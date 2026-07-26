@@ -1,0 +1,25 @@
+# 常驻技能名单 —— 只有列在这里的才会链接到 ~/.claude/skills 和 ~/.agents/skills
+# 改完之后跑 ./scripts/link.py 生效。井号开头是注释。
+
+# 初始名单按实际使用数据挑选：跨会话次数 >= 3 的（真正反复在用的）
+
+smart-search                    # 54 次 / 23 个会话 / 最近 2026-07-20
+deep-dive                       # 25 次 / 15 个会话 / 最近 2026-07-20
+improve-codebase-architecture   # 20 次 / 12 个会话 / 最近 2026-07-12
+frontend-design                 # 63 次 / 8 个会话 / 最近 2026-07-19
+reference-interpreter           # 21 次 / 8 个会话 / 最近 2026-07-20
+ios-dev                         # 51 次 / 6 个会话 / 最近 2026-07-21
+security-hardening              # 13 次 / 6 个会话 / 最近 2026-07-12
+manage-skills                   # 7 次 / 6 个会话 / 最近 2026-07-17
+diagnose                        # 62 次 / 4 个会话 / 最近 2026-07-21
+skill-creator                   # 16 次 / 3 个会话 / 最近 2026-07-21
+redesign-existing-projects      # 10 次 / 3 个会话 / 最近 2026-07-18
+high-end-visual-design          # 8 次 / 3 个会话 / 最近 2026-07-15
+minimalist-ui                   # 6 次 / 3 个会话 / 最近 2026-07-15
+simulator-utils                 # 6 次 / 3 个会话 / 最近 2026-07-05
+guide-swiftui-ui-patterns       # 4 次 / 3 个会话 / 最近 2026-07-20
+to-prd                          # 4 次 / 3 个会话 / 最近 2026-07-06
+lark-shared                     # 3 次 / 3 个会话 / 最近 2026-07-21
+writing-guidelines              # 3 次 / 3 个会话 / 最近 2026-07-22
+
+# 其余 134 个留在库里，做项目时用 ./scripts/pull.sh <分类> 拉进项目级

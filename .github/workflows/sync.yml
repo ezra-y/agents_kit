@@ -1,0 +1,79 @@
+name: 跟上游对齐
+
+on:
+  schedule:
+    - cron: '0 18 * * *'      # 每天 UTC 18:00 = 北京时间次日 02:00
+  workflow_dispatch:           # 也能在网页上手动点
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 同步
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/sync.py
+
+      - name: 体检
+        run: python scripts/doctor.py || true
+
+      - name: 提交自动更新的部分
+        run: |
+          git config user.name  "skill-sync"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A skills/ sources.json
+          if git diff --cached --quiet; then
+            echo "没有需要提交的改动"
+          else
+            n=$(python -c "import json;print(len(json.load(open('.sync-report.json'))['updated']))")
+            git commit -m "sync: 跟上游对齐 $n 个技能 ($(date +%F))"
+            git push
+          fi
+
+      - name: 改动过大的开 Issue 等人工确认
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, os, subprocess
+          r = json.load(open('.sync-report.json'))
+          flagged, failed = r['flagged'], r['failed']
+          if not flagged and not failed:
+              print('无需人工确认'); raise SystemExit
+          lines = ['上游有改动，但改动过大或出错，**本地文件未被修改**，需要你确认。', '']
+          if flagged:
+              lines += ['## 改动过大，需人工确认', '']
+              for n, repo, why, detail in flagged:
+                  lines.append(f'### `{n}`')
+                  lines.append(f'- 上游：{repo}')
+                  lines.append(f'- 原因：{why}')
+                  if detail: lines.append(f'- 差异：{detail}')
+                  lines.append('')
+              lines += ['确认没问题的话，本地跑：', '',
+                        '```bash', 'python scripts/sync.py  # 或手动整目录替换', '```', '']
+          if failed:
+              lines += ['## 同步失败', '']
+              lines += [f'- `{n}` — {why}' for n, why in failed]
+          body = '\n'.join(lines)
+          title = f'上游同步待确认：{len(flagged)} 个改动过大' + (f'，{len(failed)} 个失败' if failed else '')
+          # 已有同名 open issue 就追加评论，不重复开
+          out = subprocess.run(['gh','issue','list','--state','open','--label','sync',
+                                '--json','number,title'], capture_output=True, text=True).stdout
+          existing = [i for i in json.loads(out or '[]') if i['title'].startswith('上游同步待确认')]
+          if existing:
+              subprocess.run(['gh','issue','comment',str(existing[0]['number']),'--body',body])
+              print(f"追加到 Issue #{existing[0]['number']}")
+          else:
+              subprocess.run(['gh','issue','create','--title',title,'--body',body,'--label','sync'])
+              print('已开 Issue')
+          PY
