@@ -1,25 +1,71 @@
 # 常驻技能名单 —— 只有列在这里的才会链接到 ~/.claude/skills 和 ~/.agents/skills
-# 改完之后跑 ./scripts/link.py 生效。井号开头是注释。
+# 改完之后跑 python3 scripts/link.py 生效。井号开头是注释。
 
-# 初始名单按实际使用数据挑选：跨会话次数 >= 3 的（真正反复在用的）
+# 当前 64 个：所有实际调用过的技能（Codex + Claude Code 合计）
 
-smart-search                    # 54 次 / 23 个会话 / 最近 2026-07-20
-deep-dive                       # 25 次 / 15 个会话 / 最近 2026-07-20
-improve-codebase-architecture   # 20 次 / 12 个会话 / 最近 2026-07-12
-frontend-design                 # 63 次 / 8 个会话 / 最近 2026-07-19
-reference-interpreter           # 21 次 / 8 个会话 / 最近 2026-07-20
-ios-dev                         # 51 次 / 6 个会话 / 最近 2026-07-21
-security-hardening              # 13 次 / 6 个会话 / 最近 2026-07-12
-manage-skills                   # 7 次 / 6 个会话 / 最近 2026-07-17
-diagnose                        # 62 次 / 4 个会话 / 最近 2026-07-21
-skill-creator                   # 16 次 / 3 个会话 / 最近 2026-07-21
-redesign-existing-projects      # 10 次 / 3 个会话 / 最近 2026-07-18
-high-end-visual-design          # 8 次 / 3 个会话 / 最近 2026-07-15
-minimalist-ui                   # 6 次 / 3 个会话 / 最近 2026-07-15
-simulator-utils                 # 6 次 / 3 个会话 / 最近 2026-07-05
-guide-swiftui-ui-patterns       # 4 次 / 3 个会话 / 最近 2026-07-20
-to-prd                          # 4 次 / 3 个会话 / 最近 2026-07-06
-lark-shared                     # 3 次 / 3 个会话 / 最近 2026-07-21
-writing-guidelines              # 3 次 / 3 个会话 / 最近 2026-07-22
+frontend-design                   #  63 次 /  8 会话 / 2026-07-19
+diagnose                          #  62 次 /  4 会话 / 2026-07-21
+smart-search                      #  54 次 / 23 会话 / 2026-07-20
+ios-dev                           #  51 次 /  6 会话 / 2026-07-21
+ui-ux-pro-max                     #  34 次 /  2 会话 / 2026-06-27
+deep-dive                         #  25 次 / 15 会话 / 2026-07-20
+reference-interpreter             #  21 次 /  8 会话 / 2026-07-20
+improve-codebase-architecture     #  20 次 / 12 会话 / 2026-07-12
+skill-creator                     #  16 次 /  3 会话 / 2026-07-21
+core-animation                    #  15 次 /  1 会话 / 2026-07-22
+design-system                     #  14 次 /  1 会话 / 2026-07-18
+nextjs-mastery                    #  13 次 /  1 会话 / 2026-06-30
+security-hardening                #  13 次 /  6 会话 / 2026-07-12
+gsap-performance                  #  12 次 /  1 会话 / 2026-07-19
+swift-development                 #  10 次 /  1 会话 / 2026-07-23
+redesign-existing-projects        #  10 次 /  3 会话 / 2026-07-18
+apple-docs-index                  #   8 次 /  1 会话 / 2026-07-24
+swiftui-pro                       #   8 次 /  2 会话 / 2026-07-05
+high-end-visual-design            #   8 次 /  3 会话 / 2026-07-15
+gsap-core                         #   8 次 /  1 会话 / 2026-07-17
+authentication-patterns           #   8 次 /  2 会话 / 2026-06-28
+manage-skills                     #   7 次 /  6 会话 / 2026-07-17
+simulator-utils                   #   6 次 /  3 会话 / 2026-07-05
+guide-swiftui-view-refactor       #   6 次 /  1 会话 / 2026-07-05
+minimalist-ui                     #   6 次 /  3 会话 / 2026-07-15
+prototype                         #   6 次 /  2 会话 / 2026-07-15
+hig                               #   4 次 /  1 会话 / 2026-07-20
+guide-swiftui-animations          #   4 次 /  1 会话 / 2026-07-22
+guide-swiftui-ui-patterns         #   4 次 /  3 会话 / 2026-07-20
+swift-testing-pro                 #   4 次 /  1 会话 / 2026-07-05
+impeccable                        #   4 次 /  2 会话 / 2026-07-15
+to-prd                            #   4 次 /  3 会话 / 2026-07-06
+guide-macos-spm-packaging         #   3 次 /  1 会话 / 2026-07-24
+swift-concurrency-pro             #   3 次 /  2 会话 / 2026-07-03
+writing-guidelines                #   3 次 /  3 会话 / 2026-07-22
+lark-shared                       #   3 次 /  3 会话 / 2026-07-21
+write-a-skill                     #   3 次 /  2 会话 / 2026-06-30
+grill-me                          #   3 次 /  2 会话 / 2026-06-26
+ios-liquid-glass                  #   2 次 /  1 会话 / 2026-07-03
+guide-swiftui-performance-audit   #   2 次 /  1 会话 / 2026-07-03
+gsap-timeline                     #   2 次 /  1 会话 / 2026-07-13
+lark-im                           #   2 次 /  2 会话 / 2026-07-21
+tdd                               #   2 次 /  2 会话 / 2026-07-20
+swiftui-design-skill              #   1 次 /  1 会话 / 2026-06-18
+ios-motion-patterns-index         #   1 次 /  1 会话 / 2026-06-18
+ios-ui-craft                      #   1 次 /  1 会话 / 2026-07-03
+guide-swiftdata                   #   1 次 /  1 会话 / 2026-07-03
+guide-swift-testing               #   1 次 /  1 会话 / 2026-07-05
+swiftdata-agent-skill             #   1 次 /  1 会话 / 2026-07-03
+design-systems-index              #   1 次 /  1 会话 / 2026-06-18
+banner-design                     #   1 次 /  1 会话 / 2026-07-02
+opencli-autofix                   #   1 次 /  1 会话 / 2026-07-17
+accessibility-wcag                #   1 次 /  1 会话 / 2026-07-17
+playground                        #   1 次 /  1 会话 / 2026-07-15
+gsap-plugins                      #   1 次 /  1 会话 / 2026-07-13
+lark-markdown                     #   1 次 /  1 会话 / 2026-07-06
+lark-doc                          #   1 次 /  1 会话 / 2026-07-06
+lark-drive                        #   1 次 /  1 会话 / 2026-07-06
+lark-event                        #   1 次 /  1 会话 / 2026-07-02
+lark-apps                         #   1 次 /  1 会话 / 2026-07-02
+api-design-patterns               #   1 次 /  1 会话 / 2026-06-28
+rust-systems                      #   1 次 /  1 会话 / 2026-07-22
+setup-matt-pocock-skills          #   1 次 /  1 会话 / 2026-07-03
+grill-with-docs                   #   1 次 /  1 会话 / 2026-06-26
 
-# 其余 134 个留在库里，做项目时用 ./scripts/pull.sh <分类> 拉进项目级
+# 其余 89 个从没用过，留在库里，需要时用 scripts/pull.py <分类> 拉进项目级
