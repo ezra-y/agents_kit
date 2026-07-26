@@ -47,6 +47,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # label 不存在时 gh issue create 会直接报错，先确保它存在
+          gh label create sync --description "上游同步" --color 1D76DB 2>/dev/null || true
           python - <<'PY'
           import json, os, subprocess
           r = json.load(open('.sync-report.json'))

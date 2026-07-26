@@ -75,7 +75,6 @@ for dest in DESTS:
             # 只清理「仓库里有」的 —— 别人用插件装的、你手写的一律不动，
             # 因为那些删了就找不回来，而仓库里有的随时能链回来
             if e in src:
-                real = os.path.realpath(p)
                 print(f'  ⊘ 移除非常驻 {e}' + ('（软链）' if os.path.islink(p) else '（实体副本，仓库里有备份）'))
                 if not DRY:
                     os.unlink(p) if os.path.islink(p) else shutil.rmtree(p)

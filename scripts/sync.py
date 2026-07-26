@@ -117,7 +117,7 @@ if flagged:
     for n, r, why, d in flagged:
         print(f'  ⚠ {n:<30} {why}')
         if d: print(f'    {d}')
-        print(f'    上游: https://github.com/{r}' if r != 'open.feishu.cn' else '')
+        if r != 'open.feishu.cn': print(f'    上游: https://github.com/{r}')
 if failed:
     print('\n【失败】')
     for n, why in failed: print(f'  ✗ {n:<30} {why}')

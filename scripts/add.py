@@ -100,9 +100,14 @@ def ask(prompt, default=''):
     except EOFError: return default
 
 if a.active or ask('\n设为常驻？(加进 active.txt) [y/N] ').lower() == 'y':
-    with open(f'{REPO}/active.txt', 'a', encoding='utf-8') as f:
-        f.write(f'{sk}\n')
-    print('✓ 已加进 active.txt —— 跑 scripts/link.py 生效')
+    # 查重：已经在名单里就不重复追加
+    have = [l.split('#')[0].strip() for l in open(f'{REPO}/active.txt', encoding='utf-8')]
+    if sk in have:
+        print(f'✓ {sk} 已在 active.txt 里')
+    else:
+        with open(f'{REPO}/active.txt', 'a', encoding='utf-8') as f:
+            f.write(f'{sk}\n')
+        print('✓ 已加进 active.txt —— 跑 python3 scripts/link.py 装上')
 
 if desc: print(f'\n描述: {desc[:160]}')
 

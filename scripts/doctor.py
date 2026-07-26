@@ -64,12 +64,14 @@ broken = 0
 CONTEXT = re.compile(r'skill|技能|invoke|run the|/(?:run|use)\b', re.I)
 for n, p in sorted(skills.items()):
     t = open(f'{p}/SKILL.md', encoding='utf-8', errors='ignore').read()
+    seen = set()          # 同一个缺失引用在一个技能里只报一次
     for m in re.finditer(r'`/([a-z][a-z0-9-]{2,40})`', t):
         r = m.group(1)
-        if r in skills: continue
+        if r in skills or r in seen: continue
         # 只有上下文明确在讲技能时才算引用 —— 否则 `/users` 这种 REST 路径会误报
         around = t[max(0, m.start() - 80): m.end() + 80]
         if not CONTEXT.search(around): continue
+        seen.add(r)
         bad(f'{n} 引用了 /{r}，但仓库里没有这个技能'); broken += 1
 if broken == 0: ok('所有引用都能解析')
 
