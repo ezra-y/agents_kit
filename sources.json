@@ -408,6 +408,13 @@
    "path": "disabled-skills/ios-ui-craft",
    "category": "apple"
   },
+  "khazix-writer": {
+   "type": "github",
+   "repo": "KKKKhazix/khazix-skills",
+   "branch": "main",
+   "path": "khazix-writer",
+   "category": "method"
+  },
   "lark-approval": {
    "type": "url",
    "url": "https://open.feishu.cn/.well-known/skills/lark-approval/SKILL.md",

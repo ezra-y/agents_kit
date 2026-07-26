@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **153** 个 · 常驻 **64** 个 · 有上游可自动同步 **130** 个
+共 **154** 个 · 常驻 **65** 个 · 有上游可自动同步 **131** 个
 
 想看每个技能的详细说明和触发方式，开 [index.html](index.html)。
 
@@ -130,7 +130,7 @@
 | `lark-workflow-meeting-summary` | 工作流:汇总指定时间范围内的会议纪要,生成结构化报告(会议周报)。 |  |  | 飞书官方 |
 | `lark-workflow-standup-report` | 工作流:编排日历日程和任务,生成指定日期的日程与未完成任务摘要。 |  |  | 飞书官方 |
 
-## method（16 个）
+## method（17 个）
 
 | 技能 | 说明 | 常驻 | 用量 | 上游 |
 |---|---|:--:|---|---|
@@ -147,6 +147,7 @@
 | `domain-modeling` | 领域建模:梳理业务概念、统一术语、产出领域词汇表,74 行。 |  |  | [mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/domain-modeling) |
 | `grilling` | 拷问式访谈的引擎,12 行。一次一个问题走完决策树,每问都给推荐答案。grill-me 和 grill-with-docs 都靠它。 |  |  | [mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling) |
 | `handoff` | 把当前对话压缩成交接文档给下一个 agent,要求不重复 PRD/计划/ADR/commit 里已有的内容,只给路径或 URL。已更新到上游 |  |  | [mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/productivity/handoff) |
+| `khazix-writer` | \| 数字生命卡兹克（Khazix）的公众号长文写作skill。当用户需要撰写公众号文章、写稿子、续写文章、根据素材产出长文时使用。触发词包括 | ● |  | [KKKKhazix/khazix-skills](https://github.com/KKKKhazix/khazix-skills/tree/main/khazix-writer) |
 | `to-issues` | 把计划/规格拆成可独立认领的 issue,用 tracer bullet 纵向切片。已更新到上游最新(上游改名 to-tickets,105 |  |  | [mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/to-tickets) |
 | `triage` | 用状态机和五种 triage 角色流转 issue,要求每条评论带免责声明。 |  |  | [mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/triage) |
 | `zoom-out` | 让 agent 抬升一个抽象层,给出相关模块和调用方的地图。正文只有 2 行,标了仅手动调用。 |  |  | — |
