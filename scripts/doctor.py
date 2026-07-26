@@ -60,6 +60,7 @@ else: ok(f'{len(active)} 个常驻技能全部匹配')
 
 print(f'\n[4/6] 技能间引用')
 broken = 0
+# 只有上下文里提到 skill/技能 才当成技能引用 —— 否则 `/users` 这种 REST 路径会误报
 CONTEXT = re.compile(r'skill|技能|invoke|run the|/(?:run|use)\b', re.I)
 for n, p in sorted(skills.items()):
     t = open(f'{p}/SKILL.md', encoding='utf-8', errors='ignore').read()

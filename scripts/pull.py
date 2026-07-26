@@ -15,7 +15,8 @@ from collections import Counter
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEST = os.path.join(os.getcwd(), '.claude', 'skills')
 
-# 某些技能离了依赖就不能用
+# 某些技能离了依赖就不能用。上游把技能重构成「去跑另一个技能」的空壳之后，
+# 光拉它本身是拉了个寂寞，所以这里硬编码几组已知的依赖关系。
 DEPS = {
     'lark':            ['lark-shared'],
     'grill-me':        ['grilling'],

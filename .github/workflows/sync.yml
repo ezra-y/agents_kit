@@ -24,6 +24,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: python scripts/sync.py
 
+      - name: 重新生成文档
+        run: python scripts/render.py
+
       - name: 体检
         run: python scripts/doctor.py || true
 
@@ -31,7 +34,7 @@ jobs:
         run: |
           git config user.name  "skill-sync"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A skills/ sources.json
+          git add -A skills/ sources.json docs/
           if git diff --cached --quiet; then
             echo "没有需要提交的改动"
           else

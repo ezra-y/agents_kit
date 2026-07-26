@@ -1,0 +1,548 @@
+{
+ "accessibility-wcag": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-17",
+  "cx": 1,
+  "cc": 0
+ },
+ "api-design-patterns": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-06-28",
+  "cx": 1,
+  "cc": 0
+ },
+ "apple-docs-index": {
+  "n": 8,
+  "s": 1,
+  "last": "2026-07-24",
+  "cx": 8,
+  "cc": 0
+ },
+ "authentication-patterns": {
+  "n": 8,
+  "s": 2,
+  "last": "2026-06-28",
+  "cx": 8,
+  "cc": 0
+ },
+ "banner-design": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-02",
+  "cx": 1,
+  "cc": 0
+ },
+ "bizyair-skill": {
+  "n": 5,
+  "s": 5,
+  "last": "2026-07-19",
+  "cx": 0,
+  "cc": 5
+ },
+ "ci-cd-pipelines": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-06-28",
+  "cx": 1,
+  "cc": 0
+ },
+ "component-rules": {
+  "n": 6,
+  "s": 2,
+  "last": "2026-06-30",
+  "cx": 6,
+  "cc": 0
+ },
+ "core-animation": {
+  "n": 15,
+  "s": 1,
+  "last": "2026-07-22",
+  "cx": 15,
+  "cc": 0
+ },
+ "deep-dive": {
+  "n": 25,
+  "s": 15,
+  "last": "2026-07-20",
+  "cx": 25,
+  "cc": 0
+ },
+ "design-system": {
+  "n": 14,
+  "s": 1,
+  "last": "2026-07-18",
+  "cx": 14,
+  "cc": 0
+ },
+ "design-systems-index": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-06-18",
+  "cx": 0,
+  "cc": 1
+ },
+ "diagnose": {
+  "n": 62,
+  "s": 4,
+  "last": "2026-07-21",
+  "cx": 62,
+  "cc": 0
+ },
+ "frontend-design": {
+  "n": 63,
+  "s": 8,
+  "last": "2026-07-19",
+  "cx": 61,
+  "cc": 2
+ },
+ "frontend-excellence": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-17",
+  "cx": 1,
+  "cc": 0
+ },
+ "git-advanced": {
+  "n": 8,
+  "s": 2,
+  "last": "2026-06-29",
+  "cx": 8,
+  "cc": 0
+ },
+ "grill-me": {
+  "n": 3,
+  "s": 2,
+  "last": "2026-06-26",
+  "cx": 2,
+  "cc": 1
+ },
+ "grill-with-docs": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-06-26",
+  "cx": 1,
+  "cc": 0
+ },
+ "gsap-core": {
+  "n": 8,
+  "s": 1,
+  "last": "2026-07-17",
+  "cx": 8,
+  "cc": 0
+ },
+ "gsap-performance": {
+  "n": 12,
+  "s": 1,
+  "last": "2026-07-19",
+  "cx": 12,
+  "cc": 0
+ },
+ "gsap-plugins": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-13",
+  "cx": 1,
+  "cc": 0
+ },
+ "gsap-timeline": {
+  "n": 2,
+  "s": 1,
+  "last": "2026-07-13",
+  "cx": 2,
+  "cc": 0
+ },
+ "guide-macos-spm-packaging": {
+  "n": 3,
+  "s": 1,
+  "last": "2026-07-24",
+  "cx": 3,
+  "cc": 0
+ },
+ "guide-swift-testing": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-05",
+  "cx": 1,
+  "cc": 0
+ },
+ "guide-swiftdata": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-03",
+  "cx": 1,
+  "cc": 0
+ },
+ "guide-swiftui-animations": {
+  "n": 4,
+  "s": 1,
+  "last": "2026-07-22",
+  "cx": 4,
+  "cc": 0
+ },
+ "guide-swiftui-performance-audit": {
+  "n": 2,
+  "s": 1,
+  "last": "2026-07-03",
+  "cx": 2,
+  "cc": 0
+ },
+ "guide-swiftui-ui-patterns": {
+  "n": 4,
+  "s": 3,
+  "last": "2026-07-20",
+  "cx": 4,
+  "cc": 0
+ },
+ "guide-swiftui-view-refactor": {
+  "n": 6,
+  "s": 1,
+  "last": "2026-07-05",
+  "cx": 6,
+  "cc": 0
+ },
+ "hig": {
+  "n": 4,
+  "s": 1,
+  "last": "2026-07-20",
+  "cx": 4,
+  "cc": 0
+ },
+ "high-end-visual-design": {
+  "n": 8,
+  "s": 3,
+  "last": "2026-07-15",
+  "cx": 7,
+  "cc": 1
+ },
+ "impeccable": {
+  "n": 4,
+  "s": 2,
+  "last": "2026-07-15",
+  "cx": 3,
+  "cc": 1
+ },
+ "improve-codebase-architecture": {
+  "n": 20,
+  "s": 12,
+  "last": "2026-07-12",
+  "cx": 20,
+  "cc": 0
+ },
+ "ios-dev": {
+  "n": 51,
+  "s": 6,
+  "last": "2026-07-21",
+  "cx": 51,
+  "cc": 0
+ },
+ "ios-liquid-glass": {
+  "n": 2,
+  "s": 1,
+  "last": "2026-07-03",
+  "cx": 2,
+  "cc": 0
+ },
+ "ios-motion-patterns-index": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-06-18",
+  "cx": 0,
+  "cc": 1
+ },
+ "ios-ui-craft": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-03",
+  "cx": 1,
+  "cc": 0
+ },
+ "lark-apps": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-02",
+  "cx": 1,
+  "cc": 0
+ },
+ "lark-doc": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-06",
+  "cx": 1,
+  "cc": 0
+ },
+ "lark-drive": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-06",
+  "cx": 1,
+  "cc": 0
+ },
+ "lark-event": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-02",
+  "cx": 1,
+  "cc": 0
+ },
+ "lark-im": {
+  "n": 2,
+  "s": 2,
+  "last": "2026-07-21",
+  "cx": 2,
+  "cc": 0
+ },
+ "lark-markdown": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-06",
+  "cx": 1,
+  "cc": 0
+ },
+ "lark-shared": {
+  "n": 3,
+  "s": 3,
+  "last": "2026-07-21",
+  "cx": 3,
+  "cc": 0
+ },
+ "llm-integration": {
+  "n": 2,
+  "s": 2,
+  "last": "2026-07-19",
+  "cx": 2,
+  "cc": 0
+ },
+ "manage-skills": {
+  "n": 7,
+  "s": 6,
+  "last": "2026-07-17",
+  "cx": 7,
+  "cc": 0
+ },
+ "mcp-integration": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-20",
+  "cx": 1,
+  "cc": 0
+ },
+ "minimalist-ui": {
+  "n": 6,
+  "s": 3,
+  "last": "2026-07-15",
+  "cx": 4,
+  "cc": 2
+ },
+ "monitoring-observability": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-05",
+  "cx": 1,
+  "cc": 0
+ },
+ "nextjs-mastery": {
+  "n": 13,
+  "s": 1,
+  "last": "2026-06-30",
+  "cx": 13,
+  "cc": 0
+ },
+ "opencli-autofix": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-17",
+  "cx": 1,
+  "cc": 0
+ },
+ "playground": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-15",
+  "cx": 1,
+  "cc": 0
+ },
+ "plugin-settings": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-13",
+  "cx": 1,
+  "cc": 0
+ },
+ "prompt-engineering": {
+  "n": 2,
+  "s": 1,
+  "last": "2026-06-28",
+  "cx": 2,
+  "cc": 0
+ },
+ "prototype": {
+  "n": 6,
+  "s": 2,
+  "last": "2026-07-15",
+  "cx": 6,
+  "cc": 0
+ },
+ "redesign-existing-projects": {
+  "n": 10,
+  "s": 3,
+  "last": "2026-07-18",
+  "cx": 9,
+  "cc": 1
+ },
+ "reference-interpreter": {
+  "n": 21,
+  "s": 8,
+  "last": "2026-07-20",
+  "cx": 21,
+  "cc": 0
+ },
+ "rust-systems": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-22",
+  "cx": 1,
+  "cc": 0
+ },
+ "security-hardening": {
+  "n": 13,
+  "s": 6,
+  "last": "2026-07-12",
+  "cx": 13,
+  "cc": 0
+ },
+ "setup-matt-pocock-skills": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-03",
+  "cx": 1,
+  "cc": 0
+ },
+ "simulator-utils": {
+  "n": 6,
+  "s": 3,
+  "last": "2026-07-05",
+  "cx": 6,
+  "cc": 0
+ },
+ "skill-creator": {
+  "n": 16,
+  "s": 3,
+  "last": "2026-07-21",
+  "cx": 16,
+  "cc": 0
+ },
+ "smart-search": {
+  "n": 54,
+  "s": 23,
+  "last": "2026-07-20",
+  "cx": 52,
+  "cc": 2
+ },
+ "styleseed": {
+  "n": 2,
+  "s": 2,
+  "last": "2026-07-15",
+  "cx": 2,
+  "cc": 0
+ },
+ "swift-concurrency-pro": {
+  "n": 3,
+  "s": 2,
+  "last": "2026-07-03",
+  "cx": 3,
+  "cc": 0
+ },
+ "swift-development": {
+  "n": 10,
+  "s": 1,
+  "last": "2026-07-23",
+  "cx": 10,
+  "cc": 0
+ },
+ "swift-testing-pro": {
+  "n": 4,
+  "s": 1,
+  "last": "2026-07-05",
+  "cx": 4,
+  "cc": 0
+ },
+ "swiftdata-agent-skill": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-03",
+  "cx": 1,
+  "cc": 0
+ },
+ "swiftui-design-skill": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-06-18",
+  "cx": 0,
+  "cc": 1
+ },
+ "swiftui-pro": {
+  "n": 8,
+  "s": 2,
+  "last": "2026-07-05",
+  "cx": 8,
+  "cc": 0
+ },
+ "tdd": {
+  "n": 2,
+  "s": 2,
+  "last": "2026-07-20",
+  "cx": 2,
+  "cc": 0
+ },
+ "tdd-mastery": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-07-01",
+  "cx": 1,
+  "cc": 0
+ },
+ "testing-strategies": {
+  "n": 4,
+  "s": 2,
+  "last": "2026-06-30",
+  "cx": 4,
+  "cc": 0
+ },
+ "to-prd": {
+  "n": 4,
+  "s": 3,
+  "last": "2026-07-06",
+  "cx": 3,
+  "cc": 1
+ },
+ "ui-config": {
+  "n": 1,
+  "s": 1,
+  "last": "2026-06-26",
+  "cx": 1,
+  "cc": 0
+ },
+ "ui-ux-pro-max": {
+  "n": 34,
+  "s": 2,
+  "last": "2026-06-27",
+  "cx": 33,
+  "cc": 1
+ },
+ "write-a-skill": {
+  "n": 3,
+  "s": 2,
+  "last": "2026-06-30",
+  "cx": 2,
+  "cc": 1
+ },
+ "writing-guidelines": {
+  "n": 3,
+  "s": 3,
+  "last": "2026-07-22",
+  "cx": 3,
+  "cc": 0
+ }
+}

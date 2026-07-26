@@ -105,4 +105,14 @@ if a.active or ask('\n设为常驻？(加进 active.txt) [y/N] ').lower() == 'y'
     print('✓ 已加进 active.txt —— 跑 scripts/link.py 生效')
 
 if desc: print(f'\n描述: {desc[:160]}')
-print('\n建议接着跑: python scripts/doctor.py')
+
+# ── 连带更新：文档重新生成 + 体检 ──
+# 加技能会让 README/清册过期，所以这里直接重跑，不指望你记得
+print('\n重新生成文档…')
+subprocess.run([sys.executable, f'{REPO}/scripts/render.py'])
+print('\n体检…')
+subprocess.run([sys.executable, f'{REPO}/scripts/doctor.py'])
+print(f'\n提示：在 scripts/descriptions.py 里给 {sk} 补一条中文说明，'
+      f'然后重跑 scripts/render.py，文档里就有中文了。')
+if a.active:
+    print('已加进 active.txt —— 跑 python3 scripts/link.py 把它装上')

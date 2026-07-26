@@ -57,6 +57,8 @@ for dest in DESTS:
         s = src.get(n)
         if not s: continue
         t = f'{dest}/{n}'
+        # 本地是实体目录 → 删掉换成软链。这是「更新不生效」的根源：
+        # 实体副本不会随 git pull 变化，软链会。
         if os.path.exists(t) and not os.path.islink(t):
             print(f'  ⟲ 清理旧实体副本 {n}'); cleaned += 1
             if not DRY: shutil.rmtree(t)
@@ -70,7 +72,8 @@ for dest in DESTS:
         for e in sorted(os.listdir(dest) if os.path.isdir(dest) else []):
             if e.startswith('.') or e in want: continue
             p = f'{dest}/{e}'
-            # 只清理「仓库里有」的 —— 别人装的、你手写的一律不动
+            # 只清理「仓库里有」的 —— 别人用插件装的、你手写的一律不动，
+            # 因为那些删了就找不回来，而仓库里有的随时能链回来
             if e in src:
                 real = os.path.realpath(p)
                 print(f'  ⊘ 移除非常驻 {e}' + ('（软链）' if os.path.islink(p) else '（实体副本，仓库里有备份）'))

@@ -41,6 +41,8 @@ for n, v in gh_items.items():
     repos.setdefault((v['repo'], v['branch']), []).append(n)
 
 for (repo, branch), names in sorted(repos.items()):
+    # 先拿整棵树的 blob SHA（文件指纹）。指纹一样就说明没变，不用下载内容。
+    # 130 个技能里大部分都没变，这一步能省掉绝大多数网络传输。
     tree = gh(['api', f'repos/{repo}/git/trees/{branch}?recursive=1',
                '--jq', '.tree[]|select(.path|endswith("SKILL.md"))|.path+"\t"+.sha'])
     if not tree:
@@ -73,6 +75,8 @@ for (repo, branch), names in sorted(repos.items()):
             lo_n = sum(len(f) for _, _, f in os.walk(local)) - 1
             up_n = sum(len(f) for _, _, f in os.walk(usrc)) - 1
             detail = f'{len(lo)}→{len(up)} 行，相似度 {ratio:.0%}，附件 {lo_n}→{up_n}'
+            # 分流的依据：改动小就自动跟，改动大就搁置等人看。
+            # 附件数变了通常意味着上游把正文拆进了新文件，只覆盖 SKILL.md 会把技能弄废。
             if ratio >= SIM_THRESHOLD and lo_n == up_n:
                 if not DRY:
                     shutil.rmtree(local); shutil.copytree(usrc, local)
