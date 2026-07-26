@@ -83,9 +83,10 @@ for n, s in sorted(skills.items()):
     else:
         repo = url = stars = None
     u = usage.get(n, {})
-    rows.append(dict(name=n, cat=s['cat'], desc=desc, how=how, rec=rec,
+    rel = os.path.relpath(s['abspath'], REPO)      # 相对仓库根，克隆到哪都能用
+    rows.append(dict(name=n, cat=s['cat'], desc=desc, how=how, rec=rec, rel=rel,
                      lines=s['lines'], nfiles=s['nfiles'], files=s['files'],
-                     body=s['body'], abspath=s['abspath'], manual=s['manual'],
+                     body=s['body'], manual=s['manual'],
                      active=n in active, repo=repo, url=url, stars=stars,
                      un=u.get('n', 0), us=u.get('s', 0), ul=u.get('last'),
                      ucx=u.get('cx', 0), ucc=u.get('cc', 0)))
@@ -279,7 +280,7 @@ function render(){
       +'<td class="c-name"><button class="sname" type="button" aria-expanded="false">'
         +'<span class="caret">▶</span>'+r.name+'</button>'+badges
         +'<span class="meta">'+r.cat+' · '+r.lines+' 行 · '+r.nfiles+' 附件 · '
-        +'<a href="file://'+encodeURI(r.abspath)+'/">📂 目录</a></span></td>'
+        +'<a href="../'+encodeURI(r.rel)+'/">📂 目录</a></span></td>'
       +'<td class="c-desc"><p class="d">'+md(r.desc)+'</p>'
         +(r.how?'<p class="how"><span class="hk">怎么用</span>'+md(r.how)+'</p>':'')+'</td>'
       +'<td class="c-side">'
@@ -302,8 +303,8 @@ tb.addEventListener('click',e=>{
   const files=r.files.length?('<div><div class="dlabel">附带资源 · '+r.files.length+' 个文件</div>'
     +'<div class="dfiles">'+r.files.map(f=>'<div>'+esc(f)+'</div>').join('')+'</div></div>'):'';
   tr.insertAdjacentHTML('afterend','<tr class="detail"><td colspan="3"><div class="dwrap">'
-    +'<div class="dbar"><a class="btn" href="file://'+encodeURI(r.abspath)+'/">📂 打开目录</a>'
-    +'<a class="btn" href="file://'+encodeURI(r.abspath)+'/SKILL.md">📄 打开 SKILL.md</a>'
+    +'<div class="dbar"><a class="btn" href="../'+encodeURI(r.rel)+'/">📂 打开目录</a>'
+    +'<a class="btn" href="../'+encodeURI(r.rel)+'/SKILL.md">📄 打开 SKILL.md</a>'
     +(r.url?'<a class="btn" href="'+r.url+'" target="_blank" rel="noopener">上游 ↗</a>':'')+'</div>'
     +'<div><div class="dlabel">SKILL.md 全文 · '+r.lines+' 行</div>'
     +'<div class="dbody">'+mdRender(r.body)+'</div></div>'+files+'</div></td></tr>');
@@ -375,7 +376,7 @@ page = f"""<!doctype html>
   <p>本页是 <code>scripts/render.py</code> 从仓库直接生成的：技能正文来自 <code>skills/**/SKILL.md</code>，
   中文说明来自 <code>scripts/descriptions.py</code>，上游来自 <code>sources.json</code>，
   用量来自 <code>docs/usage.json</code>（会话记录的静态快照）。</p>
-  <p>「📂 目录」是本地文件链接，只在你自己机器上打开这个文件时有效。</p>
+  <p>「📂 目录」是相对本仓库的链接，把这个文件在本地打开时能直接跳到技能目录。</p>
 </footer>
 </div>
 <script>{JS.replace('__DATA__', data).replace('__RECLABEL__', json.dumps(RECLABEL, ensure_ascii=False))}</script>
