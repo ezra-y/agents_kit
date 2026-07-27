@@ -550,6 +550,13 @@
    "url": "https://open.feishu.cn/.well-known/skills/lark-workflow-standup-report/SKILL.md",
    "category": "lark"
   },
+  "last30days": {
+   "type": "github",
+   "repo": "mvanhorn/last30days-skill",
+   "branch": "main",
+   "path": "skills/last30days",
+   "category": "tools"
+  },
   "manage-skills": {
    "type": "github",
    "repo": "rohitg00/awesome-claude-code-toolkit",

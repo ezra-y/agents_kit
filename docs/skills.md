@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **154** 个 · 常驻 **65** 个 · 有上游可自动同步 **131** 个
+共 **155** 个 · 常驻 **66** 个 · 有上游可自动同步 **132** 个
 
 想看每个技能的详细说明和触发方式，开 [index.html](index.html)。
 
@@ -152,13 +152,14 @@
 | `triage` | 用状态机和五种 triage 角色流转 issue,要求每条评论带免责声明。 |  |  | [mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/triage) |
 | `zoom-out` | 让 agent 抬升一个抽象层,给出相关模块和调用方的地图。正文只有 2 行,标了仅手动调用。 |  |  | — |
 
-## tools（4 个）
+## tools（5 个）
 
 | 技能 | 说明 | 常驻 | 用量 | 上游 |
 |---|---|:--:|---|---|
 | `smart-search` | 基于本机 opencli 的智能搜索路由:指定站点、社交媒体、技术资料、新闻、购物、旅游、求职、金融、中文内容各走不同的源。含强制预检、单题 | ● | 54 次 | — |
 | `deep-dive` | 不依赖外部 API 的深度研究:把问题拆成 DAG、按依赖顺序并行跑子代理、按缺口迭代一轮。 | ● | 25 次 | [rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit/tree/main/skills/deep-dive) |
 | `opencli-autofix` | opencli 命令失败时自动修适配器:收集 trace、打补丁、重试,修好后再去上游提 issue。含「空结果 ≠ 坏了」的前置判断。 | ● | 1 次 | — |
+| `last30days` | 研究一个话题最近 30 天在 Reddit、X、YouTube、TikTok、Hacker News、Polymarket、GitHub 和 | ● |  | [mvanhorn/last30days-skill](https://github.com/mvanhorn/last30days-skill/tree/main/skills/last30days) |
 | `opencli-adapter-author` | 给新站点写 opencli 适配器,或给已有站点加命令,15 个附件。从初次侦察、字段解码、写适配器到验证,含决策树、逐步 runbook  |  |  | — |
 
 ## web（34 个）
