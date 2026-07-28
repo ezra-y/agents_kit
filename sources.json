@@ -1,879 +1,1804 @@
 {
- "_comment": "上游来源清单。不在此文件中的技能 sync.py 不会碰。",
- "skills": {
-  "accessibility-wcag": {
-   "type": "github",
-   "repo": "rohitg00/awesome-claude-code-toolkit",
-   "branch": "main",
-   "path": "skills/accessibility-wcag",
-   "category": "web"
-  },
-  "api-design-patterns": {
-   "type": "github",
-   "repo": "rohitg00/awesome-claude-code-toolkit",
-   "branch": "main",
-   "path": "skills/api-design-patterns",
-   "category": "backend"
-  },
-  "appintents": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/appintents",
-   "category": "apple"
-  },
-  "apple-aso": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/apple-aso",
-   "category": "apple"
-  },
-  "apple-docs-index": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/apple-docs-index",
-   "category": "apple"
-  },
-  "authentication-patterns": {
-   "type": "github",
-   "repo": "rohitg00/awesome-claude-code-toolkit",
-   "branch": "main",
-   "path": "skills/authentication-patterns",
-   "category": "backend"
-  },
-  "backgroundtasks": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/backgroundtasks",
-   "category": "apple"
-  },
-  "banner-design": {
-   "type": "github",
-   "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
-   "branch": "main",
-   "path": ".claude/skills/banner-design",
-   "category": "design"
-  },
-  "brand": {
-   "type": "github",
-   "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
-   "branch": "main",
-   "path": ".claude/skills/brand",
-   "category": "design"
-  },
-  "build-mcp-app": {
-   "type": "github",
-   "repo": "anthropics/claude-plugins-official",
-   "branch": "main",
-   "path": "plugins/mcp-server-dev/skills/build-mcp-app",
-   "category": "agent"
-  },
-  "build-mcp-server": {
-   "type": "github",
-   "repo": "anthropics/claude-plugins-official",
-   "branch": "main",
-   "path": "plugins/mcp-server-dev/skills/build-mcp-server",
-   "category": "agent"
-  },
-  "canvas-design": {
-   "type": "github",
-   "repo": "anthropics/skills",
-   "branch": "main",
-   "path": "skills/canvas-design",
-   "category": "design"
-  },
-  "claude-md-improver": {
-   "type": "github",
-   "repo": "anthropics/claude-plugins-official",
-   "branch": "main",
-   "path": "plugins/claude-md-management/skills/claude-md-improver",
-   "category": "agent"
-  },
-  "codebase-design": {
-   "type": "github",
-   "repo": "mattpocock/skills",
-   "branch": "main",
-   "path": "skills/engineering/codebase-design",
-   "category": "method"
-  },
-  "combine": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/combine",
-   "category": "apple"
-  },
-  "composition-patterns": {
-   "type": "github",
-   "repo": "vercel-labs/agent-skills",
-   "branch": "main",
-   "path": "skills/composition-patterns",
-   "category": "web"
-  },
-  "core-animation": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/core-animation",
-   "category": "apple"
-  },
-  "corehaptics": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/corehaptics",
-   "category": "apple"
-  },
-  "deep-dive": {
-   "type": "github",
-   "repo": "rohitg00/awesome-claude-code-toolkit",
-   "branch": "main",
-   "path": "skills/deep-dive",
-   "category": "tools"
-  },
-  "deploy-to-vercel": {
-   "type": "github",
-   "repo": "vercel-labs/agent-skills",
-   "branch": "main",
-   "path": "skills/deploy-to-vercel",
-   "category": "web"
-  },
-  "design": {
-   "type": "github",
-   "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
-   "branch": "main",
-   "path": ".claude/skills/design",
-   "category": "design"
-  },
-  "design-system": {
-   "type": "github",
-   "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
-   "branch": "main",
-   "path": ".claude/skills/design-system",
-   "category": "design"
-  },
-  "diagnose": {
-   "type": "github",
-   "repo": "mattpocock/skills",
-   "branch": "main",
-   "path": "skills/engineering/diagnosing-bugs",
-   "category": "method",
-   "upstream_name": "diagnosing-bugs"
-  },
-  "domain-modeling": {
-   "type": "github",
-   "repo": "mattpocock/skills",
-   "branch": "main",
-   "path": "skills/engineering/domain-modeling",
-   "category": "method"
-  },
-  "eventkit": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/eventkit",
-   "category": "apple"
-  },
-  "figma-style-binding": {
-   "type": "github",
-   "repo": "senlindesign/claude2figma",
-   "branch": "main",
-   "path": ".claude/skills/figma-style-binding",
-   "category": "design"
-  },
-  "frontend-design": {
-   "type": "github",
-   "repo": "anthropics/skills",
-   "branch": "main",
-   "path": "skills/frontend-design",
-   "category": "web"
-  },
-  "frontend-slides": {
-   "type": "github",
-   "repo": "zarazhangrui/frontend-slides",
-   "branch": "main",
-   "path": "plugins/frontend-slides/skills/frontend-slides",
-   "category": "design"
-  },
-  "grill-me": {
-   "type": "github",
-   "repo": "mattpocock/skills",
-   "branch": "main",
-   "path": "skills/productivity/grill-me",
-   "category": "method"
-  },
-  "grill-with-docs": {
-   "type": "github",
-   "repo": "mattpocock/skills",
-   "branch": "main",
-   "path": "skills/engineering/grill-with-docs",
-   "category": "method"
-  },
-  "grilling": {
-   "type": "github",
-   "repo": "mattpocock/skills",
-   "branch": "main",
-   "path": "skills/productivity/grilling",
-   "category": "method"
-  },
-  "gsap-core": {
-   "type": "github",
-   "repo": "greensock/gsap-skills",
-   "branch": "main",
-   "path": "skills/gsap-core",
-   "category": "web"
-  },
-  "gsap-frameworks": {
-   "type": "github",
-   "repo": "greensock/gsap-skills",
-   "branch": "main",
-   "path": "skills/gsap-frameworks",
-   "category": "web"
-  },
-  "gsap-performance": {
-   "type": "github",
-   "repo": "greensock/gsap-skills",
-   "branch": "main",
-   "path": "skills/gsap-performance",
-   "category": "web"
-  },
-  "gsap-plugins": {
-   "type": "github",
-   "repo": "greensock/gsap-skills",
-   "branch": "main",
-   "path": "skills/gsap-plugins",
-   "category": "web"
-  },
-  "gsap-react": {
-   "type": "github",
-   "repo": "greensock/gsap-skills",
-   "branch": "main",
-   "path": "skills/gsap-react",
-   "category": "web"
-  },
-  "gsap-scrolltrigger": {
-   "type": "github",
-   "repo": "greensock/gsap-skills",
-   "branch": "main",
-   "path": "skills/gsap-scrolltrigger",
-   "category": "web"
-  },
-  "gsap-timeline": {
-   "type": "github",
-   "repo": "greensock/gsap-skills",
-   "branch": "main",
-   "path": "skills/gsap-timeline",
-   "category": "web"
-  },
-  "gsap-utils": {
-   "type": "github",
-   "repo": "greensock/gsap-skills",
-   "branch": "main",
-   "path": "skills/gsap-utils",
-   "category": "web"
-  },
-  "guide-macos-spm-packaging": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/guide-macos-spm-packaging",
-   "category": "apple"
-  },
-  "guide-swift-concurrency": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/guide-swift-concurrency",
-   "category": "apple"
-  },
-  "guide-swift-testing": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/guide-swift-testing",
-   "category": "apple"
-  },
-  "guide-swiftdata": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/guide-swiftdata",
-   "category": "apple"
-  },
-  "guide-swiftui-animations": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/guide-swiftui-animations",
-   "category": "apple"
-  },
-  "guide-swiftui-charts": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/guide-swiftui-charts",
-   "category": "apple"
-  },
-  "guide-swiftui-performance-audit": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/guide-swiftui-performance-audit",
-   "category": "apple"
-  },
-  "guide-swiftui-ui-patterns": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/guide-swiftui-ui-patterns",
-   "category": "apple"
-  },
-  "guide-swiftui-view-refactor": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "disabled-skills/guide-swiftui-view-refactor",
-   "category": "apple"
-  },
-  "handoff": {
-   "type": "github",
-   "repo": "mattpocock/skills",
-   "branch": "main",
-   "path": "skills/productivity/handoff",
-   "category": "method"
-  },
-  "healthkit": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/healthkit",
-   "category": "apple"
-  },
-  "hig": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/hig",
-   "category": "apple"
-  },
-  "hook-development": {
-   "type": "github",
-   "repo": "anthropics/claude-plugins-official",
-   "branch": "main",
-   "path": "plugins/plugin-dev/skills/hook-development",
-   "category": "agent"
-  },
-  "improve-codebase-architecture": {
-   "type": "github",
-   "repo": "mattpocock/skills",
-   "branch": "main",
-   "path": "skills/engineering/improve-codebase-architecture",
-   "category": "method"
-  },
-  "ios-design-consultant": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "disabled-skills/ios-design-consultant",
-   "category": "apple"
-  },
-  "ios-dev": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/ios-dev",
-   "category": "apple"
-  },
-  "ios-liquid-glass": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/ios-liquid-glass",
-   "category": "apple"
-  },
-  "ios-simulator-skill": {
-   "type": "github",
-   "repo": "conorluddy/ios-simulator-skill",
-   "branch": "main",
-   "path": "ios-simulator-skill/skills/ios-simulator-skill",
-   "category": "apple"
-  },
-  "ios-ui-craft": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "disabled-skills/ios-ui-craft",
-   "category": "apple"
-  },
-  "khazix-writer": {
-   "type": "github",
-   "repo": "KKKKhazix/khazix-skills",
-   "branch": "main",
-   "path": "khazix-writer",
-   "category": "method"
-  },
-  "lark-approval": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-approval/SKILL.md",
-   "category": "lark"
-  },
-  "lark-apps": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-apps/SKILL.md",
-   "category": "lark"
-  },
-  "lark-attendance": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-attendance/SKILL.md",
-   "category": "lark"
-  },
-  "lark-base": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-base/SKILL.md",
-   "category": "lark"
-  },
-  "lark-calendar": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-calendar/SKILL.md",
-   "category": "lark"
-  },
-  "lark-contact": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-contact/SKILL.md",
-   "category": "lark"
-  },
-  "lark-doc": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-doc/SKILL.md",
-   "category": "lark"
-  },
-  "lark-drive": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-drive/SKILL.md",
-   "category": "lark"
-  },
-  "lark-event": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-event/SKILL.md",
-   "category": "lark"
-  },
-  "lark-im": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-im/SKILL.md",
-   "category": "lark"
-  },
-  "lark-mail": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-mail/SKILL.md",
-   "category": "lark"
-  },
-  "lark-markdown": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-markdown/SKILL.md",
-   "category": "lark"
-  },
-  "lark-minutes": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-minutes/SKILL.md",
-   "category": "lark"
-  },
-  "lark-note": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-note/SKILL.md",
-   "category": "lark"
-  },
-  "lark-okr": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-okr/SKILL.md",
-   "category": "lark"
-  },
-  "lark-openapi-explorer": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-openapi-explorer/SKILL.md",
-   "category": "lark"
-  },
-  "lark-shared": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-shared/SKILL.md",
-   "category": "lark"
-  },
-  "lark-sheets": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-sheets/SKILL.md",
-   "category": "lark"
-  },
-  "lark-skill-maker": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-skill-maker/SKILL.md",
-   "category": "lark"
-  },
-  "lark-slides": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-slides/SKILL.md",
-   "category": "lark"
-  },
-  "lark-task": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-task/SKILL.md",
-   "category": "lark"
-  },
-  "lark-vc": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-vc/SKILL.md",
-   "category": "lark"
-  },
-  "lark-vc-agent": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-vc-agent/SKILL.md",
-   "category": "lark"
-  },
-  "lark-whiteboard": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-whiteboard/SKILL.md",
-   "category": "lark"
-  },
-  "lark-wiki": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-wiki/SKILL.md",
-   "category": "lark"
-  },
-  "lark-workflow-meeting-summary": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-workflow-meeting-summary/SKILL.md",
-   "category": "lark"
-  },
-  "lark-workflow-standup-report": {
-   "type": "url",
-   "url": "https://open.feishu.cn/.well-known/skills/lark-workflow-standup-report/SKILL.md",
-   "category": "lark"
-  },
-  "last30days": {
-   "type": "github",
-   "repo": "mvanhorn/last30days-skill",
-   "branch": "main",
-   "path": "skills/last30days",
-   "category": "tools"
-  },
-  "mapkit": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/mapkit",
-   "category": "apple"
-  },
-  "nextjs-mastery": {
-   "type": "github",
-   "repo": "rohitg00/awesome-claude-code-toolkit",
-   "branch": "main",
-   "path": "skills/nextjs-mastery",
-   "category": "web"
-  },
-  "photosui": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/photosui",
-   "category": "apple"
-  },
-  "playground": {
-   "type": "github",
-   "repo": "anthropics/claude-plugins-official",
-   "branch": "main",
-   "path": "plugins/playground/skills/playground",
-   "category": "web"
-  },
-  "prototype": {
-   "type": "github",
-   "repo": "mattpocock/skills",
-   "branch": "main",
-   "path": "skills/engineering/prototype",
-   "category": "method"
-  },
-  "react-best-practices": {
-   "type": "github",
-   "repo": "vercel-labs/agent-skills",
-   "branch": "main",
-   "path": "skills/react-best-practices",
-   "category": "web"
-  },
-  "react-native-skills": {
-   "type": "github",
-   "repo": "vercel-labs/agent-skills",
-   "branch": "main",
-   "path": "skills/react-native-skills",
-   "category": "web"
-  },
-  "react-patterns": {
-   "type": "github",
-   "repo": "rohitg00/awesome-claude-code-toolkit",
-   "branch": "main",
-   "path": "skills/react-patterns",
-   "category": "web"
-  },
-  "react-view-transitions": {
-   "type": "github",
-   "repo": "vercel-labs/agent-skills",
-   "branch": "main",
-   "path": "skills/react-view-transitions",
-   "category": "web"
-  },
-  "reference-interpreter": {
-   "type": "github",
-   "repo": "senlindesign/claude2figma",
-   "branch": "main",
-   "path": ".claude/skills/reference-interpreter",
-   "category": "design"
-  },
-  "rust-systems": {
-   "type": "github",
-   "repo": "rohitg00/awesome-claude-code-toolkit",
-   "branch": "main",
-   "path": "skills/rust-systems",
-   "category": "backend"
-  },
-  "security-hardening": {
-   "type": "github",
-   "repo": "rohitg00/awesome-claude-code-toolkit",
-   "branch": "main",
-   "path": "skills/security-hardening",
-   "category": "backend"
-  },
-  "session-report": {
-   "type": "github",
-   "repo": "anthropics/claude-plugins-official",
-   "branch": "main",
-   "path": "plugins/session-report/skills/session-report",
-   "category": "agent"
-  },
-  "setup-matt-pocock-skills": {
-   "type": "github",
-   "repo": "mattpocock/skills",
-   "branch": "main",
-   "path": "skills/engineering/setup-matt-pocock-skills",
-   "category": "method"
-  },
-  "simulator-utils": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/simulator-utils",
-   "category": "apple"
-  },
-  "skill-creator": {
-   "type": "github",
-   "repo": "anthropics/skills",
-   "branch": "main",
-   "path": "skills/skill-creator",
-   "category": "agent"
-  },
-  "skill-development": {
-   "type": "github",
-   "repo": "anthropics/claude-plugins-official",
-   "branch": "main",
-   "path": "plugins/plugin-dev/skills/skill-development",
-   "category": "agent"
-  },
-  "slides": {
-   "type": "github",
-   "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
-   "branch": "main",
-   "path": ".claude/skills/slides",
-   "category": "design"
-  },
-  "storekit": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/storekit",
-   "category": "apple"
-  },
-  "swift-concurrency": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/swift-concurrency",
-   "category": "apple"
-  },
-  "swift-concurrency-pro": {
-   "type": "github",
-   "repo": "twostraws/Swift-Concurrency-Agent-Skill",
-   "branch": "main",
-   "path": "swift-concurrency-pro",
-   "category": "apple"
-  },
-  "swift-testing": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/swift-testing",
-   "category": "apple"
-  },
-  "swift-testing-pro": {
-   "type": "github",
-   "repo": "twostraws/Swift-Testing-Agent-Skill",
-   "branch": "main",
-   "path": "swift-testing-pro",
-   "category": "apple"
-  },
-  "swiftdata": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/swiftdata",
-   "category": "apple"
-  },
-  "swiftui": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/swiftui",
-   "category": "apple"
-  },
-  "swiftui-pro": {
-   "type": "github",
-   "repo": "twostraws/SwiftUI-Agent-Skill",
-   "branch": "main",
-   "path": "swiftui-pro",
-   "category": "apple"
-  },
-  "tdd": {
-   "type": "github",
-   "repo": "mattpocock/skills",
-   "branch": "main",
-   "path": "skills/engineering/tdd",
-   "category": "method"
-  },
-  "theme-factory": {
-   "type": "github",
-   "repo": "anthropics/skills",
-   "branch": "main",
-   "path": "skills/theme-factory",
-   "category": "design"
-  },
-  "tipkit": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/tipkit",
-   "category": "apple"
-  },
-  "to-issues": {
-   "type": "github",
-   "repo": "mattpocock/skills",
-   "branch": "main",
-   "path": "skills/engineering/to-tickets",
-   "category": "method",
-   "upstream_name": "to-tickets"
-  },
-  "to-prd": {
-   "type": "github",
-   "repo": "mattpocock/skills",
-   "branch": "main",
-   "path": "skills/engineering/to-spec",
-   "category": "method",
-   "upstream_name": "to-spec"
-  },
-  "triage": {
-   "type": "github",
-   "repo": "mattpocock/skills",
-   "branch": "main",
-   "path": "skills/engineering/triage",
-   "category": "method"
-  },
-  "ui-styling": {
-   "type": "github",
-   "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
-   "branch": "main",
-   "path": ".claude/skills/ui-styling",
-   "category": "web"
-  },
-  "ui-ux-pro-max": {
-   "type": "github",
-   "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
-   "branch": "main",
-   "path": ".claude/skills/ui-ux-pro-max",
-   "category": "web"
-  },
-  "uikit": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/uikit",
-   "category": "apple"
-  },
-  "usernotifications": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/usernotifications",
-   "category": "apple"
-  },
-  "vercel-cli-with-tokens": {
-   "type": "github",
-   "repo": "vercel-labs/agent-skills",
-   "branch": "main",
-   "path": "skills/vercel-cli-with-tokens",
-   "category": "web"
-  },
-  "vercel-optimize": {
-   "type": "github",
-   "repo": "vercel-labs/agent-skills",
-   "branch": "main",
-   "path": "skills/vercel-optimize",
-   "category": "web"
-  },
-  "watch": {
-   "type": "github",
-   "repo": "bradautomates/claude-video",
-   "branch": "main",
-   "path": "skills/watch",
-   "category": "tools"
-  },
-  "web-design-guidelines": {
-   "type": "github",
-   "repo": "vercel-labs/agent-skills",
-   "branch": "main",
-   "path": "skills/web-design-guidelines",
-   "category": "web"
-  },
-  "widgetkit": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/widgetkit",
-   "category": "apple"
-  },
-  "write-a-skill": {
-   "type": "github",
-   "repo": "mattpocock/skills",
-   "branch": "main",
-   "path": "skills/productivity/writing-great-skills",
-   "category": "agent",
-   "upstream_name": "writing-great-skills"
-  },
-  "writing-guidelines": {
-   "type": "github",
-   "repo": "vercel-labs/agent-skills",
-   "branch": "main",
-   "path": "skills/writing-guidelines",
-   "category": "web"
-  },
-  "writing-rules": {
-   "type": "github",
-   "repo": "anthropics/claude-plugins-official",
-   "branch": "main",
-   "path": "plugins/hookify/skills/writing-rules",
-   "category": "agent"
-  },
-  "xcuitest": {
-   "type": "github",
-   "repo": "Prisma-Labs-Dev/apple-skills",
-   "branch": "main",
-   "path": "skills/xcuitest",
-   "category": "apple"
+  "schema_version": 2,
+  "_comment": "技能来源清单。provider 负责解释 locator；无记录的技能由本地维护。",
+  "skills": {
+    "accessibility-wcag": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
+        "ref": "main",
+        "path": "skills/accessibility-wcag"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "a6cf1bd691d2b867f0ccdb681523dce5811462b3fe603f21a682a7eaeaea1da4"
+      }
+    },
+    "api-design-patterns": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
+        "ref": "main",
+        "path": "skills/api-design-patterns"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "f266b10c5e43c960a7cd3c81d171028d1a0099b5fc71bed53bebb93b73a660de"
+      }
+    },
+    "appintents": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/appintents"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "c3245d1f8ae4a93f80c10cb4b21dec2cba3718968fcb5a316c44587da420e9d8"
+      }
+    },
+    "apple-aso": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/apple-aso"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "9eb86c4a380c0b6602e7a3cd771062cd833abaa7b3e1f5e782ea90ed70879184"
+      }
+    },
+    "apple-docs-index": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/apple-docs-index"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "d6ad28a8aa11b3a4245ec5516adb68b9d52f691311121392355305ac0b3ff610"
+      }
+    },
+    "authentication-patterns": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
+        "ref": "main",
+        "path": "skills/authentication-patterns"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "2e4760c5e281d1435c861c962124ad5a18557ab61a6797da498e4353ba7bbe4f"
+      }
+    },
+    "backgroundtasks": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/backgroundtasks"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "19d6f42a87fb167afc72c630a0a1e098125357ff3f0886b55514693144dc86f1"
+      }
+    },
+    "banner-design": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+        "ref": "main",
+        "path": ".claude/skills/banner-design"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "b4b93f422f326094512dcf4d991775cead1fd277435d82a6276b018612285d49"
+      }
+    },
+    "brand": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+        "ref": "main",
+        "path": ".claude/skills/brand"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "77467b3dc5cfbc6c5bcc9a39f3d00dcebbc08c38e641768ffe85731c797215f9"
+      }
+    },
+    "build-mcp-app": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "ref": "main",
+        "path": "plugins/mcp-server-dev/skills/build-mcp-app"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "31783640f669358c71f4df0944a79e62c9fb29e4718030c18956dad03acc1839"
+      }
+    },
+    "build-mcp-server": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "ref": "main",
+        "path": "plugins/mcp-server-dev/skills/build-mcp-server"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "f8eb3a6e0e763f29b14887305d10780964d12165e59ea380cb54482bd8cf7799"
+      }
+    },
+    "canvas-design": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/anthropics/skills.git",
+        "ref": "main",
+        "path": "skills/canvas-design"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "f694039e78a22aa6e5563ce312da699ba9780ab29ae01ec504e18cb67a6bceaf"
+      }
+    },
+    "claude-md-improver": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "ref": "main",
+        "path": "plugins/claude-md-management/skills/claude-md-improver"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "bf9b908fb692f3ca9e19bed3aad6907b77d707fa6326d626a5f417cbb722ab00"
+      }
+    },
+    "codebase-design": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mattpocock/skills.git",
+        "ref": "main",
+        "path": "skills/engineering/codebase-design"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "f12ef4df18807b87b9274abe662fbcf9fc2ea98a08f996689dd3dd08508a4ca3"
+      }
+    },
+    "combine": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/combine"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "47e0d2f81534c4b52612f0aec52db74e7274cdab29d08ff5e2a3080e9181ac88"
+      }
+    },
+    "composition-patterns": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/vercel-labs/agent-skills.git",
+        "ref": "main",
+        "path": "skills/composition-patterns"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "04a5d529684d15bdb87e3406d7f389878b3a67258f91de2b5b209ca29dbad0de"
+      }
+    },
+    "core-animation": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/core-animation"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "91417a32d7d161588746a7e1043e114cac83f8409be87f3805b36ccbc41f043f"
+      }
+    },
+    "corehaptics": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/corehaptics"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "46526f1ce1797b5d9ddded670b41bc5b0141f95733ffcd98fefe6c51cca1faea"
+      }
+    },
+    "deep-dive": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
+        "ref": "main",
+        "path": "skills/deep-dive"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "c27d9bd8a595cb0ae71831cf6e85e2f3a0b759b71abe096e421328fa092cf21e"
+      }
+    },
+    "deploy-to-vercel": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/vercel-labs/agent-skills.git",
+        "ref": "main",
+        "path": "skills/deploy-to-vercel"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "6a0522ec25c9d5d687b476dfa278686e7939138448cd2fc2c20e03dd57c5fc21"
+      }
+    },
+    "design": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+        "ref": "main",
+        "path": ".claude/skills/design"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "97ee54a7f2768ce5c1609a8df083b7635231f12a7bbc859457e5e2c3a100bbd7"
+      }
+    },
+    "design-system": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+        "ref": "main",
+        "path": ".claude/skills/design-system"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "a02d9a1738ead0c03f59c0edeab14161eef7d2103bd520d6b324d4b6bd2dd8ad"
+      }
+    },
+    "diagnose": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mattpocock/skills.git",
+        "ref": "main",
+        "path": "skills/engineering/diagnosing-bugs"
+      },
+      "content_mode": "directory",
+      "source_name": "diagnosing-bugs",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "8104b8b0e4c9764f649cc0e57040bf15c45b4edf57ee6f51a08cd625c9c3bbbd"
+      }
+    },
+    "domain-modeling": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mattpocock/skills.git",
+        "ref": "main",
+        "path": "skills/engineering/domain-modeling"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "5071178d5a430f461590021b3a3582643182c5ba310a928aedcf27f17708e9cf"
+      }
+    },
+    "eventkit": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/eventkit"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "58ff5048ff40d51e11306361740f020a0509192af39a011e64e5d9d7e1393ae5"
+      }
+    },
+    "figma-style-binding": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/senlindesign/claude2figma.git",
+        "ref": "main",
+        "path": ".claude/skills/figma-style-binding"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "1ac20c6d7b760e0bae51728a5ee83d44e9c4cf782725ed23d0772b507d4021b8"
+      }
+    },
+    "frontend-design": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/anthropics/skills.git",
+        "ref": "main",
+        "path": "skills/frontend-design"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "59f14d7b600063e7902f9b0ac9169d267fcda675f7222eba1e21cd2b1579aadc"
+      }
+    },
+    "frontend-slides": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/zarazhangrui/frontend-slides.git",
+        "ref": "main",
+        "path": "plugins/frontend-slides/skills/frontend-slides"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "2f7fa17fa3b373b8a77eb5b6c3795c8a0eb0e38278a868f549665a34bc55b2d3"
+      }
+    },
+    "grill-me": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mattpocock/skills.git",
+        "ref": "main",
+        "path": "skills/productivity/grill-me"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "cf75fc2eb1f8d2b1d6e9b00f4fdaada73201319bf69fe8c34260b2ddf6deb19a"
+      }
+    },
+    "grill-with-docs": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mattpocock/skills.git",
+        "ref": "main",
+        "path": "skills/engineering/grill-with-docs"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "bc42a878715a04bf4e6ba572c07ec491c0c156c31501d924d55d20e29ee273e5"
+      }
+    },
+    "grilling": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mattpocock/skills.git",
+        "ref": "main",
+        "path": "skills/productivity/grilling"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "de5ccbb35c6f6b9fe8deb3d7f02693cd6d31ea2fbba0c14d06d07b154cc8eab7"
+      }
+    },
+    "gsap-core": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/greensock/gsap-skills.git",
+        "ref": "main",
+        "path": "skills/gsap-core"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "3e78ca3bfb928f998d4c56b254f76fb2ecdc173a52deb69ca92d6cbacc74a809"
+      }
+    },
+    "gsap-frameworks": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/greensock/gsap-skills.git",
+        "ref": "main",
+        "path": "skills/gsap-frameworks"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "aa0f522d93fb23c61611aef94c722c9420d5d50b69570b15cf268b7d797bf1fc"
+      }
+    },
+    "gsap-performance": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/greensock/gsap-skills.git",
+        "ref": "main",
+        "path": "skills/gsap-performance"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "294919088934162b9d727a43f7964cc793f61e686ae1869bda8357d0f84144c6"
+      }
+    },
+    "gsap-plugins": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/greensock/gsap-skills.git",
+        "ref": "main",
+        "path": "skills/gsap-plugins"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "689fff196afe1586fc80fbee8c2f2d6eb05c72ef884f11950ac37fe3aec2dc9f"
+      }
+    },
+    "gsap-react": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/greensock/gsap-skills.git",
+        "ref": "main",
+        "path": "skills/gsap-react"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "975f54e3e08e9146cfa02dc8b6ecd649842aa27c6a4daed28c40e97f5a6294d9"
+      }
+    },
+    "gsap-scrolltrigger": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/greensock/gsap-skills.git",
+        "ref": "main",
+        "path": "skills/gsap-scrolltrigger"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "67f07abe2940fe97531f609e8637acd98b117d7cea16fd3195103f08ec19e2a3"
+      }
+    },
+    "gsap-timeline": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/greensock/gsap-skills.git",
+        "ref": "main",
+        "path": "skills/gsap-timeline"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "24aa167070b1aa04a31b147e5bc214edef5008d94d21e85db700c211063fa2d5"
+      }
+    },
+    "gsap-utils": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/greensock/gsap-skills.git",
+        "ref": "main",
+        "path": "skills/gsap-utils"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "b5c182cbe04d75d90ef0f84d0ce18681c0c921ca02d380c2566a3c5f2fa69237"
+      }
+    },
+    "guide-macos-spm-packaging": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/guide-macos-spm-packaging"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "4d4b773771c836f3caa9ae6a4565141e21b09f8db7bba15a12914a507dd92154"
+      }
+    },
+    "guide-swift-concurrency": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/guide-swift-concurrency"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "19fdfd619aaba1a9c04cfed412cb469031bd97361ac8f856ef32cdc9f82477da"
+      }
+    },
+    "guide-swift-testing": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/guide-swift-testing"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "1cc1b1ed2e890384d205ebf0003158a412cb96bd93d63916019fe081012f3b7d"
+      }
+    },
+    "guide-swiftdata": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/guide-swiftdata"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "3a053983a1a2fb595dd91e843ab2c02c405a8ce8e1e2acc5c872556a80c8e2f9"
+      }
+    },
+    "guide-swiftui-animations": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/guide-swiftui-animations"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "d128aeadbae597822cb7c5bb2722614fe8a80f064be8aab738113941773d5eee"
+      }
+    },
+    "guide-swiftui-charts": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/guide-swiftui-charts"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "8ca6d1ccf7360c6823d6e1de94698ee806a086a11b7f6622c24ae465fd838975"
+      }
+    },
+    "guide-swiftui-performance-audit": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/guide-swiftui-performance-audit"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "ae0afdc40f21ef597ce81a1216158d85e8fd558b866ec55f64d7ceb27af9d0c1"
+      }
+    },
+    "guide-swiftui-ui-patterns": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/guide-swiftui-ui-patterns"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "943bce5b3955f5957afb55336d2e2c854750a6c8178181b450c2fbc506e6cec2"
+      }
+    },
+    "guide-swiftui-view-refactor": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "disabled-skills/guide-swiftui-view-refactor"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "6e7e68795718488c741e566b423deca5c58bbbf7828654913542edd0f4e6e635"
+      }
+    },
+    "handoff": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mattpocock/skills.git",
+        "ref": "main",
+        "path": "skills/productivity/handoff"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "0f98f2c47324bf6feecc3c00ce1aa9651ae4e772d391b23443bee78d91e82b0d"
+      }
+    },
+    "healthkit": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/healthkit"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "cf0db0eb7f5bfe4e6bb17ee2472d298c8e96d16a8e1dbd43ca44b22d0e283e51"
+      }
+    },
+    "hig": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/hig"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "e2fd60ce7d5225c81d9f4a96c44c501b5bee23aa286f7512c53f3819d05e5997"
+      }
+    },
+    "hook-development": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "ref": "main",
+        "path": "plugins/plugin-dev/skills/hook-development"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "4a29bc45a1965e49f12a2ab668f75a5a31f70dacc6564dd49f330b1f3528319f"
+      }
+    },
+    "improve-codebase-architecture": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mattpocock/skills.git",
+        "ref": "main",
+        "path": "skills/engineering/improve-codebase-architecture"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "fad4048abebdfff86f0aac56490cc032aaf144f85f3cc270aef8b82a27632210"
+      }
+    },
+    "ios-design-consultant": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "disabled-skills/ios-design-consultant"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "ef37df60c80395a2b7c3427ded062bc0c0fc6df72e10910c3beb2222fa27e76a"
+      }
+    },
+    "ios-dev": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/ios-dev"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "82af08d688e498c9bd2df7db358ac681b32753eac54057b24cc69a782d111ca7"
+      }
+    },
+    "ios-liquid-glass": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/ios-liquid-glass"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "8e2c487244785a87ba7a00b2885804fd7ae125ea2fe4492951fecfac34695f79"
+      }
+    },
+    "ios-simulator-skill": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/conorluddy/ios-simulator-skill.git",
+        "ref": "main",
+        "path": "ios-simulator-skill/skills/ios-simulator-skill"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "eff85c92a8b6c03e2cbd79d49c736a133b75495f08c046422ea3e490356fda75"
+      }
+    },
+    "ios-ui-craft": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "disabled-skills/ios-ui-craft"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "8f132695e8e8aed717f035bfd8261083f2fa56083c5f3c4369a627b7e050ce4b"
+      }
+    },
+    "khazix-writer": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/KKKKhazix/khazix-skills.git",
+        "ref": "main",
+        "path": "khazix-writer"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "be2e02644be585519f560ba2f63c02fb6cd1e8aeba4ea6b3d50bd28d4f0946d7"
+      }
+    },
+    "lark-approval": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-approval/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "fee377eca410dcda36b0bbbd632aab085b2e26e8232bb2ff88d394a1571d5ae2"
+      }
+    },
+    "lark-apps": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-apps/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "4bd8d41467b40f1aa1d0e115a36d9c7115d5bb79d31e0809f0f1b48ec85e4bd9"
+      }
+    },
+    "lark-attendance": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-attendance/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "a0ea5f3fa176496dda31d912f7e55ad7cfed5243b30567d16e7f9dc96eebbe8b"
+      }
+    },
+    "lark-base": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-base/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "aef3c07dbeb11cc87352b217fd3d9868b41f31f0cf3ae3de906e4e8443c4a01e"
+      }
+    },
+    "lark-calendar": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-calendar/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "d9f7150664f23f6e75f3cbdf410df5fc448fd5cd90b7cc959420ca86b2287611"
+      }
+    },
+    "lark-contact": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-contact/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "3f8cd36b6dfddfc4974ec3f796b4163d6511aafabd46f7eeacb2798c647f8f06"
+      }
+    },
+    "lark-doc": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-doc/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "249110f21116d2e1eb09cc1b9b266889f290be57944975236254945dada65c0c"
+      }
+    },
+    "lark-drive": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-drive/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "5423817c78709d70b0b84bb7bee15b8abc21c5982fc48c7e37ca2ddc42972c19"
+      }
+    },
+    "lark-event": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-event/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "37a53e919b24d494624a519c7d34b40f2fd6613d080ada8cc90bf59fd3442aea"
+      }
+    },
+    "lark-im": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-im/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "287bed8d773465befcf3da93bfb3c829e111c3ae6c8fa087724f9d69d0f2e5cf"
+      }
+    },
+    "lark-mail": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-mail/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "bee1da98483c1dfc1d6dc3b5a4ac6403279dad6f6a8bde77f7fdb5b1f4725d38"
+      }
+    },
+    "lark-markdown": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-markdown/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "50024d5e506a95f122fb818011b7624c1948342ea8617089a102fcd72bab0a1b"
+      }
+    },
+    "lark-minutes": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-minutes/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "00d8955b0e5326bf1d7c5c2149ecc8a8b73bed7c9609797a9e8576aeb024e535"
+      }
+    },
+    "lark-note": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-note/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "51ce47948e5ea9361dd0ecc6633519b01dfa8ae86729874217d08a0b0831df48"
+      }
+    },
+    "lark-okr": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-okr/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "658ec51f59e3af529064821fb5fbee2ed3ff5cac9e22b66887541cfab4353772"
+      }
+    },
+    "lark-openapi-explorer": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-openapi-explorer/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "ae89debc3f807f9947831b4525e1c118bc14544877c14c14aaa47298b1e863b4"
+      }
+    },
+    "lark-shared": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-shared/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "036e6fe4f45ee16dfd9271d4f4bfcaa97069de1e96a8e19a28b0bb9f45193296"
+      }
+    },
+    "lark-sheets": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-sheets/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "8c470db8e85b38ff81de56255f878f63ba4822bc892ba3355386435eca41e2fa"
+      }
+    },
+    "lark-skill-maker": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-skill-maker/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "8591158289a3cb003c7ac18001ce6b42837c780d2567492cea87bf98982b3678"
+      }
+    },
+    "lark-slides": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-slides/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "edd9faa1f576589211ec622aa00b9f2acb726641a9ff20ac19d932e5a291e216"
+      }
+    },
+    "lark-task": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-task/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "c9bae3576de69599b8b0587c120042fe8e6b27e9837b2d23ee6f43ca4974a41a"
+      }
+    },
+    "lark-vc": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-vc/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "07663b7ba87a5ab97e6b23f453ceb619b4de365720998d143fabe9b57c0ecb76"
+      }
+    },
+    "lark-vc-agent": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-vc-agent/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "1d6d57b68e23e965d7f7b6510414dce04d5dcaa6efcf51e9a80db3f6bf27f973"
+      }
+    },
+    "lark-whiteboard": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-whiteboard/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "bb4e249612ad80f8be13c4c555a220db5192f1311651613f36ad0933d832d595"
+      }
+    },
+    "lark-wiki": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-wiki/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "ef3c2f766db1a85426bcae9609a0ecfcfe931962c27d95231cfd6dd7c75d18dd"
+      }
+    },
+    "lark-workflow-meeting-summary": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-workflow-meeting-summary/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "ad3db979a2e6d8932ab33058967e1dab82090f8d8d82b16c59ee2955eb967d61"
+      }
+    },
+    "lark-workflow-standup-report": {
+      "provider": "http",
+      "locator": {
+        "url": "https://open.feishu.cn/.well-known/skills/lark-workflow-standup-report/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "a283de746e65f97d7d25c3b9e351c2e5c16702be81c0f004d5be718c50994690"
+      }
+    },
+    "last30days": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mvanhorn/last30days-skill.git",
+        "ref": "main",
+        "path": "skills/last30days"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "e5a4241ab88bffdb00fbe0d73bec89b312cb1f2113ea192e4cbf5b8fdaea3d52"
+      }
+    },
+    "mapkit": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/mapkit"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "2659f65664c20d01ba0d74ddf8ec6e0faa46bad0194db3154c10e1aa7a0f83bb"
+      }
+    },
+    "nextjs-mastery": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
+        "ref": "main",
+        "path": "skills/nextjs-mastery"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "5fef77fa5855c34a4c34d4d7d3cd46a824a8f5b9d0b758ad6f2dedf2d04a429b"
+      }
+    },
+    "photosui": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/photosui"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "07befce2bcf3b41c8f47bd684dd856d8cda8830fb7290da444cfc4d95cfe7df4"
+      }
+    },
+    "playground": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "ref": "main",
+        "path": "plugins/playground/skills/playground"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "86708b2acff49e19321c97ee1b27192e052bdce1435df623e953d320b84dd95b"
+      }
+    },
+    "prototype": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mattpocock/skills.git",
+        "ref": "main",
+        "path": "skills/engineering/prototype"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "3db8a0ee4c237f38b14b8243f9f062d96fbc6552b7be16d7e20a38a88d79f285"
+      }
+    },
+    "react-best-practices": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/vercel-labs/agent-skills.git",
+        "ref": "main",
+        "path": "skills/react-best-practices"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "440c80c96814a5dd3f799b8b17b9094ac97744a29c4334fd7174be4e90fd36ce"
+      }
+    },
+    "react-native-skills": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/vercel-labs/agent-skills.git",
+        "ref": "main",
+        "path": "skills/react-native-skills"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "f7b4653a958709c0ea1ed3f5be5240e3087c62c5d8620f31cc33a010543567b8"
+      }
+    },
+    "react-patterns": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
+        "ref": "main",
+        "path": "skills/react-patterns"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "41daf076eb1cd8007a18d93433f138b244666d641a9cb9fe96c63d65dec3431b"
+      }
+    },
+    "react-view-transitions": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/vercel-labs/agent-skills.git",
+        "ref": "main",
+        "path": "skills/react-view-transitions"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "bf700dc9d65a362b9a396c9dcf69912692413c0888e3acb040fe4b4778574a34"
+      }
+    },
+    "reference-interpreter": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/senlindesign/claude2figma.git",
+        "ref": "main",
+        "path": ".claude/skills/reference-interpreter"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "b0c1a417605c3cfc3b49c68c26abc1277b500e6145c23d95462f520654f11b59"
+      }
+    },
+    "rust-systems": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
+        "ref": "main",
+        "path": "skills/rust-systems"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "a66bf8d88505f72db421cb0e1a45dccc1f553e3ace30f6b252b76586641c91dc"
+      }
+    },
+    "security-hardening": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
+        "ref": "main",
+        "path": "skills/security-hardening"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "4cf904f3afe57ed0022ad4f6774089ca080722f11977aca569782ec91b158871"
+      }
+    },
+    "session-report": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "ref": "main",
+        "path": "plugins/session-report/skills/session-report"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "a292039974331be64bc2efa86c519d0a84ca6d85f035dd526d333306cfc42532"
+      }
+    },
+    "setup-matt-pocock-skills": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mattpocock/skills.git",
+        "ref": "main",
+        "path": "skills/engineering/setup-matt-pocock-skills"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "14c2ce7db49609b35dc0b51792a42123ba6e58cb0a7ed7a7630734ed15e4852d"
+      }
+    },
+    "simulator-utils": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/simulator-utils"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "58ebd3ba97c1ef5522b2d0196b710d6c599d15dced8f68d579954922498ff525"
+      }
+    },
+    "skill-creator": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/anthropics/skills.git",
+        "ref": "main",
+        "path": "skills/skill-creator"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "701a8358e7669f5e1e8396a2e299a1b94da370615af6e5ec4048a6dbd44d9118"
+      }
+    },
+    "skill-development": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "ref": "main",
+        "path": "plugins/plugin-dev/skills/skill-development"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "f965f9597b046272c9984f33379146b49c9329c7c72b911db4637f4ec8c83482"
+      }
+    },
+    "slides": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+        "ref": "main",
+        "path": ".claude/skills/slides"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "6ff0b7f56a668e18755f01fcb19e58d2842cb1a2a49bdb0f557892badfdc15fd"
+      }
+    },
+    "storekit": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/storekit"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "3aeee4192b87d9a7b16ca30906e6b9f3835c37b667af5a112e215ff78ff8602d"
+      }
+    },
+    "swift-concurrency": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/swift-concurrency"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "ec601ce1a706c3940e1da4445086a917272ab9555e0ee21a8c6d41e45e21bfb3"
+      }
+    },
+    "swift-concurrency-pro": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/twostraws/Swift-Concurrency-Agent-Skill.git",
+        "ref": "main",
+        "path": "swift-concurrency-pro"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "bcecf93e82f44fa9b75f3a68197373c8f1d356a66c080b1185b0dae3b4286c58"
+      }
+    },
+    "swift-testing": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/swift-testing"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "dd76df61ebf15765dd83cc945d12f5fdcf493f0d6db1445017f788022e6e7127"
+      }
+    },
+    "swift-testing-pro": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/twostraws/Swift-Testing-Agent-Skill.git",
+        "ref": "main",
+        "path": "swift-testing-pro"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "b0aed9949931b36388b62bbf914c2d2e0e609779990cfe377373e745181da202"
+      }
+    },
+    "swiftdata": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/swiftdata"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "93b765955a1ed2c6b5fbc7e9b2a9d6abc1ebd513392a288e4db5edda32ee2fc9"
+      }
+    },
+    "swiftui": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/swiftui"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "f1aca0dd5023662673d49485ae3910e15dd65281f2bc56256c9667872206ae4a"
+      }
+    },
+    "swiftui-pro": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/twostraws/SwiftUI-Agent-Skill.git",
+        "ref": "main",
+        "path": "swiftui-pro"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "3259b0bb873cf66cad156150b6a7a49f3ff1c44d8705cc63475977112fb6ae6c"
+      }
+    },
+    "tdd": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mattpocock/skills.git",
+        "ref": "main",
+        "path": "skills/engineering/tdd"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "31a6e15f9eee52ab7c47b5704a1008455c4f1aa3021bf9f9175d65ce3083788e"
+      }
+    },
+    "theme-factory": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/anthropics/skills.git",
+        "ref": "main",
+        "path": "skills/theme-factory"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "0c109146c090fa50d3829266d56bee03caeb08d5d463e06a5d3ea8d9cf191ef9"
+      }
+    },
+    "tipkit": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/tipkit"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "9da0906eda6a8203ff7879d3e8c4f510aadaf29ac04b2272c557096116e43fc7"
+      }
+    },
+    "to-issues": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mattpocock/skills.git",
+        "ref": "main",
+        "path": "skills/engineering/to-tickets"
+      },
+      "content_mode": "directory",
+      "source_name": "to-tickets",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "dfe655af05ec94a90cbfdd2b2f91dd3f6ad5798e204b6053b360fec4b11a0b7a"
+      }
+    },
+    "to-prd": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mattpocock/skills.git",
+        "ref": "main",
+        "path": "skills/engineering/to-spec"
+      },
+      "content_mode": "directory",
+      "source_name": "to-spec",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "9ef8fdddf5f8874500f655f7c435064a6fa06f4d48c25367999758e6efdc643a"
+      }
+    },
+    "triage": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mattpocock/skills.git",
+        "ref": "main",
+        "path": "skills/engineering/triage"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "156e146980d5d9dbdf2249e971a5883be689eba4f74416b136e67cfc342a72f9"
+      }
+    },
+    "ui-styling": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+        "ref": "main",
+        "path": ".claude/skills/ui-styling"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "27f3876475a8bda82e7a912a42412d9e752c14090fe467f84192013a5e12f87a"
+      }
+    },
+    "ui-ux-pro-max": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+        "ref": "main",
+        "path": ".claude/skills/ui-ux-pro-max"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "9c5e400a34c85cc4235c6e7b6d31762062add5a0bd0efbd23c34493eb26d837d"
+      }
+    },
+    "uikit": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/uikit"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "1539a7bd870003aeb43e68fa1310111ef63ef3a3b20cf0c18434fc3f88a55472"
+      }
+    },
+    "usernotifications": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/usernotifications"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "23bf8a0af4ea820c0f711be6d17b05c05c9f7d8c3e411d05b5f17618cc0b2072"
+      }
+    },
+    "vercel-cli-with-tokens": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/vercel-labs/agent-skills.git",
+        "ref": "main",
+        "path": "skills/vercel-cli-with-tokens"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "1ca285afa564f2e44c12039c0f172f82a2bbc33bd9c252f212843e7d4c95cb2e"
+      }
+    },
+    "vercel-optimize": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/vercel-labs/agent-skills.git",
+        "ref": "main",
+        "path": "skills/vercel-optimize"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "a8f320b5441e3149812f738a34f2da832198287e2e9d0243862cc6f514340155"
+      }
+    },
+    "watch": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/bradautomates/claude-video.git",
+        "ref": "main",
+        "path": "skills/watch"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "399b1d4eb81c51d29f6db7c2f4888335eddd9cd073566ec00b3763b2e1ec6c76"
+      }
+    },
+    "web-design-guidelines": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/vercel-labs/agent-skills.git",
+        "ref": "main",
+        "path": "skills/web-design-guidelines"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "9c8730429b9994836654bda5a84caf8183bed4c0c8a00d822de27c0f5e7a2d23"
+      }
+    },
+    "widgetkit": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/widgetkit"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "117836400a10b3548f73c10013df314ce32632e3b87a8a5b3414aa0c280af1d0"
+      }
+    },
+    "write-a-skill": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/mattpocock/skills.git",
+        "ref": "main",
+        "path": "skills/productivity/writing-great-skills"
+      },
+      "content_mode": "directory",
+      "source_name": "writing-great-skills",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "ed14061c4c4b7f696967ecbd3334b1fbe9ac2883f15c1a59ef56c5514393b6aa"
+      }
+    },
+    "writing-guidelines": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/vercel-labs/agent-skills.git",
+        "ref": "main",
+        "path": "skills/writing-guidelines"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "8045fafdfd103e4d93f5766fd4610c831db8cb90c7057cb86713578a2c1f5ede"
+      }
+    },
+    "writing-rules": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "ref": "main",
+        "path": "plugins/hookify/skills/writing-rules"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "2109f722a99a21cd9d55581e625e343d2f3eaa8804e72b6351dcc5d131fc1e26"
+      }
+    },
+    "xcuitest": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
+        "ref": "main",
+        "path": "skills/xcuitest"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": null,
+        "content_sha256": "95c85e68621dfa8696249c0f82d0002c0473a492716d972e0abe9f8b32f74d94"
+      }
+    }
   }
- }
 }

@@ -1,106 +1,111 @@
 # agents_kit
 
-Ezra 的私有 Agent 配置仓库。Claude Code 和 Codex 共用一套技能，并从这里统一安装、
-更新和删除。
+Ezra 的私有 Agent Skill 中央仓库。Claude Code 与 Codex 共用同一份技能，
+所有收录、更新、安装和检查都从一个命令进入：`agents-kit`。
 
-完整清册：
+## 快速开始
 
-- [docs/skills.md](docs/skills.md)：适合在 GitHub 上快速浏览的纯记录。
-- [docs/index.html](docs/index.html)：可搜索、筛选并展开每份 `SKILL.md` 全文。
-
-## 仓库里有什么
-
-| 目录 | 内容 |
-|---|---|
-| `skills/` | Agent Skill，分为 `apple web design lark method agent tools backend` |
-| `rules/` | 每次会话或按文件路径加载的规则；目前只有说明文件 |
-| `agents/` | Claude Code 子代理；目前只有说明文件 |
-| `hooks/` | 需要注册进设置的自动化 Hook；目前只有说明文件 |
-| `prompts/` | 不安装的私人提示词素材；目前只有说明文件 |
-| `scripts/` | 收录、管理、安装、同步、生成和体检命令 |
-| `docs/` | 自动生成的技能清册 |
-
-根目录中的三个状态文件：
-
-- `active.txt`：哪些技能全局常驻。
-- `sources.json`：每个外部技能来自哪里，供自动同步使用。
-- `metadata.json`：中文说明、触发方式和推荐指数。
-
-## 第一次安装
+前提：`uv` 已安装，且 `~/.local/bin` 位于 `PATH`。
 
 ```bash
-git clone <仓库地址> ~/agents_kit
-cd ~/agents_kit
-python3 scripts/link.py
+git clone git@github.com:ezra-y/agents_kit.git ~/agents_kit
+mkdir -p ~/.local/bin
+ln -sfn ~/agents_kit/scripts/agents-kit ~/.local/bin/agents-kit
+agents-kit global apply
+agents-kit check
 ```
 
-`link.py` 会把 `active.txt` 中的技能软链到：
+`global apply` 按 `active.txt` 把技能软链到：
 
 - `~/.claude/skills`
 - `~/.agents/skills`
 
-因为使用软链，之后执行 `git pull` 就能更新已经安装的技能。
+技能不是副本。以后执行 `cd ~/agents_kit && git pull`，已启用技能会直接更新。
 
-## 常用命令
+## 仓库内容
 
-### 查看
+| 路径 | 内容 |
+|---|---|
+| `skills/` | 按 `apple web design lark method agent tools backend` 分类的技能 |
+| `scripts/agents-kit` | 唯一公开命令 |
+| `scripts/agents_kit/` | 命令使用的内部 Python 模块 |
+| `active.txt` | 全局常驻技能名 |
+| `sources.json` | 上游 provider、定位信息、更新策略和内容摘要 |
+| `metadata.json` | 中文说明、触发方式、推荐指数和可选依赖 |
+| `docs/skills.md` | 自动生成的技能清册 |
+| `docs/cli.md` | 自动生成的完整命令参考 |
+| `ARCHITECTURE.md` | 架构、模块边界和数据流 |
+
+`rules/`、`agents/`、`hooks/`、`prompts/` 目前只保留各自说明，不进入技能安装流程。
+
+## 收录技能
+
+一次命令完成获取、校验、入库、登记、安装、文档生成和体检：
 
 ```bash
-python3 scripts/manage.py list
-python3 scripts/manage.py list --active
-python3 scripts/doctor.py
-```
-
-### 收录并全局安装 GitHub 技能
-
-```bash
-python3 scripts/add.py "<GitHub URL>" \
-  --cat tools \
+agents-kit skill import "<Git URL、HTTP URL 或本地路径>" \
+  --category tools \
   --scope global \
-  --description-zh "<中文说明>" \
-  --trigger-zh "<触发方式>" \
+  --description "<中文说明>" \
+  --trigger "<触发方式>" \
   --recommendation 3
 ```
 
-项目级安装使用 `--scope project --project-dir "<项目路径>"`。只收进仓库但不安装使用
-`--scope library`。
-
-### 管理已有技能
+安装到项目时改用：
 
 ```bash
-python3 scripts/manage.py activate <技能名>
-python3 scripts/manage.py deactivate <技能名>
-python3 scripts/manage.py move <技能名> <分类>
-python3 scripts/manage.py detach <技能名>
-python3 scripts/manage.py remove <技能名> --yes
+agents-kit skill import "<来源>" \
+  --category tools \
+  --scope project \
+  --project "<项目路径>" \
+  --description "<中文说明>"
 ```
 
-`detach` 会取消上游登记，把技能改为本地维护。`remove` 会删除技能本体、登记、清册信息
-和本仓库创建的全局软链。
+来源中有多个技能时，先运行 `agents-kit source inspect <来源>`，再用
+`--candidate <相对路径>` 选择。
 
-### 临时复制到项目
+## 日常管理
 
 ```bash
-cd <项目目录>
-python3 ~/agents_kit/scripts/pull.py <分类或技能名>
+agents-kit status
+agents-kit skill list
+agents-kit skill list --active
+agents-kit skill show <技能名>
+
+agents-kit global enable <技能名>
+agents-kit global disable <技能名>
+agents-kit skill move <技能名> <分类>
+agents-kit skill rename <旧名> <新名>
+agents-kit skill remove <技能名> --yes
 ```
 
-项目中使用副本而不是软链，避免把只在本机有效的绝对路径提交给别人。
-
-### 修改后刷新
+向项目复制一个技能或整个分类：
 
 ```bash
-python3 scripts/manage.py refresh
+agents-kit project install <技能名或分类> --project "<项目路径>"
 ```
 
-改过常驻名单或移动技能后使用 `--link`；删除或停用后使用 `--prune`。
+项目安装使用副本，后续不会被中央仓库自动覆盖。
 
-## 自动同步
+## 上游更新
 
-`.github/workflows/sync.yml` 每天北京时间 02:00 按 `sources.json` 检查上游。
+```bash
+agents-kit source check --all
+agents-kit source update <技能名> --yes
+agents-kit source detach <技能名>
+```
 
-- `SKILL.md` 没变：跳过。
-- 相似度至少 90% 且附件数不变：自动更新。
-- 其他变化或错误：保留本地版本并创建 Issue 等待确认。
+默认策略是 `review`。定时任务只检查变化并开 Issue，确认后再更新。Git、压缩包等
+整目录来源会替换技能目录；直接指向 `SKILL.md` 的 HTTP 来源只更新该文件，
+不会删除仓库维护的 `references/` 或 `scripts/`。
 
-`docs/skills.md` 和 `docs/index.html` 都由 `render.py` 生成，不要直接编辑。
+## 文档与体检
+
+```bash
+agents-kit docs build
+agents-kit docs check
+agents-kit check
+```
+
+`docs/skills.md`、`docs/cli.md` 和 `ARCHITECTURE.md` 的生成区块进入 Git。
+可搜索网页生成到 `build/docs/index.html`，由 CI 上传为 artifact，不写入 Git 历史。

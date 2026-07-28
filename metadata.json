@@ -183,12 +183,19 @@
     "grill-me": {
       "recommendation": 3,
       "description": "拷问你的计划直到达成共识,现在是 7 行的入口,实际跑 grilling。已更新到上游最新。",
-      "trigger": "说「grill me」「拷问一下我这个方案」。"
+      "trigger": "说「grill me」「拷问一下我这个方案」。",
+      "dependencies": [
+        "grilling"
+      ]
     },
     "grill-with-docs": {
       "recommendation": 3,
       "description": "拷问 + 落文档版本:边问边更新 CONTEXT.md 和 ADR,现在是 7 行入口,跑 grilling + domain-modeling。已更新到上游最新。",
-      "trigger": "说「拷问这个设计并把结论写进文档」。"
+      "trigger": "说「拷问这个设计并把结论写进文档」。",
+      "dependencies": [
+        "grilling",
+        "domain-modeling"
+      ]
     },
     "grilling": {
       "recommendation": 3,
@@ -693,17 +700,26 @@
     "to-issues": {
       "recommendation": 2,
       "description": "把计划/规格拆成可独立认领的 issue,用 tracer bullet 纵向切片。已更新到上游最新(上游改名 to-tickets,105 行)。",
-      "trigger": "说「把这个计划拆成任务」。同样依赖脚手架。"
+      "trigger": "说「把这个计划拆成任务」。同样依赖脚手架。",
+      "dependencies": [
+        "setup-matt-pocock-skills"
+      ]
     },
     "to-prd": {
       "recommendation": 2,
       "description": "把当前对话合成规格文档并发到 issue tracker。已更新到上游最新(上游改名 to-spec,75 行)。明确不访谈你,只综合已知信息。",
-      "trigger": "说「把刚才讨论的整理成 PRD」。依赖 setup-matt-pocock-skills 先配好 issue tracker。"
+      "trigger": "说「把刚才讨论的整理成 PRD」。依赖 setup-matt-pocock-skills 先配好 issue tracker。",
+      "dependencies": [
+        "setup-matt-pocock-skills"
+      ]
     },
     "triage": {
       "recommendation": 2,
       "description": "用状态机和五种 triage 角色流转 issue,要求每条评论带免责声明。",
-      "trigger": "说「过一遍待办 issue」。强依赖 issue tracker 脚手架。"
+      "trigger": "说「过一遍待办 issue」。强依赖 issue tracker 脚手架。",
+      "dependencies": [
+        "setup-matt-pocock-skills"
+      ]
     },
     "ui-styling": {
       "recommendation": 4,

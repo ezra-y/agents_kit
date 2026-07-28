@@ -1,135 +1,75 @@
 # agents_kit
 
-这是 Ezra 的私有 Agent 配置仓库，也是 Claude Code 与 Codex 共用技能的唯一事实来源。
+本仓库是 Claude Code 与 Codex 共用技能的唯一事实来源。
 
-## 仓库内容
+## 操作规则
 
-| 路径 | 内容 | 去向 |
-|---|---|---|
-| `skills/` | Agent Skill，按八个主题分一级目录 | 常驻项软链到 `~/.claude/skills` 与 `~/.agents/skills` |
-| `rules/` | 会话规则片段；目前只有说明文件 | 尚未接入安装脚本 |
-| `agents/` | Claude Code 子代理定义；目前只有说明文件 | 尚未接入安装脚本 |
-| `hooks/` | Hook 源码与配置素材；目前只有说明文件 | 需要显式注册进 Claude Code 设置 |
-| `prompts/` | 私人提示词素材；目前只有说明文件 | 不自动安装 |
-| `scripts/` | 收录、管理、安装、同步、生成和体检命令 | AI 与维护者执行 |
-| `docs/` | 自动生成的技能清册 | GitHub 与本地浏览 |
-
-技能分类固定为：
-
-`apple web design lark method agent tools backend`
-
-分类只用于浏览。安装时会拍平成 `<技能名>/SKILL.md`，因此技能目录名必须全局唯一。
+1. 只使用 `agents-kit` 这个公开命令，不直接调用 `scripts/agents_kit/` 内部模块。
+2. 用户没有说明安装范围时，先问全局还是当前项目。
+3. 新技能必须先进入本仓库，再按 scope 安装；不要直接复制到
+   `~/.claude/skills`、`~/.agents/skills` 或项目目录。
+4. 优先使用 CLI 修改 `active.txt`、`sources.json`、`metadata.json` 和技能目录。
+   直接改源码或事实状态后，运行 `agents-kit docs build` 和 `agents-kit check`。
+5. 删除技能必须同时处理技能目录、常驻状态、来源记录、metadata 和本仓库管理的链接。
+   使用 `agents-kit skill remove <技能名> --yes`。
+6. 项目安装是副本，不受中央仓库继续追踪；全局安装是软链接。
+7. 上游默认使用 `review` 策略。先 `source check`，确认后再 `source update`。
+8. HTTP 单文件来源只管理 `SKILL.md`；`references/`、`scripts/` 等附件由仓库保留。
+9. 修改 `rules/`、`agents/`、`hooks/` 或 `prompts/` 前，先读对应目录的 README。
 
 ## 状态文件
 
-| 文件 | 含义 | 修改方式 |
-|---|---|---|
-| `active.txt` | 全局常驻技能名集合 | `manage.py activate/deactivate`，或编辑后运行 `link.py --prune` |
-| `sources.json` | 上游来源与同步所有权 | `add.py` 写入，`manage.py remove/move/detach` 维护 |
-| `metadata.json` | 中文说明、触发方式、推荐指数 | `manage.py describe` |
-| `.sync-report.json` | 最近一次同步报告 | `sync.py` 生成，Git 忽略 |
-
-有 `sources.json` 登记的技能由上游维护；没有登记的技能视为本地自有或来源不明。
-需要长期修改上游技能时，先用 `manage.py detach` 停止自动同步。
-
-## 生成文件
-
-`docs/skills.md` 是纯 Markdown 清册，`docs/index.html` 是可搜索并展开全文的静态清册。
-两者都由 `render.py` 覆盖生成。不要直接编辑 `docs/`，应修改：
-
-- 技能正文：`skills/<分类>/<技能>/`
-- 常驻状态：`active.txt`
-- 上游来源：`sources.json`
-- 中文清册信息：`metadata.json`
-
-## 脚本
-
-| 脚本 | 作用 |
+| 文件 | 唯一职责 |
 |---|---|
-| `scripts/add.py` | 从 GitHub 收录技能，登记来源和清册信息，并按 scope 留库、全局安装或复制到项目 |
-| `scripts/manage.py` | 列出、启停、删除、移动、脱离上游、修改清册信息、统一刷新 |
-| `scripts/link.py` | 按 `active.txt` 建立全局软链；`--prune` 清理本仓库管理的非常驻项 |
-| `scripts/pull.py` | 将分类或单个技能复制到当前项目 `.claude/skills/` |
-| `scripts/sync.py` | 检查登记过的上游，小改自动更新，大改写报告等待确认 |
-| `scripts/render.py` | 从仓库状态生成两个清册 |
-| `scripts/doctor.py` | 检查格式、重名、引用、登记和本地软链；CI 用 `--repo-only` |
+| `agents-kit.json` | 分类、安装目标和默认策略 |
+| `active.txt` | 全局常驻技能名 |
+| `sources.json` | 上游来源、更新策略和受管内容摘要 |
+| `metadata.json` | 中文清册、触发信息、推荐指数和依赖 |
+
+不要增加 `usage.json`。技能数量、分类和附件等可推导信息不重复存入状态文件。
 
 ## 正常流程
 
-### 收录 GitHub 技能
-
-用户未说明范围时，先问装全局还是只装当前项目。然后一次调用：
+收录并安装：
 
 ```bash
-python3 scripts/add.py "<GitHub URL>" \
-  --cat <分类> \
+agents-kit skill import "<来源>" \
+  --category <分类> \
   --scope <global|project|library> \
-  --project-dir "<项目绝对路径>" \
-  --description-zh "<中文说明>" \
-  --trigger-zh "<触发方式>" \
-  --recommendation <1-5>
-```
-
-项目路径只在 `scope=project` 时需要。`add.py` 优先通过 SSH 拉取，失败后切 HTTPS；
-每条通道有超时上限。安装阶段不执行第三方技能脚本。它会自动生成文档、完成对应安装
-并体检，不要随后重复运行 `refresh`。
-
-### 创建本地技能
-
-使用 `skill-creator` 初始化并验证，放到 `skills/<分类>/<技能名>/`。不要写入
-`sources.json`。然后：
-
-```bash
-python3 scripts/manage.py describe <技能名> \
+  --project "<项目路径>" \
   --description "<中文说明>" \
   --trigger "<触发方式>" \
   --recommendation <1-5>
-python3 scripts/manage.py activate <技能名>
 ```
 
-### 管理已有技能
+`--project` 只在 `scope=project` 时需要。来源有多个候选时，先用
+`agents-kit source inspect <来源>` 查看，再传 `--candidate`。
+
+管理命令及完整参数见 `docs/cli.md`。模块职责和依赖方向见 `ARCHITECTURE.md`。
+
+## 生成文件
+
+不要直接编辑：
+
+- `docs/skills.md`
+- `docs/cli.md`
+- `ARCHITECTURE.md` 的生成区块
+- `build/docs/index.html`
+
+修改事实状态后运行：
 
 ```bash
-python3 scripts/manage.py list [--active] [--category web] [--json]
-python3 scripts/manage.py activate <技能名>
-python3 scripts/manage.py deactivate <技能名>
-python3 scripts/manage.py remove <技能名> --yes
-python3 scripts/manage.py move <技能名> <分类>
-python3 scripts/manage.py detach <技能名>
-python3 scripts/manage.py refresh [--link|--prune]
+agents-kit docs build
+agents-kit check
 ```
 
-删除只在用户明确要求时执行。`remove` 必须同时清理技能目录、常驻项、来源、清册元数据
-和本仓库创建的全局软链。
-
-项目副本不受中央仓库追踪。项目级安装仍要提交并推送 `agents_kit`；只有用户明确要求时
-才提交项目仓库中的 `.claude/skills/` 副本。
-
-### 管理其他配置
-
-修改 `rules/`、`agents/`、`hooks/` 或 `prompts/` 前先读目标目录的 `README.md`。
-它们目前没有统一管理脚本，也不进入技能清册。写入 `rules/` 或 `agents/` 不等于已经
-安装；Hook 只有注册进 Claude Code 设置后才生效。
-
-### 同步上游
-
-日常同步由 `.github/workflows/sync.yml` 每天北京时间 02:00 执行。
-
-```bash
-python3 scripts/sync.py --dry-run
-python3 scripts/sync.py
-```
-
-上游 `SKILL.md` 未变化时跳过下载。变化后，相似度至少 90% 且附件数不变才自动更新；
-其他情况保留本地版本并写入报告。
+如果改过常驻状态或技能路径，再运行 `agents-kit global apply`。
 
 ## 完成标准
 
-1. `add.py` 和 `manage.py` 的写操作自带生成与体检。只有直接编辑源码后才运行
-   `manage.py refresh`；路径变化时加 `--link`，手工删除或停用时加 `--prune`。
-2. `doctor.py` 退出码为 0。
-3. `git diff --check` 通过。
-4. 只暂存当前任务文件，不覆盖或提交用户的无关改动。
-5. 工作区干净时用 `git pull --rebase origin main` 同步；推送被拒后也用 rebase，
-   不创建无意义的 merge commit。
-6. 提交并推送仓库；本机 GitHub 操作优先走 SSH。
+1. `uv run --with "PyYAML>=6,<7" python -m unittest discover -s tests` 通过。
+2. `agents-kit docs build` 后，第二次运行不产生变化。
+3. `agents-kit check` 通过；CI 使用 `agents-kit check --repo-only`。
+4. `git diff --check` 通过。
+5. 不覆盖或提交用户的无关改动。
+6. 提交并推送本仓库；推送被拒时先 `git pull --rebase origin main`。

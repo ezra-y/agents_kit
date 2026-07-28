@@ -1,4 +1,4 @@
 .DS_Store
-.sync-report.json
 __pycache__/
 *.pyc
+build/

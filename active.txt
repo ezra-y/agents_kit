@@ -1,5 +1,5 @@
-# 常驻技能名单。只有这里列出的技能才会链接到 ~/.claude/skills 和 ~/.agents/skills。
-# 修改后运行 python3 scripts/link.py --prune。
+# 常驻技能名单。这里只记录需要全局生效的技能名。
+# 请使用 agents-kit global enable/disable/apply 修改和应用。
 
 frontend-design
 diagnose

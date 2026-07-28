@@ -1,0 +1,736 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#   "PyYAML>=6,<7",
+# ]
+# ///
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import sys
+from pathlib import Path
+from typing import Any
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from agents_kit import checks, docs, installation, skills
+from agents_kit.installation import InstallationError
+from agents_kit.models import ChangeSet, Effect
+from agents_kit.repository import Repository, RepositoryError
+from agents_kit.skills import SkillError
+from agents_kit.sources import SourceError, SourceSession
+
+
+class CommandError(RuntimeError):
+    def __init__(self, message: str, payload: dict[str, Any] | None = None) -> None:
+        super().__init__(message)
+        self.payload = payload
+
+
+def build_parser() -> argparse.ArgumentParser:
+    root = argparse.ArgumentParser(
+        prog="agents-kit",
+        description="统一管理 agents_kit 中的技能、来源、安装和生成文档",
+    )
+    commands = root.add_subparsers(dest="object", required=True)
+
+    status = commands.add_parser("status", help="查看仓库摘要")
+    _json_flag(status)
+    status.set_defaults(handler=command_status)
+
+    source = commands.add_parser("source", help="检查和更新技能来源")
+    source_commands = source.add_subparsers(dest="source_command", required=True)
+
+    providers = source_commands.add_parser("providers", help="列出来源适配器")
+    _json_flag(providers)
+    providers.set_defaults(handler=command_source_providers)
+
+    inspect = source_commands.add_parser("inspect", help="只检查来源，不写仓库")
+    inspect.add_argument("source")
+    _source_flags(inspect)
+    _json_flag(inspect)
+    inspect.set_defaults(handler=command_source_inspect)
+
+    detach = source_commands.add_parser("detach", help="停止跟踪技能来源")
+    detach.add_argument("name")
+    detach.add_argument("--dry-run", action="store_true")
+    _json_flag(detach)
+    detach.set_defaults(handler=command_source_detach)
+
+    source_check = source_commands.add_parser("check", help="检查来源变化")
+    _name_or_all(source_check)
+    _json_flag(source_check)
+    source_check.set_defaults(handler=command_source_check)
+
+    source_update = source_commands.add_parser(
+        "update", help="获取并应用经过确认的来源更新"
+    )
+    _name_or_all(source_update)
+    source_update.add_argument("--dry-run", action="store_true")
+    source_update.add_argument("--yes", action="store_true")
+    _json_flag(source_update)
+    source_update.set_defaults(handler=command_source_update)
+
+    skill = commands.add_parser("skill", help="管理中央技能库")
+    skill_commands = skill.add_subparsers(dest="skill_command", required=True)
+
+    skill_import = skill_commands.add_parser(
+        "import", help="从来源导入并按 scope 安装技能"
+    )
+    skill_import.add_argument("source")
+    skill_import.add_argument("--category", required=True)
+    skill_import.add_argument(
+        "--scope", required=True, choices=("library", "global", "project")
+    )
+    skill_import.add_argument("--name")
+    skill_import.add_argument("--description", required=True)
+    skill_import.add_argument("--trigger", default="")
+    skill_import.add_argument(
+        "--recommendation", type=int, choices=range(1, 6), default=3
+    )
+    skill_import.add_argument("--project", type=Path)
+    skill_import.add_argument("--replace", action="store_true")
+    skill_import.add_argument("--dry-run", action="store_true")
+    skill_import.add_argument("--yes", action="store_true")
+    _source_flags(skill_import)
+    skill_import.add_argument("--candidate")
+    _json_flag(skill_import)
+    skill_import.set_defaults(handler=command_skill_import)
+
+    skill_list = skill_commands.add_parser("list", help="列出技能")
+    skill_list.add_argument("--active", action="store_true")
+    skill_list.add_argument("--category")
+    skill_list.add_argument("--tracked", action="store_true")
+    _json_flag(skill_list)
+    skill_list.set_defaults(handler=command_skill_list)
+
+    skill_show = skill_commands.add_parser("show", help="查看单个技能")
+    skill_show.add_argument("name")
+    _json_flag(skill_show)
+    skill_show.set_defaults(handler=command_skill_show)
+
+    metadata = skill_commands.add_parser("metadata", help="修改本地清册信息")
+    metadata_commands = metadata.add_subparsers(dest="metadata_command", required=True)
+    metadata_set = metadata_commands.add_parser("set", help="设置 metadata")
+    metadata_set.add_argument("name")
+    metadata_set.add_argument("--description")
+    metadata_set.add_argument("--trigger")
+    metadata_set.add_argument("--recommendation", type=int, choices=range(1, 6))
+    metadata_set.add_argument("--dependency", action="append")
+    metadata_set.add_argument("--clear-dependencies", action="store_true")
+    metadata_set.add_argument("--dry-run", action="store_true")
+    _json_flag(metadata_set)
+    metadata_set.set_defaults(handler=command_skill_metadata)
+
+    rename = skill_commands.add_parser("rename", help="重命名本地技能 ID")
+    rename.add_argument("old_name")
+    rename.add_argument("new_name")
+    rename.add_argument("--dry-run", action="store_true")
+    _json_flag(rename)
+    rename.set_defaults(handler=command_skill_rename)
+
+    move = skill_commands.add_parser("move", help="移动技能分类")
+    move.add_argument("name")
+    move.add_argument("category")
+    move.add_argument("--dry-run", action="store_true")
+    _json_flag(move)
+    move.set_defaults(handler=command_skill_move)
+
+    remove = skill_commands.add_parser("remove", help="删除技能及全部登记")
+    remove.add_argument("name")
+    remove.add_argument("--dry-run", action="store_true")
+    remove.add_argument("--yes", action="store_true")
+    _json_flag(remove)
+    remove.set_defaults(handler=command_skill_remove)
+
+    global_parser = commands.add_parser("global", help="管理全局技能链接")
+    global_commands = global_parser.add_subparsers(dest="global_command", required=True)
+    for name, help_text, handler in (
+        ("enable", "启用全局技能", command_global_enable),
+        ("disable", "停用全局技能", command_global_disable),
+    ):
+        item = global_commands.add_parser(name, help=help_text)
+        item.add_argument("name")
+        item.add_argument("--dry-run", action="store_true")
+        _json_flag(item)
+        item.set_defaults(handler=handler)
+    global_apply = global_commands.add_parser("apply", help="收敛全部全局链接")
+    global_apply.add_argument("--dry-run", action="store_true")
+    _json_flag(global_apply)
+    global_apply.set_defaults(handler=command_global_apply)
+
+    project = commands.add_parser("project", help="向项目复制技能")
+    project_commands = project.add_subparsers(dest="project_command", required=True)
+    project_install = project_commands.add_parser(
+        "install", help="安装技能或分类到项目"
+    )
+    project_install.add_argument("target")
+    project_install.add_argument("--project", required=True, type=Path)
+    project_install.add_argument("--replace", action="store_true")
+    project_install.add_argument("--dry-run", action="store_true")
+    project_install.add_argument("--yes", action="store_true")
+    _json_flag(project_install)
+    project_install.set_defaults(handler=command_project_install)
+
+    docs_parser = commands.add_parser("docs", help="构建和检查生成文档")
+    docs_commands = docs_parser.add_subparsers(dest="docs_command", required=True)
+    docs_build = docs_commands.add_parser("build", help="更新全部生成内容")
+    _json_flag(docs_build)
+    docs_build.set_defaults(handler=command_docs_build)
+    docs_check = docs_commands.add_parser("check", help="检查 tracked 文档是否过期")
+    _json_flag(docs_check)
+    docs_check.set_defaults(handler=command_docs_check)
+
+    check = commands.add_parser("check", help="执行完整只读体检")
+    check.add_argument("--repo-only", action="store_true")
+    _json_flag(check)
+    check.set_defaults(handler=command_check)
+    return root
+
+
+def command_status(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    repo = context.repo
+    inventory = repo.inventory()
+    by_category: dict[str, int] = {}
+    for entry in inventory.values():
+        by_category[entry.category] = by_category.get(entry.category, 0) + 1
+    return {
+        "root": str(repo.root),
+        "skills": len(inventory),
+        "active": len(repo.read_active()),
+        "sources": len(repo.read_sources()["skills"]),
+        "metadata": len(repo.read_metadata()["skills"]),
+        "categories": dict(sorted(by_category.items())),
+    }
+
+
+def command_source_providers(
+    args: argparse.Namespace, context: Context
+) -> dict[str, Any]:
+    with SourceSession(context.repo.network_timeout) as session:
+        return {"providers": session.provider_names()}
+
+
+def command_source_inspect(
+    args: argparse.Namespace, context: Context
+) -> dict[str, Any]:
+    with SourceSession(context.repo.network_timeout) as session:
+        spec = _source_spec(session, args)
+        candidates = session.candidates(spec)
+        return {
+            "provider": spec.provider,
+            "locator": spec.locator,
+            "candidates": [
+                {
+                    "path": candidate.relative_path,
+                    "name": candidate.declared_name,
+                    "description": candidate.description,
+                }
+                for candidate in candidates
+            ],
+        }
+
+
+def command_source_detach(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    context.repo.require_skill(args.name)
+    if args.dry_run:
+        return {
+            "dry_run": True,
+            "skill": args.name,
+            "tracked": context.repo.source_record(args.name) is not None,
+        }
+    with context.repo.write_lock():
+        change = skills.detach_source(context.repo, args.name)
+    return context.finish(change)
+
+
+def command_source_check(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    names = _source_names(context.repo, args)
+    results: list[dict[str, Any]] = []
+    failures: list[dict[str, str]] = []
+    with SourceSession(context.repo.network_timeout) as session:
+        for name in names:
+            record = context.repo.source_record(name)
+            if record is None:
+                failures.append({"skill": name, "error": "没有来源登记"})
+                continue
+            if record.get("policy") == "pinned":
+                results.append({"skill": name, "status": "pinned"})
+                continue
+            try:
+                snapshot = session.snapshot_from_record(record)
+                local_hash = context.repo.hash_skill_content(
+                    context.repo.require_skill(name).path,
+                    snapshot.content_mode,
+                )
+                results.append(
+                    {
+                        "skill": name,
+                        "status": (
+                            "unchanged"
+                            if local_hash == snapshot.content_sha256
+                            else "changed"
+                        ),
+                        "local_sha256": local_hash,
+                        "remote_sha256": snapshot.content_sha256,
+                        "revision": snapshot.revision,
+                    }
+                )
+            except (OSError, RuntimeError, ValueError) as exc:
+                failures.append({"skill": name, "error": str(exc)})
+    return {"results": results, "failures": failures}
+
+
+def command_source_update(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    names = _source_names(context.repo, args)
+    _confirm(args, f"应用 {len(names)} 个技能的当前来源内容？")
+    snapshots: list[tuple[str, Any]] = []
+    failures: list[dict[str, str]] = []
+    with SourceSession(context.repo.network_timeout) as session:
+        for name in names:
+            record = context.repo.source_record(name)
+            if record is None:
+                failures.append({"skill": name, "error": "没有来源登记"})
+                continue
+            if record.get("policy") == "pinned":
+                continue
+            try:
+                snapshots.append((name, session.snapshot_from_record(record)))
+            except (OSError, RuntimeError, ValueError) as exc:
+                failures.append({"skill": name, "error": str(exc)})
+        if args.dry_run:
+            return {
+                "dry_run": True,
+                "updates": [
+                    {
+                        "skill": name,
+                        "changed": (
+                            context.repo.hash_skill_content(
+                                context.repo.require_skill(name).path,
+                                snapshot.content_mode,
+                            )
+                            != snapshot.content_sha256
+                        ),
+                        "revision": snapshot.revision,
+                    }
+                    for name, snapshot in snapshots
+                ],
+                "failures": failures,
+            }
+        combined = ChangeSet()
+        with context.repo.write_lock():
+            for name, snapshot in snapshots:
+                combined.merge(skills.update_from_source(context.repo, name, snapshot))
+        result = context.finish(combined)
+        result["failures"] = failures
+        return result
+
+
+def command_skill_import(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    if args.category not in context.repo.categories:
+        raise CommandError(
+            f"未知分类：{args.category}；可用分类："
+            + ", ".join(context.repo.categories)
+        )
+    if args.scope == "project" and args.project is None:
+        raise CommandError("--scope project 必须提供 --project")
+    if args.scope == "project" and not args.project.expanduser().is_dir():
+        raise CommandError(f"项目目录不存在：{args.project.expanduser()}")
+    if args.replace:
+        _confirm(args, "替换已有同名技能内容？")
+    with SourceSession(context.repo.network_timeout) as session:
+        spec = _source_spec(session, args)
+        snapshot = session.snapshot(spec, candidate_path=args.candidate)
+        local_name = args.name or snapshot.declared_name
+        if args.dry_run:
+            return {
+                "dry_run": True,
+                "skill": local_name,
+                "category": args.category,
+                "scope": args.scope,
+                "provider": spec.provider,
+                "locator": snapshot.spec.locator,
+                "content_sha256": snapshot.content_sha256,
+                "existing": local_name in context.repo.inventory(),
+            }
+        with context.repo.write_lock():
+            change = skills.import_snapshot(
+                context.repo,
+                snapshot,
+                category=args.category,
+                name=args.name,
+                description=args.description,
+                trigger=args.trigger,
+                recommendation=args.recommendation,
+                policy=context.repo.config["defaults"]["source_policy"],
+                replace=args.replace,
+            )
+            if args.scope == "global":
+                change.merge(installation.enable_global(context.repo, local_name))
+        if args.scope == "project":
+            project_result = installation.install_project(
+                context.repo,
+                local_name,
+                project=args.project,
+                replace=args.replace,
+            )
+            change.details["project_install"] = project_result.details
+        return context.finish(change)
+
+
+def command_skill_list(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    rows = skills.list_skills(
+        context.repo,
+        active_only=args.active,
+        category=args.category,
+        tracked_only=args.tracked,
+    )
+    return {"skills": rows, "count": len(rows)}
+
+
+def command_skill_show(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    return skills.show_skill(context.repo, args.name)
+
+
+def command_skill_metadata(
+    args: argparse.Namespace, context: Context
+) -> dict[str, Any]:
+    if (
+        args.description is None
+        and args.trigger is None
+        and args.recommendation is None
+        and args.dependency is None
+        and not args.clear_dependencies
+    ):
+        raise CommandError("至少提供一个 metadata 字段")
+    dependencies = [] if args.clear_dependencies else args.dependency
+    if args.dry_run:
+        context.repo.require_skill(args.name)
+        return {
+            "dry_run": True,
+            "skill": args.name,
+            "updates": {
+                key: value
+                for key, value in {
+                    "description": args.description,
+                    "trigger": args.trigger,
+                    "recommendation": args.recommendation,
+                    "dependencies": dependencies,
+                }.items()
+                if value is not None
+            },
+        }
+    with context.repo.write_lock():
+        change = skills.set_metadata(
+            context.repo,
+            args.name,
+            description=args.description,
+            trigger=args.trigger,
+            recommendation=args.recommendation,
+            dependencies=dependencies,
+        )
+    return context.finish(change)
+
+
+def command_skill_rename(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    context.repo.require_skill(args.old_name)
+    if args.dry_run:
+        return {
+            "dry_run": True,
+            "old_name": args.old_name,
+            "new_name": args.new_name,
+        }
+    with context.repo.write_lock():
+        change = skills.rename_skill(context.repo, args.old_name, args.new_name)
+    return context.finish(change)
+
+
+def command_skill_move(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    entry = context.repo.require_skill(args.name)
+    if args.dry_run:
+        return {
+            "dry_run": True,
+            "skill": args.name,
+            "from": entry.category,
+            "to": args.category,
+        }
+    with context.repo.write_lock():
+        change = skills.move_skill(context.repo, args.name, args.category)
+    return context.finish(change)
+
+
+def command_skill_remove(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    entry = context.repo.require_skill(args.name)
+    if args.dry_run:
+        return {
+            "dry_run": True,
+            "skill": args.name,
+            "path": str(entry.path),
+            "active": args.name in context.repo.read_active(),
+            "tracked": context.repo.source_record(args.name) is not None,
+        }
+    _confirm(args, f"彻底删除 {args.name} 及其登记？")
+    with context.repo.write_lock():
+        change = skills.remove_skill(context.repo, args.name)
+    return context.finish(change)
+
+
+def command_global_enable(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    context.repo.require_skill(args.name)
+    if args.dry_run:
+        return {
+            "dry_run": True,
+            "skill": args.name,
+            "active": args.name in context.repo.read_active(),
+            "target_active": True,
+        }
+    with context.repo.write_lock():
+        change = installation.enable_global(context.repo, args.name)
+    return context.finish(change)
+
+
+def command_global_disable(
+    args: argparse.Namespace, context: Context
+) -> dict[str, Any]:
+    context.repo.require_skill(args.name)
+    if args.dry_run:
+        return {
+            "dry_run": True,
+            "skill": args.name,
+            "active": args.name in context.repo.read_active(),
+            "target_active": False,
+        }
+    with context.repo.write_lock():
+        change = installation.disable_global(context.repo, args.name)
+    return context.finish(change)
+
+
+def command_global_apply(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    return installation.apply_global(context.repo, dry_run=args.dry_run).details
+
+
+def command_project_install(
+    args: argparse.Namespace, context: Context
+) -> dict[str, Any]:
+    if args.replace:
+        _confirm(args, "覆盖项目中的同名技能目录？")
+    return installation.install_project(
+        context.repo,
+        args.target,
+        project=args.project,
+        replace=args.replace,
+        dry_run=args.dry_run,
+    ).details
+
+
+def command_docs_build(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    with context.repo.write_lock():
+        return docs.build(context.repo, command_help=context.command_help)
+
+
+def command_docs_check(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    stale = docs.check(context.repo, command_help=context.command_help)
+    if stale:
+        raise CommandError("生成文档已过期：" + ", ".join(stale))
+    return {"stale": [], "ok": True}
+
+
+def command_check(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    report = checks.run(
+        context.repo,
+        command_help=context.command_help,
+        repo_only=args.repo_only,
+    )
+    result = {
+        "ok": report.ok,
+        "problems": report.problems,
+        "warnings": report.warnings,
+        "sections": report.sections,
+    }
+    if not report.ok:
+        raise CommandError(
+            f"体检发现 {len(report.problems)} 个问题",
+            result,
+        )
+    return result
+
+
+class Context:
+    def __init__(self, repo: Repository, parser: argparse.ArgumentParser):
+        self.repo = repo
+        self.parser = parser
+        self.command_help = full_help(parser)
+
+    def finish(self, change: ChangeSet) -> dict[str, Any]:
+        effects: dict[str, Any] = {}
+        if Effect.DOCS_BUILD in change.effects:
+            with self.repo.write_lock():
+                effects[Effect.DOCS_BUILD.value] = docs.build(
+                    self.repo, command_help=self.command_help
+                )
+        if Effect.CHECK in change.effects:
+            report = checks.run(
+                self.repo,
+                command_help=self.command_help,
+                repo_only=True,
+            )
+            effects[Effect.CHECK.value] = {
+                "ok": report.ok,
+                "problems": report.problems,
+            }
+            if not report.ok:
+                raise CommandError(
+                    f"修改已写入，但收尾体检发现 {len(report.problems)} 个问题",
+                    {
+                        "changed": sorted(change.changed),
+                        "details": change.details,
+                        "effects": effects,
+                    },
+                )
+        if Effect.GLOBAL_APPLY in change.effects:
+            effects[Effect.GLOBAL_APPLY.value] = installation.apply_global(
+                self.repo
+            ).details
+        return {
+            "changed": sorted(change.changed),
+            "details": change.details,
+            "warnings": change.warnings,
+            "effects": effects,
+        }
+
+
+def full_help(parser: argparse.ArgumentParser) -> str:
+    chunks: list[str] = [parser.format_help().rstrip()]
+
+    def walk(current: argparse.ArgumentParser, prefix: list[str]) -> None:
+        for action in current._actions:
+            if not isinstance(action, argparse._SubParsersAction):
+                continue
+            for name, child in action.choices.items():
+                command = [*prefix, name]
+                chunks.append(
+                    f"$ {' '.join(command)} --help\n{child.format_help().rstrip()}"
+                )
+                walk(child, command)
+
+    walk(parser, ["agents-kit"])
+    return "\n\n".join(chunks) + "\n"
+
+
+def _source_spec(session: SourceSession, args: argparse.Namespace):
+    options = {
+        key: value
+        for key, value in {
+            "ref": getattr(args, "ref", None),
+            "path": getattr(args, "source_path", None),
+        }.items()
+        if value
+    }
+    return session.spec(
+        args.source,
+        provider_id=getattr(args, "provider", None),
+        options=options,
+    )
+
+
+def _source_names(repo: Repository, args: argparse.Namespace) -> list[str]:
+    if args.all:
+        return sorted(repo.read_sources()["skills"])
+    return [args.name]
+
+
+def _source_flags(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--provider")
+    parser.add_argument("--ref")
+    parser.add_argument("--source-path", dest="source_path")
+
+
+def _name_or_all(parser: argparse.ArgumentParser) -> None:
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("name", nargs="?")
+    group.add_argument("--all", action="store_true")
+
+
+def _json_flag(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--json", action="store_true")
+
+
+def _confirm(args: argparse.Namespace, message: str) -> None:
+    if getattr(args, "dry_run", False):
+        return
+    if getattr(args, "yes", False):
+        return
+    if not sys.stdin.isatty():
+        raise CommandError(f"{message} 非交互环境必须提供 --yes")
+    answer = input(f"{message} [y/N] ").strip().lower()
+    if answer != "y":
+        raise CommandError("已取消")
+
+
+def _emit(result: dict[str, Any], *, as_json: bool) -> None:
+    if as_json:
+        print(json.dumps(result, ensure_ascii=False, indent=2, default=str))
+        return
+    if "skills" in result and isinstance(result["skills"], list):
+        for row in result["skills"]:
+            marker = "*" if row.get("active") else " "
+            tracked = "↑" if row.get("tracked") else " "
+            print(f"{marker}{tracked} {row['category']:<8} {row['name']}")
+        print(f"\n共 {result.get('count', len(result['skills']))} 个")
+        return
+    if result.get("ok") is True and "sections" in result:
+        summary = result["sections"].get("summary", {})
+        print(
+            "全部检查通过："
+            f"{summary.get('skills', 0)} 个技能，"
+            f"{summary.get('active', 0)} 个常驻，"
+            f"{summary.get('sources', 0)} 条来源"
+        )
+        return
+    print(json.dumps(result, ensure_ascii=False, indent=2, default=str))
+
+
+def main() -> int:
+    parser = build_parser()
+    args = parser.parse_args()
+    as_json = bool(getattr(args, "json", False))
+    try:
+        override = os.environ.get("AGENTS_KIT_HOME")
+        repo = (
+            Repository(Path(override))
+            if override
+            else Repository.discover(SCRIPT_DIR.parent)
+        )
+        context = Context(repo, parser)
+        result = args.handler(args, context)
+        _emit(result, as_json=as_json)
+        return 0
+    except CommandError as exc:
+        payload = getattr(exc, "payload", None) or {"ok": False, "error": str(exc)}
+    except (
+        RepositoryError,
+        SourceError,
+        SkillError,
+        InstallationError,
+        OSError,
+        ValueError,
+    ) as exc:
+        payload = {"ok": False, "error": str(exc)}
+    if as_json:
+        print(json.dumps(payload, ensure_ascii=False, indent=2, default=str))
+    else:
+        print(f"错误：{payload.get('error', payload)}", file=sys.stderr)
+        if payload.get("problems"):
+            for problem in payload["problems"]:
+                print(f"  - {problem}", file=sys.stderr)
+    return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

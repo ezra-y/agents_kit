@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "categories": [
+    "apple",
+    "web",
+    "design",
+    "lark",
+    "method",
+    "agent",
+    "tools",
+    "backend"
+  ],
+  "install_targets": {
+    "global": [
+      {
+        "id": "claude",
+        "path": "~/.claude/skills",
+        "mode": "symlink"
+      },
+      {
+        "id": "agents",
+        "path": "~/.agents/skills",
+        "mode": "symlink"
+      }
+    ],
+    "project": [
+      {
+        "id": "claude",
+        "path": ".claude/skills",
+        "mode": "copy"
+      }
+    ]
+  },
+  "defaults": {
+    "source_policy": "review",
+    "network_timeout_seconds": 20
+  }
+}
