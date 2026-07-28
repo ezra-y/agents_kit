@@ -1,6 +1,6 @@
 # agents_kit
 
-本仓库是 Claude Code 与 Codex 共用技能的唯一事实来源。
+本仓库是 Claude Code 与 Codex 共用技能、MCP 清单的唯一事实来源。
 
 ## 操作规则
 
@@ -16,6 +16,8 @@
 7. 上游默认使用 `review` 策略。先 `source check`，确认后再 `source update`。
 8. HTTP 单文件来源只管理 `SKILL.md`；`references/`、`scripts/` 等附件由仓库保留。
 9. 修改 `rules/`、`agents/`、`hooks/` 或 `prompts/` 前，先读对应目录的 README。
+10. 第三方 MCP 集中记录在 `mcps.json`，不要为只有配置的 MCP 建独立目录。
+    凭据只记录环境变量或安全命令来源，不把值写进仓库和客户端配置。
 
 ## 状态文件
 
@@ -25,6 +27,7 @@
 | `active.txt` | 全局常驻技能名 |
 | `sources.json` | 上游来源、更新策略和受管内容摘要 |
 | `metadata.json` | 中文清册、触发信息、推荐指数和依赖 |
+| `mcps.json` | MCP 上游、锁定版本、启动方式、凭据来源、目标和启用状态 |
 
 ## 正常流程
 
@@ -43,6 +46,24 @@ agents-kit skill import "<来源>" \
 `--project` 只在 `scope=project` 时需要。来源有多个候选时，先用
 `agents-kit source inspect <来源>` 查看，再传 `--candidate`。
 
+收录并全局安装 MCP：
+
+```bash
+agents-kit mcp import "<上游>" \
+  --name <名称> \
+  --description "<中文说明>" \
+  --distribution <npm|pypi|brew|remote> \
+  --package <包名> \
+  --version <锁定版本> \
+  --command <启动命令> \
+  --arg <启动参数> \
+  --scope global
+```
+
+`npm`、`pypi` 和 `brew` 必须锁定版本。需要凭据时使用 `--secret-env`
+或 `--secret-command` 记录读取方式。客户端统一运行
+`agents-kit mcp run <名称>`，不要把具体包命令复制进各客户端。
+
 管理命令及完整参数见 `docs/cli.md`。模块职责和依赖方向见
 `docs/architecture.md`。
 
@@ -51,6 +72,7 @@ agents-kit skill import "<来源>" \
 一般不直接编辑：
 
 - `docs/skills.md`
+- `docs/mcps.md`
 - `docs/cli.md`
 - `docs/architecture.md` 的生成区块
 - `docs/index.html`

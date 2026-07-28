@@ -179,16 +179,20 @@ function render(){
   countEl.textContent=list.length+' / '+DATA.length;
   emptyEl.hidden=list.length>0;
   tb.innerHTML=list.map(r=>{
-    const badges=(r.active?'<span class="badge on">常驻</span>':'')
+    const badges=(r.active?'<span class="badge on">'+(r.kind==='mcp'?'启用':'常驻')+'</span>':'')
+      +(r.kind==='mcp'?'<span class="badge">MCP</span>':'')
       +(r.manual?'<span class="badge">仅手动</span>':'');
     const up=r.url?('<a href="'+esc(r.url)+'" target="_blank" rel="noopener">'+esc(r.repo)+'</a>')
       :'<span class="dim">来源未记录</span>';
+    const meta=r.kind==='mcp'
+      ?('MCP · '+esc(r.runtime)+' · '+esc(r.targets.join(', ')))
+      :(r.cat+' · '+r.lines+' 行 · '+r.nfiles+' 附件 · '
+        +'<button class="folder-link" type="button" data-open-skill="'+esc(r.name)
+        +'">Finder</button>');
     return '<tr data-rec="'+r.rec+'" data-name="'+r.name+'">'
       +'<td class="c-name"><button class="sname" type="button" aria-expanded="false">'
         +'<span class="caret">▶</span>'+r.name+'</button>'+badges
-        +'<span class="meta">'+r.cat+' · '+r.lines+' 行 · '+r.nfiles+' 附件 · '
-        +'<button class="folder-link" type="button" data-open-skill="'+esc(r.name)
-        +'">Finder</button></span></td>'
+        +'<span class="meta">'+meta+'</span></td>'
       +'<td class="c-desc"><p class="d">'+md(r.desc)+'</p>'
         +(r.how?'<p class="how"><span class="hk">怎么用</span>'+md(r.how)+'</p>':'')+'</td>'
       +'<td class="c-side">'
@@ -211,12 +215,15 @@ tb.addEventListener('click',e=>{
   const r=DATA.find(x=>x.name===tr.dataset.name);
   const files=r.files.length?('<div><div class="dlabel">附带资源 · '+r.files.length+' 个文件</div>'
     +'<div class="dfiles">'+r.files.map(f=>'<div>'+esc(f)+'</div>').join('')+'</div></div>'):'';
+  const actions=r.kind==='mcp'
+    ?(r.url?'<a class="btn" href="'+esc(r.url)+'" target="_blank" rel="noopener">上游 ↗</a>':'')
+    :'<button class="btn" type="button" data-open-skill="'+esc(r.name)
+      +'">Finder 打开目录</button>'
+      +'<a class="btn" href="../'+encodeURI(r.rel)+'/SKILL.md">打开 SKILL.md</a>'
+      +(r.url?'<a class="btn" href="'+esc(r.url)+'" target="_blank" rel="noopener">上游 ↗</a>':'');
   tr.insertAdjacentHTML('afterend','<tr class="detail"><td colspan="3"><div class="dwrap">'
-    +'<div class="dbar"><button class="btn" type="button" data-open-skill="'+esc(r.name)
-    +'">Finder 打开目录</button>'
-    +'<a class="btn" href="../'+encodeURI(r.rel)+'/SKILL.md">打开 SKILL.md</a>'
-    +(r.url?'<a class="btn" href="'+esc(r.url)+'" target="_blank" rel="noopener">上游 ↗</a>':'')+'</div>'
-    +'<div><div class="dlabel">SKILL.md 全文 · '+r.lines+' 行</div>'
+    +'<div class="dbar">'+actions+'</div>'
+    +'<div><div class="dlabel">'+(r.kind==='mcp'?'MCP 清单记录':'SKILL.md 全文 · '+r.lines+' 行')+'</div>'
     +'<div class="dbody">'+mdRender(r.body)+'</div></div>'+files+'</div></td></tr>');
 });
 
@@ -260,6 +267,7 @@ def collect_rows(repo: Repository) -> list[dict[str, Any]]:
         source_label, source_url = _source_view(sources.get(name))
         rows.append(
             {
+                "kind": "skill",
                 "name": name,
                 "cat": entry.category,
                 "desc": (
@@ -278,6 +286,43 @@ def collect_rows(repo: Repository) -> list[dict[str, Any]]:
                 "active": name in active,
                 "repo": source_label,
                 "url": source_url,
+                "runtime": "",
+                "targets": [],
+            }
+        )
+    return rows
+
+
+def collect_mcp_rows(repo: Repository) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for name, record in sorted(repo.read_mcps()["servers"].items()):
+        distribution = record["distribution"]
+        package = distribution.get("package") or distribution["type"]
+        version = distribution.get("version")
+        runtime = package + (f"@{version}" if version else "")
+        source_label, source_url = _mcp_source_view(record["source"]["url"])
+        rows.append(
+            {
+                "kind": "mcp",
+                "name": name,
+                "cat": "MCP",
+                "desc": record["description"],
+                "how": "、".join(record["tags"]),
+                "rec": record["recommendation"],
+                "rel": "",
+                "lines": 0,
+                "nfiles": 0,
+                "files": [],
+                "body": json.dumps(record, ensure_ascii=False, indent=2),
+                "manual": False,
+                "active": record["enabled"],
+                "repo": source_label,
+                "url": source_url,
+                "runtime": runtime,
+                "targets": record["targets"],
+                "distribution": distribution["type"],
+                "package": package,
+                "version": version,
             }
         )
     return rows
@@ -327,21 +372,57 @@ def render_markdown(repo: Repository, rows: list[dict[str, Any]]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def render_html(repo: Repository, rows: list[dict[str, Any]]) -> str:
+def render_mcp_markdown(repo: Repository, rows: list[dict[str, Any]]) -> str:
+    enabled_count = sum(1 for row in rows if row["active"])
+    lines = [
+        "# MCP 清单",
+        "",
+        f"共 **{len(rows)}** 个 · 全局启用 **{enabled_count}** 个",
+        "",
+        "| MCP | 说明 | 分发 | 版本 | 目标 | 启用 | 上游 |",
+        "|---|---|---|---|---|:--:|---|",
+    ]
+    for row in rows:
+        description = row["desc"].replace("|", "\\|")
+        source = f"[{row['repo']}]({row['url']})" if row["url"] else "—"
+        lines.append(
+            f"| `{row['name']}` | {description} | `{row['package']}` | "
+            f"`{row['version'] or '—'}` | {', '.join(row['targets'])} | "
+            f"{'●' if row['active'] else ''} | {source} |"
+        )
+    lines.extend(
+        [
+            "",
+            "客户端配置由 `agents-kit mcp apply --all` 从 `mcps.json` 收敛。",
+            "仓库只保存凭据来源，不保存凭据值。",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def render_html(
+    repo: Repository,
+    skill_rows: list[dict[str, Any]],
+    mcp_rows: list[dict[str, Any]],
+) -> str:
+    rows = [*skill_rows, *mcp_rows]
     by_category = _by_category(rows)
-    total = len(rows)
-    active_count = sum(1 for row in rows if row["active"])
+    total = len(skill_rows)
+    active_count = sum(1 for row in skill_rows if row["active"])
+    mcp_count = len(mcp_rows)
+    enabled_mcp_count = sum(1 for row in mcp_rows if row["active"])
     source_count = len(repo.read_sources()["skills"])
     data = json.dumps(rows, ensure_ascii=False)
     data = data.replace("</", r"<\/").replace("<!--", "<\\u0021--")
     chips = [
         (
             f'<button class="chip" data-cat="*" aria-pressed="true">'
-            f'全部<span class="c">{total}</span></button>'
+            f'全部<span class="c">{len(rows)}</span></button>'
         ),
         (
             f'<button class="chip" data-cat="__act" aria-pressed="false">'
-            f'常驻<span class="c">{active_count}</span></button>'
+            f'生效<span class="c">{active_count + enabled_mcp_count}</span></button>'
         ),
     ]
     for category in sorted(by_category):
@@ -358,24 +439,26 @@ def render_html(repo: Repository, rows: list[dict[str, Any]]) -> str:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>技能清册 · {total} 个</title>
+<title>agents_kit 清册 · {total} 个技能 · {mcp_count} 个 MCP</title>
 <style>{CSS}</style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>{total} 个技能</h1>
-  <p class="lede">点技能名可就地展开它的 <code>SKILL.md</code> 全文。<b>怎么用</b>写的是触发方式。
+  <h1>{total} 个技能 · {mcp_count} 个 MCP</h1>
+  <p class="lede">点名称可就地展开完整记录。技能展示 <code>SKILL.md</code>，MCP 展示中央清单。
   本页由 <code>agents-kit docs build</code> 生成。</p>
 </header>
 <div class="stats">
   <div class="stat"><span class="n">{total}</span><span class="l">技能总数</span></div>
   <div class="stat g"><span class="n">{active_count}</span><span class="l">常驻（已装）</span></div>
   <div class="stat"><span class="n">{source_count}</span><span class="l">有来源记录</span></div>
+  <div class="stat"><span class="n">{mcp_count}</span><span class="l">MCP 清单</span></div>
+  <div class="stat g"><span class="n">{enabled_mcp_count}</span><span class="l">MCP 已启用</span></div>
   <div class="stat"><span class="n">{len(by_category)}</span><span class="l">分类</span></div>
 </div>
 <div class="controls">
-  <div class="row"><input id="q" type="search" placeholder="搜技能名、说明、来源…" aria-label="搜索">
+  <div class="row"><input id="q" type="search" placeholder="搜技能、MCP、说明、来源…" aria-label="搜索">
     <span class="count" id="count"></span></div>
   <div class="row" id="chips">{"".join(chips)}</div>
   <div class="row"><span class="sl">排序</span>
@@ -385,10 +468,11 @@ def render_html(repo: Repository, rows: list[dict[str, Any]]) -> str:
   </div>
 </div>
 <table><tbody id="tb"></tbody></table>
-<div class="empty" id="empty" hidden>没有匹配的技能。</div>
+<div class="empty" id="empty" hidden>没有匹配项。</div>
 <footer>
-  <p>技能正文来自 <code>skills/**/SKILL.md</code>，中文说明来自
-  <code>metadata.json</code>，来源来自 <code>sources.json</code>。</p>
+  <p>技能正文来自 <code>skills/**/SKILL.md</code>；MCP 来自
+  <code>mcps.json</code>。中文说明和技能来源分别来自
+  <code>metadata.json</code> 与 <code>sources.json</code>。</p>
   <p>本文件是本地或 CI 构建产物，不进入 Git。</p>
 </footer>
 </div>
@@ -398,7 +482,11 @@ def render_html(repo: Repository, rows: list[dict[str, Any]]) -> str:
 """
 
 
-def render_architecture(repo: Repository, rows: list[dict[str, Any]]) -> str:
+def render_architecture(
+    repo: Repository,
+    rows: list[dict[str, Any]],
+    mcp_rows: list[dict[str, Any]],
+) -> str:
     existing_path = repo.root / "docs" / "architecture.md"
     if existing_path.is_file():
         existing = existing_path.read_text(encoding="utf-8")
@@ -421,6 +509,8 @@ def render_architecture(repo: Repository, rows: list[dict[str, Any]]) -> str:
             f"- 常驻：{sum(1 for row in rows if row['active'])}",
             f"- 来源记录：{len(repo.read_sources()['skills'])}",
             f"- metadata：{len(repo.read_metadata()['skills'])}",
+            f"- MCP：{len(mcp_rows)}",
+            f"- MCP 已启用：{sum(1 for row in mcp_rows if row['active'])}",
             f"- 分类：{', '.join(f'{name}({len(items)})' for name, items in sorted(by_category.items()))}",
             "",
             "## 状态所有权",
@@ -429,6 +519,7 @@ def render_architecture(repo: Repository, rows: list[dict[str, Any]]) -> str:
             "- `active.txt`：全局常驻技能名",
             "- `sources.json`：provider 来源记录",
             "- `metadata.json`：中文清册和依赖",
+            "- `mcps.json`：MCP 清单、上游、锁定版本、启动方式和启用状态",
             "",
             GENERATED_END,
         ]
@@ -450,29 +541,38 @@ def expected_tracked_documents(
     repo: Repository, *, command_help: str
 ) -> dict[Path, str]:
     rows = collect_rows(repo)
+    mcp_rows = collect_mcp_rows(repo)
     return {
         repo.root / "docs" / "skills.md": render_markdown(repo, rows),
+        repo.root / "docs" / "mcps.md": render_mcp_markdown(repo, mcp_rows),
         repo.root / "docs" / "cli.md": render_cli_reference(command_help),
-        repo.root / "docs" / "architecture.md": render_architecture(repo, rows),
+        repo.root / "docs" / "architecture.md": render_architecture(
+            repo, rows, mcp_rows
+        ),
     }
 
 
 def build(repo: Repository, *, command_help: str) -> dict[str, Any]:
     rows = collect_rows(repo)
+    mcp_rows = collect_mcp_rows(repo)
     changed: list[str] = []
     tracked = {
         repo.root / "docs" / "skills.md": render_markdown(repo, rows),
+        repo.root / "docs" / "mcps.md": render_mcp_markdown(repo, mcp_rows),
         repo.root / "docs" / "cli.md": render_cli_reference(command_help),
-        repo.root / "docs" / "architecture.md": render_architecture(repo, rows),
+        repo.root / "docs" / "architecture.md": render_architecture(
+            repo, rows, mcp_rows
+        ),
     }
     for path, content in tracked.items():
         if repo.write_text_if_changed(path, content):
             changed.append(path.relative_to(repo.root).as_posix())
     html_path = repo.root / "docs" / "index.html"
-    if repo.write_text_if_changed(html_path, render_html(repo, rows)):
+    if repo.write_text_if_changed(html_path, render_html(repo, rows, mcp_rows)):
         changed.append(html_path.relative_to(repo.root).as_posix())
     return {
         "skills": len(rows),
+        "mcps": len(mcp_rows),
         "changed": changed,
         "html": str(html_path),
     }
@@ -536,3 +636,12 @@ def _source_view(
             return parsed.hostname or "HTTP", url
         return "HTTP", None
     return str(provider), None
+
+
+def _mcp_source_view(url: str) -> tuple[str, str | None]:
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in {"http", "https"}:
+        return url, None
+    path = parsed.path.removesuffix(".git").strip("/")
+    label = f"{parsed.hostname}/{path}" if path else parsed.hostname or url
+    return label, url.removesuffix(".git")

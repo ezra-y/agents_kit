@@ -15,6 +15,7 @@ class DocsAndChecksTests(unittest.TestCase):
             "schema_version": 1,
             "categories": ["tools"],
             "install_targets": {"global": [], "project": []},
+            "mcp_install_targets": {"global": []},
             "defaults": {"source_policy": "review", "network_timeout_seconds": 60},
         }
         (self.root / "agents-kit.json").write_text(json.dumps(config), encoding="utf-8")
@@ -60,6 +61,9 @@ class DocsAndChecksTests(unittest.TestCase):
                 }
             ),
             encoding="utf-8",
+        )
+        (self.root / "mcps.json").write_text(
+            json.dumps({"schema_version": 1, "servers": {}}), encoding="utf-8"
         )
         self.repo = Repository(self.root)
         self.help = "usage: agents-kit ..."

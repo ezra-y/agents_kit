@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "servers": {
+    "context7": {
+      "description": "查询最新、指定版本的开发文档和代码示例",
+      "tags": [
+        "开发",
+        "文档"
+      ],
+      "recommendation": 5,
+      "source": {
+        "url": "https://github.com/upstash/context7",
+        "policy": "review"
+      },
+      "distribution": {
+        "type": "npm",
+        "package": "@upstash/context7-mcp",
+        "version": "3.2.5"
+      },
+      "runtime": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "{package}@{version}"
+        ]
+      },
+      "environment": {},
+      "targets": [
+        "codex",
+        "claude"
+      ],
+      "enabled": true
+    },
+    "evalview": {
+      "description": "为 Agent 和 Skill 建立行为快照并检测回归",
+      "tags": [
+        "AI构建",
+        "测试"
+      ],
+      "recommendation": 4,
+      "source": {
+        "url": "https://github.com/hidai25/eval-view",
+        "policy": "review"
+      },
+      "distribution": {
+        "type": "pypi",
+        "package": "evalview",
+        "version": "0.8.1"
+      },
+      "runtime": {
+        "command": "uvx",
+        "args": [
+          "--from",
+          "{package}=={version}",
+          "evalview",
+          "mcp",
+          "serve"
+        ]
+      },
+      "environment": {},
+      "targets": [
+        "codex",
+        "claude"
+      ],
+      "enabled": true
+    },
+    "firecrawl": {
+      "description": "搜索、抓取和整理网页内容，免 Key 模式支持搜索与单页抓取",
+      "tags": [
+        "研究",
+        "网页采集"
+      ],
+      "recommendation": 3,
+      "source": {
+        "url": "https://github.com/firecrawl/firecrawl-mcp-server",
+        "policy": "review"
+      },
+      "distribution": {
+        "type": "npm",
+        "package": "mcp-remote",
+        "version": "0.1.38"
+      },
+      "runtime": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "{package}@{version}",
+          "https://mcp.firecrawl.dev/v2/mcp"
+        ]
+      },
+      "environment": {},
+      "targets": [
+        "codex",
+        "claude"
+      ],
+      "enabled": true
+    },
+    "github": {
+      "description": "读取 GitHub 仓库、Issue、PR 和 Actions 状态",
+      "tags": [
+        "开发",
+        "代码托管"
+      ],
+      "recommendation": 4,
+      "source": {
+        "url": "https://github.com/github/github-mcp-server",
+        "policy": "review"
+      },
+      "distribution": {
+        "type": "brew",
+        "package": "github-mcp-server",
+        "version": "1.7.0"
+      },
+      "runtime": {
+        "command": "github-mcp-server",
+        "args": [
+          "stdio",
+          "--read-only",
+          "--toolsets",
+          "context,repos,issues,pull_requests,actions"
+        ]
+      },
+      "environment": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": {
+          "required": true,
+          "source": {
+            "type": "command",
+            "argv": [
+              "gh",
+              "auth",
+              "token"
+            ]
+          }
+        }
+      },
+      "targets": [
+        "codex",
+        "claude"
+      ],
+      "enabled": true
+    }
+  }
+}

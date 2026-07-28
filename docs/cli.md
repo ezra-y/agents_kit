@@ -3,15 +3,17 @@
 本文件由 `agents-kit docs build` 生成。
 
 ```text
-usage: agents-kit [-h] {status,source,skill,global,project,docs,ui,check} ...
+usage: agents-kit [-h]
+                  {status,source,skill,mcp,global,project,docs,ui,check} ...
 
 统一管理 agents_kit 中的技能、来源、安装和生成文档
 
 positional arguments:
-  {status,source,skill,global,project,docs,ui,check}
+  {status,source,skill,mcp,global,project,docs,ui,check}
     status              查看仓库摘要
     source              检查和更新技能来源
     skill               管理中央技能库
+    mcp                 管理中央 MCP 清单和客户端配置
     global              管理全局技能链接
     project             向项目复制技能
     docs                构建和检查生成文档
@@ -250,6 +252,151 @@ options:
   --dry-run
   --yes
   --json
+
+$ agents-kit mcp --help
+usage: agents-kit mcp [-h]
+                      {import,list,show,enable,disable,apply,update,remove,run}
+                      ...
+
+positional arguments:
+  {import,list,show,enable,disable,apply,update,remove,run}
+    import              收录 MCP 并按 scope 写入客户端
+    list                列出 MCP
+    show                查看单个 MCP
+    enable              启用并同步 MCP
+    disable             停用并移除客户端配置
+    apply               收敛 MCP 客户端配置
+    update              检查并应用 MCP 上游版本
+    remove              删除 MCP 及受管客户端配置
+    run                 ==SUPPRESS==
+
+options:
+  -h, --help            show this help message and exit
+
+$ agents-kit mcp import --help
+usage: agents-kit mcp import [-h] --name NAME --description DESCRIPTION
+                             [--tag TAG] [--recommendation {1,2,3,4,5}]
+                             --distribution {brew,npm,pypi,remote}
+                             [--package PACKAGE] [--version VERSION] --command
+                             COMMAND [--arg ARG] [--secret-env SECRET_ENV]
+                             [--secret-command NAME=COMMAND]
+                             [--target {claude,codex}] --scope
+                             {library,global} [--replace] [--dry-run] [--yes]
+                             [--json]
+                             source
+
+positional arguments:
+  source
+
+options:
+  -h, --help            show this help message and exit
+  --name NAME
+  --description DESCRIPTION
+  --tag TAG
+  --recommendation {1,2,3,4,5}
+  --distribution {brew,npm,pypi,remote}
+  --package PACKAGE
+  --version VERSION
+  --command COMMAND
+  --arg ARG
+  --secret-env SECRET_ENV
+  --secret-command NAME=COMMAND
+  --target {claude,codex}
+  --scope {library,global}
+  --replace
+  --dry-run
+  --yes
+  --json
+
+$ agents-kit mcp list --help
+usage: agents-kit mcp list [-h] [--enabled] [--json]
+
+options:
+  -h, --help  show this help message and exit
+  --enabled
+  --json
+
+$ agents-kit mcp show --help
+usage: agents-kit mcp show [-h] [--json] name
+
+positional arguments:
+  name
+
+options:
+  -h, --help  show this help message and exit
+  --json
+
+$ agents-kit mcp enable --help
+usage: agents-kit mcp enable [-h] [--dry-run] [--json] name
+
+positional arguments:
+  name
+
+options:
+  -h, --help  show this help message and exit
+  --dry-run
+  --json
+
+$ agents-kit mcp disable --help
+usage: agents-kit mcp disable [-h] [--dry-run] [--json] name
+
+positional arguments:
+  name
+
+options:
+  -h, --help  show this help message and exit
+  --dry-run
+  --json
+
+$ agents-kit mcp apply --help
+usage: agents-kit mcp apply [-h] [--all] [--replace] [--dry-run] [--yes]
+                            [--json]
+                            [name]
+
+positional arguments:
+  name
+
+options:
+  -h, --help  show this help message and exit
+  --all
+  --replace
+  --dry-run
+  --yes
+  --json
+
+$ agents-kit mcp update --help
+usage: agents-kit mcp update [-h] [--all] [--dry-run] [--yes] [--json] [name]
+
+positional arguments:
+  name
+
+options:
+  -h, --help  show this help message and exit
+  --all
+  --dry-run
+  --yes
+  --json
+
+$ agents-kit mcp remove --help
+usage: agents-kit mcp remove [-h] [--dry-run] [--yes] [--json] name
+
+positional arguments:
+  name
+
+options:
+  -h, --help  show this help message and exit
+  --dry-run
+  --yes
+  --json
+
+$ agents-kit mcp run --help
+usage: agents-kit mcp run [-h] name
+
+positional arguments:
+  name
+
+options:
+  -h, --help  show this help message and exit
 
 $ agents-kit global --help
 usage: agents-kit global [-h] {enable,disable,apply} ...

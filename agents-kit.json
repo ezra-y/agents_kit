@@ -31,6 +31,16 @@
       }
     ]
   },
+  "mcp_install_targets": {
+    "global": [
+      {
+        "id": "codex"
+      },
+      {
+        "id": "claude"
+      }
+    ]
+  },
   "defaults": {
     "source_policy": "review",
     "network_timeout_seconds": 20

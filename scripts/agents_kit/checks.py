@@ -5,7 +5,7 @@ import urllib.parse
 from pathlib import Path
 from typing import Any
 
-from . import docs
+from . import docs, mcps
 from .installation import InstallationError, global_plan
 from .models import CheckReport, ContentMode, parse_skill_frontmatter
 from .repository import Repository, RepositoryError
@@ -29,6 +29,7 @@ def run(repo: Repository, *, command_help: str, repo_only: bool = False) -> Chec
     _check_active(repo, inventory, report)
     _check_sources(repo, inventory, report)
     _check_metadata(repo, inventory, report)
+    _check_mcps(repo, report, repo_only=repo_only)
     _check_references(inventory, report)
     _check_docs(repo, command_help, report)
     if not repo_only:
@@ -38,6 +39,10 @@ def run(repo: Repository, *, command_help: str, repo_only: bool = False) -> Chec
         "active": len(repo.read_active()),
         "sources": len(repo.read_sources()["skills"]),
         "metadata": len(repo.read_metadata()["skills"]),
+        "mcps": len(repo.read_mcps()["servers"]),
+        "enabled_mcps": sum(
+            1 for record in repo.read_mcps()["servers"].values() if record["enabled"]
+        ),
         "repo_only": repo_only,
     }
     return report
@@ -164,6 +169,23 @@ def _check_metadata(
         "count": len(metadata),
         "missing": missing,
         "stale": stale,
+    }
+
+
+def _check_mcps(repo: Repository, report: CheckReport, *, repo_only: bool) -> None:
+    try:
+        catalog = mcps.validated_catalog(repo)
+    except (RepositoryError, mcps.McpError) as exc:
+        report.problems.append(str(exc))
+        report.sections["mcps"] = {"count": 0, "enabled": 0}
+        return
+    if not repo_only:
+        report.problems.extend(mcps.runtime_issues(repo, include_targets=True))
+    report.sections["mcps"] = {
+        "count": len(catalog["servers"]),
+        "enabled": sum(
+            1 for record in catalog["servers"].values() if record["enabled"]
+        ),
     }
 
 

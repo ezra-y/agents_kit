@@ -12,6 +12,7 @@ CONFIG = {
         "global": [{"id": "agents", "path": "~/.agents/skills", "mode": "symlink"}],
         "project": [{"id": "claude", "path": ".claude/skills", "mode": "copy"}],
     },
+    "mcp_install_targets": {"global": []},
     "defaults": {"source_policy": "review", "network_timeout_seconds": 60},
 }
 
@@ -42,6 +43,9 @@ class RepositoryTests(unittest.TestCase):
                 }
             ),
             encoding="utf-8",
+        )
+        (self.root / "mcps.json").write_text(
+            json.dumps({"schema_version": 1, "servers": {}}), encoding="utf-8"
         )
         self.repo = Repository(self.root)
 

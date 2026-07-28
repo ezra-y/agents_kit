@@ -10,6 +10,8 @@
 - 常驻：66
 - 来源记录：132
 - metadata：155
+- MCP：4
+- MCP 已启用：4
 - 分类：agent(9), apple(44), backend(4), design(14), lark(27), method(17), tools(6), web(34)
 
 ## 状态所有权
@@ -18,14 +20,15 @@
 - `active.txt`：全局常驻技能名
 - `sources.json`：provider 来源记录
 - `metadata.json`：中文清册和依赖
+- `mcps.json`：MCP 清单、上游、锁定版本、启动方式和启用状态
 
 <!-- END GENERATED -->
 
 ## 设计目标
 
 仓库只提供一个公开入口 `scripts/agents-kit`。用户按业务对象记命令：
-`source`、`skill`、`global`、`project`、`docs`、`ui`、`check`。内部代码按稳定
-职责拆分，不把每个动作做成单独脚本。
+`source`、`skill`、`mcp`、`global`、`project`、`docs`、`ui`、`check`。
+内部代码按稳定职责拆分，不把每个动作做成单独脚本。
 
 ## 数据流
 
@@ -35,6 +38,11 @@
   -> skills.py 修改中央技能库和登记
   -> ChangeSet 描述后续影响
   -> installation.py / docs.py / checks.py 收尾
+
+MCP 上游与分发
+  -> mcps.json 保存期望状态和锁定版本
+  -> mcps.py 解析启动模板和凭据来源
+  -> Codex / Claude 只保存 agents-kit mcp run <名称>
 ```
 
 `SkillSnapshot` 是来源层与技能层之间的固定接口。`ChangeSet` 是业务修改与安装、
@@ -49,6 +57,7 @@
 | `repository.py` | 发现仓库、读写状态、锁、原子落盘、内容哈希 | 业务流程 |
 | `sources.py` | Git、HTTP、本地来源识别、获取、候选发现 | 修改仓库状态 |
 | `skills.py` | 导入、更新、移动、重命名、删除、metadata | 全局或项目安装 |
+| `mcps.py` | MCP 导入、启停、版本更新、运行和客户端同步 | 保存凭据值、管理 Skill |
 | `installation.py` | 全局软链接和项目副本 | 修改技能正文 |
 | `docs.py` | 纯渲染、write-if-changed、文档过期检查 | 修改事实状态 |
 | `ui.py` | 本地网页服务和 Finder 桥接 | 修改技能或清册状态 |
@@ -60,6 +69,7 @@
 入口 -> 业务模块 -> repository/models
 checks -> docs 的纯渲染 API / installation 的只读计划
 skills -> models 中的 SkillSnapshot
+mcps -> repository 中的单一 MCP 清单
 ```
 
 ## 来源模型
@@ -77,6 +87,23 @@ skills -> models 中的 SkillSnapshot
 `SKILL.md`，适用于直接 HTTP 文件；更新时保留本地附件。增加新来源时，只扩展
 `sources.py` 的 provider 注册和对应测试，不修改技能、安装和文档流程。
 
+## MCP 模型
+
+`mcps.json` 是第三方 MCP 的唯一事实来源。每条记录包含：
+
+- `source`：上游地址和 `review` / `pinned` 策略。
+- `distribution`：npm、PyPI、Homebrew 或远程分发及锁定版本。
+- `runtime`：启动命令和使用 `{package}`、`{version}` 的参数模板。
+- `environment`：凭据名称及读取方式，只允许环境变量或无 shell 的命令。
+- `targets`、`enabled`：目标客户端和全局启用状态。
+
+Codex 和 Claude 不保存真实包命令，只运行本仓库的稳定 launcher。这样版本更新只修改
+`mcps.json`，不需要同步改多份客户端配置。`mcp apply` 只处理能够证明由本仓库
+launcher 管理的记录；同名外部配置默认停止并报告。
+
+第三方 MCP 只有一条清单记录，不建立独立目录。只有本仓库自己维护 MCP 源码、测试和
+发布流程时，才为源码建立工程目录。
+
 ## 写入模型
 
 写操作先完成来源解析和参数校验，再取得仓库锁。JSON、文本和单文件技能更新使用
@@ -91,11 +118,12 @@ skills -> models 中的 SkillSnapshot
 `docs.py` 从事实状态生成：
 
 - `docs/skills.md`
+- `docs/mcps.md`
 - `docs/cli.md`
 - 本文件的生成区块
 - 未跟踪的 `docs/index.html`
 
-相同输入必须生成相同内容；内容未变化时不得重写文件。CI 检查前三项是否过期，
+相同输入必须生成相同内容；内容未变化时不得重写文件。CI 检查全部 tracked 文档是否过期，
 并把 HTML 作为 artifact 上传。
 
 `agents-kit ui` 在本机重新生成 HTML 后启动只监听 `127.0.0.1` 的服务。网页只把
@@ -108,3 +136,5 @@ skills -> models 中的 SkillSnapshot
 3. metadata 必须覆盖全部技能，active 和 sources 只能引用存在的技能。
 4. 全局安装由 `active.txt` 决定，项目安装不写回中央状态。
 5. 体检只报告问题，不修改仓库。
+6. MCP 凭据值不得进入仓库或客户端配置；运行时再从声明的来源读取。
+7. MCP 客户端同步不能删除同名但不受本仓库 launcher 管理的配置。

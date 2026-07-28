@@ -21,6 +21,7 @@ class UiTests(unittest.TestCase):
                     "schema_version": 1,
                     "categories": ["tools"],
                     "install_targets": {"global": [], "project": []},
+                    "mcp_install_targets": {"global": []},
                     "defaults": {
                         "source_policy": "review",
                         "network_timeout_seconds": 60,
@@ -35,6 +36,9 @@ class UiTests(unittest.TestCase):
         )
         (self.root / "metadata.json").write_text(
             json.dumps({"skills": {}}), encoding="utf-8"
+        )
+        (self.root / "mcps.json").write_text(
+            json.dumps({"schema_version": 1, "servers": {}}), encoding="utf-8"
         )
         skill = self.root / "skills/tools/alpha"
         skill.mkdir(parents=True)

@@ -31,6 +31,7 @@ class Repository:
         self.active_path = self.root / "active.txt"
         self.sources_path = self.root / "sources.json"
         self.metadata_path = self.root / "metadata.json"
+        self.mcps_path = self.root / "mcps.json"
         self.config_path = self.root / CONFIG_NAME
         self._config: dict[str, Any] | None = None
         self._inventory: dict[str, SkillEntry] | None = None
@@ -127,6 +128,20 @@ class Repository:
         if not isinstance(data.get("skills"), dict):
             raise RepositoryError("metadata.json 缺 skills 对象")
         return data
+
+    def read_mcps(self) -> dict[str, Any]:
+        data = self._load_json(self.mcps_path)
+        if data.get("schema_version") != 1:
+            raise RepositoryError("mcps.json schema_version 必须是 1")
+        if not isinstance(data.get("servers"), dict):
+            raise RepositoryError("mcps.json 缺 servers 对象")
+        return data
+
+    def write_mcps(self, data: dict[str, Any]) -> bool:
+        normalized = dict(data)
+        normalized["schema_version"] = 1
+        normalized["servers"] = dict(sorted(normalized.get("servers", {}).items()))
+        return self.write_json_if_changed(self.mcps_path, normalized)
 
     def write_metadata(self, data: dict[str, Any]) -> bool:
         normalized = dict(data)
@@ -297,6 +312,22 @@ class Repository:
                     for key in ("id", "path", "mode")
                 ):
                     raise RepositoryError(f"install_targets.{scope} 记录不完整")
+        mcp_targets = config.get("mcp_install_targets")
+        if not isinstance(mcp_targets, dict) or not isinstance(
+            mcp_targets.get("global"), list
+        ):
+            raise RepositoryError("agents-kit.json 缺 mcp_install_targets.global")
+        mcp_target_ids: list[str] = []
+        for target in mcp_targets["global"]:
+            if (
+                not isinstance(target, dict)
+                or not isinstance(target.get("id"), str)
+                or not target["id"]
+            ):
+                raise RepositoryError("mcp_install_targets.global 记录不完整")
+            mcp_target_ids.append(target["id"])
+        if len(mcp_target_ids) != len(set(mcp_target_ids)):
+            raise RepositoryError("mcp_install_targets.global id 必须唯一")
         defaults = config.get("defaults")
         if not isinstance(defaults, dict):
             raise RepositoryError("agents-kit.json 缺 defaults")

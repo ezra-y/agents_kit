@@ -31,6 +31,7 @@ class CliTests(unittest.TestCase):
                     }
                 ],
             },
+            "mcp_install_targets": {"global": []},
             "defaults": {"source_policy": "review", "network_timeout_seconds": 60},
         }
         (self.root / "agents-kit.json").write_text(json.dumps(config), encoding="utf-8")
@@ -41,6 +42,9 @@ class CliTests(unittest.TestCase):
         )
         (self.root / "metadata.json").write_text(
             json.dumps({"skills": {}}), encoding="utf-8"
+        )
+        (self.root / "mcps.json").write_text(
+            json.dumps({"schema_version": 1, "servers": {}}), encoding="utf-8"
         )
         self.source = self.root / "source"
         self.source.mkdir()
@@ -172,6 +176,41 @@ class CliTests(unittest.TestCase):
 
         self.assertNotEqual(result.returncode, 0)
         self.assertFalse((self.root / "skills/tools/alpha").exists())
+
+    def test_one_command_mcp_library_import(self):
+        result = self.run_cli(
+            "mcp",
+            "import",
+            "https://github.com/upstash/context7",
+            "--name",
+            "context7",
+            "--description",
+            "查询最新开发文档",
+            "--tag",
+            "开发",
+            "--distribution",
+            "npm",
+            "--package",
+            "@upstash/context7-mcp",
+            "--version",
+            "3.2.5",
+            "--command",
+            "npx",
+            "--arg=-y",
+            "--arg={package}@{version}",
+            "--scope",
+            "library",
+            "--json",
+        )
+        payload = json.loads(result.stdout)
+
+        self.assertEqual(payload["details"]["mcp"], "context7")
+        catalog = json.loads((self.root / "mcps.json").read_text())
+        self.assertEqual(
+            catalog["servers"]["context7"]["distribution"]["version"], "3.2.5"
+        )
+        self.assertFalse(catalog["servers"]["context7"]["enabled"])
+        self.assertTrue((self.root / "docs/mcps.md").is_file())
 
 
 if __name__ == "__main__":

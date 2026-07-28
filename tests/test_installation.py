@@ -43,6 +43,7 @@ class InstallationTests(unittest.TestCase):
                     }
                 ],
             },
+            "mcp_install_targets": {"global": []},
             "defaults": {"source_policy": "review", "network_timeout_seconds": 60},
         }
         (self.root / "agents-kit.json").write_text(json.dumps(config), encoding="utf-8")
@@ -66,6 +67,9 @@ class InstallationTests(unittest.TestCase):
             }
         }
         (self.root / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
+        (self.root / "mcps.json").write_text(
+            json.dumps({"schema_version": 1, "servers": {}}), encoding="utf-8"
+        )
         for name in ("alpha", "beta"):
             path = self.root / "skills/tools" / name
             path.mkdir(parents=True)
