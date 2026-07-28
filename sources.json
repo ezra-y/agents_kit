@@ -832,6 +832,13 @@
    "path": "skills/vercel-optimize",
    "category": "web"
   },
+  "watch": {
+   "type": "github",
+   "repo": "bradautomates/claude-video",
+   "branch": "main",
+   "path": ".",
+   "category": "tools"
+  },
   "web-design-guidelines": {
    "type": "github",
    "repo": "vercel-labs/agent-skills",

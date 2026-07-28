@@ -171,6 +171,7 @@ D = {
 # ══════════ opencli / 搜索 ══════════
 'smart-search': (C_MISC,4,'基于本机 opencli 的智能搜索路由:指定站点、社交媒体、技术资料、新闻、购物、旅游、求职、金融、中文内容各走不同的源。含强制预检、单题预算和频率限制。','说「搜一下 XXX」「查查小红书上关于 XXX 的」。依赖本机 opencli 二进制,模型不可能自己知道怎么调。'),
 'last30days': (C_MISC,4,'研究一个话题最近 30 天在 Reddit、X、YouTube、TikTok、Hacker News、Polymarket、GitHub 和网页上的真实讨论,按互动数据整理主题、观点和来源。','说「查查最近 30 天大家怎么讨论 XXX」「用 last30days 找选题」。部分数据源需要单独配置凭证。'),
+'watch': (C_MISC,4,'读取视频 URL 或本地视频:用 yt-dlp 下载、ffmpeg 抽帧,优先提取原生字幕,无字幕时可调用 Groq 或 OpenAI Whisper 转录,再按时间戳总结或回答问题。','发一个 YouTube、X、TikTok 等视频链接或本地视频路径,说「看完并总结」「分析 2:30 附近发生了什么」。长视频最好指定片段以控制耗时和图像 token。'),
 'opencli-adapter-author': (C_MISC,4,'给新站点写 opencli 适配器,或给已有站点加命令,15 个附件。从初次侦察、字段解码、写适配器到验证,含决策树、逐步 runbook 和卡住时的降级路径。中文写的。','说「给 XX 网站写个适配器」。'),
 'opencli-autofix': (C_MISC,4,'opencli 命令失败时自动修适配器:收集 trace、打补丁、重试,修好后再去上游提 issue。含「空结果 ≠ 坏了」的前置判断。','某个 opencli 命令报错时说「修一下这个适配器」。'),
 
