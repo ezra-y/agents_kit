@@ -67,15 +67,17 @@ class DocsAndChecksTests(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
-    def test_build_is_idempotent_and_html_is_untracked_path(self):
+    def test_build_is_idempotent_and_html_is_in_docs(self):
         first = docs.build(self.repo, command_help=self.help)
         second = docs.build(self.repo, command_help=self.help)
 
         self.assertIn("docs/skills.md", first["changed"])
-        self.assertIn("build/docs/index.html", first["changed"])
+        self.assertIn("docs/index.html", first["changed"])
         self.assertEqual(second["changed"], [])
-        self.assertTrue((self.root / "build/docs/index.html").is_file())
-        self.assertFalse((self.root / "docs/index.html").exists())
+        self.assertTrue((self.root / "docs/index.html").is_file())
+        self.assertTrue((self.root / "docs/architecture.md").is_file())
+        self.assertFalse((self.root / "ARCHITECTURE.md").exists())
+        self.assertFalse((self.root / "build").exists())
         self.assertEqual(docs.check(self.repo, command_help=self.help), [])
 
     def test_checks_use_docs_renderer_to_find_stale_files(self):

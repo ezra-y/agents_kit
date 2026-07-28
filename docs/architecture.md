@@ -24,8 +24,8 @@
 ## 设计目标
 
 仓库只提供一个公开入口 `scripts/agents-kit`。用户按业务对象记命令：
-`source`、`skill`、`global`、`project`、`docs`、`check`。内部代码按稳定职责拆分，
-不把每个动作做成单独脚本。
+`source`、`skill`、`global`、`project`、`docs`、`ui`、`check`。内部代码按稳定
+职责拆分，不把每个动作做成单独脚本。
 
 ## 数据流
 
@@ -51,6 +51,7 @@
 | `skills.py` | 导入、更新、移动、重命名、删除、metadata | 全局或项目安装 |
 | `installation.py` | 全局软链接和项目副本 | 修改技能正文 |
 | `docs.py` | 纯渲染、write-if-changed、文档过期检查 | 修改事实状态 |
+| `ui.py` | 本地网页服务和 Finder 桥接 | 修改技能或清册状态 |
 | `checks.py` | 只读验证状态、依赖、引用、文档和安装 | 自动修复 |
 
 依赖方向保持单向：
@@ -92,10 +93,13 @@ skills -> models 中的 SkillSnapshot
 - `docs/skills.md`
 - `docs/cli.md`
 - 本文件的生成区块
-- 未跟踪的 `build/docs/index.html`
+- 未跟踪的 `docs/index.html`
 
 相同输入必须生成相同内容；内容未变化时不得重写文件。CI 检查前三项是否过期，
 并把 HTML 作为 artifact 上传。
+
+`agents-kit ui` 在本机重新生成 HTML 后启动只监听 `127.0.0.1` 的服务。网页只把
+技能名交给后端，后端从仓库清册解析目录并调用 Finder；不接受任意文件路径。
 
 ## 不变量
 

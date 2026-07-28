@@ -34,9 +34,11 @@ agents-kit check
 | `metadata.json` | 中文说明、触发方式、推荐指数和可选依赖 |
 | `docs/skills.md` | 自动生成的技能清册 |
 | `docs/cli.md` | 自动生成的完整命令参考 |
-| `ARCHITECTURE.md` | 架构、模块边界和数据流 |
+| `docs/architecture.md` | 架构、模块边界和数据流 |
+| `docs/index.html` | 本地生成的可视化技能清册，不进入 Git |
 
 `rules/`、`agents/`、`hooks/`、`prompts/` 目前只保留各自说明，不进入技能安装流程。
+仓库规则以 `CLAUDE.md` 为准，`AGENTS.md` 是指向它的软链接。
 
 ## 收录技能
 
@@ -71,6 +73,8 @@ agents-kit status
 agents-kit skill list
 agents-kit skill list --active
 agents-kit skill show <技能名>
+agents-kit skill open <技能名>
+agents-kit ui
 
 agents-kit global enable <技能名>
 agents-kit global disable <技能名>
@@ -107,5 +111,7 @@ agents-kit docs check
 agents-kit check
 ```
 
-`docs/skills.md`、`docs/cli.md` 和 `ARCHITECTURE.md` 的生成区块进入 Git。
-可搜索网页生成到 `build/docs/index.html`，由 CI 上传为 artifact，不写入 Git 历史。
+`docs/skills.md`、`docs/cli.md` 和 `docs/architecture.md` 的生成区块进入 Git。
+可搜索网页生成到 `docs/index.html`，由 CI 上传为 artifact，不写入 Git 历史。
+运行 `agents-kit ui` 会先更新网页，再启动本地服务并自动打开浏览器；网页中的
+Finder 按钮可以直接打开对应技能目录。

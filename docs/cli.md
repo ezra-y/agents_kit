@@ -3,18 +3,19 @@
 本文件由 `agents-kit docs build` 生成。
 
 ```text
-usage: agents-kit [-h] {status,source,skill,global,project,docs,check} ...
+usage: agents-kit [-h] {status,source,skill,global,project,docs,ui,check} ...
 
 统一管理 agents_kit 中的技能、来源、安装和生成文档
 
 positional arguments:
-  {status,source,skill,global,project,docs,check}
+  {status,source,skill,global,project,docs,ui,check}
     status              查看仓库摘要
     source              检查和更新技能来源
     skill               管理中央技能库
     global              管理全局技能链接
     project             向项目复制技能
     docs                构建和检查生成文档
+    ui                  打开本地可视化技能清册
     check               执行完整只读体检
 
 options:
@@ -101,13 +102,15 @@ options:
 
 $ agents-kit skill --help
 usage: agents-kit skill [-h]
-                        {import,list,show,metadata,rename,move,remove} ...
+                        {import,list,show,open,metadata,rename,move,remove}
+                        ...
 
 positional arguments:
-  {import,list,show,metadata,rename,move,remove}
+  {import,list,show,open,metadata,rename,move,remove}
     import              从来源导入并按 scope 安装技能
     list                列出技能
     show                查看单个技能
+    open                在 Finder 中打开技能目录
     metadata            修改本地清册信息
     rename              重命名本地技能 ID
     move                移动技能分类
@@ -167,6 +170,17 @@ positional arguments:
 
 options:
   -h, --help  show this help message and exit
+  --json
+
+$ agents-kit skill open --help
+usage: agents-kit skill open [-h] [--dry-run] [--json] name
+
+positional arguments:
+  name
+
+options:
+  -h, --help  show this help message and exit
+  --dry-run
   --json
 
 $ agents-kit skill metadata --help
@@ -329,6 +343,14 @@ usage: agents-kit docs check [-h] [--json]
 options:
   -h, --help  show this help message and exit
   --json
+
+$ agents-kit ui --help
+usage: agents-kit ui [-h] [--port PORT] [--no-open]
+
+options:
+  -h, --help   show this help message and exit
+  --port PORT
+  --no-open
 
 $ agents-kit check --help
 usage: agents-kit check [-h] [--repo-only] [--json]

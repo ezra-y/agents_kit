@@ -19,12 +19,13 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from agents_kit import checks, docs, installation, skills
+from agents_kit import checks, docs, installation, skills, ui
 from agents_kit.installation import InstallationError
 from agents_kit.models import ChangeSet, Effect
 from agents_kit.repository import Repository, RepositoryError
 from agents_kit.skills import SkillError
 from agents_kit.sources import SourceError, SourceSession
+from agents_kit.ui import UiError
 
 
 class CommandError(RuntimeError):
@@ -115,6 +116,12 @@ def build_parser() -> argparse.ArgumentParser:
     _json_flag(skill_show)
     skill_show.set_defaults(handler=command_skill_show)
 
+    skill_open = skill_commands.add_parser("open", help="在 Finder 中打开技能目录")
+    skill_open.add_argument("name")
+    skill_open.add_argument("--dry-run", action="store_true")
+    _json_flag(skill_open)
+    skill_open.set_defaults(handler=command_skill_open)
+
     metadata = skill_commands.add_parser("metadata", help="修改本地清册信息")
     metadata_commands = metadata.add_subparsers(dest="metadata_command", required=True)
     metadata_set = metadata_commands.add_parser("set", help="设置 metadata")
@@ -186,6 +193,11 @@ def build_parser() -> argparse.ArgumentParser:
     docs_check = docs_commands.add_parser("check", help="检查 tracked 文档是否过期")
     _json_flag(docs_check)
     docs_check.set_defaults(handler=command_docs_check)
+
+    ui_parser = commands.add_parser("ui", help="打开本地可视化技能清册")
+    ui_parser.add_argument("--port", type=int, default=0)
+    ui_parser.add_argument("--no-open", action="store_true")
+    ui_parser.set_defaults(handler=command_ui, streaming=True)
 
     check = commands.add_parser("check", help="执行完整只读体检")
     check.add_argument("--repo-only", action="store_true")
@@ -398,6 +410,10 @@ def command_skill_show(args: argparse.Namespace, context: Context) -> dict[str, 
     return skills.show_skill(context.repo, args.name)
 
 
+def command_skill_open(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    return ui.open_skill(context.repo, args.name, dry_run=args.dry_run)
+
+
 def command_skill_metadata(
     args: argparse.Namespace, context: Context
 ) -> dict[str, Any]:
@@ -539,6 +555,17 @@ def command_docs_check(args: argparse.Namespace, context: Context) -> dict[str, 
     if stale:
         raise CommandError("生成文档已过期：" + ", ".join(stale))
     return {"stale": [], "ok": True}
+
+
+def command_ui(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    with context.repo.write_lock():
+        built = docs.build(context.repo, command_help=context.command_help)
+    return ui.serve(
+        context.repo,
+        Path(str(built["html"])),
+        port=args.port,
+        open_browser=not args.no_open,
+    )
 
 
 def command_check(args: argparse.Namespace, context: Context) -> dict[str, Any]:
@@ -709,7 +736,8 @@ def main() -> int:
         )
         context = Context(repo, parser)
         result = args.handler(args, context)
-        _emit(result, as_json=as_json)
+        if not getattr(args, "streaming", False):
+            _emit(result, as_json=as_json)
         return 0
     except CommandError as exc:
         payload = getattr(exc, "payload", None) or {"ok": False, "error": str(exc)}
@@ -718,6 +746,7 @@ def main() -> int:
         SourceError,
         SkillError,
         InstallationError,
+        UiError,
         OSError,
         ValueError,
     ) as exc:

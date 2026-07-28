@@ -37,7 +37,7 @@ jobs:
         run: scripts/agents-kit docs build
 
       - name: 检查受管生成文件
-        run: git diff --exit-code -- docs/skills.md docs/cli.md ARCHITECTURE.md
+        run: git diff --exit-code -- docs/skills.md docs/cli.md docs/architecture.md
 
       - name: 仓库体检
         run: scripts/agents-kit check --repo-only
@@ -46,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: skills-catalog-${{ github.sha }}
-          path: build/docs/index.html
+          path: docs/index.html
           if-no-files-found: error
 
   upstream:
@@ -64,15 +64,13 @@ jobs:
         run: python -m pip install uv
 
       - name: 检查全部上游
-        run: |
-          mkdir -p build
-          scripts/agents-kit source check --all --json > build/source-check.json
+        run: scripts/agents-kit source check --all --json > "$RUNNER_TEMP/source-check.json"
 
       - name: 上传检查报告
         uses: actions/upload-artifact@v7
         with:
           name: source-check-${{ github.run_id }}
-          path: build/source-check.json
+          path: ${{ runner.temp }}/source-check.json
           if-no-files-found: error
 
       - name: 更新待确认 Issue
@@ -80,8 +78,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           title="上游技能待更新"
-          changed=$(jq '[.results[] | select(.status == "changed")] | length' build/source-check.json)
-          failed=$(jq '.failures | length' build/source-check.json)
+          changed=$(jq '[.results[] | select(.status == "changed")] | length' "$RUNNER_TEMP/source-check.json")
+          failed=$(jq '.failures | length' "$RUNNER_TEMP/source-check.json")
           number=$(gh issue list --state open --search "$title in:title" --json number --jq '.[0].number // empty')
 
           if [ "$changed" -eq 0 ] && [ "$failed" -eq 0 ]; then
@@ -91,8 +89,8 @@ jobs:
             exit 0
           fi
 
-          changed_names=$(jq -r '[.results[] | select(.status == "changed") | .skill] | join(", ")' build/source-check.json)
-          failed_names=$(jq -r '[.failures[] | .skill] | join(", ")' build/source-check.json)
+          changed_names=$(jq -r '[.results[] | select(.status == "changed") | .skill] | join(", ")' "$RUNNER_TEMP/source-check.json")
+          failed_names=$(jq -r '[.failures[] | .skill] | join(", ")' "$RUNNER_TEMP/source-check.json")
           report_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           body=$(printf '检测到 %s 个来源变化，%s 个检查失败。\\n\\n变化：%s\\n\\n失败：%s\\n\\n[查看完整报告](%s)' \
             "$changed" "$failed" "${changed_names:-无}" "${failed_names:-无}" "$report_url")

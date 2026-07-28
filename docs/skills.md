@@ -2,7 +2,7 @@
 
 共 **155** 个 · 常驻 **66** 个 · 有上游可检查更新 **132** 个
 
-可搜索网页清册由 `agents-kit docs build` 生成到 `build/docs/index.html`，不进入 Git。
+可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
 `●` = 常驻
 

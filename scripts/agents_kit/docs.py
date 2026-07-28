@@ -69,6 +69,8 @@ tr[data-rec="1"] td.c-name::before{background:var(--red)}
 .badge.on{color:var(--green);border-color:var(--green)}
 .meta{font-size:12px;color:var(--ink-3);margin-top:6px;line-height:1.6;font-family:ui-monospace,Menlo,monospace}
 .meta a{color:var(--blue);text-decoration:none}.meta a:hover{text-decoration:underline}
+.folder-link{font:inherit;color:var(--blue);background:none;border:0;padding:0;cursor:pointer}
+.folder-link:hover{text-decoration:underline}
 td.c-desc{vertical-align:top;padding:16px 26px 16px 0}
 td.c-desc .d{margin:0;font-size:15.5px;line-height:1.72;color:var(--ink)}
 td.c-desc strong{font-weight:650}
@@ -143,6 +145,23 @@ function mdRender(src){
   return out.join('');
 }
 
+async function openFinder(name){
+  if(location.protocol==='file:'){
+    window.alert('请运行 agents-kit ui 后使用 Finder 按钮。');
+    return;
+  }
+  try{
+    const response=await fetch('/api/skills/'+encodeURIComponent(name)+'/open',{
+      method:'POST',
+      headers:{'X-Agents-Kit-UI':'1'}
+    });
+    const payload=await response.json();
+    if(!response.ok) throw new Error(payload.error||'无法打开目录');
+  }catch(error){
+    window.alert('Finder 连接失败。请通过 agents-kit ui 打开本页。');
+  }
+}
+
 function render(){
   const term=q.value.trim().toLowerCase();
   let list=DATA.filter(r=>{
@@ -168,7 +187,8 @@ function render(){
       +'<td class="c-name"><button class="sname" type="button" aria-expanded="false">'
         +'<span class="caret">▶</span>'+r.name+'</button>'+badges
         +'<span class="meta">'+r.cat+' · '+r.lines+' 行 · '+r.nfiles+' 附件 · '
-        +'<a href="../../'+encodeURI(r.rel)+'/">📂 目录</a></span></td>'
+        +'<button class="folder-link" type="button" data-open-skill="'+esc(r.name)
+        +'">Finder</button></span></td>'
       +'<td class="c-desc"><p class="d">'+md(r.desc)+'</p>'
         +(r.how?'<p class="how"><span class="hk">怎么用</span>'+md(r.how)+'</p>':'')+'</td>'
       +'<td class="c-side">'
@@ -181,6 +201,8 @@ function render(){
 }
 
 tb.addEventListener('click',e=>{
+  const folder=e.target.closest('[data-open-skill]');
+  if(folder){openFinder(folder.dataset.openSkill);return;}
   const b=e.target.closest('.sname'); if(!b) return;
   const tr=b.closest('tr'), open=tr.nextElementSibling&&tr.nextElementSibling.classList.contains('detail');
   b.setAttribute('aria-expanded',String(!open));
@@ -190,8 +212,9 @@ tb.addEventListener('click',e=>{
   const files=r.files.length?('<div><div class="dlabel">附带资源 · '+r.files.length+' 个文件</div>'
     +'<div class="dfiles">'+r.files.map(f=>'<div>'+esc(f)+'</div>').join('')+'</div></div>'):'';
   tr.insertAdjacentHTML('afterend','<tr class="detail"><td colspan="3"><div class="dwrap">'
-    +'<div class="dbar"><a class="btn" href="../../'+encodeURI(r.rel)+'/">📂 打开目录</a>'
-    +'<a class="btn" href="../../'+encodeURI(r.rel)+'/SKILL.md">📄 打开 SKILL.md</a>'
+    +'<div class="dbar"><button class="btn" type="button" data-open-skill="'+esc(r.name)
+    +'">Finder 打开目录</button>'
+    +'<a class="btn" href="../'+encodeURI(r.rel)+'/SKILL.md">打开 SKILL.md</a>'
     +(r.url?'<a class="btn" href="'+esc(r.url)+'" target="_blank" rel="noopener">上游 ↗</a>':'')+'</div>'
     +'<div><div class="dlabel">SKILL.md 全文 · '+r.lines+' 行</div>'
     +'<div class="dbody">'+mdRender(r.body)+'</div></div>'+files+'</div></td></tr>');
@@ -274,7 +297,7 @@ def render_markdown(repo: Repository, rows: list[dict[str, Any]]) -> str:
         "",
         (
             "可搜索网页清册由 `agents-kit docs build` 生成到 "
-            "`build/docs/index.html`，不进入 Git。"
+            "`docs/index.html`，不进入 Git。"
         ),
         "",
         "`●` = 常驻",
@@ -376,7 +399,7 @@ def render_html(repo: Repository, rows: list[dict[str, Any]]) -> str:
 
 
 def render_architecture(repo: Repository, rows: list[dict[str, Any]]) -> str:
-    existing_path = repo.root / "ARCHITECTURE.md"
+    existing_path = repo.root / "docs" / "architecture.md"
     if existing_path.is_file():
         existing = existing_path.read_text(encoding="utf-8")
     else:
@@ -386,7 +409,7 @@ def render_architecture(repo: Repository, rows: list[dict[str, Any]]) -> str:
             f"{GENERATED_BEGIN}\n{GENERATED_END}\n"
         )
     if GENERATED_BEGIN not in existing or GENERATED_END not in existing:
-        raise ValueError("ARCHITECTURE.md 缺生成区块标记")
+        raise ValueError("docs/architecture.md 缺生成区块标记")
     by_category = _by_category(rows)
     generated = "\n".join(
         [
@@ -430,7 +453,7 @@ def expected_tracked_documents(
     return {
         repo.root / "docs" / "skills.md": render_markdown(repo, rows),
         repo.root / "docs" / "cli.md": render_cli_reference(command_help),
-        repo.root / "ARCHITECTURE.md": render_architecture(repo, rows),
+        repo.root / "docs" / "architecture.md": render_architecture(repo, rows),
     }
 
 
@@ -440,12 +463,12 @@ def build(repo: Repository, *, command_help: str) -> dict[str, Any]:
     tracked = {
         repo.root / "docs" / "skills.md": render_markdown(repo, rows),
         repo.root / "docs" / "cli.md": render_cli_reference(command_help),
-        repo.root / "ARCHITECTURE.md": render_architecture(repo, rows),
+        repo.root / "docs" / "architecture.md": render_architecture(repo, rows),
     }
     for path, content in tracked.items():
         if repo.write_text_if_changed(path, content):
             changed.append(path.relative_to(repo.root).as_posix())
-    html_path = repo.root / "build" / "docs" / "index.html"
+    html_path = repo.root / "docs" / "index.html"
     if repo.write_text_if_changed(html_path, render_html(repo, rows)):
         changed.append(html_path.relative_to(repo.root).as_posix())
     return {

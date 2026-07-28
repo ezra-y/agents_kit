@@ -84,11 +84,17 @@ class CliTests(unittest.TestCase):
         self.assertEqual(payload["details"]["skill"], "alpha")
         self.assertTrue((self.root / "skills/tools/alpha/SKILL.md").is_file())
         self.assertTrue((self.root / "home/skills/alpha").is_symlink())
-        self.assertTrue((self.root / "build/docs/index.html").is_file())
+        self.assertTrue((self.root / "docs/index.html").is_file())
 
         status = json.loads(self.run_cli("status", "--json").stdout)
         self.assertEqual(status["skills"], 1)
         self.assertEqual(status["active"], 1)
+
+        opened = json.loads(
+            self.run_cli("skill", "open", "alpha", "--dry-run", "--json").stdout
+        )
+        self.assertEqual(opened["skill"], "alpha")
+        self.assertFalse(opened["opened"])
 
     def test_remove_requires_yes_in_noninteractive_mode(self):
         self.run_cli(
