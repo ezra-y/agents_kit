@@ -495,11 +495,6 @@
       "description": "研究一个话题最近 30 天在 Reddit、X、YouTube、TikTok、Hacker News、Polymarket、GitHub 和网页上的真实讨论,按互动数据整理主题、观点和来源。",
       "trigger": "说「查查最近 30 天大家怎么讨论 XXX」「用 last30days 找选题」。部分数据源需要单独配置凭证。"
     },
-    "manage-agents-kit": {
-      "recommendation": 5,
-      "description": "管理 agents_kit 私有配置仓库:理解目录与数据流,并用仓库原生命令安装、创建、启停、删除、移动、更新和同步技能。",
-      "trigger": "说「装这个技能」「删掉某个技能」「调整常驻名单」「更新 agents_kit」「这个仓库怎么管理」。"
-    },
     "mapkit": {
       "recommendation": 2,
       "description": "MapKit for SwiftUI API 离线镜像。Map 视图、Marker / Annotation 标注、相机位置控制、地图要素与样式。",

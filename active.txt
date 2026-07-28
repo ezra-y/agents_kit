@@ -10,7 +10,6 @@ deep-dive
 reference-interpreter
 improve-codebase-architecture
 skill-creator
-manage-agents-kit
 core-animation
 design-system
 nextjs-mastery

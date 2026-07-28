@@ -1,12 +1,12 @@
 # 技能清单
 
-共 **156** 个 · 常驻 **67** 个 · 有上游可自动同步 **132** 个
+共 **155** 个 · 常驻 **66** 个 · 有上游可自动同步 **132** 个
 
 想看每个技能的详细说明和触发方式，开 [index.html](index.html)。
 
 `●` = 常驻（已链到 `~/.claude/skills`）
 
-## agent（10 个）
+## agent（9 个）
 
 | 技能 | 说明 | 常驻 | 上游 |
 |---|---|:--:|---|
@@ -14,7 +14,6 @@
 | `build-mcp-server` | 建 MCP 服务。先盘问用途(连什么、谁用、暴露几个动作、要不要中途要用户输入、上游怎么认证),再推荐部署形态,默认推荐远程 streama |  | [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/mcp-server-dev/skills/build-mcp-server) |
 | `claude-md-improver` | 扫描仓库里所有 CLAUDE.md,做质量评估出报告,再做定向修改。 |  | [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-md-management/skills/claude-md-improver) |
 | `hook-development` | 写 hook,707 行。PreToolUse / PostToolUse / Stop 各类钩子、prompt 型(推荐)与命令型的取舍、 |  | [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/plugin-dev/skills/hook-development) |
-| `manage-agents-kit` | 管理 agents_kit 私有配置仓库:理解目录与数据流,并用仓库原生命令安装、创建、启停、删除、移动、更新和同步技能。 | ● | — |
 | `session-report` | 从 ~/.claude/projects 的会话记录生成可探索的 HTML 用量报告:token、缓存命中、子代理、技能调用、最贵的 pro |  | [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/session-report/skills/session-report) |
 | `skill-creator` | 从零建技能、改进已有技能、衡量技能表现,481 行 + 17 个附件。含意图捕获、访谈调研、SKILL.md 写作指南。Anthropic  | ● | [anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/skill-creator) |
 | `skill-development` | 往插件里加技能、渐进披露设计原则、技能创建流程、description 怎么写才能被正确触发,632 行。 |  | [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/plugin-dev/skills/skill-development) |
