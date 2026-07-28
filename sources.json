@@ -557,13 +557,6 @@
    "path": "skills/last30days",
    "category": "tools"
   },
-  "manage-skills": {
-   "type": "github",
-   "repo": "rohitg00/awesome-claude-code-toolkit",
-   "branch": "main",
-   "path": "skills/manage-skills",
-   "category": "agent"
-  },
   "mapkit": {
    "type": "github",
    "repo": "Prisma-Labs-Dev/apple-skills",
@@ -836,7 +829,7 @@
    "type": "github",
    "repo": "bradautomates/claude-video",
    "branch": "main",
-   "path": ".",
+   "path": "skills/watch",
    "category": "tools"
   },
   "web-design-guidelines": {

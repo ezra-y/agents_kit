@@ -1,48 +1,135 @@
 # agents_kit
 
-我的 agent 配置库：技能、规则、子代理、hook。同时喂给 Claude Code 和 Codex。
+这是 Ezra 的私有 Agent 配置仓库，也是 Claude Code 与 Codex 共用技能的唯一事实来源。
 
-## 目录
+## 仓库内容
 
-| 目录 | 装到哪 | 放什么 |
+| 路径 | 内容 | 去向 |
 |---|---|---|
-| `skills/` | `~/.claude/skills` + `~/.agents/skills`（软链） | 技能，八个一级分类：`apple` `web` `design` `lark` `method` `agent` `tools` `backend` |
-| `rules/` | `~/.claude/rules/`（软链） | 规则片段，可用 `paths:` 限定只在碰特定文件时加载。目前为空 |
-| `agents/` | `~/.claude/agents/`（软链） | 子代理定义。目前为空 |
-| `hooks/` | 注册进 `settings.json` | 到点强制执行的脚本。目前为空 |
-| `prompts/` | 不安装 | 私人提示词素材库，手动复制用。目前为空 |
-| `docs/` | 不安装 | 由 `render.py` 生成的文档，别手改 |
+| `skills/` | Agent Skill，按八个主题分一级目录 | 常驻项软链到 `~/.claude/skills` 与 `~/.agents/skills` |
+| `rules/` | 会话规则片段；目前只有说明文件 | 尚未接入安装脚本 |
+| `agents/` | Claude Code 子代理定义；目前只有说明文件 | 尚未接入安装脚本 |
+| `hooks/` | Hook 源码与配置素材；目前只有说明文件 | 需要显式注册进 Claude Code 设置 |
+| `prompts/` | 私人提示词素材；目前只有说明文件 | 不自动安装 |
+| `scripts/` | 收录、管理、安装、同步、生成和体检命令 | AI 与维护者执行 |
+| `docs/` | 自动生成的技能清册 | GitHub 与本地浏览 |
 
-## 每个脚本干什么
+技能分类固定为：
 
-| 脚本 | 作用 | 读什么 | 写什么 |
-|---|---|---|---|
-| `scripts/link.py` | 把 `active.txt` 列出的技能软链到 `~/.claude/skills` 和 `~/.agents/skills`。碰到实体目录会删掉换软链（实体副本不随 git pull 更新，软链会）。`--dry-run` 只看不动，`--prune` 顺带清掉本地非常驻的 | `active.txt`、`skills/` | 两个本地技能目录 |
-| `scripts/pull.py` | 把某个分类（或单个技能）**拷贝**进当前项目的 `.claude/skills/`，只在那个项目生效。自动带上硬编码的依赖（如 lark → lark-shared）。`--list` 看分类 | `skills/` | 当前项目的 `.claude/skills/` |
-| `scripts/add.py` | 收新技能。给 GitHub 链接 → 浅克隆 → 放进 `--cat` 指定的分类 → 登记进 `sources.json` → 自动跑 `render.py` 和 `doctor.py`。`--active` 顺带加进常驻名单（查重）。同名技能会拒绝，用 `--name` 换名 | GitHub | `skills/`、`sources.json`、（可选）`active.txt`、`docs/` |
-| `scripts/sync.py` | 跟上游对齐，GitHub Action 每天自动跑。先比 git blob SHA 指纹，没变的不下载；变了的按闸门分流：相似度 ≥90% 且附件数不变 → 直接更新，否则不动、记进报告等人工确认（防上游重构把技能改废）。`--dry-run` 只报告 | `sources.json`、`skills/`、上游仓库 | `skills/`、`.sync-report.json` |
-| `scripts/doctor.py` | 体检六项：SKILL.md 格式、重名冲突、active.txt 匹配、技能间引用断裂、本地软链有效性、两个本地目录一致性。有问题退出码 1 | `skills/`、`active.txt`、两个本地目录 | 无（只读） |
-| `scripts/render.py` | 重新生成 `docs/skills.md`（GitHub 上翻的索引）和 `docs/index.html`（可搜索的完整清册，内嵌全部 SKILL.md 正文）。`add.py` 和 workflow 会自动带跑，手动改动后才需要自己跑 | `skills/`、`sources.json`、`active.txt`、`scripts/descriptions.py`、`docs/usage.json` | `docs/` |
-| `scripts/descriptions.py` | 不是可执行脚本，是**数据文件**：153 个技能的中文说明（说明 + 怎么触发 + 推荐指数），`render.py` 的数据源。没写的技能退回用 SKILL.md 里的英文 description。注意：每条第一个字段（分类常量）是历史遗留，现在分类以目录为准，render.py 不读它 | — | — |
+`apple web design lark method agent tools backend`
 
-## 每个数据文件是什么
+分类只用于浏览。安装时会拍平成 `<技能名>/SKILL.md`，因此技能目录名必须全局唯一。
 
-| 文件 | 是什么 | 谁改它 |
+## 状态文件
+
+| 文件 | 含义 | 修改方式 |
 |---|---|---|
-| `active.txt` | 常驻名单：列在这里的技能才会被 `link.py` 装到本地。一行一个，`#` 后面是注释（记着使用次数）。改完必须跑 `link.py` 才生效 | 你手改，或 `add.py --active` 追加 |
-| `sources.json` | 上游登记表：每个技能来自哪个仓库/分支/路径（或飞书 URL）。**`sync.py` 只碰登记过的**；23 个查不到出处的技能故意不登记，永远不会被覆盖。别给它们乱填来源 | `add.py` 写，一般不手改 |
-| `docs/usage.json` | 使用统计的一次性快照（2026-07 从 Codex 9.9GB + Claude Code 会话日志解析的），`render.py` 拿它显示"使用"列。**没有配套脚本，不自动更新** —— 想刷新就在会话里让 agent 重新统计一次 | 不改 |
-| `.sync-report.json` | `sync.py` 每次跑完的结果报告，workflow 拿它决定要不要开 Issue。已 gitignore | 自动生成 |
-| `.github/workflows/sync.yml` | 每天北京时间凌晨 2 点：sync → render → doctor → 小改自动提交，大改开 Issue（label `sync`，会先确保 label 存在） | — |
+| `active.txt` | 全局常驻技能名集合 | `manage.py activate/deactivate`，或编辑后运行 `link.py --prune` |
+| `sources.json` | 上游来源与同步所有权 | `add.py` 写入，`manage.py remove/move/detach` 维护 |
+| `metadata.json` | 中文说明、触发方式、推荐指数 | `manage.py describe` |
+| `.sync-report.json` | 最近一次同步报告 | `sync.py` 生成，Git 忽略 |
 
-## 维护规矩
+有 `sources.json` 登记的技能由上游维护；没有登记的技能视为本地自有或来源不明。
+需要长期修改上游技能时，先用 `manage.py detach` 停止自动同步。
 
-1. **加技能一律走 `add.py`**，手动拷进 `skills/` 的不会进 `sources.json`，以后收不到上游更新，文档也不刷新。
-2. **技能名必须全局唯一**。装到本地时分类目录会被拍平成 `~/.claude/skills/<技能名>/`，重名会互相覆盖。`doctor.py` 查这个。
-3. **`skills/` 只分一级**，不要建二级目录。分类只是给人看的，装的时候会被拍平，多一级没好处。
-4. **动过技能后跑 `render.py`**（`add.py` 已自动带），**改完跑 `doctor.py`**。
-5. 新技能在 `scripts/descriptions.py` 补中文说明，格式 `'技能名': (分类常量, 推荐指数 1-5, '说明', '怎么触发'),`。不补不报错，文档退回英文。
+## 生成文件
 
-## 分类原则
+`docs/skills.md` 是纯 Markdown 清册，`docs/index.html` 是可搜索并展开全文的静态清册。
+两者都由 `render.py` 覆盖生成。不要直接编辑 `docs/`，应修改：
 
-目录只表达**主题**，不表达装没装 —— 装没装由 `active.txt` 决定。主题基本不变，激活状态经常变，让变化频繁的那个用最轻的方式（改一行文本）。
+- 技能正文：`skills/<分类>/<技能>/`
+- 常驻状态：`active.txt`
+- 上游来源：`sources.json`
+- 中文清册信息：`metadata.json`
+
+## 脚本
+
+| 脚本 | 作用 |
+|---|---|
+| `scripts/add.py` | 从 GitHub 收录技能，登记来源和清册信息，并按 scope 留库、全局安装或复制到项目 |
+| `scripts/manage.py` | 列出、启停、删除、移动、脱离上游、修改清册信息、统一刷新 |
+| `scripts/link.py` | 按 `active.txt` 建立全局软链；`--prune` 清理本仓库管理的非常驻项 |
+| `scripts/pull.py` | 将分类或单个技能复制到当前项目 `.claude/skills/` |
+| `scripts/sync.py` | 检查登记过的上游，小改自动更新，大改写报告等待确认 |
+| `scripts/render.py` | 从仓库状态生成两个清册 |
+| `scripts/doctor.py` | 检查格式、重名、引用、登记和本地软链；CI 用 `--repo-only` |
+
+## 正常流程
+
+### 收录 GitHub 技能
+
+用户未说明范围时，先问装全局还是只装当前项目。然后一次调用：
+
+```bash
+python3 scripts/add.py "<GitHub URL>" \
+  --cat <分类> \
+  --scope <global|project|library> \
+  --project-dir "<项目绝对路径>" \
+  --description-zh "<中文说明>" \
+  --trigger-zh "<触发方式>" \
+  --recommendation <1-5>
+```
+
+项目路径只在 `scope=project` 时需要。`add.py` 优先通过 SSH 拉取，失败后切 HTTPS；
+每条通道有超时上限。安装阶段不执行第三方技能脚本。它会自动生成文档、完成对应安装
+并体检，不要随后重复运行 `refresh`。
+
+### 创建本地技能
+
+使用 `skill-creator` 初始化并验证，放到 `skills/<分类>/<技能名>/`。不要写入
+`sources.json`。然后：
+
+```bash
+python3 scripts/manage.py describe <技能名> \
+  --description "<中文说明>" \
+  --trigger "<触发方式>" \
+  --recommendation <1-5>
+python3 scripts/manage.py activate <技能名>
+```
+
+### 管理已有技能
+
+```bash
+python3 scripts/manage.py list [--active] [--category web] [--json]
+python3 scripts/manage.py activate <技能名>
+python3 scripts/manage.py deactivate <技能名>
+python3 scripts/manage.py remove <技能名> --yes
+python3 scripts/manage.py move <技能名> <分类>
+python3 scripts/manage.py detach <技能名>
+python3 scripts/manage.py refresh [--link|--prune]
+```
+
+删除只在用户明确要求时执行。`remove` 必须同时清理技能目录、常驻项、来源、清册元数据
+和本仓库创建的全局软链。
+
+项目副本不受中央仓库追踪。项目级安装仍要提交并推送 `agents_kit`；只有用户明确要求时
+才提交项目仓库中的 `.claude/skills/` 副本。
+
+### 管理其他配置
+
+修改 `rules/`、`agents/`、`hooks/` 或 `prompts/` 前先读目标目录的 `README.md`。
+它们目前没有统一管理脚本，也不进入技能清册。写入 `rules/` 或 `agents/` 不等于已经
+安装；Hook 只有注册进 Claude Code 设置后才生效。
+
+### 同步上游
+
+日常同步由 `.github/workflows/sync.yml` 每天北京时间 02:00 执行。
+
+```bash
+python3 scripts/sync.py --dry-run
+python3 scripts/sync.py
+```
+
+上游 `SKILL.md` 未变化时跳过下载。变化后，相似度至少 90% 且附件数不变才自动更新；
+其他情况保留本地版本并写入报告。
+
+## 完成标准
+
+1. `add.py` 和 `manage.py` 的写操作自带生成与体检。只有直接编辑源码后才运行
+   `manage.py refresh`；路径变化时加 `--link`，手工删除或停用时加 `--prune`。
+2. `doctor.py` 退出码为 0。
+3. `git diff --check` 通过。
+4. 只暂存当前任务文件，不覆盖或提交用户的无关改动。
+5. 工作区干净时用 `git pull --rebase origin main` 同步；推送被拒后也用 rebase，
+   不创建无意义的 merge commit。
+6. 提交并推送仓库；本机 GitHub 操作优先走 SSH。

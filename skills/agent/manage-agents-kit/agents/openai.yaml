@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage agents_kit"
+  short_description: "Manage the shared Agent Skills repository"
+  default_prompt: "Inspect or update agents_kit using its repository-native workflows."

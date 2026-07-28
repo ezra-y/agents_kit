@@ -8,7 +8,7 @@
 策略（改动大小决定处理方式）：
   相似度 >= 90% 且附件数不变  → 直接更新
   否则                        → 不动，写进报告等人工确认
-不在 sources.json 里的技能完全不碰（那 23 个自有/来源不明的）。
+不在 sources.json 里的技能完全不碰，它们由本地维护。
 """
 import json, os, subprocess, tempfile, shutil, difflib, hashlib, sys, urllib.request
 
@@ -41,8 +41,8 @@ for n, v in gh_items.items():
     repos.setdefault((v['repo'], v['branch']), []).append(n)
 
 for (repo, branch), names in sorted(repos.items()):
-    # 先拿整棵树的 blob SHA（文件指纹）。指纹一样就说明没变，不用下载内容。
-    # 130 个技能里大部分都没变，这一步能省掉绝大多数网络传输。
+    # 先拿整棵树的 blob SHA（文件指纹）。指纹一样就说明没变，不用下载内容，
+    # 这样能省掉绝大多数网络传输。
     tree = gh(['api', f'repos/{repo}/git/trees/{branch}?recursive=1',
                '--jq', '.tree[]|select(.path|endswith("SKILL.md"))|.path+"\t"+.sha'])
     if not tree:

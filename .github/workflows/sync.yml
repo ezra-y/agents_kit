@@ -27,8 +27,11 @@ jobs:
       - name: 重新生成文档
         run: python scripts/render.py
 
+      - name: 管理脚本测试
+        run: python -m unittest tests/test_manage.py
+
       - name: 体检
-        run: python scripts/doctor.py || true
+        run: python scripts/doctor.py --repo-only
 
       - name: 提交自动更新的部分
         run: |

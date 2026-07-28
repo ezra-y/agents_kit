@@ -1,135 +1,106 @@
 # agents_kit
 
-我的 agent 配置库。Claude Code 和 Codex 共用一套。
+Ezra 的私有 Agent 配置仓库。Claude Code 和 Codex 共用一套技能，并从这里统一安装、
+更新和删除。
 
-**153 个技能** · 常驻 **64** 个 · **130** 个能自动跟上游更新
+完整清册：
 
-完整清册看 [docs/index.html](docs/index.html)（能搜索、能展开每个技能的全文），
-想在 GitHub 上直接翻就看 [docs/skills.md](docs/skills.md)。
+- [docs/skills.md](docs/skills.md)：适合在 GitHub 上快速浏览的纯记录。
+- [docs/index.html](docs/index.html)：可搜索、筛选并展开每份 `SKILL.md` 全文。
 
----
+## 仓库里有什么
 
-## 第一次装
+| 目录 | 内容 |
+|---|---|
+| `skills/` | Agent Skill，分为 `apple web design lark method agent tools backend` |
+| `rules/` | 每次会话或按文件路径加载的规则；目前只有说明文件 |
+| `agents/` | Claude Code 子代理；目前只有说明文件 |
+| `hooks/` | 需要注册进设置的自动化 Hook；目前只有说明文件 |
+| `prompts/` | 不安装的私人提示词素材；目前只有说明文件 |
+| `scripts/` | 收录、管理、安装、同步、生成和体检命令 |
+| `docs/` | 自动生成的技能清册 |
+
+根目录中的三个状态文件：
+
+- `active.txt`：哪些技能全局常驻。
+- `sources.json`：每个外部技能来自哪里，供自动同步使用。
+- `metadata.json`：中文说明、触发方式和推荐指数。
+
+## 第一次安装
 
 ```bash
-git clone <这个仓库> ~/agents_kit
+git clone <仓库地址> ~/agents_kit
 cd ~/agents_kit
 python3 scripts/link.py
 ```
 
-跑完之后 `~/.claude/skills` 和 `~/.agents/skills` 里会出现 64 个**快捷方式**，指向这个仓库里的技能。
+`link.py` 会把 `active.txt` 中的技能软链到：
 
-之后想更新，一条命令：
+- `~/.claude/skills`
+- `~/.agents/skills`
 
-```bash
-cd ~/agents_kit && git pull
-```
+因为使用软链，之后执行 `git pull` 就能更新已经安装的技能。
 
-**不用再跑 link.py。** 因为装的是快捷方式不是复制品，仓库内容一变，装好的技能立刻就是新的。
+## 常用命令
 
----
-
-## 日常怎么用
-
-### 我看到个好技能，想收进来
+### 查看
 
 ```bash
-python3 scripts/add.py https://github.com/某人/某仓库/tree/main/skills/某技能 --cat web
-```
-
-`--cat` 是放哪个分类，八选一：`apple` `web` `design` `lark` `method` `agent` `tools` `backend`。
-
-它会自动：下载 → 放进分类目录 → 记进 `sources.json`（这样以后会跟着上游更新）→ 重新生成文档 → 体检。
-
-想顺便设成常驻，加 `--active`，然后跑一次 `link.py`。
-
-### 我想改常驻名单
-
-编辑 `active.txt`，加一行或删一行（井号开头是注释），然后：
-
-```bash
-python3 scripts/link.py
-```
-
-想把没列在名单里的旧快捷方式一并清掉，加 `--prune`。
-
-### 我要做个 iOS 项目，想临时用一批技能
-
-在项目目录里：
-
-```bash
-python3 ~/agents_kit/scripts/pull.py apple
-```
-
-技能会被**复制**到这个项目的 `.claude/skills/`，只在这个项目生效。
-不知道有哪些分类就 `pull.py --list`。
-
-> 这里用复制不用快捷方式，因为项目可能要提交给别人，快捷方式指向的是你本机路径，对别人是死链。
-
-### 我怀疑哪儿坏了
-
-```bash
+python3 scripts/manage.py list
+python3 scripts/manage.py list --active
 python3 scripts/doctor.py
 ```
 
-会查：SKILL.md 格式、重名冲突、名单和实际对不对得上、快捷方式失效没、技能之间的引用断没断、两个目录一致不一致。
-
-### 我改了技能的中文说明
-
-编辑 `scripts/descriptions.py`，然后：
+### 收录并全局安装 GitHub 技能
 
 ```bash
-python3 scripts/render.py
+python3 scripts/add.py "<GitHub URL>" \
+  --cat tools \
+  --scope global \
+  --description-zh "<中文说明>" \
+  --trigger-zh "<触发方式>" \
+  --recommendation 3
 ```
 
-`docs/skills.md` 和 `docs/index.html` 会重新生成。
+项目级安装使用 `--scope project --project-dir "<项目路径>"`。只收进仓库但不安装使用
+`--scope library`。
 
----
+### 管理已有技能
 
-## 六个脚本
-
-| 脚本 | 干什么 | 什么时候跑 |
-|---|---|---|
-| `link.py` | 按 `active.txt` 把技能装到本地（建快捷方式） | 改了名单之后 |
-| `pull.py` | 把某一类技能复制进当前项目 | 做特定项目时 |
-| `add.py` | 加新技能，自动归类、登记、更新文档、体检 | 收技能时 |
-| `sync.py` | 跟 130 个上游对齐 | **不用手动跑**，GitHub 每天自动 |
-| `doctor.py` | 体检 | 改完东西随手跑 |
-| `render.py` | 重新生成 `docs/` 下的文档 | 改了说明之后（`add.py` 会自动带跑） |
-
----
-
-## 自动同步是怎么回事
-
-`.github/workflows/sync.yml` 每天北京时间凌晨 2 点跑一次：
-
-1. 按 `sources.json` 检查那 130 个技能的原作者有没有更新
-2. **改动小的**（相似度 ≥90% 且附件数没变）→ 直接更新并提交
-3. **改动大的** → 不动本地文件，开一个 Issue 等你确认
-
-第 3 条是有教训的。之前 `grill-with-docs` 上游从 89 行重构成 7 行空壳，依赖的技能本地没有，盲目自动更新会直接把技能弄废。
-
-另外 **23 个技能没写进 `sources.json`** —— 那些是查不到出处的，同步脚本永远不碰它们，只有本地这一份。
-
----
-
-## 目录
-
-| 目录 | 装到哪 | 放什么 |
-|---|---|---|
-| `skills/` | `~/.claude/skills` + `~/.agents/skills` | 技能，八个分类 |
-| `rules/` | `~/.claude/rules/` | 规则片段，可按文件类型限定加载 |
-| `agents/` | `~/.claude/agents/` | 子代理定义 |
-| `hooks/` | 注册进 `settings.json` | 到点强制执行的脚本 |
-| `prompts/` | 不装 | 私人素材库，手动复制用 |
-
-后四个目录现在是空的，各有一个 README 说明该往里放什么。等真有内容了再填。
-
-`skills/` 下**只分一级**：
-
-```
-apple/    44     web/     34     lark/    27     method/   16
-design/   14     agent/   10     tools/    4     backend/   4
+```bash
+python3 scripts/manage.py activate <技能名>
+python3 scripts/manage.py deactivate <技能名>
+python3 scripts/manage.py move <技能名> <分类>
+python3 scripts/manage.py detach <技能名>
+python3 scripts/manage.py remove <技能名> --yes
 ```
 
-分类只是给你自己看的 —— 装到本地时会被拍平，Claude 只认 `~/.claude/skills/<技能名>/SKILL.md` 这一层。所以**技能名必须全局唯一**，分类怎么归都不影响使用。
+`detach` 会取消上游登记，把技能改为本地维护。`remove` 会删除技能本体、登记、清册信息
+和本仓库创建的全局软链。
+
+### 临时复制到项目
+
+```bash
+cd <项目目录>
+python3 ~/agents_kit/scripts/pull.py <分类或技能名>
+```
+
+项目中使用副本而不是软链，避免把只在本机有效的绝对路径提交给别人。
+
+### 修改后刷新
+
+```bash
+python3 scripts/manage.py refresh
+```
+
+改过常驻名单或移动技能后使用 `--link`；删除或停用后使用 `--prune`。
+
+## 自动同步
+
+`.github/workflows/sync.yml` 每天北京时间 02:00 按 `sources.json` 检查上游。
+
+- `SKILL.md` 没变：跳过。
+- 相似度至少 90% 且附件数不变：自动更新。
+- 其他变化或错误：保留本地版本并创建 Issue 等待确认。
+
+`docs/skills.md` 和 `docs/index.html` 都由 `render.py` 生成，不要直接编辑。
