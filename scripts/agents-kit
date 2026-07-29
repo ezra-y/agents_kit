@@ -27,6 +27,7 @@ from agents_kit.models import ChangeSet, Effect
 from agents_kit.repository import Repository, RepositoryError
 from agents_kit.skills import SkillError
 from agents_kit.sources import SourceError, SourceSession
+from agents_kit.taxonomy import TaxonomyError
 from agents_kit.ui import UiError
 
 
@@ -94,6 +95,7 @@ def build_parser() -> argparse.ArgumentParser:
     skill_import.add_argument("--name")
     skill_import.add_argument("--description", required=True)
     skill_import.add_argument("--trigger", default="")
+    skill_import.add_argument("--tag", action="append", required=True)
     skill_import.add_argument(
         "--recommendation", type=int, choices=range(1, 6), default=3
     )
@@ -109,6 +111,7 @@ def build_parser() -> argparse.ArgumentParser:
     skill_list = skill_commands.add_parser("list", help="列出技能")
     skill_list.add_argument("--active", action="store_true")
     skill_list.add_argument("--category")
+    skill_list.add_argument("--tag", action="append")
     skill_list.add_argument("--tracked", action="store_true")
     _json_flag(skill_list)
     skill_list.set_defaults(handler=command_skill_list)
@@ -133,6 +136,8 @@ def build_parser() -> argparse.ArgumentParser:
     metadata_set.add_argument("--recommendation", type=int, choices=range(1, 6))
     metadata_set.add_argument("--dependency", action="append")
     metadata_set.add_argument("--clear-dependencies", action="store_true")
+    metadata_set.add_argument("--tag", action="append")
+    metadata_set.add_argument("--clear-tags", action="store_true")
     metadata_set.add_argument("--dry-run", action="store_true")
     _json_flag(metadata_set)
     metadata_set.set_defaults(handler=command_skill_metadata)
@@ -462,6 +467,7 @@ def command_skill_import(args: argparse.Namespace, context: Context) -> dict[str
                 "provider": spec.provider,
                 "locator": snapshot.spec.locator,
                 "content_sha256": snapshot.content_sha256,
+                "tags": args.tag,
                 "existing": local_name in context.repo.inventory(),
             }
         with context.repo.write_lock():
@@ -473,6 +479,7 @@ def command_skill_import(args: argparse.Namespace, context: Context) -> dict[str
                 description=args.description,
                 trigger=args.trigger,
                 recommendation=args.recommendation,
+                tags=args.tag,
                 policy=context.repo.config["defaults"]["source_policy"],
                 replace=args.replace,
             )
@@ -494,6 +501,7 @@ def command_skill_list(args: argparse.Namespace, context: Context) -> dict[str, 
         context.repo,
         active_only=args.active,
         category=args.category,
+        tags=args.tag,
         tracked_only=args.tracked,
     )
     return {"skills": rows, "count": len(rows)}
@@ -516,9 +524,17 @@ def command_skill_metadata(
         and args.recommendation is None
         and args.dependency is None
         and not args.clear_dependencies
+        and args.tag is None
+        and not args.clear_tags
     ):
         raise CommandError("至少提供一个 metadata 字段")
     dependencies = [] if args.clear_dependencies else args.dependency
+    tags = None
+    if args.clear_tags:
+        tags = args.tag or []
+    elif args.tag:
+        current = context.repo.metadata_record(args.name) or {}
+        tags = list(dict.fromkeys([*current.get("tags", []), *args.tag]))
     if args.dry_run:
         context.repo.require_skill(args.name)
         return {
@@ -531,6 +547,7 @@ def command_skill_metadata(
                     "trigger": args.trigger,
                     "recommendation": args.recommendation,
                     "dependencies": dependencies,
+                    "tags": tags,
                 }.items()
                 if value is not None
             },
@@ -543,6 +560,7 @@ def command_skill_metadata(
             trigger=args.trigger,
             recommendation=args.recommendation,
             dependencies=dependencies,
+            tags=tags,
         )
     return context.finish(change)
 
@@ -1041,6 +1059,7 @@ def main() -> int:
         SkillError,
         McpError,
         InstallationError,
+        TaxonomyError,
         UiError,
         OSError,
         ValueError,

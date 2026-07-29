@@ -5,6 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tests.support import metadata_catalog, taxonomy_config
+
 LAUNCHER = Path(__file__).resolve().parents[1] / "scripts" / "agents-kit"
 
 
@@ -13,8 +15,7 @@ class CliTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         config = {
-            "schema_version": 1,
-            "categories": ["tools"],
+            **taxonomy_config(["tools"]),
             "install_targets": {
                 "global": [
                     {
@@ -41,7 +42,7 @@ class CliTests(unittest.TestCase):
             json.dumps({"schema_version": 2, "skills": {}}), encoding="utf-8"
         )
         (self.root / "metadata.json").write_text(
-            json.dumps({"skills": {}}), encoding="utf-8"
+            json.dumps(metadata_catalog({})), encoding="utf-8"
         )
         (self.root / "mcps.json").write_text(
             json.dumps({"schema_version": 1, "servers": {}}), encoding="utf-8"
@@ -81,6 +82,10 @@ class CliTests(unittest.TestCase):
             "中文说明",
             "--trigger",
             "需要时",
+            "--tag",
+            "role/builder",
+            "--tag",
+            "focus/example",
             "--json",
         )
         payload = json.loads(result.stdout)
@@ -93,6 +98,12 @@ class CliTests(unittest.TestCase):
         status = json.loads(self.run_cli("status", "--json").stdout)
         self.assertEqual(status["skills"], 1)
         self.assertEqual(status["active"], 1)
+        filtered = json.loads(
+            self.run_cli(
+                "skill", "list", "--tag", "focus/example", "--json"
+            ).stdout
+        )
+        self.assertEqual(filtered["count"], 1)
 
         opened = json.loads(
             self.run_cli("skill", "open", "alpha", "--dry-run", "--json").stdout
@@ -111,6 +122,10 @@ class CliTests(unittest.TestCase):
             "library",
             "--description",
             "中文说明",
+            "--tag",
+            "role/builder",
+            "--tag",
+            "focus/example",
             "--json",
         )
 
@@ -131,6 +146,10 @@ class CliTests(unittest.TestCase):
             "library",
             "--description",
             "中文说明",
+            "--tag",
+            "role/builder",
+            "--tag",
+            "focus/example",
             "--json",
         )
         (self.root / "active.txt").write_text("alpha\n", encoding="utf-8")
@@ -170,6 +189,10 @@ class CliTests(unittest.TestCase):
             str(self.root / "missing-project"),
             "--description",
             "中文说明",
+            "--tag",
+            "role/builder",
+            "--tag",
+            "focus/example",
             "--json",
             check=False,
         )

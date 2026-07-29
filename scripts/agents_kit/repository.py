@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from .models import ContentMode, SkillEntry
+from .taxonomy import TaxonomyError, validate_definition
 
 CONFIG_NAME = "agents-kit.json"
 ACTIVE_HEADER = (
@@ -57,6 +58,22 @@ class Repository:
     @property
     def categories(self) -> tuple[str, ...]:
         return tuple(self.config["categories"])
+
+    @property
+    def taxonomy_version(self) -> int:
+        return int(self.config["taxonomy_version"])
+
+    @property
+    def tag_namespaces(self) -> dict[str, dict[str, Any]]:
+        return dict(self.config["tag_namespaces"])
+
+    @property
+    def max_tags(self) -> int:
+        return int(self.config["max_tags"])
+
+    def category_label(self, category: str) -> str:
+        definition = self.config["categories"].get(category)
+        return definition["label"] if definition else category
 
     @property
     def network_timeout(self) -> int:
@@ -125,6 +142,10 @@ class Repository:
 
     def read_metadata(self) -> dict[str, Any]:
         data = self._load_json(self.metadata_path)
+        if data.get("schema_version") != 2:
+            raise RepositoryError("metadata.json schema_version 必须是 2")
+        if not isinstance(data.get("taxonomy_version"), int):
+            raise RepositoryError("metadata.json 缺 taxonomy_version")
         if not isinstance(data.get("skills"), dict):
             raise RepositoryError("metadata.json 缺 skills 对象")
         return data
@@ -145,6 +166,8 @@ class Repository:
 
     def write_metadata(self, data: dict[str, Any]) -> bool:
         normalized = dict(data)
+        normalized["schema_version"] = 2
+        normalized["taxonomy_version"] = self.taxonomy_version
         normalized["skills"] = dict(sorted(normalized.get("skills", {}).items()))
         return self.write_json_if_changed(self.metadata_path, normalized)
 
@@ -290,16 +313,12 @@ class Repository:
 
     @staticmethod
     def _validate_config(config: dict[str, Any]) -> None:
-        if config.get("schema_version") != 1:
-            raise RepositoryError("agents-kit.json schema_version 必须是 1")
-        categories = config.get("categories")
-        if (
-            not isinstance(categories, list)
-            or not categories
-            or any(not isinstance(item, str) or not item for item in categories)
-            or len(categories) != len(set(categories))
-        ):
-            raise RepositoryError("agents-kit.json categories 必须是非空唯一字符串数组")
+        if config.get("schema_version") != 2:
+            raise RepositoryError("agents-kit.json schema_version 必须是 2")
+        try:
+            validate_definition(config)
+        except TaxonomyError as exc:
+            raise RepositoryError(f"agents-kit.json taxonomy 无效：{exc}") from exc
         targets = config.get("install_targets")
         if not isinstance(targets, dict):
             raise RepositoryError("agents-kit.json 缺 install_targets")

@@ -4,10 +4,10 @@ import unittest
 from pathlib import Path
 
 from scripts.agents_kit.repository import Repository, RepositoryError
+from tests.support import metadata_catalog, taxonomy_config
 
 CONFIG = {
-    "schema_version": 1,
-    "categories": ["tools", "web"],
+    **taxonomy_config(["tools", "web"]),
     "install_targets": {
         "global": [{"id": "agents", "path": "~/.agents/skills", "mode": "symlink"}],
         "project": [{"id": "claude", "path": ".claude/skills", "mode": "copy"}],
@@ -28,19 +28,19 @@ class RepositoryTests(unittest.TestCase):
         (self.root / "agents-kit.json").write_text(json.dumps(CONFIG), encoding="utf-8")
         (self.root / "active.txt").write_text("alpha\n", encoding="utf-8")
         (self.root / "sources.json").write_text(
-            json.dumps({"skills": {}}), encoding="utf-8"
+            json.dumps({"schema_version": 2, "skills": {}}), encoding="utf-8"
         )
         (self.root / "metadata.json").write_text(
             json.dumps(
-                {
-                    "skills": {
+                metadata_catalog(
+                    {
                         "alpha": {
                             "description": "Alpha",
                             "trigger": "",
                             "recommendation": 3,
                         }
                     }
-                }
+                )
             ),
             encoding="utf-8",
         )

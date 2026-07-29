@@ -5,6 +5,7 @@ from pathlib import Path
 
 from scripts.agents_kit import checks, docs
 from scripts.agents_kit.repository import Repository
+from tests.support import metadata_catalog, taxonomy_config
 
 
 class DocsAndChecksTests(unittest.TestCase):
@@ -12,8 +13,7 @@ class DocsAndChecksTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         config = {
-            "schema_version": 1,
-            "categories": ["tools"],
+            **taxonomy_config(["tools", "web"]),
             "install_targets": {"global": [], "project": []},
             "mcp_install_targets": {"global": []},
             "defaults": {"source_policy": "review", "network_timeout_seconds": 60},
@@ -50,15 +50,15 @@ class DocsAndChecksTests(unittest.TestCase):
         )
         (self.root / "metadata.json").write_text(
             json.dumps(
-                {
-                    "skills": {
+                metadata_catalog(
+                    {
                         "alpha": {
                             "description": "中文说明",
                             "trigger": "需要时",
                             "recommendation": 3,
                         }
                     }
-                }
+                )
             ),
             encoding="utf-8",
         )
@@ -83,6 +83,9 @@ class DocsAndChecksTests(unittest.TestCase):
         self.assertFalse((self.root / "ARCHITECTURE.md").exists())
         self.assertFalse((self.root / "build").exists())
         self.assertEqual(docs.check(self.repo, command_help=self.help), [])
+        html = (self.root / "docs/index.html").read_text(encoding="utf-8")
+        self.assertIn("role/builder", html)
+        self.assertIn('data-tag-ns="focus"', html)
 
     def test_checks_use_docs_renderer_to_find_stale_files(self):
         docs.build(self.repo, command_help=self.help)
@@ -114,6 +117,24 @@ class DocsAndChecksTests(unittest.TestCase):
         self.assertTrue(
             any("Markdown 链接目标不存在" in problem for problem in report.problems)
         )
+
+    def test_cross_category_skill_link_resolves_by_skill_name(self):
+        beta = self.root / "skills/web/beta"
+        beta.mkdir(parents=True)
+        (beta / "SKILL.md").write_text(
+            "---\nname: beta\ndescription: Beta\n---\n",
+            encoding="utf-8",
+        )
+        inventory = self.repo.inventory(refresh=True)
+
+        missing = checks._missing_markdown_links(
+            "alpha",
+            self.root / "skills/tools/alpha",
+            "[Beta](../beta/SKILL.md)",
+            inventory,
+        )
+
+        self.assertEqual(missing, [])
 
 
 if __name__ == "__main__":

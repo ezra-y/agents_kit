@@ -6,6 +6,7 @@ from unittest import mock
 
 from scripts.agents_kit import mcps
 from scripts.agents_kit.repository import Repository
+from tests.support import metadata_catalog, taxonomy_config
 
 
 class McpTests(unittest.TestCase):
@@ -13,8 +14,7 @@ class McpTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         config = {
-            "schema_version": 1,
-            "categories": ["tools"],
+            **taxonomy_config(["tools"]),
             "install_targets": {"global": [], "project": []},
             "mcp_install_targets": {"global": [{"id": "codex"}, {"id": "claude"}]},
             "defaults": {"source_policy": "review", "network_timeout_seconds": 60},
@@ -26,7 +26,7 @@ class McpTests(unittest.TestCase):
             json.dumps({"schema_version": 2, "skills": {}}), encoding="utf-8"
         )
         (self.root / "metadata.json").write_text(
-            json.dumps({"skills": {}}), encoding="utf-8"
+            json.dumps(metadata_catalog({})), encoding="utf-8"
         )
         (self.root / "mcps.json").write_text(
             json.dumps({"schema_version": 1, "servers": {}}), encoding="utf-8"

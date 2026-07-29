@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 from scripts.agents_kit import ui
 from scripts.agents_kit.repository import Repository
+from tests.support import metadata_catalog, taxonomy_config
 
 
 class UiTests(unittest.TestCase):
@@ -18,8 +19,7 @@ class UiTests(unittest.TestCase):
         (self.root / "agents-kit.json").write_text(
             json.dumps(
                 {
-                    "schema_version": 1,
-                    "categories": ["tools"],
+                    **taxonomy_config(["tools"]),
                     "install_targets": {"global": [], "project": []},
                     "mcp_install_targets": {"global": []},
                     "defaults": {
@@ -35,7 +35,7 @@ class UiTests(unittest.TestCase):
             json.dumps({"schema_version": 2, "skills": {}}), encoding="utf-8"
         )
         (self.root / "metadata.json").write_text(
-            json.dumps({"skills": {}}), encoding="utf-8"
+            json.dumps(metadata_catalog({})), encoding="utf-8"
         )
         (self.root / "mcps.json").write_text(
             json.dumps({"schema_version": 1, "servers": {}}), encoding="utf-8"

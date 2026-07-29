@@ -15,10 +15,11 @@ from scripts.agents_kit.skills import (
     update_from_source,
 )
 from scripts.agents_kit.sources import SourceSession
+from scripts.agents_kit.taxonomy import TaxonomyError
+from tests.support import DEFAULT_TAGS, metadata_catalog, taxonomy_config
 
 CONFIG = {
-    "schema_version": 1,
-    "categories": ["tools", "web"],
+    **taxonomy_config(["tools", "web"]),
     "install_targets": {"global": [], "project": []},
     "mcp_install_targets": {"global": []},
     "defaults": {"source_policy": "review", "network_timeout_seconds": 60},
@@ -36,7 +37,7 @@ class SkillTests(unittest.TestCase):
             json.dumps({"schema_version": 2, "skills": {}}), encoding="utf-8"
         )
         (self.root / "metadata.json").write_text(
-            json.dumps({"skills": {}}), encoding="utf-8"
+            json.dumps(metadata_catalog({})), encoding="utf-8"
         )
         (self.root / "mcps.json").write_text(
             json.dumps({"schema_version": 1, "servers": {}}), encoding="utf-8"
@@ -64,6 +65,7 @@ class SkillTests(unittest.TestCase):
                 description="中文说明",
                 trigger="需要 alpha 时",
                 recommendation=3,
+                tags=DEFAULT_TAGS,
                 policy="review",
             )
 
@@ -74,6 +76,7 @@ class SkillTests(unittest.TestCase):
         self.assertEqual(result.changed, {"skills", "metadata"})
         self.assertIsNone(self.repo.source_record("alpha"))
         self.assertEqual(self.repo.metadata_record("alpha")["description"], "中文说明")
+        self.assertEqual(self.repo.metadata_record("alpha")["tags"], DEFAULT_TAGS)
 
     def test_source_record_contains_managed_content_mode(self):
         with SourceSession(timeout=5) as session:
@@ -97,6 +100,16 @@ class SkillTests(unittest.TestCase):
         )
 
         self.assertEqual(result.changed, set())
+
+    def test_metadata_rejects_unregistered_tag(self):
+        self.import_alpha()
+
+        with self.assertRaises(TaxonomyError):
+            set_metadata(
+                self.repo,
+                "alpha",
+                tags=["role/builder", "focus/not-registered"],
+            )
 
     def test_rename_updates_active_and_dependencies(self):
         self.import_alpha()
@@ -127,6 +140,7 @@ class SkillTests(unittest.TestCase):
             "trigger": "",
             "recommendation": 3,
             "dependencies": ["alpha"],
+            "tags": DEFAULT_TAGS,
         }
         self.repo.write_metadata(metadata)
         self.repo.refresh()

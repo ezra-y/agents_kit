@@ -11,6 +11,7 @@ from scripts.agents_kit.installation import (
     install_project,
 )
 from scripts.agents_kit.repository import Repository
+from tests.support import metadata_catalog, taxonomy_config
 
 
 class InstallationTests(unittest.TestCase):
@@ -20,8 +21,7 @@ class InstallationTests(unittest.TestCase):
         self.global_one = self.root / "home/claude"
         self.global_two = self.root / "home/agents"
         config = {
-            "schema_version": 1,
-            "categories": ["tools"],
+            **taxonomy_config(["tools"]),
             "install_targets": {
                 "global": [
                     {
@@ -51,8 +51,8 @@ class InstallationTests(unittest.TestCase):
         (self.root / "sources.json").write_text(
             json.dumps({"schema_version": 2, "skills": {}}), encoding="utf-8"
         )
-        metadata = {
-            "skills": {
+        metadata = metadata_catalog(
+            {
                 "alpha": {
                     "description": "Alpha",
                     "trigger": "",
@@ -65,7 +65,7 @@ class InstallationTests(unittest.TestCase):
                     "recommendation": 3,
                 },
             }
-        }
+        )
         (self.root / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
         (self.root / "mcps.json").write_text(
             json.dumps({"schema_version": 1, "servers": {}}), encoding="utf-8"

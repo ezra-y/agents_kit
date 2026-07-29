@@ -9,6 +9,7 @@ from . import docs, mcps
 from .installation import InstallationError, global_plan
 from .models import CheckReport, ContentMode, parse_skill_frontmatter
 from .repository import Repository, RepositoryError
+from .taxonomy import TaxonomyError, validate_tags
 
 REFERENCE_CONTEXT = re.compile(
     r"skill|技能|invoke|run the|/(?:run|use)\b", re.IGNORECASE
@@ -132,7 +133,14 @@ def _check_sources(
 def _check_metadata(
     repo: Repository, inventory: dict[str, Any], report: CheckReport
 ) -> None:
-    metadata = repo.read_metadata()["skills"]
+    catalog = repo.read_metadata()
+    metadata = catalog["skills"]
+    if catalog["taxonomy_version"] != repo.taxonomy_version:
+        report.problems.append(
+            "metadata.json taxonomy_version "
+            f"{catalog['taxonomy_version']} 与 agents-kit.json "
+            f"{repo.taxonomy_version} 不一致"
+        )
     stale = sorted(set(metadata) - set(inventory))
     missing = sorted(set(inventory) - set(metadata))
     for name in stale:
@@ -154,6 +162,10 @@ def _check_metadata(
             report.problems.append(f"{name}: metadata 缺 description")
         if not isinstance(record.get("trigger"), str):
             report.problems.append(f"{name}: metadata trigger 必须是字符串")
+        try:
+            validate_tags(repo, record.get("tags"))
+        except TaxonomyError as exc:
+            report.problems.append(f"{name}: {exc}")
         dependencies = record.get("dependencies", [])
         if not isinstance(dependencies, list) or any(
             not isinstance(item, str) for item in dependencies
@@ -230,7 +242,9 @@ def _check_references(inventory: dict[str, Any], report: CheckReport) -> None:
                 continue
             seen.add(reference)
             broken.append(f"{name} 引用了 /{reference}，但仓库里不存在")
-        missing_files.extend(_missing_markdown_links(name, entry.path, text))
+        missing_files.extend(
+            _missing_markdown_links(name, entry.path, text, inventory)
+        )
     report.problems.extend([*broken, *missing_files])
     report.sections["references"] = {
         "broken_skills": broken,
@@ -238,9 +252,14 @@ def _check_references(inventory: dict[str, Any], report: CheckReport) -> None:
     }
 
 
-def _missing_markdown_links(name: str, skill_root: Path, text: str) -> list[str]:
+def _missing_markdown_links(
+    name: str,
+    skill_root: Path,
+    text: str,
+    inventory: dict[str, Any],
+) -> list[str]:
     missing: list[str] = []
-    category_root = skill_root.parent.resolve()
+    skills_root = skill_root.parents[1].resolve()
     for match in MARKDOWN_LINK.finditer(text):
         raw = match.group(1).strip()
         if raw.startswith("<") and ">" in raw:
@@ -256,8 +275,14 @@ def _missing_markdown_links(name: str, skill_root: Path, text: str) -> list[str]
         if "/" not in relative and not Path(relative).suffix:
             continue
         target = (skill_root / relative).resolve()
-        if target != category_root and category_root not in target.parents:
-            missing.append(f"{name}: Markdown 链接越出分类目录 {relative}")
+        parts = Path(relative).parts
+        referenced_skill = (
+            parts[-2] if len(parts) >= 2 and parts[-1] == "SKILL.md" else None
+        )
+        if not target.exists() and referenced_skill in inventory:
+            continue
+        if target != skills_root and skills_root not in target.parents:
+            missing.append(f"{name}: Markdown 链接越出技能库 {relative}")
         elif not target.exists():
             missing.append(f"{name}: Markdown 链接目标不存在 {relative}")
     return list(dict.fromkeys(missing))

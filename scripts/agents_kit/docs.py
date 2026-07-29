@@ -50,6 +50,11 @@ h1{font-family:Georgia,"Songti SC",serif;font-size:clamp(28px,4vw,42px);margin:0
 .chip:hover,.sbtn:hover{border-color:var(--ink-3);color:var(--ink)}
 .chip[aria-pressed=true],.sbtn.on{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:600}
 .chip .c{font-family:ui-monospace,Menlo,monospace;font-size:11px;opacity:.55;margin-left:5px}
+.tag-controls{gap:12px}
+.tag-field{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-3)}
+.tag-field select{max-width:210px;padding:6px 24px 6px 8px;background:var(--paper-2);color:var(--ink-2);
+border:1px solid var(--rule);border-radius:2px;font:12px ui-monospace,Menlo,monospace}
+.tag-field select:focus{outline:2px solid var(--red);outline-offset:1px}
 .sl{font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
 .sbtn.on::after{content:" ▼";font-size:8px}.sbtn.on[data-dir=asc]::after{content:" ▲"}
 .count{margin-left:auto;font-size:12.5px;color:var(--ink-3);font-family:ui-monospace,Menlo,monospace}
@@ -67,7 +72,7 @@ tr[data-rec="1"] td.c-name::before{background:var(--red)}
 .caret{font-size:9px;opacity:.5;margin-right:5px}
 .badge{display:inline-block;font-size:10px;padding:1px 5px;border:1px solid var(--rule);color:var(--ink-3);margin-left:5px;border-radius:2px}
 .badge.on{color:var(--green);border-color:var(--green)}
-.meta{font-size:12px;color:var(--ink-3);margin-top:6px;line-height:1.6;font-family:ui-monospace,Menlo,monospace}
+.meta{display:block;font-size:12px;color:var(--ink-3);margin-top:6px;line-height:1.6;font-family:ui-monospace,Menlo,monospace}
 .meta a{color:var(--blue);text-decoration:none}.meta a:hover{text-decoration:underline}
 .folder-link{font:inherit;color:var(--blue);background:none;border:0;padding:0;cursor:pointer}
 .folder-link:hover{text-decoration:underline}
@@ -76,6 +81,11 @@ td.c-desc .d{margin:0;font-size:15.5px;line-height:1.72;color:var(--ink)}
 td.c-desc strong{font-weight:650}
 td.c-desc code{font-family:ui-monospace,Menlo,monospace;font-size:13px;background:var(--paper-2);padding:1px 5px;border-radius:2px}
 td.c-desc .how{margin:10px 0 0;font-size:14px;line-height:1.68;color:var(--ink-2);padding-left:12px;border-left:2px solid var(--rule)}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.tag{font:10.5px ui-monospace,Menlo,monospace;padding:2px 6px;color:var(--ink-3);
+background:transparent;border:1px solid var(--rule);border-radius:2px;cursor:pointer}
+.tag:hover{color:var(--ink);border-color:var(--ink-3)}
+.tag.role{color:var(--red);border-color:color-mix(in srgb,var(--red) 45%,var(--rule))}
 .hk{display:inline-block;font-size:10.5px;letter-spacing:.12em;color:var(--ink-3);border:1px solid var(--rule);border-radius:2px;padding:1px 5px;margin-right:8px}
 td.c-side{width:300px;min-width:270px;vertical-align:top;padding:16px 0 16px 20px;border-left:1px solid var(--rule-2)}
 .s-row{display:flex;gap:10px;align-items:baseline;margin-bottom:6px;font-size:12.5px}
@@ -123,7 +133,7 @@ const DATA = __DATA__;
 const RECLABEL = __RECLABEL__;
 const tb=document.getElementById('tb'), q=document.getElementById('q'),
       countEl=document.getElementById('count'), emptyEl=document.getElementById('empty');
-let cat='*', sortKey='name', sortDir='asc';
+let cat='*', sortKey='name', sortDir='asc', tagFilters={};
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const md=t=>esc(t||'').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>');
 
@@ -167,8 +177,10 @@ function render(){
   let list=DATA.filter(r=>{
     if(cat==='__act'){ if(!r.active) return false; }
     else if(cat!=='*' && r.cat!==cat) return false;
+    if(Object.values(tagFilters).some(tag=>tag && !(r.tags||[]).includes(tag))) return false;
     if(!term) return true;
-    return (r.name+' '+r.desc+' '+r.how+' '+(r.repo||'')+' '+r.cat).toLowerCase().includes(term);
+    return (r.name+' '+r.desc+' '+r.how+' '+(r.repo||'')+' '+r.cat+' '
+      +(r.catLabel||'')+' '+(r.tags||[]).join(' ')).toLowerCase().includes(term);
   });
   list.sort((a,b)=>{
     let x=a[sortKey],y=b[sortKey];
@@ -184,9 +196,14 @@ function render(){
       +(r.manual?'<span class="badge">仅手动</span>':'');
     const up=r.url?('<a href="'+esc(r.url)+'" target="_blank" rel="noopener">'+esc(r.repo)+'</a>')
       :'<span class="dim">来源未记录</span>';
+    const tags=(r.tags||[]).map(tag=>{
+      const ns=tag.split('/',1)[0];
+      return '<button class="tag '+(ns==='role'?'role':'')+'" type="button" data-tag="'
+        +esc(tag)+'">'+esc(tag)+'</button>';
+    }).join('');
     const meta=r.kind==='mcp'
       ?('MCP · '+esc(r.runtime)+' · '+esc(r.targets.join(', ')))
-      :(r.cat+' · '+r.lines+' 行 · '+r.nfiles+' 附件 · '
+      :(esc(r.catLabel||r.cat)+' · '+r.lines+' 行 · '+r.nfiles+' 附件 · '
         +'<button class="folder-link" type="button" data-open-skill="'+esc(r.name)
         +'">Finder</button>');
     return '<tr data-rec="'+r.rec+'" data-name="'+r.name+'">'
@@ -194,7 +211,8 @@ function render(){
         +'<span class="caret">▶</span>'+r.name+'</button>'+badges
         +'<span class="meta">'+meta+'</span></td>'
       +'<td class="c-desc"><p class="d">'+md(r.desc)+'</p>'
-        +(r.how?'<p class="how"><span class="hk">怎么用</span>'+md(r.how)+'</p>':'')+'</td>'
+        +(r.how?'<p class="how"><span class="hk">怎么用</span>'+md(r.how)+'</p>':'')
+        +(tags?'<div class="tags">'+tags+'</div>':'')+'</td>'
       +'<td class="c-side">'
         +'<div class="s-row"><span class="sk">推荐</span><span class="sv"><span class="rec">'
           +'<span class="on">'+'★'.repeat(r.rec)+'</span><span class="off">'+'★'.repeat(5-r.rec)
@@ -207,6 +225,13 @@ function render(){
 tb.addEventListener('click',e=>{
   const folder=e.target.closest('[data-open-skill]');
   if(folder){openFinder(folder.dataset.openSkill);return;}
+  const tagButton=e.target.closest('[data-tag]');
+  if(tagButton){
+    const tag=tagButton.dataset.tag, ns=tag.split('/',1)[0];
+    const select=document.querySelector('[data-tag-ns="'+ns+'"]');
+    if(select){select.value=tag;tagFilters[ns]=tag;render();}
+    return;
+  }
   const b=e.target.closest('.sname'); if(!b) return;
   const tr=b.closest('tr'), open=tr.nextElementSibling&&tr.nextElementSibling.classList.contains('detail');
   b.setAttribute('aria-expanded',String(!open));
@@ -231,6 +256,12 @@ document.getElementById('chips').addEventListener('click',e=>{
   const b=e.target.closest('.chip'); if(!b) return;
   cat=b.dataset.cat;
   document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',String(c===b)));
+  render();
+});
+document.getElementById('tagFilters').addEventListener('change',e=>{
+  const select=e.target.closest('[data-tag-ns]'); if(!select) return;
+  if(select.value) tagFilters[select.dataset.tagNs]=select.value;
+  else delete tagFilters[select.dataset.tagNs];
   render();
 });
 document.querySelectorAll('.sbtn').forEach(b=>b.addEventListener('click',()=>{
@@ -270,12 +301,14 @@ def collect_rows(repo: Repository) -> list[dict[str, Any]]:
                 "kind": "skill",
                 "name": name,
                 "cat": entry.category,
+                "catLabel": repo.category_label(entry.category),
                 "desc": (
                     local_metadata.get("description")
                     or str(frontmatter.get("description") or "")
                     or "（未写中文说明，见 SKILL.md）"
                 ),
                 "how": local_metadata.get("trigger", ""),
+                "tags": local_metadata.get("tags", []),
                 "rec": local_metadata.get("recommendation", 3),
                 "rel": entry.path.relative_to(repo.root).as_posix(),
                 "lines": body.count("\n") + 1,
@@ -306,8 +339,10 @@ def collect_mcp_rows(repo: Repository) -> list[dict[str, Any]]:
                 "kind": "mcp",
                 "name": name,
                 "cat": "MCP",
+                "catLabel": "MCP",
                 "desc": record["description"],
                 "how": "、".join(record["tags"]),
+                "tags": [],
                 "rec": record["recommendation"],
                 "rel": "",
                 "lines": 0,
@@ -348,14 +383,17 @@ def render_markdown(repo: Repository, rows: list[dict[str, Any]]) -> str:
         "`●` = 常驻",
         "",
     ]
-    for category in sorted(by_category):
-        category_rows = by_category[category]
+    for category in repo.categories:
+        category_rows = by_category.get(category, [])
         lines.extend(
             [
-                f"## {category}（{len(category_rows)} 个）",
+                (
+                    f"## {repo.category_label(category)} "
+                    f"(`{category}`，{len(category_rows)} 个)"
+                ),
                 "",
-                "| 技能 | 说明 | 常驻 | 来源 |",
-                "|---|---|:--:|---|",
+                "| 技能 | 说明 | 标签 | 常驻 | 来源 |",
+                "|---|---|---|:--:|---|",
             ]
         )
         for row in sorted(category_rows, key=lambda item: item["name"]):
@@ -364,8 +402,9 @@ def render_markdown(repo: Repository, rows: list[dict[str, Any]]) -> str:
                 source = f"[{row['repo']}]({row['url']})"
             else:
                 source = "—"
+            tags = " ".join(f"`{tag}`" for tag in row["tags"])
             lines.append(
-                f"| `{row['name']}` | {description} | "
+                f"| `{row['name']}` | {description} | {tags} | "
                 f"{'●' if row['active'] else ''} | {source} |"
             )
         lines.append("")
@@ -425,11 +464,33 @@ def render_html(
             f'生效<span class="c">{active_count + enabled_mcp_count}</span></button>'
         ),
     ]
-    for category in sorted(by_category):
+    for category in repo.categories:
+        category_rows = by_category.get(category, [])
         chips.append(
             f'<button class="chip" data-cat="{esc(category)}" '
-            f'aria-pressed="false">{esc(category)}'
-            f'<span class="c">{len(by_category[category])}</span></button>'
+            f'aria-pressed="false">{esc(repo.category_label(category))}'
+            f'<span class="c">{len(category_rows)}</span></button>'
+        )
+    if mcp_rows:
+        chips.append(
+            '<button class="chip" data-cat="MCP" aria-pressed="false">MCP'
+            f'<span class="c">{len(mcp_rows)}</span></button>'
+        )
+    used_tags = {
+        tag for row in skill_rows for tag in row.get("tags", [])
+    }
+    tag_controls: list[str] = []
+    for namespace, definition in repo.tag_namespaces.items():
+        tags = sorted(
+            tag for tag in used_tags if tag.startswith(f"{namespace}/")
+        )
+        options = "".join(
+            f'<option value="{esc(tag)}">{esc(tag)}</option>' for tag in tags
+        )
+        tag_controls.append(
+            f'<label class="tag-field">{esc(definition["label"])}'
+            f'<select data-tag-ns="{esc(namespace)}">'
+            f'<option value="">全部</option>{options}</select></label>'
         )
     script = JS.replace("__DATA__", data).replace(
         "__RECLABEL__", json.dumps(RECLABEL, ensure_ascii=False)
@@ -455,12 +516,13 @@ def render_html(
   <div class="stat"><span class="n">{source_count}</span><span class="l">有来源记录</span></div>
   <div class="stat"><span class="n">{mcp_count}</span><span class="l">MCP 清单</span></div>
   <div class="stat g"><span class="n">{enabled_mcp_count}</span><span class="l">MCP 已启用</span></div>
-  <div class="stat"><span class="n">{len(by_category)}</span><span class="l">分类</span></div>
+  <div class="stat"><span class="n">{len(repo.categories)}</span><span class="l">技能分类</span></div>
 </div>
 <div class="controls">
   <div class="row"><input id="q" type="search" placeholder="搜技能、MCP、说明、来源…" aria-label="搜索">
     <span class="count" id="count"></span></div>
   <div class="row" id="chips">{"".join(chips)}</div>
+  <div class="row tag-controls" id="tagFilters">{"".join(tag_controls)}</div>
   <div class="row"><span class="sl">排序</span>
     <button class="sbtn on" data-sort="name" data-dir="asc" type="button">名称</button>
     <button class="sbtn" data-sort="rec" type="button">推荐指数</button>
@@ -511,14 +573,20 @@ def render_architecture(
             f"- metadata：{len(repo.read_metadata()['skills'])}",
             f"- MCP：{len(mcp_rows)}",
             f"- MCP 已启用：{sum(1 for row in mcp_rows if row['active'])}",
-            f"- 分类：{', '.join(f'{name}({len(items)})' for name, items in sorted(by_category.items()))}",
+            (
+                "- 分类："
+                + ", ".join(
+                    f"{repo.category_label(name)}({len(by_category.get(name, []))})"
+                    for name in repo.categories
+                )
+            ),
             "",
             "## 状态所有权",
             "",
-            "- `agents-kit.json`：分类、安装目标和默认策略",
+            "- `agents-kit.json`：taxonomy、标签词表、安装目标和默认策略",
             "- `active.txt`：全局常驻技能名",
             "- `sources.json`：provider 来源记录",
-            "- `metadata.json`：中文清册和依赖",
+            "- `metadata.json`：中文清册、标签和依赖",
             "- `mcps.json`：MCP 清单、上游、锁定版本、启动方式和启用状态",
             "",
             GENERATED_END,

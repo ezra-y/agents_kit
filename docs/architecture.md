@@ -12,14 +12,14 @@
 - metadata：155
 - MCP：4
 - MCP 已启用：4
-- 分类：agent(9), apple(44), backend(4), design(14), lark(27), method(17), tools(6), web(34)
+- 分类：视频制作(0), iOS(42), 运营与内容(8), 前端与 UI/UX(42), 后端(4), 通用工程(8), 产品(8), 研究与办公(29), AI Building(14)
 
 ## 状态所有权
 
-- `agents-kit.json`：分类、安装目标和默认策略
+- `agents-kit.json`：taxonomy、标签词表、安装目标和默认策略
 - `active.txt`：全局常驻技能名
 - `sources.json`：provider 来源记录
-- `metadata.json`：中文清册和依赖
+- `metadata.json`：中文清册、标签和依赖
 - `mcps.json`：MCP 清单、上游、锁定版本、启动方式和启用状态
 
 <!-- END GENERATED -->
@@ -35,7 +35,8 @@
 ```text
 外部来源
   -> sources.py 获取并生成 SkillSnapshot
-  -> skills.py 修改中央技能库和登记
+  -> 当前 AI 读取 skill-taxonomy.md，给出分类和标签
+  -> skills.py 调用 taxonomy.py 校验后修改中央技能库和登记
   -> ChangeSet 描述后续影响
   -> installation.py / docs.py / checks.py 收尾
 
@@ -55,8 +56,9 @@ MCP 上游与分发
 | `scripts/agents-kit` | 参数解析、命令编排、输出 | 保存业务状态 |
 | `models.py` | 共享数据结构 | I/O |
 | `repository.py` | 发现仓库、读写状态、锁、原子落盘、内容哈希 | 业务流程 |
+| `taxonomy.py` | 校验分类定义、标签词表和数量约束 | 根据语义替模型分类 |
 | `sources.py` | Git、HTTP、本地来源识别、获取、候选发现 | 修改仓库状态 |
-| `skills.py` | 导入、更新、移动、重命名、删除、metadata | 全局或项目安装 |
+| `skills.py` | 导入、更新、移动、重命名、删除、metadata 和标签 | 全局或项目安装 |
 | `mcps.py` | MCP 导入、启停、版本更新、运行和客户端同步 | 保存凭据值、管理 Skill |
 | `installation.py` | 全局软链接和项目副本 | 修改技能正文 |
 | `docs.py` | 纯渲染、write-if-changed、文档过期检查 | 修改事实状态 |
@@ -67,6 +69,7 @@ MCP 上游与分发
 
 ```text
 入口 -> 业务模块 -> repository/models
+skills/checks -> taxonomy 的确定性校验
 checks -> docs 的纯渲染 API / installation 的只读计划
 skills -> models 中的 SkillSnapshot
 mcps -> repository 中的单一 MCP 清单
@@ -86,6 +89,18 @@ mcps -> repository 中的单一 MCP 清单
 `directory` 管理整个技能目录，适用于 Git 和压缩包。`skill_file` 只管理
 `SKILL.md`，适用于直接 HTTP 文件；更新时保留本地附件。增加新来源时，只扩展
 `sources.py` 的 provider 注册和对应测试，不修改技能、安装和文档流程。
+
+## 分类与标签模型
+
+目录 `skills/<分类>/<技能名>` 表达唯一一级分类。`metadata.json` 保存标签，
+`agents-kit.json` 保存 taxonomy 版本、分类边界、标签命名空间和中央词表。
+
+添加技能的当前 AI 读取 `docs/skill-taxonomy.md` 后，根据主要用户目标和正常产出给出
+分类与标签。代码不实现关键词分类器，只验证结构化结果。这样模型负责语义，脚本负责
+不变量，新增来源不需要修改分类逻辑。
+
+跨 Skill 引用以唯一技能名识别。检查器允许 `../<技能名>/SKILL.md` 这类逻辑引用跨越
+分类目录，但目标技能必须存在；项目安装仍将依赖复制到同一个扁平 skills 目录。
 
 ## MCP 模型
 
@@ -128,13 +143,16 @@ launcher 管理的记录；同名外部配置默认停止并报告。
 
 `agents-kit ui` 在本机重新生成 HTML 后启动只监听 `127.0.0.1` 的服务。网页只把
 技能名交给后端，后端从仓库清册解析目录并调用 Finder；不接受任意文件路径。
+网页展示全部标签，并按一级分类、标签命名空间和全文搜索筛选。
 
 ## 不变量
 
 1. 技能固定放在 `skills/<分类>/<技能名>/SKILL.md`。
 2. 技能名在全部分类中唯一。
-3. metadata 必须覆盖全部技能，active 和 sources 只能引用存在的技能。
-4. 全局安装由 `active.txt` 决定，项目安装不写回中央状态。
-5. 体检只报告问题，不修改仓库。
-6. MCP 凭据值不得进入仓库或客户端配置；运行时再从声明的来源读取。
-7. MCP 客户端同步不能删除同名但不受本仓库 launcher 管理的配置。
+3. metadata 必须覆盖全部技能，并与当前 taxonomy 版本一致。
+4. 每个技能有一个 `role`、1–3 个 `focus`，全部标签来自中央词表且总数不超过 8。
+5. active 和 sources 只能引用存在的技能。
+6. 全局安装由 `active.txt` 决定，项目安装不写回中央状态。
+7. 体检只报告问题，不修改仓库。
+8. MCP 凭据值不得进入仓库或客户端配置；运行时再从声明的来源读取。
+9. MCP 客户端同步不能删除同名但不受本仓库 launcher 管理的配置。

@@ -125,7 +125,7 @@ $ agents-kit skill import --help
 usage: agents-kit skill import [-h] --category CATEGORY --scope
                                {library,global,project} [--name NAME]
                                --description DESCRIPTION [--trigger TRIGGER]
-                               [--recommendation {1,2,3,4,5}]
+                               --tag TAG [--recommendation {1,2,3,4,5}]
                                [--project PROJECT] [--replace] [--dry-run]
                                [--yes] [--provider PROVIDER] [--ref REF]
                                [--source-path SOURCE_PATH]
@@ -142,6 +142,7 @@ options:
   --name NAME
   --description DESCRIPTION
   --trigger TRIGGER
+  --tag TAG
   --recommendation {1,2,3,4,5}
   --project PROJECT
   --replace
@@ -154,13 +155,14 @@ options:
   --json
 
 $ agents-kit skill list --help
-usage: agents-kit skill list [-h] [--active] [--category CATEGORY] [--tracked]
-                             [--json]
+usage: agents-kit skill list [-h] [--active] [--category CATEGORY] [--tag TAG]
+                             [--tracked] [--json]
 
 options:
   -h, --help           show this help message and exit
   --active
   --category CATEGORY
+  --tag TAG
   --tracked
   --json
 
@@ -200,8 +202,8 @@ usage: agents-kit skill metadata set [-h] [--description DESCRIPTION]
                                      [--trigger TRIGGER]
                                      [--recommendation {1,2,3,4,5}]
                                      [--dependency DEPENDENCY]
-                                     [--clear-dependencies] [--dry-run]
-                                     [--json]
+                                     [--clear-dependencies] [--tag TAG]
+                                     [--clear-tags] [--dry-run] [--json]
                                      name
 
 positional arguments:
@@ -214,6 +216,8 @@ options:
   --recommendation {1,2,3,4,5}
   --dependency DEPENDENCY
   --clear-dependencies
+  --tag TAG
+  --clear-tags
   --dry-run
   --json
 

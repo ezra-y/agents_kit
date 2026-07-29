@@ -8,25 +8,27 @@
 2. 用户没有说明安装范围时，先问全局还是当前项目。
 3. 新技能先进入本仓库，再按 scope 安装；不要直接复制到
    `~/.claude/skills`、`~/.agents/skills` 或项目目录。
-4. 优先使用 CLI 修改 `active.txt`、`sources.json`、`metadata.json` 和技能目录。
+4. 添加技能、移动分类或修改标签前，先读 `docs/skill-taxonomy.md`。当前 AI 根据
+   Skill 的主要产出选择分类和标签，只使用 `agents-kit.json` 的中央词表。
+5. 优先使用 CLI 修改 `active.txt`、`sources.json`、`metadata.json` 和技能目录。
    直接改源码或事实状态后，运行 `agents-kit docs build` 和 `agents-kit check`。
-5. 删除技能必须同时处理技能目录、常驻状态、来源记录、metadata 和本仓库管理的链接。
+6. 删除技能必须同时处理技能目录、常驻状态、来源记录、metadata 和本仓库管理的链接。
    使用 `agents-kit skill remove <技能名> --yes`。
-6. 项目安装是副本，不受中央仓库继续追踪；全局安装是软链接。
-7. 上游默认使用 `review` 策略。先 `source check`，确认后再 `source update`。
-8. HTTP 单文件来源只管理 `SKILL.md`；`references/`、`scripts/` 等附件由仓库保留。
-9. 修改 `rules/`、`agents/`、`hooks/` 或 `prompts/` 前，先读对应目录的 README。
-10. 第三方 MCP 集中记录在 `mcps.json`，不要为只有配置的 MCP 建独立目录。
+7. 项目安装是副本，不受中央仓库继续追踪；全局安装是软链接。
+8. 上游默认使用 `review` 策略。先 `source check`，确认后再 `source update`。
+9. HTTP 单文件来源只管理 `SKILL.md`；`references/`、`scripts/` 等附件由仓库保留。
+10. 修改 `rules/`、`agents/`、`hooks/` 或 `prompts/` 前，先读对应目录的 README。
+11. 第三方 MCP 集中记录在 `mcps.json`，不要为只有配置的 MCP 建独立目录。
     凭据只记录环境变量或安全命令来源，不把值写进仓库和客户端配置。
 
 ## 状态文件
 
 | 文件 | 唯一职责 |
 |---|---|
-| `agents-kit.json` | 分类、安装目标和默认策略 |
+| `agents-kit.json` | taxonomy、标签词表、安装目标和默认策略 |
 | `active.txt` | 全局常驻技能名 |
 | `sources.json` | 上游来源、更新策略和受管内容摘要 |
-| `metadata.json` | 中文清册、触发信息、推荐指数和依赖 |
+| `metadata.json` | 中文清册、触发信息、推荐指数、标签和依赖 |
 | `mcps.json` | MCP 上游、锁定版本、启动方式、凭据来源、目标和启用状态 |
 
 ## 正常流程
@@ -36,6 +38,8 @@
 ```bash
 agents-kit skill import "<来源>" \
   --category <分类> \
+  --tag role/<角色> \
+  --tag focus/<细分能力> \
   --scope <global|project|library> \
   --project "<项目路径>" \
   --description "<中文说明>" \

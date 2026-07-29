@@ -26,17 +26,18 @@ agents-kit check
 
 | 路径 | 内容 |
 |---|---|
-| `skills/` | 按 `apple web design lark method agent tools backend` 分类的技能 |
+| `skills/` | 按主要用途分类的技能目录 |
 | `scripts/agents-kit` | 唯一公开命令 |
 | `scripts/agents_kit/` | 命令使用的内部 Python 模块 |
 | `active.txt` | 全局常驻技能名 |
 | `sources.json` | 上游 provider、定位信息、更新策略和内容摘要 |
-| `metadata.json` | 中文说明、触发方式、推荐指数和可选依赖 |
+| `metadata.json` | 中文说明、触发方式、推荐指数、标签和可选依赖 |
 | `mcps.json` | MCP 上游、锁定版本、启动方式、凭据来源和启用状态 |
 | `docs/skills.md` | 自动生成的技能清册 |
 | `docs/mcps.md` | 自动生成的 MCP 清单 |
 | `docs/cli.md` | 自动生成的完整命令参考 |
 | `docs/architecture.md` | 架构、模块边界和数据流 |
+| `docs/skill-taxonomy.md` | 添加技能时供 AI 读取的分类与标签边界 |
 | `docs/index.html` | 本地生成的可视化 Skill 与 MCP 清册，不进入 Git |
 
 `rules/`、`agents/`、`hooks/`、`prompts/` 目前只保留各自说明，不进入技能安装流程。
@@ -48,7 +49,10 @@ agents-kit check
 
 ```bash
 agents-kit skill import "<Git URL、HTTP URL 或本地路径>" \
-  --category tools \
+  --category research-office \
+  --tag role/researcher \
+  --tag focus/web-research \
+  --tag output/research \
   --scope global \
   --description "<中文说明>" \
   --trigger "<触发方式>" \
@@ -59,7 +63,10 @@ agents-kit skill import "<Git URL、HTTP URL 或本地路径>" \
 
 ```bash
 agents-kit skill import "<来源>" \
-  --category tools \
+  --category frontend-uiux \
+  --tag role/builder \
+  --tag focus/ui-design \
+  --tag output/code \
   --scope project \
   --project "<项目路径>" \
   --description "<中文说明>"
@@ -96,6 +103,7 @@ agents-kit mcp import "<上游 URL>" \
 agents-kit status
 agents-kit skill list
 agents-kit skill list --active
+agents-kit skill list --category ios --tag role/reviewer
 agents-kit skill show <技能名>
 agents-kit skill open <技能名>
 agents-kit ui

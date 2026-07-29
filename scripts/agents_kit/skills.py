@@ -13,6 +13,7 @@ from .models import (
     parse_skill_frontmatter,
 )
 from .repository import Repository
+from .taxonomy import normalize_tags, validate_known_tags
 
 NAME_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 
@@ -26,11 +27,14 @@ def list_skills(
     *,
     active_only: bool = False,
     category: str | None = None,
+    tags: list[str] | None = None,
     tracked_only: bool = False,
 ) -> list[dict[str, Any]]:
     active = set(repo.read_active())
     sources = repo.read_sources()["skills"]
     metadata = repo.read_metadata()["skills"]
+    validate_known_tags(repo, tags or [])
+    required_tags = set(tags or [])
     rows: list[dict[str, Any]] = []
     for name, entry in repo.inventory().items():
         if active_only and name not in active:
@@ -39,6 +43,9 @@ def list_skills(
             continue
         if tracked_only and name not in sources:
             continue
+        skill_tags = metadata.get(name, {}).get("tags", [])
+        if required_tags and not required_tags.issubset(skill_tags):
+            continue
         rows.append(
             {
                 "name": name,
@@ -46,6 +53,7 @@ def list_skills(
                 "active": name in active,
                 "tracked": name in sources,
                 "description": metadata.get(name, {}).get("description", ""),
+                "tags": skill_tags,
             }
         )
     return sorted(rows, key=lambda row: (row["category"], row["name"]))
@@ -79,6 +87,7 @@ def import_snapshot(
     description: str,
     trigger: str,
     recommendation: int,
+    tags: list[str],
     policy: str,
     replace: bool = False,
 ) -> ChangeSet:
@@ -86,9 +95,11 @@ def import_snapshot(
     skill_name = name or snapshot.declared_name or snapshot.path.name
     _validate_name(skill_name)
     metadata_record = _metadata_record(
+        repo,
         description=description or snapshot.description,
         trigger=trigger,
         recommendation=recommendation,
+        tags=tags,
     )
 
     inventory = repo.inventory()
@@ -176,6 +187,7 @@ def set_metadata(
     trigger: str | None = None,
     recommendation: int | None = None,
     dependencies: list[str] | None = None,
+    tags: list[str] | None = None,
 ) -> ChangeSet:
     repo.require_skill(name)
     current = dict(repo.metadata_record(name) or {})
@@ -187,11 +199,15 @@ def set_metadata(
         current["recommendation"] = recommendation
     if dependencies is not None:
         current["dependencies"] = list(dict.fromkeys(dependencies))
+    if tags is not None:
+        current["tags"] = tags
     validated = _metadata_record(
+        repo,
         description=current.get("description", ""),
         trigger=current.get("trigger", ""),
         recommendation=current.get("recommendation"),
         dependencies=current.get("dependencies"),
+        tags=current.get("tags", []),
     )
     changed = repo.set_metadata_record(name, validated)
     return ChangeSet(
@@ -363,11 +379,13 @@ def _validate_category(repo: Repository, category: str) -> None:
 
 
 def _metadata_record(
+    repo: Repository,
     *,
     description: Any,
     trigger: Any,
     recommendation: Any,
     dependencies: Any = None,
+    tags: Any,
 ) -> dict[str, Any]:
     if not isinstance(description, str) or not description.strip():
         raise SkillError("metadata description 不能为空")
@@ -379,6 +397,7 @@ def _metadata_record(
         "recommendation": recommendation,
         "description": description.strip(),
         "trigger": trigger.strip(),
+        "tags": normalize_tags(repo, tags),
     }
     if dependencies:
         if not isinstance(dependencies, list) or any(
