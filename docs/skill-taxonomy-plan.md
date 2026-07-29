@@ -4,246 +4,159 @@
 
 ## 目标
 
-重新组织 Skill 清册，让一级分类回答“这项能力主要服务哪类工作”，标签回答
-“它在这个大类里具体负责什么、面向什么平台、使用什么技术、产出什么”。
+一级分类回答“这个 Skill 主要完成哪类工作”，标签回答“它在这个大类里具体做什么”。
+每个 Skill 只有一个一级分类，交叉能力用标签表达。
 
-标签的目的不是重复一级分类，而是帮助用户快速区分同一大类中的相似技能。例如，
-同属 iOS 的技能可以分别是 API 参考、实现指南、代码审查或界面构建。
-
-本次改造不增加新的公开脚本，不接入额外的模型 API。安装技能的当前 AI 负责在同一条
-导入命令中给出分类和标签；仓库脚本负责约束词表、保存结果、生成页面和检查完整性。
+分类需要语义判断，不建设关键词分类器。安装技能的 AI 读取 `SKILL.md` 后，在原有导入
+命令中同时给出分类和标签；仓库代码只负责校验、保存、生成文档和更新 HTML。
 
 ## 一级分类
 
-每个技能只属于一个一级分类。交叉能力通过标签表达。
-
-| ID | 展示名称 | 边界 | 当前初分 |
-|---|---|---|---:|
-| `video` | 视频 | 视频理解、字幕、脚本、生成、剪辑及视频工作流 | 1 |
-| `operations` | 运营与内容 | 对外宣传、品牌、文章、Banner、海报、幻灯片、ASO 等内容生产 | 9 |
-| `ios` | iOS / Apple 开发 | iOS、Swift、SwiftUI、UIKit 和 Apple 平台专用能力，包括少量 macOS 能力 | 43 |
-| `frontend-uiux` | 前端与 UI/UX | Web 前端工程，以及非 iOS 的界面、交互、视觉和设计系统能力 | 41 |
-| `backend` | 后端 | API、认证、安全、服务端和后端技术 | 4 |
-| `engineering` | 通用工程 | 不绑定前后端或平台的调试、测试、架构和代码库维护 | 7 |
-| `product` | 产品与需求 | 需求澄清、领域建模、PRD、原型、Issue 和 Triage | 8 |
-| `research-office` | 研究与办公 | 搜索、研究、文档、会议、表格、消息和 Lark 办公工作流 | 30 |
-| `ai-building` | AI Building | Agent、Skill、MCP、Hook 和 AI 工作流建设 | 12 |
-
-当前 155 个技能都能进入以上分类。`product` 和 `engineering` 必须独立保留：
-前者的主要产物是决策、规格和任务，后者的主要对象是代码质量与工程结构。
-
-### 交叉项判定
-
-- 视频媒介优先进入 `video`，研究或运营属性写入标签。
-- iOS 专用的设计、测试和工程技能进入 `ios`，不进入 `frontend-uiux`。
-- 宣传内容和增长资产进入 `operations`；产品界面和设计系统进入
-  `frontend-uiux`。
-- Agent、Skill 或 MCP 是主要操作对象时进入 `ai-building`；通用 API 和服务端
-  能力进入 `backend`。
-- 主要产物是规格、需求或任务时进入 `product`；主要产物是代码改动、测试或架构
-  改进时进入 `engineering`。
-- 无法由一级分类完整表达的次要用途必须写入标签，不为交叉项新增一级分类。
-
-示例：
-
-| 技能 | 一级分类 | 关键标签 |
+| ID | 展示名称 | 分类边界 |
 |---|---|---|
-| `watch` | `video` | `role/researcher`, `focus/video-understanding`, `output/transcript` |
-| `apple-aso` | `operations` | `role/guide`, `platform/apple`, `focus/aso` |
-| `frontend-design` | `frontend-uiux` | `role/guide`, `focus/ui-design`, `platform/web` |
-| `build-mcp-app` | `ai-building` | `role/builder`, `focus/mcp-ui`, `platform/web` |
-| `react-native-skills` | `frontend-uiux` | `role/guide`, `stack/react-native`, `focus/mobile-ui` |
+| `video` | 视频制作 | 直接生成、拍摄、剪辑、包装或交付视频。只研究视频、提取字幕或总结视频不属于此类。 |
+| `ios` | iOS | 所有 iOS 专用能力，包括客户端、服务端、UI、设计、测试和平台工程。 |
+| `operations` | 运营与内容 | 宣传、增长、品牌、运营文案、文章、社交内容及营销素材。 |
+| `frontend-uiux` | 前端与 UI/UX | 非 iOS 的前端代码、界面、交互、视觉设计和设计系统。 |
+| `backend` | 后端 | 非 iOS 专用的服务端、API、认证、数据与安全能力。 |
+| `engineering` | 通用工程 | 跨平台的代码审查、测试、调试、架构、工具链和代码库维护。 |
+| `product` | 产品 | 产品发现、需求、领域模型、PRD、原型决策、Issue 与 Triage。 |
+| `research-office` | 研究与办公 | 通用搜索、研究、分析，以及文档、表格、会议、消息和 Lark 工作流。 |
+| `ai-building` | AI Building | Agent、Skill、MCP、Hook 和 AI 工作流的构建与管理。 |
 
-## 标签模型
+按主要用户目标和常见产出分类，不按输入媒介或上游仓库名称分类。只有两条强边界：
 
-标签使用 `命名空间/值` 格式。通常每个技能使用 4–6 个标签；内容丰富时允许增加，
-最多 8 个。HTML 展示全部标签，不截断为少数标签。
+- iOS 专用能力统一进入 `ios`，不拆到前端、后端或通用工程。
+- 视频只有在产出视频时进入 `video`。研究视频后产出运营内容，进入 `operations`；
+  产出一般分析、字幕或摘要，进入 `research-office`。
 
-### `role/*`
+当前清册中的 `watch` 应从视频移到研究与办公。现有清册可能暂时没有纯视频制作 Skill，
+允许 `video` 初始为空。`apple-aso` 属于运营；仅 macOS 的打包能力属于通用工程。
 
-每个技能必须且只能有一个 `role`，用于说明它如何参与工作：
+## 给模型的分类说明
 
-| 标签 | 含义 |
-|---|---|
-| `role/reference` | API、规范、索引或资料参考 |
-| `role/guide` | 提供原则、模式和实现指导 |
-| `role/builder` | 创建或修改代码、内容或其他产物 |
-| `role/reviewer` | 审查、审计或改进已有产物 |
-| `role/router` | 判断需求并路由到其他技能或流程 |
-| `role/workflow` | 编排一个有明确步骤的完整流程 |
-| `role/researcher` | 搜索、采集、阅读和分析信息 |
-| `role/integration` | 操作或连接外部平台、API 和本地工具 |
-
-### 其他命名空间
-
-- `focus/*`：大类内部的具体领域。每个技能至少一个，通常 1–3 个。例如
-  `focus/frontend-engineering`、`focus/ui-design`、`focus/testing`、
-  `focus/design-system`。
-- `platform/*`：运行或服务的平台，通常 0–2 个。例如 `platform/apple`、
-  `platform/web`、`platform/lark`。
-- `stack/*`：明确的框架、语言或工具，通常 0–2 个。例如 `stack/swiftui`、
-  `stack/react`、`stack/gsap`。
-- `output/*`：主要产物，通常 0–2 个。例如 `output/code`、`output/report`、
-  `output/article`、`output/image`、`output/slides`、`output/config`。
-
-同义词必须收敛到中央词表。例如只保留 `focus/testing`，不能同时出现
-`focus/test`、`focus/tests` 和 `focus/qa`。
-
-### 边界展示示例
+实施时把下面这段作为唯一的分类提示，放入独立的 `docs/skill-taxonomy.md`，仅在导入、
+改类和批量标注时读取。仓库规则只链接该文档，不复制全文。
 
 ```text
-swiftui
-[参考] [Apple] [SwiftUI] [API]
+# 目标
+阅读一个 Skill，为它选择一个一级分类和一组标签，让用户能看出它与同类 Skill 的区别。
 
-guide-swiftui-performance-audit
-[工作流] [Apple] [SwiftUI] [性能] [审计报告]
+# 分类
+- video：直接生成、剪辑、包装或交付视频。
+- ios：所有 iOS 专用的实现、服务端、UI、设计、测试和平台工程。
+- operations：宣传、增长、品牌、运营文案、内容和营销素材。
+- frontend-uiux：非 iOS 的前端代码及 UI/UX、视觉和设计系统。
+- backend：非 iOS 专用的服务端、API、认证、数据和安全。
+- engineering：跨平台的审查、测试、调试、架构、工具链和代码库维护。
+- product：产品发现、需求、领域模型、PRD、原型决策、Issue 和 Triage。
+- research-office：通用研究、分析及文档、表格、会议、消息和 Lark 工作流。
+- ai-building：Agent、Skill、MCP、Hook 和 AI 工作流的构建与管理。
 
-swiftui-pro
-[审查] [Apple] [SwiftUI] [代码质量] [评审报告]
+# 判断
+按主要用户目标和正常产出选择唯一分类，不按输入素材分类。
+iOS 专用能力统一归 ios。
+视频研究不归 video：产出运营内容归 operations，其他研究产出归 research-office。
+次要用途写入标签，不新增分类。
 
-ios-ui-craft
-[构建] [Apple] [SwiftUI] [界面设计] [代码]
+# 标签
+必须选择一个 role/* 和 1–3 个 focus/*。
+按实际能力选填 platform/*、stack/*、output/*。
+通常使用 4–6 个标签，最多 8 个；不要用标签重复一级分类。
+只使用中央词表中已有标签。确需新标签时，先补充词表。
+
+# 输出
+{"category":"分类 ID","tags":["role/...","focus/..."],"reason":"一句话说明主要产出"}
 ```
 
-一级分类相同，但 `role`、`focus` 和 `output` 直接说明了四个技能的边界。
+只保留少量交叉示例，用来校准边界：
 
-## 数据模型
+| Skill 情况 | 分类 | 原因 |
+|---|---|---|
+| 观看视频并输出字幕、摘要或分析 | `research-office` | 输入是视频，产出是研究结果 |
+| 研究竞品视频并输出宣传文案或营销脚本 | `operations` | 最终产出服务运营 |
+| 审查 iOS 服务端或 SwiftUI 界面 | `ios` | iOS 是强归属 |
+| 为 App Store 优化关键词与宣传页 | `operations` | 产出是增长与宣传，不是 iOS 实现 |
 
-分类继续由 `skills/<category>/<skill-name>` 的目录表达，不在 metadata 中重复保存。
-标签和分类来源写入 `metadata.json`：
+## 标签
 
-```json
-{
-  "swiftui-pro": {
-    "recommendation": 4,
-    "description": "审查已有 SwiftUI 代码。",
-    "trigger": "需要检查 SwiftUI 代码质量时使用。",
-    "tags": [
-      "role/reviewer",
-      "platform/apple",
-      "stack/swiftui",
-      "focus/code-quality",
-      "output/report"
-    ],
-    "classification": {
-      "taxonomy_version": 1,
-      "source": "agent"
-    }
-  }
-}
-```
+标签采用 `命名空间/值`：
 
-`agents-kit.json` 保存：
+- `role/*`：Skill 在流程中的角色。必须且只能有一个。
+- `focus/*`：一级分类内的具体能力。必须有 1–3 个。
+- `platform/*`：服务或运行平台。可选。
+- `stack/*`：框架、语言或工具。可选。
+- `output/*`：主要产物。可选。
 
-- taxonomy 版本；
-- 一级分类 ID、展示名称和边界说明；
-- 标签命名空间和受控词表；
-- 必填项、数量上限和同义词映射。
+`role` 的中央词表为：
 
-不保存模型的解释文本或主观置信度。标签是长期事实，分类理由只作为导入命令的临时
-输出，避免 metadata 膨胀。
+`reference`、`guide`、`builder`、`reviewer`、`router`、`workflow`、
+`researcher`、`integration`。
 
-## 自动分类流程
+其余标签也使用中央词表并收敛同义词。标签的目的不是再次写
+`ios`、`backend` 等大类名称，而是区分同类 Skill 的角色、细分能力、技术和产出。
+HTML 展示每个 Skill 的全部标签，不截断。
 
-### 新技能
+## 数据与命令
 
-技能安装通常由 Codex 或 Claude 发起。当前 AI 在读取来源后，已经需要填写中文说明和
-触发方式，因此同时完成分类和标签，不需要额外模型调用。
+- 目录 `skills/<category>/<skill-name>` 继续表达一级分类。
+- `metadata.json` 保存标签和 taxonomy 版本，不重复保存目录中已有的分类。
+- `agents-kit.json` 保存 taxonomy 版本、分类定义、标签命名空间和中央词表。
+- 分类理由只用于当次检查，不写入长期清册。
 
-导入命令扩展为：
+不新增公开脚本，继续使用一个 `agents-kit` 入口：
 
 ```bash
 agents-kit skill import "<来源>" \
-  --category frontend-uiux \
-  --tag role/reviewer \
-  --tag focus/accessibility \
-  --tag platform/web \
-  --tag output/report \
+  --category research-office \
+  --tag role/researcher \
+  --tag focus/video-analysis \
+  --tag output/summary \
   --scope global \
   ...
 ```
 
-AI 分类时必须遵守：
+- `skill import` 接收分类和可重复的 `--tag`，一次完成入库、安装、文档与体检。
+- `skill metadata set` 负责后续改标签。
+- `skill list` 支持按分类和标签筛选。
+- `check` 只做确定性校验：合法分类、中央词表、唯一 `role`、必需 `focus` 和数量上限。
+- `docs build` 根据清册生成分类统计、标签索引和 HTML。
 
-1. 先确定主要用户意图和主要产物，再选择唯一一级分类。
-2. 标签用于说明大类内部的细分位置，不得只重复分类名称。
-3. 必须选择一个 `role` 和至少一个 `focus`。
-4. 只标注技能明确具备的能力，不根据上游仓库名扩大能力范围。
-5. 交叉能力保留一个主分类，其余信息写入标签。
-6. 优先复用中央词表；缺少必要词条时先扩充词表，再导入技能。
+分类语义不写进 Python 条件分支。代码只验证模型给出的结构化结果，因此以后新增来源、
+分类或标签时，不需要改一套关键词规则。
 
-### 手动导入
+## 迁移步骤
 
-不建设独立的模型调用服务。手动导入时可以直接提供分类和标签；缺失标签时命令拒绝
-完成全局安装，并输出所缺维度。以后确有频繁手动导入需求，再增加基于关键词的建议，
-不在第一版提前建设规则引擎。
+1. 在 `agents-kit.json` 定义 taxonomy 和中央词表。
+2. 扩展 metadata、CLI、检查器和 HTML 数据结构。
+3. 当前 AI 按组读取 155 个 Skill，输出分类、标签和临时理由。
+4. 一次校验全部结果，集中复核跨分类项，再移动目录和更新 metadata。
+5. 重新同步全局链接，只生成一次文档和 HTML。
+6. 运行单元测试、`agents-kit check`、文档幂等检查和 `git diff --check`。
+7. 将本计划中的稳定规则落入 `docs/skill-taxonomy.md`，然后删除本计划。
 
-### 现有 155 个技能
+批量迁移不是 155 次模型 API 调用。当前 AI 可以分组完成语义判断，脚本只负责批量应用
+和验证。上游更新不自动重写人工确认过的分类和标签；能力描述发生实质变化时，由当前
+AI 重新判断。
 
-安排一次 AI 批量标注：
+## 验收
 
-1. 从现有清册生成只含名称、说明、触发方式、来源路径和资源文件名的输入。
-2. 按当前目录和候选新分类分批，每批处理一组相关技能，让 AI 能同时比较相似项。
-3. AI 输出统一 JSON 映射：技能名、一级分类、标签和临时分类理由。
-4. 在修改仓库前，脚本校验 155 个技能全部覆盖、无重名、分类合法、标签合法。
-5. 对跨分类或标签高度相似的技能进行第二轮集中复核。
-6. 一次性移动目录并更新 metadata，最后只运行一次全局链接同步、文档生成和体检。
-
-批量标注不是 155 次模型调用。当前任务中的 AI 可以按组读取和判断；模型只负责语义
-判断，文件移动、JSON 更新和验证全部由确定性代码完成。
-
-### 上游更新
-
-上游内容更新不自动覆盖现有标签。更新后若名称或 description 发生显著变化，体检生成
-“建议重新分类”警告，由当前 AI 复核。人工或 AI 已确认的标签保持稳定。
-
-## CLI 与模块调整
-
-不新增公开脚本，继续使用 `agents-kit`：
-
-- `skill import`：增加可重复的 `--tag`。
-- `skill metadata set`：增加 `--tag`、`--clear-tags`。
-- `skill list`：支持按 category 和 tag 筛选。
-- `check`：验证分类、标签命名空间、受控词表、唯一 role、focus 和数量上限。
-- `docs build`：生成分类统计、标签索引和 HTML 数据。
-
-分类与标签校验逻辑放在一个内部 taxonomy 模块中，不把规则散落到 CLI、文档生成器和
-检查器。
-
-## HTML 展示
-
-- 每个技能行展示全部标签，允许自然换行，不省略。
-- `role` 使用最明显的视觉样式，其余命名空间使用稳定但不同的样式。
-- 支持一级分类筛选、标签筛选和全文搜索。
-- 标签筛选按命名空间分组，避免形成无结构的标签云。
-- 详情区继续展示中文说明、触发方式、来源、推荐指数和 Finder 操作。
-- 同一分类内，根据共享的 `focus`、`platform` 和 `stack` 计算相似技能。
-- 相似技能区域同时展示不同的 `role` 和 `output`，帮助用户理解边界，不额外保存
-  手写关系。
-- 桌面和窄屏下都必须完整显示标签，不能覆盖名称、说明和操作按钮。
-
-## 实施顺序
-
-1. 在 `agents-kit.json` 定义 taxonomy、一级分类和标签词表。
-2. 扩展 metadata 读写、CLI 参数和 taxonomy 校验。
-3. 更新检查器、文档生成和 HTML 标签筛选。
-4. 让 AI 对现有 155 个技能生成完整分类与标签映射。
-5. 校验映射后一次性迁移目录和 metadata。
-6. 收敛全局软链接，重新生成文档与 HTML。
-7. 运行代码测试、文档幂等检查、完整体检和四类客户端路径检查。
-8. 将最终稳定规则合并进 `docs/architecture.md`，完成后删除本执行计划，避免长期
-   维护两份架构说明。
-
-## 验收标准
-
-- 155 个技能全部且只属于一个合法一级分类。
-- 每个技能有且只有一个 `role`，至少一个 `focus`，通常 4–6 个、最多 8 个标签。
-- 全部标签来自中央词表，没有同义词分裂和重复标签。
-- 一条 `skill import` 命令能同时完成入库、分类、标签、安装、文档生成和体检。
-- HTML 展示所有标签，并能按分类和任意标签筛选。
-- 相似技能能根据标签自动形成可理解的对照。
-- `active.txt`、`sources.json` 和技能依赖关系不因目录迁移丢失。
-- 全局软链接与新目录一致，不保留指向旧分类的链接。
+- 155 个 Skill 全部且只属于一个合法分类。
+- 每个 Skill 有且只有一个 `role`，有 1–3 个 `focus`，总标签不超过 8 个。
+- 所有标签来自中央词表，没有同义词分裂。
+- 一条 `skill import` 完成分类、标签、安装、文档生成和体检。
+- HTML 展示全部标签，并支持分类、标签和全文筛选。
+- 全局链接、来源记录、依赖关系在目录迁移后保持正确。
 - 连续运行两次 `docs build`，第二次不产生文件变化。
-- 全部单元测试、`agents-kit check` 和 `git diff --check` 通过。
+- 全部测试、`agents-kit check` 和 `git diff --check` 通过。
 
+## 提示词设计依据
+
+Anthropic 的建议是使用最少的高信号上下文、直接语言和清晰分段，在观察到失败后再补充
+规则或例子；不要先写一份覆盖所有边角情况的规则清单。Skill 编写指南也建议假设模型
+具备通用判断力，只补充它不知道的仓库边界，并使用少量有代表性的例子。
+
+- [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
+- [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
+- [Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices)
+- [System prompts](https://platform.claude.com/docs/en/release-notes/system-prompts)
