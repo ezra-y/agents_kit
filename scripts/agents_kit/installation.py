@@ -21,6 +21,12 @@ def enable_global(repo: Repository, name: str) -> ChangeSet:
     if name not in active:
         active.append(name)
         changed = repo.write_active(active)
+    # 只提示会连带装上哪些依赖；依赖不写进 active.txt，由 plan 层闭包保证安装
+    dependencies = [
+        item
+        for item in _expand_dependencies(repo, [name], missing=[])
+        if item != name and item not in active
+    ]
     return ChangeSet(
         changed={"active"} if changed else set(),
         effects=(
@@ -28,7 +34,7 @@ def enable_global(repo: Repository, name: str) -> ChangeSet:
             if changed
             else {Effect.GLOBAL_APPLY}
         ),
-        details={"skill": name, "active": True},
+        details={"skill": name, "active": True, "dependencies": dependencies},
     )
 
 
@@ -50,8 +56,16 @@ def disable_global(repo: Repository, name: str) -> ChangeSet:
 
 def global_plan(repo: Repository) -> dict[str, Any]:
     inventory = repo.inventory()
-    wanted = repo.read_active()
-    missing = [name for name in wanted if name not in inventory]
+    explicit = repo.read_active()
+    missing = [name for name in explicit if name not in inventory]
+    # 依赖闭包在 plan 层展开：active.txt 只记用户意图，
+    # 安装、清理和体检都以闭包为准。手工编辑 active.txt 也能得到依赖。
+    wanted = _expand_dependencies(
+        repo,
+        [name for name in explicit if name in inventory],
+        missing=missing,
+    )
+    dependencies = [name for name in wanted if name not in explicit]
     actions: list[dict[str, str]] = []
     conflicts: list[str] = []
     managed_root = repo.skills_dir.resolve()
@@ -113,6 +127,8 @@ def global_plan(repo: Repository) -> dict[str, Any]:
                     conflicts.append(f"非常驻技能被外部内容暴露：{item}")
     return {
         "wanted": wanted,
+        "explicit": explicit,
+        "dependencies": dependencies,
         "missing": missing,
         "actions": actions,
         "conflicts": conflicts,
@@ -232,8 +248,19 @@ def _select_skills(repo: Repository, target: str) -> list[str]:
     raise InstallationError(f"找不到技能或分类：{target}")
 
 
-def _expand_dependencies(repo: Repository, selected: list[str]) -> list[str]:
+def _expand_dependencies(
+    repo: Repository,
+    selected: list[str],
+    *,
+    missing: list[str] | None = None,
+) -> list[str]:
+    """按 metadata 的 dependencies 展开闭包，检测循环。
+
+    missing 为 None 时，缺失依赖直接报错（项目安装用）；
+    传入列表时，缺失依赖记录到该列表并跳过（全局 plan 用，让 plan 能报告而不是崩）。
+    """
     metadata = repo.read_metadata()["skills"]
+    inventory = repo.inventory()
     result = list(selected)
     visiting: set[str] = set()
     visited: set[str] = set()
@@ -243,12 +270,18 @@ def _expand_dependencies(repo: Repository, selected: list[str]) -> list[str]:
             return
         if name in visiting:
             raise InstallationError(f"技能依赖形成循环：{name}")
-        if name not in repo.inventory():
-            raise InstallationError(f"依赖技能不存在：{name}")
+        if name not in inventory:
+            if missing is None:
+                raise InstallationError(f"依赖技能不存在：{name}")
+            if name in result:
+                result.remove(name)
+            if name not in missing:
+                missing.append(name)
+            return
         visiting.add(name)
         for dependency in metadata.get(name, {}).get("dependencies", []):
             visit(dependency)
-            if dependency not in result:
+            if dependency not in result and dependency in inventory:
                 result.append(dependency)
         visiting.remove(name)
         visited.add(name)

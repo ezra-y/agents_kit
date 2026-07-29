@@ -14,7 +14,9 @@
    直接改源码或事实状态后，运行 `agents-kit docs build` 和 `agents-kit check`。
 6. 删除技能必须同时处理技能目录、常驻状态、来源记录、metadata 和本仓库管理的链接。
    使用 `agents-kit skill remove <技能名> --yes`。
-7. 项目安装是副本，不受中央仓库继续追踪；全局安装是软链接。
+7. 项目安装是副本，不受中央仓库继续追踪；全局安装是软链接。两条路径都会按
+   `metadata.json` 的 `dependencies` 自动展开依赖：`active.txt` 只记显式启用的技能，
+   依赖由 `global apply` 连带安装，停用后无人依赖的会被自动回收。
 8. 上游默认使用 `review` 策略。先 `source check`，确认后再 `source update`。
 9. HTTP 单文件来源只管理 `SKILL.md`；`references/`、`scripts/` 等附件由仓库保留。
 10. 修改 `rules/`、`agents/`、`hooks/` 或 `prompts/` 前，先读对应目录的 README。

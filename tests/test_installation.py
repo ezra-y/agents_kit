@@ -8,6 +8,7 @@ from scripts.agents_kit.installation import (
     InstallationError,
     apply_global,
     enable_global,
+    global_plan,
     install_project,
 )
 from scripts.agents_kit.repository import Repository
@@ -83,21 +84,25 @@ class InstallationTests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_global_enable_apply_and_prune(self):
-        enable_global(self.repo, "alpha")
+        change = enable_global(self.repo, "alpha")
+        self.assertEqual(change.details["dependencies"], ["beta"])
         result = apply_global(self.repo)
 
-        self.assertEqual(result.details["linked"], 2)
+        # alpha 及其依赖 beta，各链到 2 个目标
+        self.assertEqual(result.details["linked"], 4)
         self.assertEqual(
             (self.global_one / "alpha").resolve(), self.repo.require_skill("alpha").path
         )
         self.assertEqual(
-            (self.global_two / "alpha").resolve(), self.repo.require_skill("alpha").path
+            (self.global_two / "beta").resolve(), self.repo.require_skill("beta").path
         )
 
+        # 停用 alpha 后，没人需要 beta，依赖链接一并回收
         self.repo.write_active([])
         result = apply_global(self.repo)
-        self.assertEqual(result.details["unlinked"], 2)
+        self.assertEqual(result.details["unlinked"], 4)
         self.assertFalse((self.global_one / "alpha").exists())
+        self.assertFalse((self.global_one / "beta").exists())
 
     def test_global_apply_refuses_entity_directory(self):
         self.repo.write_active(["alpha"])
@@ -117,6 +122,33 @@ class InstallationTests(unittest.TestCase):
             apply_global(self.repo)
 
         self.assertTrue(conflict.is_dir())
+
+    def test_global_plan_expands_dependencies_from_hand_edited_active(self):
+        # 直接手改 active.txt（不经过 enable）也必须得到依赖
+        self.repo.write_active(["alpha"])
+        plan = global_plan(self.repo)
+        self.assertEqual(plan["explicit"], ["alpha"])
+        self.assertEqual(plan["dependencies"], ["beta"])
+        self.assertIn("beta", plan["wanted"])
+
+    def test_global_plan_reports_missing_dependency(self):
+        metadata = self.repo.read_metadata()
+        metadata["skills"]["alpha"]["dependencies"] = ["ghost"]
+        self.repo.write_metadata(metadata)
+        self.repo.write_active(["alpha"])
+        plan = global_plan(self.repo)
+        self.assertIn("ghost", plan["missing"])
+        with self.assertRaises(InstallationError):
+            apply_global(self.repo)
+
+    def test_global_plan_detects_dependency_cycle(self):
+        metadata = self.repo.read_metadata()
+        metadata["skills"]["alpha"]["dependencies"] = ["beta"]
+        metadata["skills"]["beta"]["dependencies"] = ["alpha"]
+        self.repo.write_metadata(metadata)
+        self.repo.write_active(["alpha"])
+        with self.assertRaises(InstallationError):
+            global_plan(self.repo)
 
     def test_project_install_expands_dependencies(self):
         project = self.root / "project"
