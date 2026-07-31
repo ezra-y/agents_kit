@@ -72,6 +72,19 @@
         "content_sha256": "d6ad28a8aa11b3a4245ec5516adb68b9d52f691311121392355305ac0b3ff610"
       }
     },
+    "ars-deep-research": {
+      "provider": "http",
+      "locator": {
+        "url": "https://raw.githubusercontent.com/Imbad0202/academic-research-skills/main/deep-research/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"63e1819e08c3a50a41f14a42ec0c7698104db53e5ef317b43026e9fbece56952\"",
+        "content_sha256": "f903840f07c447abe51fc7f52c6fe2354a9b15af25bfd254728a199cd26985be"
+      },
+      "source_name": "deep-research"
+    },
     "arxiv": {
       "provider": "http",
       "locator": {

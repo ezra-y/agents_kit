@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **167** 个 · 常驻 **78** 个 · 有上游可检查更新 **142** 个
+共 **168** 个 · 常驻 **79** 个 · 有上游可检查更新 **143** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -153,10 +153,11 @@
 | `to-prd` | 把当前对话合成规格文档并发到 issue tracker。已更新到上游最新(上游改名 to-spec,75 行)。明确不访谈你,只综合已知信 | `role/builder` `focus/product-specification` `focus/requirements-synthesis` `output/prd` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/to-spec) |
 | `triage` | 用状态机和五种 triage 角色流转 issue,要求每条评论带免责声明。 | `role/workflow` `focus/delivery-planning` `focus/issue-triage` `output/issues` |  | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/triage) |
 
-## 学术研究 (`academic`，12 个)
+## 学术研究 (`academic`，13 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
+| `ars-deep-research` | ARS 的严谨学术研究与文献综述工作流：覆盖研究问题定义、可复现检索、纳入排除、双阶段筛选、来源核验、证据综合、PRISMA 系统综述、偏倚 | `role/workflow` `focus/deep-research` `focus/evidence-synthesis` `focus/literature-review` `platform/multi-platform` `output/literature-review` `output/report` | ● | [raw.githubusercontent.com](https://raw.githubusercontent.com/Imbad0202/academic-research-skills/main/deep-research/SKILL.md) |
 | `arxiv` | arXiv 专用论文检索、详情读取、摘要和 PDF 下载；适合查最新预印本或处理明确的 arXiv ID。 | `role/researcher` `focus/full-text-retrieval` `focus/literature-search` `platform/arxiv` `output/files` `output/paper-metadata` | ● | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/wanshuiyin/Auto-claude-code-research-in-sleep@6e5856f2ace5970705788aced3b77aba040fe4ab/skills/skills-codex/arxiv/SKILL.md) |
 | `nature-academic-search` | 跨 CrossRef、PubMed、arXiv、Scopus 和 ScienceDirect 的学术检索工作流，支持 MeSH 查询、引用核 | `role/workflow` `focus/citation-analysis` `focus/literature-search` `focus/query-construction` `platform/sciencedirect` `platform/scopus` `output/paper-metadata` | ● | [github.com](https://github.com/Yuan1z0825/nature-skills/archive/refs/heads/main.zip) |
 | `paper-search` | 通过本机 paper-search CLI 跨 20 多个学术来源检索论文、下载 PDF 和提取全文；它是统一检索工具层，不负责完整文献综述 | `role/integration` `focus/full-text-retrieval` `focus/literature-search` `focus/paper-metadata` `platform/multi-platform` `output/files` `output/paper-metadata` | ● | — |

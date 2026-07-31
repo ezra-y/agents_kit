@@ -1,0 +1,4 @@
+interface:
+  display_name: "ARS Deep Research"
+  short_description: "严谨学术研究、PRISMA 系统综述与证据综合工作流"
+  default_prompt: "Use $ars-deep-research to conduct a rigorous literature review with explicit search and screening criteria."

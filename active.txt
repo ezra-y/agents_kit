@@ -79,3 +79,4 @@ pm-fulltext
 pm-navigate-pages
 pm-export
 nature-academic-search
+ars-deep-research

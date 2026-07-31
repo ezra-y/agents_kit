@@ -83,6 +83,20 @@
         "output/reference"
       ]
     },
+    "ars-deep-research": {
+      "recommendation": 4,
+      "description": "ARS 的严谨学术研究与文献综述工作流：覆盖研究问题定义、可复现检索、纳入排除、双阶段筛选、来源核验、证据综合、PRISMA 系统综述、偏倚评估和可选 Meta 分析；不包含独立论文写作与审稿返修 Skill。",
+      "trigger": "说「用 ARS 做严谨文献综述」「按 PRISMA 做系统综述」「设计研究问题并做证据综合」「比较多篇论文的 WHY/HOW/WHAT」。",
+      "tags": [
+        "role/workflow",
+        "focus/deep-research",
+        "focus/evidence-synthesis",
+        "focus/literature-review",
+        "platform/multi-platform",
+        "output/literature-review",
+        "output/report"
+      ]
+    },
     "arxiv": {
       "recommendation": 4,
       "description": "arXiv 专用论文检索、详情读取、摘要和 PDF 下载；适合查最新预印本或处理明确的 arXiv ID。",
