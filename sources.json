@@ -72,6 +72,18 @@
         "content_sha256": "d6ad28a8aa11b3a4245ec5516adb68b9d52f691311121392355305ac0b3ff610"
       }
     },
+    "arxiv": {
+      "provider": "http",
+      "locator": {
+        "url": "https://cdn.jsdelivr.net/gh/wanshuiyin/Auto-claude-code-research-in-sleep@6e5856f2ace5970705788aced3b77aba040fe4ab/skills/skills-codex/arxiv/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": "W/\"1e80-iOJgvHEUUZaGD+OiXrUMw5seDNo\"",
+        "content_sha256": "f984dc04545e7cab0781fc518e9bc7ed5121175cac15a53707e8fc5bbd97c95f"
+      }
+    },
     "authentication-patterns": {
       "provider": "git",
       "locator": {
@@ -1223,6 +1235,66 @@
         "content_sha256": "86708b2acff49e19321c97ee1b27192e052bdce1435df623e953d320b84dd95b"
       }
     },
+    "pm-advanced-search": {
+      "provider": "http",
+      "locator": {
+        "url": "https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-advanced-search/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"017d1013d76d4f88bbd03caa61ad50971c905a745e976394135eaeebb7f9c664\"",
+        "content_sha256": "b348f3ee9a7ced47d9c1cad1c26cd429e7f76f278d1cd11605191a1ca025905a"
+      }
+    },
+    "pm-fulltext": {
+      "provider": "http",
+      "locator": {
+        "url": "https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-fulltext/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"e305131597db747780ed4914d30b0d48f4873f3d61ea01aaa64397c546069f16\"",
+        "content_sha256": "919eb4ae3e105862cd94f44c49dc5eeb41a0a9744ab84e9398d5ae1757288b45"
+      }
+    },
+    "pm-navigate-pages": {
+      "provider": "http",
+      "locator": {
+        "url": "https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-navigate-pages/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"23bb92d71eb31d672c0c89081b40b2428d4df00ed50fa0ac9018d47fc1987e2e\"",
+        "content_sha256": "253e7374c5cebcbb9e881d5bb1665e6b5ba0c1c274492cdc63982fba3d243021"
+      }
+    },
+    "pm-paper-detail": {
+      "provider": "http",
+      "locator": {
+        "url": "https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-paper-detail/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"ac45ef6ca098d16e970dcaf8ca671109fc5542e20c5fdbf5b2d40e54e3372eb8\"",
+        "content_sha256": "036d578043feccd478bbcb002a851e063f88d9e99af0655fc96177486093d721"
+      }
+    },
+    "pm-search": {
+      "provider": "http",
+      "locator": {
+        "url": "https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-search/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"75e93c712dd0687419f2371cc71dbeb84d40ce3a1a386eba8dc5380468cd944e\"",
+        "content_sha256": "a7ea8d8317d5592a858eb61caaa7bcb2f94d99ae926fc478d049486412aa6cc5"
+      }
+    },
     "prototype": {
       "provider": "git",
       "locator": {
@@ -1235,6 +1307,18 @@
       "resolved": {
         "revision": null,
         "content_sha256": "3db8a0ee4c237f38b14b8243f9f062d96fbc6552b7be16d7e20a38a88d79f285"
+      }
+    },
+    "pubmed": {
+      "provider": "http",
+      "locator": {
+        "url": "https://cdn.jsdelivr.net/gh/masa061580/pubmed-skill@cf1a877aee83c427d7a2b6cff6d1d78c69d0a823/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"63c93ee084a9dec4547ebc2ed4865f292b9dccada3ffb2d434e395d57268fba4\"",
+        "content_sha256": "14684059cff5fd63841a77bebc2871e9f1831788d1feae7e8519f5919059211a"
       }
     },
     "react-best-practices": {
@@ -1307,6 +1391,18 @@
         "content_sha256": "b0c1a417605c3cfc3b49c68c26abc1277b500e6145c23d95462f520654f11b59"
       }
     },
+    "research-lit": {
+      "provider": "http",
+      "locator": {
+        "url": "https://cdn.jsdelivr.net/gh/wanshuiyin/Auto-claude-code-research-in-sleep@0fafc8ed11d66ad537efd54977b9d9a91c206ec0/skills/skills-codex/research-lit/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": "W/\"51b9-4rTZOIbSMjrsm+65+5BujsT/iCc\"",
+        "content_sha256": "a1d692e03cb13c9fe4cc143f919915feda19f0d663df2cbade9793130e3d47a6"
+      }
+    },
     "rust-systems": {
       "provider": "git",
       "locator": {
@@ -1333,6 +1429,18 @@
       "resolved": {
         "revision": null,
         "content_sha256": "4cf904f3afe57ed0022ad4f6774089ca080722f11977aca569782ec91b158871"
+      }
+    },
+    "semantic-scholar": {
+      "provider": "http",
+      "locator": {
+        "url": "https://cdn.jsdelivr.net/gh/wanshuiyin/Auto-claude-code-research-in-sleep@6e5856f2ace5970705788aced3b77aba040fe4ab/skills/skills-codex/semantic-scholar/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": "W/\"28c4-2glgKvy63O/BUB7CRuHi7MKY0rk\"",
+        "content_sha256": "d04cbbe6632dd4c0543c5f4c984b369b2ce4b01120cd7e1de5526144bd735c57"
       }
     },
     "session-report": {

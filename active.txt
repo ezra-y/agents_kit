@@ -67,3 +67,14 @@ grill-with-docs
 khazix-writer
 last30days
 watch
+research-lit
+arxiv
+semantic-scholar
+paper-search
+pubmed
+pm-search
+pm-advanced-search
+pm-paper-detail
+pm-fulltext
+pm-navigate-pages
+pm-export

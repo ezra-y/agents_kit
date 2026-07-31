@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **155** 个 · 常驻 **66** 个 · 有上游可检查更新 **132** 个
+共 **166** 个 · 常驻 **77** 个 · 有上游可检查更新 **141** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -153,10 +153,21 @@
 | `to-prd` | 把当前对话合成规格文档并发到 issue tracker。已更新到上游最新(上游改名 to-spec,75 行)。明确不访谈你,只综合已知信 | `role/builder` `focus/product-specification` `focus/requirements-synthesis` `output/prd` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/to-spec) |
 | `triage` | 用状态机和五种 triage 角色流转 issue,要求每条评论带免责声明。 | `role/workflow` `focus/delivery-planning` `focus/issue-triage` `output/issues` |  | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/triage) |
 
-## 学术研究 (`academic`，0 个)
+## 学术研究 (`academic`，11 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
+| `arxiv` | arXiv 专用论文检索、详情读取、摘要和 PDF 下载；适合查最新预印本或处理明确的 arXiv ID。 | `role/researcher` `focus/full-text-retrieval` `focus/literature-search` `platform/arxiv` `output/files` `output/paper-metadata` | ● | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/wanshuiyin/Auto-claude-code-research-in-sleep@6e5856f2ace5970705788aced3b77aba040fe4ab/skills/skills-codex/arxiv/SKILL.md) |
+| `paper-search` | 通过本机 paper-search CLI 跨 20 多个学术来源检索论文、下载 PDF 和提取全文；它是统一检索工具层，不负责完整文献综述 | `role/integration` `focus/full-text-retrieval` `focus/literature-search` `focus/paper-metadata` `platform/multi-platform` `output/files` `output/paper-metadata` | ● | — |
+| `pm-advanced-search` | PubMed 高级检索：把自然语言条件转换为作者、标题、期刊、MeSH、日期和文章类型等字段限定查询。 | `role/researcher` `focus/biomedical-literature` `focus/literature-search` `focus/query-construction` `platform/pubmed` `output/paper-metadata` | ● | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-advanced-search/SKILL.md) |
+| `pm-export` | 把一个或一批 PubMed 记录导出为 RIS，或通过本地 Zotero Connector 写入 Zotero；负责文献管理交接，不负责检 | `role/integration` `focus/bibliographic-export` `focus/biomedical-literature` `platform/pubmed` `platform/zotero` `output/bibliography` | ● | — |
+| `pm-fulltext` | 按 PMID 查找论文全文入口：解析 DOI、PMC 开放获取和出版社链接，用于从论文元数据继续定位可读全文。 | `role/researcher` `focus/biomedical-literature` `focus/full-text-retrieval` `platform/pubmed` `output/reference` | ● | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-fulltext/SKILL.md) |
+| `pm-navigate-pages` | 延续上一轮 PubMed 检索，切换结果页或排序方式；它只负责检索结果导航，不发起新的研究主题。 | `role/workflow` `focus/biomedical-literature` `focus/literature-search` `focus/search-result-navigation` `platform/pubmed` `output/paper-metadata` | ● | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-navigate-pages/SKILL.md) |
+| `pm-paper-detail` | 按 PMID 读取 PubMed 论文完整元数据：作者与机构、摘要、MeSH、关键词、文章类型、DOI 和引用信息。 | `role/researcher` `focus/biomedical-literature` `focus/paper-metadata` `platform/pubmed` `output/paper-metadata` | ● | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-paper-detail/SKILL.md) |
+| `pm-search` | PubMed 基础关键词检索：返回 PMID、标题、作者、期刊、日期和 DOI，是拆分式 PubMed 工作流的入口。 | `role/researcher` `focus/biomedical-literature` `focus/literature-search` `focus/paper-metadata` `platform/pubmed` `output/paper-metadata` | ● | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-search/SKILL.md) |
+| `pubmed` | 单体 PubMed/PMC 学术检索工作流：直接调用 NCBI E-utilities、PMC 与 iCite，覆盖检索、摘要、相似论文、引 | `role/workflow` `focus/biomedical-literature` `focus/citation-analysis` `focus/literature-search` `platform/pubmed` `output/paper-metadata` | ● | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/masa061580/pubmed-skill@cf1a877aee83c427d7a2b6cff6d1d78c69d0a823/SKILL.md) |
+| `research-lit` | 多源学术文献综述工作流：检索 Zotero、本地 PDF、网页和学术数据库，去重后阅读并综合相关工作；重点是形成综述，不只是返回论文列表。 | `role/workflow` `focus/evidence-synthesis` `focus/literature-review` `focus/literature-search` `platform/multi-platform` `output/literature-review` | ● | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/wanshuiyin/Auto-claude-code-research-in-sleep@0fafc8ed11d66ad537efd54977b9d9a91c206ec0/skills/skills-codex/research-lit/SKILL.md) |
+| `semantic-scholar` | Semantic Scholar 专用论文检索：侧重正式会议和期刊，返回 venue、DOI、引用量、TLDR 与开放获取链接，用于补充 a | `role/researcher` `focus/citation-analysis` `focus/literature-search` `focus/paper-metadata` `platform/semantic-scholar` `output/paper-metadata` | ● | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/wanshuiyin/Auto-claude-code-research-in-sleep@6e5856f2ace5970705788aced3b77aba040fe4ab/skills/skills-codex/semantic-scholar/SKILL.md) |
 
 ## 研究与办公 (`research-office`，29 个)
 

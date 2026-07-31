@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "taxonomy_version": 2,
+  "taxonomy_version": 3,
   "skills": {
     "accessibility-wcag": {
       "recommendation": 2,
@@ -81,6 +81,19 @@
         "focus/api-discovery",
         "platform/apple",
         "output/reference"
+      ]
+    },
+    "arxiv": {
+      "recommendation": 4,
+      "description": "arXiv 专用论文检索、详情读取、摘要和 PDF 下载；适合查最新预印本或处理明确的 arXiv ID。",
+      "trigger": "说「查 arXiv 上关于 XXX 的论文」「下载 arXiv:XXXX.XXXXX」。",
+      "tags": [
+        "role/researcher",
+        "focus/full-text-retrieval",
+        "focus/literature-search",
+        "platform/arxiv",
+        "output/files",
+        "output/paper-metadata"
       ]
     },
     "authentication-patterns": {
@@ -1231,6 +1244,20 @@
         "output/code"
       ]
     },
+    "paper-search": {
+      "recommendation": 4,
+      "description": "通过本机 paper-search CLI 跨 20 多个学术来源检索论文、下载 PDF 和提取全文；它是统一检索工具层，不负责完整文献综述。",
+      "trigger": "说「跨多个数据库找论文」「下载或读取这篇论文全文」。",
+      "tags": [
+        "role/integration",
+        "focus/full-text-retrieval",
+        "focus/literature-search",
+        "focus/paper-metadata",
+        "platform/multi-platform",
+        "output/files",
+        "output/paper-metadata"
+      ]
+    },
     "photosui": {
       "recommendation": 2,
       "description": "PhotosUI API 离线镜像。PhotosPicker 相册选择器、PHLivePhotoView 实况照片、选择结果的加载与转换。",
@@ -1255,6 +1282,85 @@
         "output/app"
       ]
     },
+    "pm-advanced-search": {
+      "recommendation": 4,
+      "description": "PubMed 高级检索：把自然语言条件转换为作者、标题、期刊、MeSH、日期和文章类型等字段限定查询。",
+      "trigger": "说「按作者、MeSH、期刊或年份精确查 PubMed」。",
+      "tags": [
+        "role/researcher",
+        "focus/biomedical-literature",
+        "focus/literature-search",
+        "focus/query-construction",
+        "platform/pubmed",
+        "output/paper-metadata"
+      ]
+    },
+    "pm-export": {
+      "recommendation": 3,
+      "description": "把一个或一批 PubMed 记录导出为 RIS，或通过本地 Zotero Connector 写入 Zotero；负责文献管理交接，不负责检索。",
+      "trigger": "给出 PMID 并说「导出 RIS」「保存到 Zotero」。",
+      "tags": [
+        "role/integration",
+        "focus/bibliographic-export",
+        "focus/biomedical-literature",
+        "platform/pubmed",
+        "platform/zotero",
+        "output/bibliography"
+      ]
+    },
+    "pm-fulltext": {
+      "recommendation": 3,
+      "description": "按 PMID 查找论文全文入口：解析 DOI、PMC 开放获取和出版社链接，用于从论文元数据继续定位可读全文。",
+      "trigger": "给出 PMID 并说「找全文或 PDF」。",
+      "tags": [
+        "role/researcher",
+        "focus/biomedical-literature",
+        "focus/full-text-retrieval",
+        "platform/pubmed",
+        "output/reference"
+      ]
+    },
+    "pm-navigate-pages": {
+      "recommendation": 2,
+      "description": "延续上一轮 PubMed 检索，切换结果页或排序方式；它只负责检索结果导航，不发起新的研究主题。",
+      "trigger": "在 PubMed 结果后说「下一页」「第 N 页」「按日期排序」。",
+      "tags": [
+        "role/workflow",
+        "focus/biomedical-literature",
+        "focus/literature-search",
+        "focus/search-result-navigation",
+        "platform/pubmed",
+        "output/paper-metadata"
+      ],
+      "dependencies": [
+        "pm-search"
+      ]
+    },
+    "pm-paper-detail": {
+      "recommendation": 3,
+      "description": "按 PMID 读取 PubMed 论文完整元数据：作者与机构、摘要、MeSH、关键词、文章类型、DOI 和引用信息。",
+      "trigger": "给出 PMID 并说「看这篇论文的完整信息或摘要」。",
+      "tags": [
+        "role/researcher",
+        "focus/biomedical-literature",
+        "focus/paper-metadata",
+        "platform/pubmed",
+        "output/paper-metadata"
+      ]
+    },
+    "pm-search": {
+      "recommendation": 3,
+      "description": "PubMed 基础关键词检索：返回 PMID、标题、作者、期刊、日期和 DOI，是拆分式 PubMed 工作流的入口。",
+      "trigger": "说「用关键词查 PubMed」「找某主题的生物医学论文」。",
+      "tags": [
+        "role/researcher",
+        "focus/biomedical-literature",
+        "focus/literature-search",
+        "focus/paper-metadata",
+        "platform/pubmed",
+        "output/paper-metadata"
+      ]
+    },
     "prototype": {
       "recommendation": 3,
       "description": "做一次性原型回答一个具体问题。分两支:状态/业务逻辑问题走可运行的终端应用,UI 问题走一个路由下可切换的多套截然不同的方案。",
@@ -1264,6 +1370,19 @@
         "focus/product-validation",
         "focus/prototyping",
         "output/prototype"
+      ]
+    },
+    "pubmed": {
+      "recommendation": 4,
+      "description": "单体 PubMed/PMC 学术检索工作流：直接调用 NCBI E-utilities、PMC 与 iCite，覆盖检索、摘要、相似论文、引用指标、开放全文和 MEDLINE/RIS 导出。",
+      "trigger": "说「查 PubMed」「按 MeSH 找生物医学论文」「查 PMID 的摘要或引用」。",
+      "tags": [
+        "role/workflow",
+        "focus/biomedical-literature",
+        "focus/citation-analysis",
+        "focus/literature-search",
+        "platform/pubmed",
+        "output/paper-metadata"
       ]
     },
     "react-best-practices": {
@@ -1337,6 +1456,19 @@
         "output/design-brief"
       ]
     },
+    "research-lit": {
+      "recommendation": 4,
+      "description": "多源学术文献综述工作流：检索 Zotero、本地 PDF、网页和学术数据库，去重后阅读并综合相关工作；重点是形成综述，不只是返回论文列表。",
+      "trigger": "说「帮我做文献综述」「找 related work 并总结研究空白」。",
+      "tags": [
+        "role/workflow",
+        "focus/evidence-synthesis",
+        "focus/literature-review",
+        "focus/literature-search",
+        "platform/multi-platform",
+        "output/literature-review"
+      ]
+    },
     "rust-systems": {
       "recommendation": 2,
       "description": "Rust 系统编程:所有权与借用、错误处理(thiserror/anyhow)、trait 与泛型设计、async 运行时、builder 模式、unsafe 使用准则。",
@@ -1357,6 +1489,19 @@
         "focus/application-security",
         "focus/dependency-security",
         "output/report"
+      ]
+    },
+    "semantic-scholar": {
+      "recommendation": 4,
+      "description": "Semantic Scholar 专用论文检索：侧重正式会议和期刊，返回 venue、DOI、引用量、TLDR 与开放获取链接，用于补充 arXiv 预印本。",
+      "trigger": "说「查正式发表的论文」「按引用量找 Semantic Scholar 论文」。",
+      "tags": [
+        "role/researcher",
+        "focus/citation-analysis",
+        "focus/literature-search",
+        "focus/paper-metadata",
+        "platform/semantic-scholar",
+        "output/paper-metadata"
       ]
     },
     "session-report": {
