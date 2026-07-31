@@ -153,6 +153,11 @@
 | `to-prd` | 把当前对话合成规格文档并发到 issue tracker。已更新到上游最新(上游改名 to-spec,75 行)。明确不访谈你,只综合已知信 | `role/builder` `focus/product-specification` `focus/requirements-synthesis` `output/prd` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/to-spec) |
 | `triage` | 用状态机和五种 triage 角色流转 issue,要求每条评论带免责声明。 | `role/workflow` `focus/delivery-planning` `focus/issue-triage` `output/issues` |  | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/triage) |
 
+## 学术研究 (`academic`，0 个)
+
+| 技能 | 说明 | 标签 | 常驻 | 来源 |
+|---|---|---|:--:|---|
+
 ## 研究与办公 (`research-office`，29 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |

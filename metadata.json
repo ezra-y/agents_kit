@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "taxonomy_version": 1,
+  "taxonomy_version": 2,
   "skills": {
     "accessibility-wcag": {
       "recommendation": 2,

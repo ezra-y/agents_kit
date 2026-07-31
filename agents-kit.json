@@ -29,9 +29,13 @@
       "label": "产品",
       "description": "产品发现、需求、领域模型、PRD、原型决策、Issue 和 Triage。"
     },
+    "academic": {
+      "label": "学术研究",
+      "description": "面向学术论文与科研证据的检索、阅读、管理、分析、写作、评审和发表工作流。"
+    },
     "research-office": {
       "label": "研究与办公",
-      "description": "通用搜索、研究、分析及文档、表格、会议、消息和办公工作流。"
+      "description": "通用信息检索、业务研究、分析及文档、表格、会议、消息和办公工作流。"
     },
     "ai-building": {
       "label": "AI Building",
@@ -73,7 +77,7 @@
     "source_policy": "review",
     "network_timeout_seconds": 20
   },
-  "taxonomy_version": 1,
+  "taxonomy_version": 2,
   "tag_namespaces": {
     "role": {
       "label": "角色",
