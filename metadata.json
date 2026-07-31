@@ -2,6 +2,20 @@
   "schema_version": 2,
   "taxonomy_version": 3,
   "skills": {
+    "academic-pdf-translation": {
+      "recommendation": 5,
+      "description": "学术 PDF 全文翻译与版式重建工作流：保留证据强度、数字、引用和因果边界，支持复杂图表与截图文字本地化、自动完整性检查、源译逐页审查、可检索 PDF 交付及 Zotero 收尾。",
+      "trigger": "在毕设项目中说「全文翻译这篇论文」「修复这个 PDF 译本」「生成中外文逐页对照」「检查译文排版和语义忠实度」时使用。",
+      "tags": [
+        "role/workflow",
+        "focus/copy-editing",
+        "focus/documents",
+        "focus/full-text-retrieval",
+        "platform/zotero",
+        "output/document",
+        "output/files"
+      ]
+    },
     "academic-research-suite": {
       "recommendation": 4,
       "description": "Codex 原生 ARS 学术研究总入口：在一个 Skill 内路由深度研究、文献综述、论文写作、同行评审、研究到成稿流程和实验规划；其中 Socratic 模式用五层追问把模糊选题收敛为可回答的研究问题。研究与综述能力和 ars-deep-research 高度重叠，但额外包含论文写作等流程。",
@@ -108,6 +122,19 @@
         "platform/multi-platform",
         "output/literature-review",
         "output/report"
+      ]
+    },
+    "arts-design-tutor": {
+      "recommendation": 3,
+      "description": "艺术史与设计分析辅助：用描述、分析、解释、评价四步法处理作品和视觉证据，并提供构图、色彩、字体、设计原则、UX/UI 与作品集评析；用于增强艺术设计专业论证，不代替论文研究总流程。",
+      "trigger": "在毕设项目中说「分析这件作品」「写艺术史或设计分析段落」「用视觉证据支撑论点」「评析我的设计方案」时使用；正式研究设计和整篇论文仍交给 academic-research-suite 与 social-science-paper-writing。",
+      "tags": [
+        "role/guide",
+        "focus/design-analysis",
+        "focus/ux",
+        "focus/visual-design",
+        "output/report",
+        "output/research"
       ]
     },
     "arxiv": {
@@ -1250,6 +1277,18 @@
         "output/paper-metadata"
       ]
     },
+    "nature-figure": {
+      "recommendation": 5,
+      "description": "Nature 风格科研绘图工作流：先明确结论、证据逻辑、数据完整性、导出要求和审稿风险，再用 Python 或 R 生成论文级单图与多面板图，支持 SVG、PDF、TIFF；AI 示意图仅作为可选草稿路线。",
+      "trigger": "在毕设项目中说「把问卷数据画成论文图」「做科研绘图」「做多面板图」「导出 SVG/PDF/TIFF」时使用；研究框架、服务蓝图等可编辑概念图优先使用 thesis-figure-skill。",
+      "tags": [
+        "role/workflow",
+        "focus/data-visualization",
+        "focus/visual-design",
+        "output/diagram",
+        "output/image"
+      ]
+    },
     "nextjs-mastery": {
       "recommendation": 2,
       "description": "Next.js App Router:目录结构约定、RSC 服务端组件取数、ISR 增量再生与缓存、中间件、并行路由、Server Actions。",
@@ -1639,6 +1678,20 @@
         "output/research"
       ]
     },
+    "social-science-paper-writing": {
+      "recommendation": 5,
+      "description": "面向社会科学与设计研究的论文工作流：支持选题诊断、研究问题细化、文献综述规划、CNKI/Google Scholar 到 Zotero 的资料流、理论框架、问卷访谈与案例研究设计、草稿审查、证据和因果表述检查。",
+      "trigger": "在毕设项目中说「帮我细化研究问题」「设计问卷或访谈研究」「规划文献综述」「审查论文证据链」「修改这一章」时使用；尤其适合设计学中的用户研究和混合研究。",
+      "tags": [
+        "role/workflow",
+        "focus/literature-review",
+        "focus/long-form-writing",
+        "focus/research-question-refinement",
+        "platform/zotero",
+        "output/article",
+        "output/report"
+      ]
+    },
     "storekit": {
       "recommendation": 3,
       "description": "StoreKit 2 API 离线镜像。Product 查询、Transaction 校验与监听、订阅状态、开箱即用的 StoreView / SubscriptionStoreView 界面组件。",
@@ -1809,6 +1862,17 @@
         "focus/theming",
         "focus/typography",
         "output/design-tokens"
+      ]
+    },
+    "thesis-figure-skill": {
+      "recommendation": 4,
+      "description": "面向论文研究框架、方法流程、概念模型、服务蓝图和系统关系的可编辑配图工作流：先明确关系与布局，再用 TikZ 或 draw.io 实现、渲染和检查，避免用不可编辑 AI 位图承载关键学术结构。",
+      "trigger": "在毕设项目中说「画研究框架图」「画方法流程图」「画概念模型」「画服务蓝图」「做可编辑论文示意图」时使用；统计数据图交给 nature-figure。",
+      "tags": [
+        "role/workflow",
+        "focus/design-analysis",
+        "focus/visual-design",
+        "output/diagram"
       ]
     },
     "tipkit": {

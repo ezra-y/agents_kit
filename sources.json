@@ -2,6 +2,20 @@
   "schema_version": 2,
   "_comment": "技能来源清单。provider 负责解释 locator；无记录的技能由本地维护。",
   "skills": {
+    "academic-pdf-translation": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/ezra-y/academic-pdf-translation.git",
+        "ref": "",
+        "path": ""
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "5d93fad9f1371beafef4317642d4197a68f9b606",
+        "content_sha256": "e8b38fcc855dd85b4b018219012b21e0691cafe9116178d667d47a8e4a372865"
+      }
+    },
     "academic-research-suite": {
       "provider": "http",
       "locator": {
@@ -1232,6 +1246,20 @@
         "content_sha256": "f10186dbf8254808ba3e7fbcbf528073132e72b7d4ef097a5ab0ce9f4ac5762f"
       }
     },
+    "nature-figure": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Yuan1z0825/nature-skills.git",
+        "ref": "",
+        "path": "skills/nature-figure"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "d5c9dee63cb1679c22e2a6e4e488f5f23d4ec2e1",
+        "content_sha256": "96841e65ce01535cb8bf9a7c71948b1bc7d7fa72f79619a5925242882db3cf5f"
+      }
+    },
     "nextjs-mastery": {
       "provider": "git",
       "locator": {
@@ -1577,6 +1605,18 @@
       "resolved": {
         "revision": null,
         "content_sha256": "6ff0b7f56a668e18755f01fcb19e58d2842cb1a2a49bdb0f557892badfdc15fd"
+      }
+    },
+    "social-science-paper-writing": {
+      "provider": "http",
+      "locator": {
+        "url": "https://raw.githubusercontent.com/fakerqwq/social-science-paper-writing-skill/main/social-science-paper-writing-skill/SKILL.md"
+      },
+      "content_mode": "skill_file",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"e7a427bdffcb2d6913f4c471030b78f3c1cce7792986c2743d0da01b5692d7a0\"",
+        "content_sha256": "cd094def21ecbb0d64fc5d0c4d757213010de1ec5674da35be2366341b03c13d"
       }
     },
     "storekit": {
