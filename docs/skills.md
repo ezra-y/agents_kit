@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **168** 个 · 常驻 **79** 个 · 有上游可检查更新 **143** 个
+共 **170** 个 · 常驻 **81** 个 · 有上游可检查更新 **145** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -153,10 +153,11 @@
 | `to-prd` | 把当前对话合成规格文档并发到 issue tracker。已更新到上游最新(上游改名 to-spec,75 行)。明确不访谈你,只综合已知信 | `role/builder` `focus/product-specification` `focus/requirements-synthesis` `output/prd` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/to-spec) |
 | `triage` | 用状态机和五种 triage 角色流转 issue,要求每条评论带免责声明。 | `role/workflow` `focus/delivery-planning` `focus/issue-triage` `output/issues` |  | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/triage) |
 
-## 学术研究 (`academic`，13 个)
+## 学术研究 (`academic`，15 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
+| `academic-research-suite` | Codex 原生 ARS 学术研究总入口：在一个 Skill 内路由深度研究、文献综述、论文写作、同行评审、研究到成稿流程和实验规划；其中  | `role/router` `focus/deep-research` `focus/long-form-writing` `focus/research-question-refinement` `output/article` `output/report` | ● | [github.com](https://github.com/Imbad0202/academic-research-skills-codex/archive/refs/heads/main.zip) |
 | `ars-deep-research` | ARS 的严谨学术研究与文献综述工作流：覆盖研究问题定义、可复现检索、纳入排除、双阶段筛选、来源核验、证据综合、PRISMA 系统综述、偏倚 | `role/workflow` `focus/deep-research` `focus/evidence-synthesis` `focus/literature-review` `platform/multi-platform` `output/literature-review` `output/report` | ● | [raw.githubusercontent.com](https://raw.githubusercontent.com/Imbad0202/academic-research-skills/main/deep-research/SKILL.md) |
 | `arxiv` | arXiv 专用论文检索、详情读取、摘要和 PDF 下载；适合查最新预印本或处理明确的 arXiv ID。 | `role/researcher` `focus/full-text-retrieval` `focus/literature-search` `platform/arxiv` `output/files` `output/paper-metadata` | ● | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/wanshuiyin/Auto-claude-code-research-in-sleep@6e5856f2ace5970705788aced3b77aba040fe4ab/skills/skills-codex/arxiv/SKILL.md) |
 | `nature-academic-search` | 跨 CrossRef、PubMed、arXiv、Scopus 和 ScienceDirect 的学术检索工作流，支持 MeSH 查询、引用核 | `role/workflow` `focus/citation-analysis` `focus/literature-search` `focus/query-construction` `platform/sciencedirect` `platform/scopus` `output/paper-metadata` | ● | [github.com](https://github.com/Yuan1z0825/nature-skills/archive/refs/heads/main.zip) |
@@ -169,6 +170,7 @@
 | `pm-search` | PubMed 基础关键词检索：返回 PMID、标题、作者、期刊、日期和 DOI，是拆分式 PubMed 工作流的入口。 | `role/researcher` `focus/biomedical-literature` `focus/literature-search` `focus/paper-metadata` `platform/pubmed` `output/paper-metadata` | ● | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-search/SKILL.md) |
 | `pubmed` | 单体 PubMed/PMC 学术检索工作流：直接调用 NCBI E-utilities、PMC 与 iCite，覆盖检索、摘要、相似论文、引 | `role/workflow` `focus/biomedical-literature` `focus/citation-analysis` `focus/literature-search` `platform/pubmed` `output/paper-metadata` | ● | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/masa061580/pubmed-skill@cf1a877aee83c427d7a2b6cff6d1d78c69d0a823/SKILL.md) |
 | `research-lit` | 多源学术文献综述工作流：检索 Zotero、本地 PDF、网页和学术数据库，去重后阅读并综合相关工作；重点是形成综述，不只是返回论文列表。 | `role/workflow` `focus/evidence-synthesis` `focus/literature-review` `focus/literature-search` `platform/multi-platform` `output/literature-review` | ● | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/wanshuiyin/Auto-claude-code-research-in-sleep@0fafc8ed11d66ad537efd54977b9d9a91c206ec0/skills/skills-codex/research-lit/SKILL.md) |
+| `research-writing-skill` | 中文优先的学术论文写作与修改 Skill：覆盖摘要、引言、相关工作、方法、实验、结果讨论、结论和学位论文正文，强调先搭论证、保持公式术语与实 | `role/builder` `focus/copy-editing` `focus/long-form-writing` `focus/voice-tone` `platform/multi-platform` `output/article` `output/text` | ● | [github.com](https://github.com/zLanqing/codex-claude-academic-skills/archive/refs/heads/main.zip) |
 | `semantic-scholar` | Semantic Scholar 专用论文检索：侧重正式会议和期刊，返回 venue、DOI、引用量、TLDR 与开放获取链接，用于补充 a | `role/researcher` `focus/citation-analysis` `focus/literature-search` `focus/paper-metadata` `platform/semantic-scholar` `output/paper-metadata` | ● | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/wanshuiyin/Auto-claude-code-research-in-sleep@6e5856f2ace5970705788aced3b77aba040fe4ab/skills/skills-codex/semantic-scholar/SKILL.md) |
 
 ## 研究与办公 (`research-office`，29 个)

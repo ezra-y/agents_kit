@@ -80,3 +80,5 @@ pm-navigate-pages
 pm-export
 nature-academic-search
 ars-deep-research
+research-writing-skill
+academic-research-suite

@@ -2,6 +2,19 @@
   "schema_version": 2,
   "_comment": "技能来源清单。provider 负责解释 locator；无记录的技能由本地维护。",
   "skills": {
+    "academic-research-suite": {
+      "provider": "http",
+      "locator": {
+        "url": "https://github.com/Imbad0202/academic-research-skills-codex/archive/refs/heads/main.zip",
+        "path": "academic-research-skills-codex-main/skills/academic-research-suite"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"499fd1632a3fb1b22f9fe404027dd1937660672a27bc1b03b47190e3ce215bec\"",
+        "content_sha256": "b936d299d30eae2986456001ae5d0b15fa5763725ff74df132fc8f66aa5e528c"
+      }
+    },
     "accessibility-wcag": {
       "provider": "git",
       "locator": {
@@ -1427,6 +1440,19 @@
       "resolved": {
         "revision": "W/\"51b9-4rTZOIbSMjrsm+65+5BujsT/iCc\"",
         "content_sha256": "a1d692e03cb13c9fe4cc143f919915feda19f0d663df2cbade9793130e3d47a6"
+      }
+    },
+    "research-writing-skill": {
+      "provider": "http",
+      "locator": {
+        "url": "https://github.com/zLanqing/codex-claude-academic-skills/archive/refs/heads/main.zip",
+        "path": "codex-claude-academic-skills-main/research-writing-skill"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"158d0d68d2c998fd70a0cd2c378a5fb08e4907b1e3477b3ddf0970dfff3f63de\"",
+        "content_sha256": "7e833ff632c6dafb6b1db927de7360c9e53f8b7f5662af48aa3ccbbbf01c4ecd"
       }
     },
     "rust-systems": {

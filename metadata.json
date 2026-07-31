@@ -2,6 +2,19 @@
   "schema_version": 2,
   "taxonomy_version": 3,
   "skills": {
+    "academic-research-suite": {
+      "recommendation": 4,
+      "description": "Codex 原生 ARS 学术研究总入口：在一个 Skill 内路由深度研究、文献综述、论文写作、同行评审、研究到成稿流程和实验规划；其中 Socratic 模式用五层追问把模糊选题收敛为可回答的研究问题。研究与综述能力和 ars-deep-research 高度重叠，但额外包含论文写作等流程。",
+      "trigger": "说「用苏格拉底式问答帮我厘清毕设研究问题」「我只有一个模糊选题，先连续问我，不要直接给答案」，或显式调用 academic-research-suite、ars-plan。",
+      "tags": [
+        "role/router",
+        "focus/deep-research",
+        "focus/long-form-writing",
+        "focus/research-question-refinement",
+        "output/article",
+        "output/report"
+      ]
+    },
     "accessibility-wcag": {
       "recommendation": 2,
       "description": "Web 无障碍 WCAG 2.2:语义化 HTML、ARIA 模式、键盘导航与焦点管理、表单无障碍、色彩对比度,末尾附自查清单。",
@@ -1495,6 +1508,20 @@
         "focus/literature-search",
         "platform/multi-platform",
         "output/literature-review"
+      ]
+    },
+    "research-writing-skill": {
+      "recommendation": 4,
+      "description": "中文优先的学术论文写作与修改 Skill：覆盖摘要、引言、相关工作、方法、实验、结果讨论、结论和学位论文正文，强调先搭论证、保持公式术语与实测结果不变，并明确标记仍缺数据或引用支持的主张。",
+      "trigger": "说「用中文写或修改论文」「根据这些材料写摘要、引言、方法或讨论」「润色学位论文正文并保留公式、术语和引用」。",
+      "tags": [
+        "role/builder",
+        "focus/copy-editing",
+        "focus/long-form-writing",
+        "focus/voice-tone",
+        "platform/multi-platform",
+        "output/article",
+        "output/text"
       ]
     },
     "rust-systems": {

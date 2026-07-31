@@ -2,3 +2,7 @@
 skills/academic/nature-academic-search/references/pubmed-28344011.bib binary
 skills/academic/nature-academic-search/references/pubmed-28344011.nbib binary
 skills/academic/nature-academic-search/references/pubmed-28344011.ris binary
+
+# Preserve imported academic skill sources byte-for-byte.
+skills/academic/academic-research-suite/** -whitespace
+skills/academic/research-writing-skill/** -whitespace

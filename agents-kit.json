@@ -216,6 +216,7 @@
         "repository-context",
         "requirements-discovery",
         "requirements-synthesis",
+        "research-question-refinement",
         "scroll-animation",
         "search-result-navigation",
         "simulator",
