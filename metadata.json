@@ -1209,6 +1209,20 @@
         "output/design-spec"
       ]
     },
+    "nature-academic-search": {
+      "recommendation": 4,
+      "description": "跨 CrossRef、PubMed、arXiv、Scopus 和 ScienceDirect 的学术检索工作流，支持 MeSH 查询、引用核验、文献去重、引用文件转换及 Scopus 作者、机构、期刊与引用指标查询；Scopus 和 ScienceDirect 需要 Elsevier API 权限。",
+      "trigger": "说「用 Nature Academic Search 跨库检索」「查 Scopus 或 ScienceDirect」「构造 MeSH 检索式」「核验论文引用」。",
+      "tags": [
+        "role/workflow",
+        "focus/citation-analysis",
+        "focus/literature-search",
+        "focus/query-construction",
+        "platform/sciencedirect",
+        "platform/scopus",
+        "output/paper-metadata"
+      ]
+    },
     "nextjs-mastery": {
       "recommendation": 2,
       "description": "Next.js App Router:目录结构约定、RSC 服务端组件取数、ISR 增量再生与缓存、中间件、并行路由、Server Actions。",

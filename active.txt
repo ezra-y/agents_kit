@@ -78,3 +78,4 @@ pm-paper-detail
 pm-fulltext
 pm-navigate-pages
 pm-export
+nature-academic-search

@@ -138,6 +138,50 @@
         "claude"
       ],
       "enabled": true
+    },
+    "nature-academic-search": {
+      "description": "Nature Academic Search 的本地 MCP 运行层，提供 CrossRef、PubMed、arXiv、Scopus 和 ScienceDirect 检索及 MeSH、引用、作者、机构和期刊指标工具。",
+      "tags": [
+        "学术",
+        "文献检索"
+      ],
+      "recommendation": 4,
+      "source": {
+        "url": "https://github.com/Yuan1z0825/nature-skills/tree/main/skills/nature-academic-search/mcp-server",
+        "policy": "review"
+      },
+      "distribution": {
+        "type": "pypi",
+        "package": "mcp",
+        "version": "1.29.0"
+      },
+      "runtime": {
+        "command": "uv",
+        "args": [
+          "run",
+          "--no-project",
+          "--directory",
+          "/Users/ezra/agents_kit/skills/academic/nature-academic-search/mcp-server",
+          "--with",
+          "mcp=={version}",
+          "--with",
+          "requests==2.34.2",
+          "--with",
+          "toml==0.10.2",
+          "--with",
+          "lxml==5.4.0",
+          "--with",
+          "pybliometrics==4.4.1",
+          "python",
+          "academic_search_server.py"
+        ]
+      },
+      "environment": {},
+      "targets": [
+        "codex",
+        "claude"
+      ],
+      "enabled": true
     }
   }
 }

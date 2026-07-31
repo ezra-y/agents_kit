@@ -1193,6 +1193,19 @@
         "content_sha256": "2659f65664c20d01ba0d74ddf8ec6e0faa46bad0194db3154c10e1aa7a0f83bb"
       }
     },
+    "nature-academic-search": {
+      "provider": "http",
+      "locator": {
+        "url": "https://github.com/Yuan1z0825/nature-skills/archive/refs/heads/main.zip",
+        "path": "nature-skills-main/skills/nature-academic-search"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"956aa373e61c63a7328faecb462707db4dc3581b01dc8d9b596a83ee05c40547\"",
+        "content_sha256": "f10186dbf8254808ba3e7fbcbf528073132e72b7d4ef097a5ab0ce9f4ac5762f"
+      }
+    },
     "nextjs-mastery": {
       "provider": "git",
       "locator": {

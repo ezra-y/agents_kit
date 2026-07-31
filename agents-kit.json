@@ -273,6 +273,8 @@
         "multi-platform",
         "opencli",
         "pubmed",
+        "sciencedirect",
+        "scopus",
         "semantic-scholar",
         "social-media",
         "vercel",
