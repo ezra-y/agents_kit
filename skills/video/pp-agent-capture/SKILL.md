@@ -97,6 +97,9 @@ click or keyboard action. Do not start with the UI action.
 3. **Start recording before touching the UI.**
    - Start `agent-capture record` with a fixed duration in a reusable background or
      PTY session.
+   - Choose a duration that covers tool scheduling as well as the animation. When
+     UI actions happen through later computer-control calls, allow at least 120
+     seconds unless measured local latency proves a shorter duration is safe.
    - Read the session output and wait until it prints
      `Recording window:<id> ...`, `Recording display:<id> ...`, or
      `Recording region:...`.
@@ -104,10 +107,10 @@ click or keyboard action. Do not start with the UI action.
      the animation before it appears.
 4. **Trigger only the planned action after ready.**
    - Re-read the current UI state with the computer-control tool.
-   - Click the exact entry that starts the animation.
-   - Wait for the open transition and stable state.
-   - Perform the planned close action when the task requires both directions, then
-     wait until the close transition is fully complete.
+   - When possible, perform the exact open click, wait for the stable state, read
+     fresh UI state, perform the planned close action, and wait for completion
+     inside one computer-control call. This avoids losing the recording window to
+     latency between separate tool calls.
    - Confirm that the intended window and control actually responded. Do not infer
      success from the click command alone.
 5. **Finish the recording cleanly.**
@@ -128,7 +131,7 @@ Example window recording:
 ```bash
 agent-capture record \
   --window-id <WINDOW_ID> \
-  --duration 8 \
+  --duration 120 \
   --fps 60 \
   --quality high \
   --cursor \
