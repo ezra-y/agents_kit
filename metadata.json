@@ -1598,6 +1598,19 @@
         "output/paper-metadata"
       ]
     },
+    "pp-agent-capture": {
+      "recommendation": 5,
+      "description": "使用 macOS ScreenCaptureKit 精确定位窗口或显示器并录制、截图、生成 GIF 与视觉证据包，避免多屏环境下猜测录制目标。",
+      "trigger": "需要录制指定 macOS 窗口、捕捉瞬时动画、生成关键帧或视觉回归证据时使用。",
+      "tags": [
+        "role/integration",
+        "focus/tool-integration",
+        "focus/ui-testing",
+        "focus/workflow-automation",
+        "platform/macos",
+        "output/screenshot"
+      ]
+    },
     "prototype": {
       "recommendation": 3,
       "description": "做一次性原型回答一个具体问题。分两支:状态/业务逻辑问题走可运行的终端应用,UI 问题走一个路由下可切换的多套截然不同的方案。",
