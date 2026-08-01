@@ -1600,7 +1600,7 @@
     },
     "pp-agent-capture": {
       "recommendation": 5,
-      "description": "使用 macOS ScreenCaptureKit 精确定位窗口或显示器并录制、截图、生成 GIF 与视觉证据包，避免多屏环境下猜测录制目标。",
+      "description": "使用 macOS ScreenCaptureKit 精确定位窗口或显示器并录制、截图、生成 GIF 与视觉证据包；要求先等录制就绪，再触发界面动作并校验成片。",
       "trigger": "需要录制指定 macOS 窗口、捕捉瞬时动画、生成关键帧或视觉回归证据时使用。",
       "tags": [
         "role/integration",

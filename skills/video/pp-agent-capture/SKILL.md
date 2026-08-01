@@ -15,12 +15,6 @@ metadata:
         bins: [agent-capture-pp-cli]
         module: github.com/mvanhorn/printing-press-library/library/developer-tools/agent-capture/cmd/agent-capture-pp-cli
 ---
-<!-- GENERATED FILE — DO NOT EDIT.
-     This file is a verbatim mirror of library/developer-tools/agent-capture/SKILL.md,
-     regenerated post-merge by tools/generate-skills/. Hand-edits here are
-     silently overwritten on the next regen. Edit the library/ source instead.
-     See the repository agent guide, section "Generated artifacts: registry.json, cli-skills/". -->
-
 # Agent Capture - Printing Press CLI
 
 ## Prerequisites: Install the CLI
@@ -31,7 +25,7 @@ This skill drives the `agent-capture-pp-cli` binary. **You must verify the CLI i
    ```bash
    npx -y @mvanhorn/printing-press-library install agent-capture --cli-only
    ```
-2. Verify: `agent-capture-pp-cli --version`
+2. Verify: `agent-capture version`
 3. Ensure the reported install directory is on `$PATH` for the agent/runtime that will invoke this skill.
 
 If the `npx` install fails (no Node, offline, etc.), fall back to a direct Go install (requires Go 1.26.5 or newer):
@@ -40,7 +34,9 @@ If the `npx` install fails (no Node, offline, etc.), fall back to a direct Go in
 go install github.com/mvanhorn/printing-press-library/library/developer-tools/agent-capture/cmd/agent-capture-pp-cli@latest
 ```
 
-If `--version` reports "command not found" after install, the runtime cannot see the binary directory on `$PATH`. Do not proceed with skill commands until verification succeeds.
+If `agent-capture version` reports "command not found" after install, the runtime
+cannot see the binary directory on `$PATH`. Do not proceed with skill commands
+until verification succeeds.
 
 ## When to Use This CLI
 
@@ -79,6 +75,66 @@ Parse `$ARGUMENTS`:
    ```bash
    agent-capture <command> [args] --json
    ```
+
+## Required Workflow for Recording UI Actions
+
+Use this sequence for transient UI, animations, and any recording that requires a
+click or keyboard action. Do not start with the UI action.
+
+1. **Locate the real target.**
+   - Run `agent-capture health --json`.
+   - Enumerate targets with `agent-capture list windows --json` and
+     `agent-capture list displays --json`.
+   - Match the window using its ID, app, bundle identifier, title, and bounds.
+     Negative coordinates are normal on multi-display Macs.
+   - When names are duplicated or the target is uncertain, capture a still of the
+     candidate window and inspect it before proceeding.
+2. **Choose the capture boundary.**
+   - Use `--window-id` when the complete action remains inside one window.
+   - Use the verified display or region when the action crosses windows, overlays,
+     popovers, or window boundaries. A window recording cannot prove what happened
+     outside that window.
+3. **Start recording before touching the UI.**
+   - Start `agent-capture record` with a fixed duration in a reusable background or
+     PTY session.
+   - Read the session output and wait until it prints
+     `Recording window:<id> ...`, `Recording display:<id> ...`, or
+     `Recording region:...`.
+   - This line is the ready handshake. Do not click, type, switch apps, or trigger
+     the animation before it appears.
+4. **Trigger only the planned action after ready.**
+   - Re-read the current UI state with the computer-control tool.
+   - Click the exact entry that starts the animation.
+   - Wait for the open transition and stable state.
+   - Perform the planned close action when the task requires both directions, then
+     wait until the close transition is fully complete.
+   - Confirm that the intended window and control actually responded. Do not infer
+     success from the click command alone.
+5. **Finish the recording cleanly.**
+   - The current recorder is duration based and has no separate stop command.
+   - Wait for the recording process to exit normally with code `0`; do not send
+     `Ctrl-C`, which can leave an incomplete movie.
+6. **Validate before analysis.**
+   - Use `ffprobe` to verify the file is decodable, has nonzero duration and frames,
+     and has dimensions consistent with the selected target.
+   - Inspect a contact sheet or extracted frames to confirm the target, cursor, and
+     complete action are visible.
+   - Treat recordings made before ready, recordings of the wrong display/window,
+     missed clicks, obstructed animations, or incomplete transitions as invalid.
+     Re-record them instead of drawing conclusions from them.
+
+Example window recording:
+
+```bash
+agent-capture record \
+  --window-id <WINDOW_ID> \
+  --duration 8 \
+  --fps 60 \
+  --quality high \
+  --cursor \
+  --json \
+  /absolute/path/open-close.mov
+```
 
 ## Notable Commands
 

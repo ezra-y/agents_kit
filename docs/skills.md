@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **187** 个 · 常驻 **67** 个 · 有上游可检查更新 **160** 个
+共 **187** 个 · 常驻 **67** 个 · 有上游可检查更新 **159** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -10,7 +10,7 @@
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
-| `pp-agent-capture` | 使用 macOS ScreenCaptureKit 精确定位窗口或显示器并录制、截图、生成 GIF 与视觉证据包，避免多屏环境下猜测录制目标 | `role/integration` `focus/tool-integration` `focus/ui-testing` `focus/workflow-automation` `platform/macos` `output/screenshot` | ● | [github.com/mvanhorn/printing-press-library](https://github.com/mvanhorn/printing-press-library/tree/main/cli-skills/pp-agent-capture) |
+| `pp-agent-capture` | 使用 macOS ScreenCaptureKit 精确定位窗口或显示器并录制、截图、生成 GIF 与视觉证据包；要求先等录制就绪，再触发界 | `role/integration` `focus/tool-integration` `focus/ui-testing` `focus/workflow-automation` `platform/macos` `output/screenshot` | ● | — |
 
 ## iOS (`ios`，42 个)
 

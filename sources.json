@@ -1505,20 +1505,6 @@
         "content_sha256": "a7ea8d8317d5592a858eb61caaa7bcb2f94d99ae926fc478d049486412aa6cc5"
       }
     },
-    "pp-agent-capture": {
-      "provider": "git",
-      "locator": {
-        "url": "https://github.com/mvanhorn/printing-press-library.git",
-        "ref": "main",
-        "path": "cli-skills/pp-agent-capture"
-      },
-      "content_mode": "directory",
-      "policy": "review",
-      "resolved": {
-        "revision": "3f6f85774c4697b8af684e04cb35f685c3326a53",
-        "content_sha256": "ef636660b01985c280b181ff7b78293ddb2ef5fc41f443b7b5a517f19f07573f"
-      }
-    },
     "prototype": {
       "provider": "git",
       "locator": {
