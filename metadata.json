@@ -254,6 +254,163 @@
         "output/report"
       ]
     },
+    "cnki-advanced-search": {
+      "recommendation": 5,
+      "description": "知网高级检索：按主题、题名、关键词、作者、期刊、年份及 CSSCI、北大核心、CSCD、SCI、EI 等来源类别精确筛选论文。",
+      "trigger": "在毕设项目中说「限定年份查知网」「只查CSSCI」「按作者、期刊或核心类别检索」时使用。",
+      "tags": [
+        "role/researcher",
+        "focus/literature-search",
+        "focus/paper-metadata",
+        "focus/query-construction",
+        "platform/cnki",
+        "platform/web",
+        "output/paper-metadata"
+      ]
+    },
+    "cnki-download": {
+      "recommendation": 4,
+      "description": "知网授权下载：在用户已登录且具有下载权限时，从论文详情页触发 PDF 或 CAJ 下载，不绕过登录、验证码或付费限制。",
+      "trigger": "在毕设项目中说「下载这篇知网论文」「优先下载PDF」「有权限的话保存CAJ」时使用。",
+      "tags": [
+        "role/integration",
+        "focus/full-text-retrieval",
+        "platform/cnki",
+        "platform/web",
+        "output/files"
+      ]
+    },
+    "cnki-export": {
+      "recommendation": 5,
+      "description": "知网引文导出：从论文详情页或结果页导出引用元数据、GB/T 7714文本和RIS/EndNote数据，并可写入本地Zotero。",
+      "trigger": "在毕设项目中说「导出知网引用」「生成GB/T 7714」「把这些论文加入Zotero」时使用。",
+      "tags": [
+        "role/integration",
+        "focus/bibliographic-export",
+        "focus/paper-metadata",
+        "platform/cnki",
+        "platform/zotero",
+        "output/bibliography"
+      ]
+    },
+    "cnki-journal-index": {
+      "recommendation": 5,
+      "description": "知网期刊收录核验：查询北大核心、CSSCI、CSCD、SCI、EI、AMI、Scopus、ISSN/CN及影响因子等评价信息。",
+      "trigger": "在毕设项目中说「这个期刊是不是核心」「查CSSCI或北大核心」「核对期刊级别和影响因子」时使用。",
+      "tags": [
+        "role/researcher",
+        "focus/citation-analysis",
+        "focus/paper-metadata",
+        "platform/cnki",
+        "platform/web",
+        "output/paper-metadata"
+      ]
+    },
+    "cnki-journal-search": {
+      "recommendation": 4,
+      "description": "知网期刊检索：按刊名、ISSN、CN号或主办单位查找期刊，返回影响因子、主办方及被引下载等候选信息。",
+      "trigger": "在毕设项目中说「知网查这个期刊」「按ISSN或CN号找期刊」「确认刊名和主办单位」时使用。",
+      "tags": [
+        "role/researcher",
+        "focus/literature-search",
+        "focus/paper-metadata",
+        "platform/cnki",
+        "platform/web",
+        "output/paper-metadata"
+      ]
+    },
+    "cnki-journal-toc": {
+      "recommendation": 4,
+      "description": "知网期刊目录浏览：提取指定期刊某年某期的论文题名、作者和页码，并在已有权限时触发原版目录下载。",
+      "trigger": "在毕设项目中说「列出这个期刊某一期目录」「查某年某期有哪些文章」时使用。",
+      "tags": [
+        "role/researcher",
+        "focus/literature-search",
+        "focus/paper-metadata",
+        "platform/cnki",
+        "platform/web",
+        "output/paper-metadata"
+      ]
+    },
+    "cnki-navigate-pages": {
+      "recommendation": 4,
+      "description": "知网结果导航：在检索结果中翻页、跳页，并按相关度、发表时间、被引次数、下载量或综合指标重新排序。",
+      "trigger": "在毕设项目中说「知网下一页」「跳到第几页」「按被引或时间排序」时使用。",
+      "tags": [
+        "role/integration",
+        "focus/query-construction",
+        "focus/search-result-navigation",
+        "platform/cnki",
+        "platform/web",
+        "output/paper-metadata"
+      ]
+    },
+    "cnki-paper-detail": {
+      "recommendation": 5,
+      "description": "知网论文详情：提取题名、作者、机构、摘要、关键词、基金、分类号、来源、发表信息及引证网络计数。",
+      "trigger": "在毕设项目中说「打开这篇知网论文」「查看摘要关键词」「核对论文详情和引用信息」时使用。",
+      "tags": [
+        "role/researcher",
+        "focus/citation-analysis",
+        "focus/paper-metadata",
+        "platform/cnki",
+        "platform/web",
+        "output/paper-metadata"
+      ]
+    },
+    "cnki-parse-results": {
+      "recommendation": 4,
+      "description": "知网结果解析：把当前检索结果页转换为结构化论文数据，保留题名、作者、来源、日期、被引、下载量、详情链接和导出标识。",
+      "trigger": "在毕设项目中已打开知网结果页并说「整理当前结果」「把这一页论文提取出来」时使用。",
+      "tags": [
+        "role/researcher",
+        "focus/paper-metadata",
+        "focus/search-result-navigation",
+        "platform/cnki",
+        "platform/web",
+        "output/paper-metadata"
+      ]
+    },
+    "cnki-researcher": {
+      "recommendation": 5,
+      "description": "知网学术调研总控：编排关键词或高级检索、结果筛选、论文详情、期刊级别、目录浏览、授权下载与Zotero导出完整流程。",
+      "trigger": "在毕设项目中自然语言提出完整知网调研任务，或说「用知网完整查一遍」「检索筛选后导出到Zotero」时使用。",
+      "tags": [
+        "role/workflow",
+        "focus/bibliographic-export",
+        "focus/literature-search",
+        "focus/query-construction",
+        "platform/cnki",
+        "platform/zotero",
+        "output/research"
+      ],
+      "dependencies": [
+        "cnki-search",
+        "cnki-advanced-search",
+        "cnki-parse-results",
+        "cnki-navigate-pages",
+        "cnki-paper-detail",
+        "cnki-journal-search",
+        "cnki-journal-index",
+        "cnki-journal-toc",
+        "cnki-download",
+        "cnki-export"
+      ]
+    },
+    "cnki-search": {
+      "recommendation": 5,
+      "description": "知网关键词检索：使用 Codex 浏览器登录态搜索中国知网，返回题名、作者、来源、日期、被引、下载量及后续详情和导出所需标识。",
+      "trigger": "在毕设项目中说「去知网搜一下」「检索知网论文」「按这个主题查中文文献」时使用。",
+      "tags": [
+        "role/researcher",
+        "focus/literature-search",
+        "focus/paper-metadata",
+        "focus/query-construction",
+        "platform/cnki",
+        "platform/web",
+        "output/paper-metadata"
+      ]
+    },
     "codebase-design": {
       "recommendation": 3,
       "description": "代码库设计:怎么把模块划得更深、边界更清楚,让代码既好测试又好让 AI 导航。是 improve-codebase-architecture 的依赖。",

@@ -1,0 +1,4 @@
+interface:
+  display_name: "CNKI 研究编排"
+  short_description: "编排知网检索、期刊核验、引用导出与授权下载完整流程"
+  default_prompt: "Use $cnki-researcher 完成一次知网主题文献调研。"

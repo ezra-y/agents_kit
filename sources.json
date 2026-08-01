@@ -236,6 +236,149 @@
         "content_sha256": "bf9b908fb692f3ca9e19bed3aad6907b77d707fa6326d626a5f417cbb722ab00"
       }
     },
+    "cnki-advanced-search": {
+      "provider": "http",
+      "locator": {
+        "url": "https://github.com/vluckyzhang/cnki-skills-codex/archive/refs/heads/master.zip",
+        "path": "cnki-skills-codex-master/skills/cnki-advanced-search"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"8e902ff40bf837e12274d14bee9675f1fb93d552744b8a42fa2586519f7e7b76\"",
+        "content_sha256": "3225d1f72a100e5ce6176ee1480946a9d2cdd306588ad2d51c08e3dca0430786"
+      }
+    },
+    "cnki-download": {
+      "provider": "http",
+      "locator": {
+        "url": "https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master",
+        "path": "cnki-skills-codex-master/skills/cnki-download"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"8e902ff40bf837e12274d14bee9675f1fb93d552744b8a42fa2586519f7e7b76\"",
+        "content_sha256": "a973fd5bf225b47a666354b901bd76986304a0ee75016375159915bb90c5daa4"
+      }
+    },
+    "cnki-export": {
+      "provider": "http",
+      "locator": {
+        "url": "https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master",
+        "path": "cnki-skills-codex-master/skills/cnki-export"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"8e902ff40bf837e12274d14bee9675f1fb93d552744b8a42fa2586519f7e7b76\"",
+        "content_sha256": "a86644f1c4b2bb31a2588827b6d907b343108a13edc2ff682011d5204e6faf18"
+      }
+    },
+    "cnki-journal-index": {
+      "provider": "http",
+      "locator": {
+        "url": "https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master",
+        "path": "cnki-skills-codex-master/skills/cnki-journal-index"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"8e902ff40bf837e12274d14bee9675f1fb93d552744b8a42fa2586519f7e7b76\"",
+        "content_sha256": "7aa2ba99917739d2b69a52ec1e28c530c0cd7685c33964f67d53a8de7dafaa6b"
+      }
+    },
+    "cnki-journal-search": {
+      "provider": "http",
+      "locator": {
+        "url": "https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master",
+        "path": "cnki-skills-codex-master/skills/cnki-journal-search"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"8e902ff40bf837e12274d14bee9675f1fb93d552744b8a42fa2586519f7e7b76\"",
+        "content_sha256": "4b0e9a052337ca1d810f3434ee003f7c23e2a5c3388e3dad8f9239a6c3ff5a47"
+      }
+    },
+    "cnki-journal-toc": {
+      "provider": "http",
+      "locator": {
+        "url": "https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master",
+        "path": "cnki-skills-codex-master/skills/cnki-journal-toc"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"8e902ff40bf837e12274d14bee9675f1fb93d552744b8a42fa2586519f7e7b76\"",
+        "content_sha256": "4be2c9dc0ac59c48b6efd598ef4b96c27a78092b975bb20d3d00ad0aeff34e9f"
+      }
+    },
+    "cnki-navigate-pages": {
+      "provider": "http",
+      "locator": {
+        "url": "https://github.com/vluckyzhang/cnki-skills-codex/archive/refs/heads/master.zip",
+        "path": "cnki-skills-codex-master/skills/cnki-navigate-pages"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"8e902ff40bf837e12274d14bee9675f1fb93d552744b8a42fa2586519f7e7b76\"",
+        "content_sha256": "1dd2113199d86659c92ae8a52e13143fd3e4d0697682ab1d1da4fff09d5dd435"
+      }
+    },
+    "cnki-paper-detail": {
+      "provider": "http",
+      "locator": {
+        "url": "https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master",
+        "path": "cnki-skills-codex-master/skills/cnki-paper-detail"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"8e902ff40bf837e12274d14bee9675f1fb93d552744b8a42fa2586519f7e7b76\"",
+        "content_sha256": "2cb94e169cb4b7abc774eddd32ce714538ce005faf1568f79abcefd1f0c8a97f"
+      }
+    },
+    "cnki-parse-results": {
+      "provider": "http",
+      "locator": {
+        "url": "https://github.com/vluckyzhang/cnki-skills-codex/archive/refs/heads/master.zip",
+        "path": "cnki-skills-codex-master/skills/cnki-parse-results"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"8e902ff40bf837e12274d14bee9675f1fb93d552744b8a42fa2586519f7e7b76\"",
+        "content_sha256": "5d01849e8f3f1cc290740d51df1d7bc9ca48d0dea3bcb47b37edc1e310919167"
+      }
+    },
+    "cnki-researcher": {
+      "provider": "http",
+      "locator": {
+        "url": "https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master",
+        "path": "cnki-skills-codex-master/skills/cnki-researcher"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"8e902ff40bf837e12274d14bee9675f1fb93d552744b8a42fa2586519f7e7b76\"",
+        "content_sha256": "da41777e1fc924c7fb0730c59ed42021f7a22a9cef6a2dd7c88c0eccc2621666"
+      }
+    },
+    "cnki-search": {
+      "provider": "http",
+      "locator": {
+        "url": "https://github.com/vluckyzhang/cnki-skills-codex/archive/refs/heads/master.zip",
+        "path": "cnki-skills-codex-master/skills/cnki-search"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "\"8e902ff40bf837e12274d14bee9675f1fb93d552744b8a42fa2586519f7e7b76\"",
+        "content_sha256": "c66b7a2ad25875d9bc6e276bee54257b266695c5e06c247cad3997ae811d1741"
+      }
+    },
     "codebase-design": {
       "provider": "git",
       "locator": {

@@ -1,0 +1,4 @@
+interface:
+  display_name: "CNKI 高级检索"
+  short_description: "按作者、期刊、年份、字段和来源类别精确筛选知网文献"
+  default_prompt: "Use $cnki-advanced-search 查找2020-2025年CSSCI中关于数字治理的论文。"

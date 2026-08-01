@@ -1,0 +1,4 @@
+interface:
+  display_name: "CNKI 论文详情"
+  short_description: "提取知网论文详情页的作者机构摘要关键词基金和分类信息"
+  default_prompt: "Use $cnki-paper-detail 提取当前知网论文详情页的完整元数据。"

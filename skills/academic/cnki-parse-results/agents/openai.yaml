@@ -1,0 +1,4 @@
+interface:
+  display_name: "CNKI 结果解析"
+  short_description: "解析当前知网结果页并提取论文标题作者来源等结构化字段"
+  default_prompt: "Use $cnki-parse-results 解析当前知网检索结果页。"

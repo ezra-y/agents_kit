@@ -1,0 +1,4 @@
+interface:
+  display_name: "CNKI 文献下载"
+  short_description: "在用户登录且有权限时触发知网论文PDF或CAJ下载"
+  default_prompt: "Use $cnki-download 下载当前知网论文详情页的PDF。"

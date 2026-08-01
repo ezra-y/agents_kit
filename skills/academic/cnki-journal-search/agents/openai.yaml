@@ -1,0 +1,4 @@
+interface:
+  display_name: "CNKI 期刊检索"
+  short_description: "按刊名、ISSN、CN号或主办单位检索知网期刊候选"
+  default_prompt: "Use $cnki-journal-search 查找《计算机学报》的知网期刊信息。"

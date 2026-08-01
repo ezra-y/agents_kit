@@ -1,0 +1,4 @@
+interface:
+  display_name: "CNKI 翻页排序"
+  short_description: "在知网结果页翻页、跳转指定页并切换常用排序方式继续解析"
+  default_prompt: "Use $cnki-navigate-pages 将当前知网结果按被引排序。"

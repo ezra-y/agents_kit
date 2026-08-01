@@ -1,0 +1,4 @@
+interface:
+  display_name: "CNKI 收录查询"
+  short_description: "查询知网期刊核心、CSSCI、CSCD、SCI、EI等收录信息"
+  default_prompt: "Use $cnki-journal-index 查询《计算机学报》是否为核心期刊。"

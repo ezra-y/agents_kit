@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **175** 个 · 常驻 **66** 个 · 有上游可检查更新 **148** 个
+共 **186** 个 · 常驻 **66** 个 · 有上游可检查更新 **159** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -153,7 +153,7 @@
 | `to-prd` | 把当前对话合成规格文档并发到 issue tracker。已更新到上游最新(上游改名 to-spec,75 行)。明确不访谈你,只综合已知信 | `role/builder` `focus/product-specification` `focus/requirements-synthesis` `output/prd` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/to-spec) |
 | `triage` | 用状态机和五种 triage 角色流转 issue,要求每条评论带免责声明。 | `role/workflow` `focus/delivery-planning` `focus/issue-triage` `output/issues` |  | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/triage) |
 
-## 学术研究 (`academic`，20 个)
+## 学术研究 (`academic`，31 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
@@ -162,6 +162,17 @@
 | `ars-deep-research` | ARS 的严谨学术研究与文献综述工作流：覆盖研究问题定义、可复现检索、纳入排除、双阶段筛选、来源核验、证据综合、PRISMA 系统综述、偏倚 | `role/workflow` `focus/deep-research` `focus/evidence-synthesis` `focus/literature-review` `platform/multi-platform` `output/literature-review` `output/report` |  | [raw.githubusercontent.com](https://raw.githubusercontent.com/Imbad0202/academic-research-skills/main/deep-research/SKILL.md) |
 | `arts-design-tutor` | 艺术史与设计分析辅助：用描述、分析、解释、评价四步法处理作品和视觉证据，并提供构图、色彩、字体、设计原则、UX/UI 与作品集评析；用于增强 | `role/guide` `focus/design-analysis` `focus/ux` `focus/visual-design` `output/report` `output/research` |  | — |
 | `arxiv` | arXiv 专用论文检索、详情读取、摘要和 PDF 下载；适合查最新预印本或处理明确的 arXiv ID。 | `role/researcher` `focus/full-text-retrieval` `focus/literature-search` `platform/arxiv` `output/files` `output/paper-metadata` |  | [cdn.jsdelivr.net](https://cdn.jsdelivr.net/gh/wanshuiyin/Auto-claude-code-research-in-sleep@6e5856f2ace5970705788aced3b77aba040fe4ab/skills/skills-codex/arxiv/SKILL.md) |
+| `cnki-advanced-search` | 知网高级检索：按主题、题名、关键词、作者、期刊、年份及 CSSCI、北大核心、CSCD、SCI、EI 等来源类别精确筛选论文。 | `role/researcher` `focus/literature-search` `focus/paper-metadata` `focus/query-construction` `platform/cnki` `platform/web` `output/paper-metadata` |  | [github.com](https://github.com/vluckyzhang/cnki-skills-codex/archive/refs/heads/master.zip) |
+| `cnki-download` | 知网授权下载：在用户已登录且具有下载权限时，从论文详情页触发 PDF 或 CAJ 下载，不绕过登录、验证码或付费限制。 | `role/integration` `focus/full-text-retrieval` `platform/cnki` `platform/web` `output/files` |  | [codeload.github.com](https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master) |
+| `cnki-export` | 知网引文导出：从论文详情页或结果页导出引用元数据、GB/T 7714文本和RIS/EndNote数据，并可写入本地Zotero。 | `role/integration` `focus/bibliographic-export` `focus/paper-metadata` `platform/cnki` `platform/zotero` `output/bibliography` |  | [codeload.github.com](https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master) |
+| `cnki-journal-index` | 知网期刊收录核验：查询北大核心、CSSCI、CSCD、SCI、EI、AMI、Scopus、ISSN/CN及影响因子等评价信息。 | `role/researcher` `focus/citation-analysis` `focus/paper-metadata` `platform/cnki` `platform/web` `output/paper-metadata` |  | [codeload.github.com](https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master) |
+| `cnki-journal-search` | 知网期刊检索：按刊名、ISSN、CN号或主办单位查找期刊，返回影响因子、主办方及被引下载等候选信息。 | `role/researcher` `focus/literature-search` `focus/paper-metadata` `platform/cnki` `platform/web` `output/paper-metadata` |  | [codeload.github.com](https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master) |
+| `cnki-journal-toc` | 知网期刊目录浏览：提取指定期刊某年某期的论文题名、作者和页码，并在已有权限时触发原版目录下载。 | `role/researcher` `focus/literature-search` `focus/paper-metadata` `platform/cnki` `platform/web` `output/paper-metadata` |  | [codeload.github.com](https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master) |
+| `cnki-navigate-pages` | 知网结果导航：在检索结果中翻页、跳页，并按相关度、发表时间、被引次数、下载量或综合指标重新排序。 | `role/integration` `focus/query-construction` `focus/search-result-navigation` `platform/cnki` `platform/web` `output/paper-metadata` |  | [github.com](https://github.com/vluckyzhang/cnki-skills-codex/archive/refs/heads/master.zip) |
+| `cnki-paper-detail` | 知网论文详情：提取题名、作者、机构、摘要、关键词、基金、分类号、来源、发表信息及引证网络计数。 | `role/researcher` `focus/citation-analysis` `focus/paper-metadata` `platform/cnki` `platform/web` `output/paper-metadata` |  | [codeload.github.com](https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master) |
+| `cnki-parse-results` | 知网结果解析：把当前检索结果页转换为结构化论文数据，保留题名、作者、来源、日期、被引、下载量、详情链接和导出标识。 | `role/researcher` `focus/paper-metadata` `focus/search-result-navigation` `platform/cnki` `platform/web` `output/paper-metadata` |  | [github.com](https://github.com/vluckyzhang/cnki-skills-codex/archive/refs/heads/master.zip) |
+| `cnki-researcher` | 知网学术调研总控：编排关键词或高级检索、结果筛选、论文详情、期刊级别、目录浏览、授权下载与Zotero导出完整流程。 | `role/workflow` `focus/bibliographic-export` `focus/literature-search` `focus/query-construction` `platform/cnki` `platform/zotero` `output/research` |  | [codeload.github.com](https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master) |
+| `cnki-search` | 知网关键词检索：使用 Codex 浏览器登录态搜索中国知网，返回题名、作者、来源、日期、被引、下载量及后续详情和导出所需标识。 | `role/researcher` `focus/literature-search` `focus/paper-metadata` `focus/query-construction` `platform/cnki` `platform/web` `output/paper-metadata` |  | [github.com](https://github.com/vluckyzhang/cnki-skills-codex/archive/refs/heads/master.zip) |
 | `nature-academic-search` | 跨 CrossRef、PubMed、arXiv、Scopus 和 ScienceDirect 的学术检索工作流，支持 MeSH 查询、引用核 | `role/workflow` `focus/citation-analysis` `focus/literature-search` `focus/query-construction` `platform/sciencedirect` `platform/scopus` `output/paper-metadata` |  | [github.com](https://github.com/Yuan1z0825/nature-skills/archive/refs/heads/main.zip) |
 | `nature-figure` | Nature 风格科研绘图工作流：先明确结论、证据逻辑、数据完整性、导出要求和审稿风险，再用 Python 或 R 生成论文级单图与多面板图 | `role/workflow` `focus/data-visualization` `focus/visual-design` `output/diagram` `output/image` |  | [github.com/Yuan1z0825/nature-skills](https://github.com/Yuan1z0825/nature-skills) |
 | `paper-search` | 通过本机 paper-search CLI 跨 20 多个学术来源检索论文、下载 PDF 和提取全文；它是统一检索工具层，不负责完整文献综述 | `role/integration` `focus/full-text-retrieval` `focus/literature-search` `focus/paper-metadata` `platform/multi-platform` `output/files` `output/paper-metadata` |  | — |
