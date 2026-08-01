@@ -99,9 +99,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(status["skills"], 1)
         self.assertEqual(status["active"], 1)
         filtered = json.loads(
-            self.run_cli(
-                "skill", "list", "--tag", "focus/example", "--json"
-            ).stdout
+            self.run_cli("skill", "list", "--tag", "focus/example", "--json").stdout
         )
         self.assertEqual(filtered["count"], 1)
 

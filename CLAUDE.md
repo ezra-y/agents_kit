@@ -95,7 +95,9 @@ agents-kit check
 ## 完成标准
 
 1. `uv run --with "PyYAML>=6,<7" python -m unittest discover -s tests` 通过。
-2. `agents-kit docs build` 后，第二次运行不产生变化。
-3. `agents-kit check` 通过；CI 使用 `agents-kit check --repo-only`。
-4. `git diff --check` 通过。
-5. 不覆盖或提交用户的无关改动。
+2. `uvx ruff==0.16.0 check scripts/agents-kit scripts/agents_kit tests` 和
+   `uvx ruff==0.16.0 format --check scripts/agents-kit scripts/agents_kit tests` 通过。
+3. `agents-kit docs build` 后，第二次运行不产生变化。
+4. `agents-kit check` 通过；CI 使用 `agents-kit check --repo-only`。
+5. `git diff --check` 通过。
+6. 不覆盖或提交用户的无关改动。

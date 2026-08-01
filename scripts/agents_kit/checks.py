@@ -242,9 +242,7 @@ def _check_references(inventory: dict[str, Any], report: CheckReport) -> None:
                 continue
             seen.add(reference)
             broken.append(f"{name} 引用了 /{reference}，但仓库里不存在")
-        missing_files.extend(
-            _missing_markdown_links(name, entry.path, text, inventory)
-        )
+        missing_files.extend(_missing_markdown_links(name, entry.path, text, inventory))
     report.problems.extend([*broken, *missing_files])
     report.sections["references"] = {
         "broken_skills": broken,

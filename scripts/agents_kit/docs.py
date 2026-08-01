@@ -476,14 +476,10 @@ def render_html(
             '<button class="chip" data-cat="MCP" aria-pressed="false">MCP'
             f'<span class="c">{len(mcp_rows)}</span></button>'
         )
-    used_tags = {
-        tag for row in skill_rows for tag in row.get("tags", [])
-    }
+    used_tags = {tag for row in skill_rows for tag in row.get("tags", [])}
     tag_controls: list[str] = []
     for namespace, definition in repo.tag_namespaces.items():
-        tags = sorted(
-            tag for tag in used_tags if tag.startswith(f"{namespace}/")
-        )
+        tags = sorted(tag for tag in used_tags if tag.startswith(f"{namespace}/"))
         options = "".join(
             f'<option value="{esc(tag)}">{esc(tag)}</option>' for tag in tags
         )

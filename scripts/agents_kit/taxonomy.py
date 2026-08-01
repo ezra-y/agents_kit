@@ -16,9 +16,7 @@ class TaxonomyError(RuntimeError):
 
 def normalize_tags(repo: Repository, tags: list[str]) -> list[str]:
     validate_tags(repo, tags)
-    namespace_order = {
-        name: index for index, name in enumerate(repo.tag_namespaces)
-    }
+    namespace_order = {name: index for index, name in enumerate(repo.tag_namespaces)}
     return sorted(
         tags,
         key=lambda tag: (
@@ -36,13 +34,9 @@ def validate_tags(repo: Repository, tags: Any) -> None:
         minimum = definition["min"]
         maximum = definition["max"]
         if count < minimum:
-            raise TaxonomyError(
-                f"缺少 {namespace} 标签，至少需要 {minimum} 个"
-            )
+            raise TaxonomyError(f"缺少 {namespace} 标签，至少需要 {minimum} 个")
         if count > maximum:
-            raise TaxonomyError(
-                f"{namespace} 标签最多 {maximum} 个，当前 {count} 个"
-            )
+            raise TaxonomyError(f"{namespace} 标签最多 {maximum} 个，当前 {count} 个")
 
 
 def validate_known_tags(repo: Repository, tags: Any) -> None:
