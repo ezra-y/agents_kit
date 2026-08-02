@@ -69,6 +69,150 @@ class CliTests(unittest.TestCase):
             self.fail(result.stderr or result.stdout)
         return result
 
+    def commit_source(self, message):
+        subprocess.run(["git", "-C", str(self.source), "add", "."], check=True)
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(self.source),
+                "-c",
+                "user.name=Test",
+                "-c",
+                "user.email=test@example.com",
+                "commit",
+                "-qm",
+                message,
+            ],
+            check=True,
+        )
+
+    def import_git_source(self):
+        subprocess.run(["git", "init", "-q", str(self.source)], check=True)
+        (self.source / "SKILL.md").write_text(
+            "---\n"
+            "name: alpha\n"
+            "description: Alpha\n"
+            "---\n\n"
+            "# Alpha\n\n" + "\n".join(f"Rule {index}" for index in range(1, 21)) + "\n",
+            encoding="utf-8",
+        )
+        self.commit_source("initial")
+        self.run_cli(
+            "skill",
+            "import",
+            self.source.as_uri(),
+            "--provider",
+            "git",
+            "--category",
+            "tools",
+            "--scope",
+            "library",
+            "--description",
+            "中文说明",
+            "--trigger",
+            "需要时",
+            "--tag",
+            "role/builder",
+            "--tag",
+            "focus/example",
+            "--json",
+        )
+
+    def test_source_check_classifies_small_change_as_safe_update(self):
+        self.import_git_source()
+        with (self.source / "SKILL.md").open("a", encoding="utf-8") as handle:
+            handle.write("Rule 21\n")
+        self.commit_source("small update")
+
+        payload = json.loads(self.run_cli("source", "check", "alpha", "--json").stdout)
+
+        self.assertEqual(payload["results"][0]["status"], "safe_update")
+
+    def test_source_update_safe_applies_small_change(self):
+        self.import_git_source()
+        with (self.source / "SKILL.md").open("a", encoding="utf-8") as handle:
+            handle.write("Rule 21\n")
+        self.commit_source("small update")
+
+        payload = json.loads(
+            self.run_cli(
+                "source",
+                "update",
+                "alpha",
+                "--safe",
+                "--yes",
+                "--json",
+            ).stdout
+        )
+
+        self.assertEqual(payload["results"][0]["status"], "safe_update")
+        self.assertTrue(payload["results"][0]["applied"])
+        self.assertIn(
+            "Rule 21",
+            (self.root / "skills/tools/alpha/SKILL.md").read_text(encoding="utf-8"),
+        )
+
+    def test_source_update_safe_leaves_file_layout_change_for_review(self):
+        self.import_git_source()
+        reference = self.source / "references/example.md"
+        reference.parent.mkdir()
+        reference.write_text("New reference\n", encoding="utf-8")
+        self.commit_source("add reference")
+
+        payload = json.loads(
+            self.run_cli(
+                "source",
+                "update",
+                "alpha",
+                "--safe",
+                "--yes",
+                "--json",
+            ).stdout
+        )
+
+        result = payload["results"][0]
+        self.assertEqual(result["status"], "review_required")
+        self.assertIn("file_layout_changed", result["reasons"])
+        self.assertFalse(result["applied"])
+        self.assertFalse(
+            (self.root / "skills/tools/alpha/references/example.md").exists()
+        )
+
+    def test_source_update_safe_leaves_large_content_change_for_review(self):
+        self.import_git_source()
+        (self.source / "SKILL.md").write_text(
+            "---\n"
+            "name: alpha\n"
+            "description: Rewritten Alpha\n"
+            "---\n\n"
+            "# Rewritten\n\n"
+            + "\n".join(f"New behavior {index}" for index in range(1, 21))
+            + "\n",
+            encoding="utf-8",
+        )
+        self.commit_source("rewrite")
+
+        payload = json.loads(
+            self.run_cli(
+                "source",
+                "update",
+                "alpha",
+                "--safe",
+                "--yes",
+                "--json",
+            ).stdout
+        )
+
+        result = payload["results"][0]
+        self.assertEqual(result["status"], "review_required")
+        self.assertIn("low_similarity", result["reasons"])
+        self.assertFalse(result["applied"])
+        self.assertIn(
+            "Rule 1",
+            (self.root / "skills/tools/alpha/SKILL.md").read_text(encoding="utf-8"),
+        )
+
     def test_one_command_local_import_and_status(self):
         result = self.run_cli(
             "skill",

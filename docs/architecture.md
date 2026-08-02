@@ -86,6 +86,14 @@ mcps -> repository 中的单一 MCP 清单
 - `resolved`：最近确认的 revision 和内容哈希。
 - 可选 `source_name`：上游名称与本地名称不同时使用。
 
+`review` 策略把检查结果分成三类：
+
+- `unchanged`：受管内容一致。
+- `safe_update`：`SKILL.md` 行级相似度至少 90%，受管文件路径和类型不变，
+  且本地内容仍与上次确认摘要一致；定时任务可自动应用。
+- `review_required`：大幅改写、文件结构变化或本地内容漂移；保留本地版本并开
+  Issue 等待人工确认。
+
 `directory` 管理整个技能目录，适用于 Git 和压缩包。`skill_file` 只管理
 `SKILL.md`，适用于直接 HTTP 文件；更新时保留本地附件。增加新来源时，只扩展
 `sources.py` 的 provider 注册和对应测试，不修改技能、安装和文档流程。

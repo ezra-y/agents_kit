@@ -132,12 +132,15 @@ agents-kit project install <技能名或分类> --project "<项目路径>"
 ```bash
 agents-kit source check --all
 agents-kit source update <技能名> --yes
+agents-kit source update --all --safe --yes
 agents-kit source detach <技能名>
 ```
 
-默认策略是 `review`。定时任务只检查变化并开 Issue，确认后再更新。Git、压缩包等
-整目录来源会替换技能目录；直接指向 `SKILL.md` 的 HTTP 来源只更新该文件，
-不会删除仓库维护的 `references/` 或 `scripts/`。
+默认策略是 `review`。定时任务自动应用正文行级相似度至少 90%、受管文件结构
+不变且本地内容未漂移的小改动；大幅改写、文件增删改名和本地漂移会开 Issue，
+确认后再更新。`--safe` 只应用满足自动更新条件的变化。Git、压缩包等整目录来源
+会替换技能目录；直接指向 `SKILL.md` 的 HTTP 来源只更新该文件，不会删除仓库
+维护的 `references/` 或 `scripts/`。
 
 ## 文档与体检
 

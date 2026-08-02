@@ -26,7 +26,11 @@ from agents_kit.mcps import McpError
 from agents_kit.models import ChangeSet, Effect
 from agents_kit.repository import Repository, RepositoryError
 from agents_kit.skills import SkillError
-from agents_kit.sources import SourceError, SourceSession
+from agents_kit.sources import (
+    SourceError,
+    SourceSession,
+    classify_source_change,
+)
 from agents_kit.taxonomy import TaxonomyError
 from agents_kit.ui import UiError
 
@@ -77,6 +81,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _name_or_all(source_update)
     source_update.add_argument("--dry-run", action="store_true")
+    source_update.add_argument(
+        "--safe",
+        action="store_true",
+        help="只应用相似度和文件结构满足自动更新条件的变化",
+    )
     source_update.add_argument("--yes", action="store_true")
     _json_flag(source_update)
     source_update.set_defaults(handler=command_source_update)
@@ -375,20 +384,15 @@ def command_source_check(args: argparse.Namespace, context: Context) -> dict[str
                 continue
             try:
                 snapshot = session.snapshot_from_record(record)
-                local_hash = context.repo.hash_skill_content(
+                comparison = classify_source_change(
                     context.repo.require_skill(name).path,
-                    snapshot.content_mode,
+                    snapshot,
+                    resolved_sha256=record.get("resolved", {}).get("content_sha256"),
                 )
                 results.append(
                     {
                         "skill": name,
-                        "status": (
-                            "unchanged"
-                            if local_hash == snapshot.content_sha256
-                            else "changed"
-                        ),
-                        "local_sha256": local_hash,
-                        "remote_sha256": snapshot.content_sha256,
+                        **comparison,
                         "revision": snapshot.revision,
                     }
                 )
@@ -399,8 +403,10 @@ def command_source_check(args: argparse.Namespace, context: Context) -> dict[str
 
 def command_source_update(args: argparse.Namespace, context: Context) -> dict[str, Any]:
     names = _source_names(context.repo, args)
-    _confirm(args, f"应用 {len(names)} 个技能的当前来源内容？")
+    action = "满足自动更新条件的来源内容" if args.safe else "当前来源内容"
+    _confirm(args, f"应用 {len(names)} 个技能中{action}？")
     snapshots: list[tuple[str, Any]] = []
+    results: list[dict[str, Any]] = []
     failures: list[dict[str, str]] = []
     with SourceSession(context.repo.network_timeout) as session:
         for name in names:
@@ -409,28 +415,32 @@ def command_source_update(args: argparse.Namespace, context: Context) -> dict[st
                 failures.append({"skill": name, "error": "没有来源登记"})
                 continue
             if record.get("policy") == "pinned":
+                results.append({"skill": name, "status": "pinned", "applied": False})
                 continue
             try:
-                snapshots.append((name, session.snapshot_from_record(record)))
+                snapshot = session.snapshot_from_record(record)
+                comparison = classify_source_change(
+                    context.repo.require_skill(name).path,
+                    snapshot,
+                    resolved_sha256=record.get("resolved", {}).get("content_sha256"),
+                )
+                should_apply = not args.safe or comparison["status"] == "safe_update"
+                results.append(
+                    {
+                        "skill": name,
+                        **comparison,
+                        "revision": snapshot.revision,
+                        "applied": should_apply and not args.dry_run,
+                    }
+                )
+                if should_apply:
+                    snapshots.append((name, snapshot))
             except (OSError, RuntimeError, ValueError) as exc:
                 failures.append({"skill": name, "error": str(exc)})
         if args.dry_run:
             return {
                 "dry_run": True,
-                "updates": [
-                    {
-                        "skill": name,
-                        "changed": (
-                            context.repo.hash_skill_content(
-                                context.repo.require_skill(name).path,
-                                snapshot.content_mode,
-                            )
-                            != snapshot.content_sha256
-                        ),
-                        "revision": snapshot.revision,
-                    }
-                    for name, snapshot in snapshots
-                ],
+                "results": results,
                 "failures": failures,
             }
         combined = ChangeSet()
@@ -438,6 +448,7 @@ def command_source_update(args: argparse.Namespace, context: Context) -> dict[st
             for name, snapshot in snapshots:
                 combined.merge(skills.update_from_source(context.repo, name, snapshot))
         result = context.finish(combined)
+        result["results"] = results
         result["failures"] = failures
         return result
 

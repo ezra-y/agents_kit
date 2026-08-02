@@ -89,7 +89,8 @@ options:
   --json
 
 $ agents-kit source update --help
-usage: agents-kit source update [-h] [--all] [--dry-run] [--yes] [--json]
+usage: agents-kit source update [-h] [--all] [--dry-run] [--safe] [--yes]
+                                [--json]
                                 [name]
 
 positional arguments:
@@ -99,6 +100,7 @@ options:
   -h, --help  show this help message and exit
   --all
   --dry-run
+  --safe      只应用相似度和文件结构满足自动更新条件的变化
   --yes
   --json
 

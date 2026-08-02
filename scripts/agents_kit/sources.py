@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import difflib
 import io
 import os
 import re
@@ -30,6 +31,91 @@ from .repository import Repository
 
 class SourceError(RuntimeError):
     pass
+
+
+SAFE_UPDATE_SIMILARITY = 0.90
+
+
+def classify_source_change(
+    local_path: Path,
+    snapshot: SkillSnapshot,
+    *,
+    resolved_sha256: str | None,
+) -> dict[str, Any]:
+    local_sha256 = Repository.hash_skill_content(local_path, snapshot.content_mode)
+    local_modified = bool(resolved_sha256 and local_sha256 != resolved_sha256)
+    if local_sha256 == snapshot.content_sha256 and not local_modified:
+        return {
+            "status": "unchanged",
+            "local_sha256": local_sha256,
+            "remote_sha256": snapshot.content_sha256,
+        }
+
+    local_lines = _skill_lines(local_path)
+    remote_lines = _skill_lines(snapshot.path)
+    similarity = difflib.SequenceMatcher(
+        None,
+        local_lines,
+        remote_lines,
+        autojunk=False,
+    ).ratio()
+    local_layout = _managed_file_layout(local_path, snapshot.content_mode)
+    remote_layout = _managed_file_layout(snapshot.path, snapshot.content_mode)
+    added_paths = sorted(remote_layout.keys() - local_layout.keys())
+    removed_paths = sorted(local_layout.keys() - remote_layout.keys())
+    changed_path_types = sorted(
+        path
+        for path in local_layout.keys() & remote_layout.keys()
+        if local_layout[path] != remote_layout[path]
+    )
+
+    reasons: list[str] = []
+    if local_modified:
+        reasons.append("local_content_modified")
+    if similarity < SAFE_UPDATE_SIMILARITY:
+        reasons.append("low_similarity")
+    if added_paths or removed_paths or changed_path_types:
+        reasons.append("file_layout_changed")
+
+    return {
+        "status": "review_required" if reasons else "safe_update",
+        "local_sha256": local_sha256,
+        "remote_sha256": snapshot.content_sha256,
+        "similarity": round(similarity, 4),
+        "similarity_threshold": SAFE_UPDATE_SIMILARITY,
+        "local_lines": len(local_lines),
+        "remote_lines": len(remote_lines),
+        "local_attachments": max(0, len(local_layout) - 1),
+        "remote_attachments": max(0, len(remote_layout) - 1),
+        "added_paths": added_paths,
+        "removed_paths": removed_paths,
+        "changed_path_types": changed_path_types,
+        "reasons": reasons,
+    }
+
+
+def _skill_lines(path: Path) -> list[str]:
+    return (
+        (path / "SKILL.md").read_text(encoding="utf-8", errors="replace").splitlines()
+    )
+
+
+def _managed_file_layout(path: Path, content_mode: ContentMode) -> dict[str, str]:
+    if content_mode == ContentMode.SKILL_FILE:
+        return {"SKILL.md": "file"}
+    layout: dict[str, str] = {}
+    for item in sorted(path.rglob("*"), key=lambda candidate: candidate.as_posix()):
+        relative = item.relative_to(path)
+        if any(part in {".git", "__pycache__"} for part in relative.parts):
+            continue
+        if item.name == ".DS_Store" or item.suffix == ".pyc":
+            continue
+        relative_path = relative.as_posix()
+        if item.is_symlink():
+            layout[relative_path] = f"symlink:{os.readlink(item)}"
+        elif item.is_file():
+            layout[relative_path] = "file"
+    return layout
 
 
 class SourceProvider(Protocol):

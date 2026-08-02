@@ -17,7 +17,9 @@
 7. 项目安装是副本，不受中央仓库继续追踪；全局安装是软链接。两条路径都会按
    `metadata.json` 的 `dependencies` 自动展开依赖：`active.txt` 只记显式启用的技能，
    依赖由 `global apply` 连带安装，停用后无人依赖的会被自动回收。
-8. 上游默认使用 `review` 策略。先 `source check`，确认后再 `source update`。
+8. 上游默认使用 `review` 策略。定时任务自动应用正文相似度至少 90%、受管文件
+   结构不变且本地内容未漂移的小改动；其余变化开 Issue，确认后使用
+   `source update`。
 9. HTTP 单文件来源只管理 `SKILL.md`；`references/`、`scripts/` 等附件由仓库保留。
 10. 修改 `rules/`、`agents/`、`hooks/` 或 `prompts/` 前，先读对应目录的 README。
 11. 第三方 MCP 集中记录在 `mcps.json`，不要为只有配置的 MCP 建独立目录。
