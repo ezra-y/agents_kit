@@ -369,6 +369,31 @@ def command_source_detach(args: argparse.Namespace, context: Context) -> dict[st
     return context.finish(change)
 
 
+def _source_change(
+    context: Context,
+    name: str,
+    record: dict[str, Any],
+    snapshot: Any,
+) -> dict[str, Any]:
+    comparison = classify_source_change(
+        context.repo.require_skill(name).path,
+        snapshot,
+        resolved_sha256=record.get("resolved", {}).get("content_sha256"),
+    )
+    if comparison["status"] != "safe_update":
+        return comparison
+    problems = checks.candidate_skill_problems(
+        name,
+        snapshot.path,
+        context.repo.inventory(),
+    )
+    if problems:
+        comparison["status"] = "review_required"
+        comparison["reasons"].append("candidate_validation_failed")
+        comparison["validation_problems"] = problems
+    return comparison
+
+
 def command_source_check(args: argparse.Namespace, context: Context) -> dict[str, Any]:
     names = _source_names(context.repo, args)
     results: list[dict[str, Any]] = []
@@ -384,11 +409,7 @@ def command_source_check(args: argparse.Namespace, context: Context) -> dict[str
                 continue
             try:
                 snapshot = session.snapshot_from_record(record)
-                comparison = classify_source_change(
-                    context.repo.require_skill(name).path,
-                    snapshot,
-                    resolved_sha256=record.get("resolved", {}).get("content_sha256"),
-                )
+                comparison = _source_change(context, name, record, snapshot)
                 results.append(
                     {
                         "skill": name,
@@ -419,11 +440,7 @@ def command_source_update(args: argparse.Namespace, context: Context) -> dict[st
                 continue
             try:
                 snapshot = session.snapshot_from_record(record)
-                comparison = classify_source_change(
-                    context.repo.require_skill(name).path,
-                    snapshot,
-                    resolved_sha256=record.get("resolved", {}).get("content_sha256"),
-                )
+                comparison = _source_change(context, name, record, snapshot)
                 should_apply = not args.safe or comparison["status"] == "safe_update"
                 results.append(
                     {

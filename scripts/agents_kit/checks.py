@@ -229,25 +229,62 @@ def _check_references(inventory: dict[str, Any], report: CheckReport) -> None:
     missing_files: list[str] = []
     for name, entry in sorted(inventory.items()):
         text = (entry.path / "SKILL.md").read_text(encoding="utf-8", errors="replace")
-        seen: set[str] = set()
-        for match in REFERENCE.finditer(text):
-            reference = match.group(1)
-            if reference in known or reference in seen:
-                continue
-            around = text[max(0, match.start() - 80) : match.end() + 80]
-            if not REFERENCE_CONTEXT.search(around):
-                continue
-            before = text[max(0, match.start() - 24) : match.start()]
-            if re.search(r"do not|don't|never|不要|禁止", before, re.IGNORECASE):
-                continue
-            seen.add(reference)
-            broken.append(f"{name} 引用了 /{reference}，但仓库里不存在")
+        broken.extend(_missing_skill_references(name, text, known))
         missing_files.extend(_missing_markdown_links(name, entry.path, text, inventory))
     report.problems.extend([*broken, *missing_files])
     report.sections["references"] = {
         "broken_skills": broken,
         "missing_files": missing_files,
     }
+
+
+def candidate_skill_problems(
+    name: str,
+    skill_root: Path,
+    inventory: dict[str, Any],
+) -> list[str]:
+    problems: list[str] = []
+    skill_file = skill_root / "SKILL.md"
+    try:
+        text = skill_file.read_text(encoding="utf-8", errors="replace")
+        frontmatter = parse_skill_frontmatter(text)
+    except (OSError, ValueError, RuntimeError) as exc:
+        return [f"{name}: {exc}"]
+    if not isinstance(frontmatter.get("name"), str) or not frontmatter["name"]:
+        problems.append(f"{name}: frontmatter 缺 name")
+    if (
+        not isinstance(frontmatter.get("description"), str)
+        or not frontmatter["description"].strip()
+    ):
+        problems.append(f"{name}: frontmatter 缺 description")
+    symlink_report = CheckReport()
+    _check_symlinks(skill_root, symlink_report)
+    problems.extend(symlink_report.problems)
+    problems.extend(_missing_skill_references(name, text, set(inventory)))
+    problems.extend(_missing_markdown_links(name, skill_root, text, inventory))
+    return problems
+
+
+def _missing_skill_references(
+    name: str,
+    text: str,
+    known: set[str],
+) -> list[str]:
+    missing: list[str] = []
+    seen: set[str] = set()
+    for match in REFERENCE.finditer(text):
+        reference = match.group(1)
+        if reference in known or reference in seen:
+            continue
+        around = text[max(0, match.start() - 80) : match.end() + 80]
+        if not REFERENCE_CONTEXT.search(around):
+            continue
+        before = text[max(0, match.start() - 24) : match.start()]
+        if re.search(r"do not|don't|never|不要|禁止", before, re.IGNORECASE):
+            continue
+        seen.add(reference)
+        missing.append(f"{name} 引用了 /{reference}，但仓库里不存在")
+    return missing
 
 
 def _missing_markdown_links(

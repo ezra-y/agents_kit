@@ -129,6 +129,24 @@ class CliTests(unittest.TestCase):
 
         self.assertEqual(payload["results"][0]["status"], "safe_update")
 
+    def test_source_check_requires_review_for_invalid_candidate(self):
+        self.import_git_source()
+        with (self.source / "SKILL.md").open("a", encoding="utf-8") as handle:
+            handle.write("[missing](references/missing.md)\n")
+        self.commit_source("broken link")
+
+        payload = json.loads(self.run_cli("source", "check", "alpha", "--json").stdout)
+
+        result = payload["results"][0]
+        self.assertEqual(result["status"], "review_required")
+        self.assertIn("candidate_validation_failed", result["reasons"])
+        self.assertTrue(
+            any(
+                "Markdown 链接目标不存在" in problem
+                for problem in result["validation_problems"]
+            )
+        )
+
     def test_source_update_safe_applies_small_change(self):
         self.import_git_source()
         with (self.source / "SKILL.md").open("a", encoding="utf-8") as handle:
