@@ -143,6 +143,28 @@ agents-kit source detach <技能名>
 Git、压缩包等整目录来源会替换技能目录；直接指向 `SKILL.md` 的 HTTP 来源只更新
 该文件，不会删除仓库维护的 `references/` 或 `scripts/`。
 
+### 本机自动同步
+
+macOS 使用 LaunchAgent `com.ezra.agents-kit-sync`，每 60 分钟检查一次
+`origin/main`。同步脚本位于
+`~/Library/Application Support/agents-kit/sync-local.zsh`，调度配置位于
+`~/Library/LaunchAgents/com.ezra.agents-kit-sync.plist`。
+
+脚本只允许干净的 `main` 分支 fast-forward。本地有未提交内容、独立提交或分叉时
+会跳过，不会覆盖本地内容，也不会自动 push。同步完成后，全局软链接立即使用新版；
+项目级复制安装需要单独重新安装。
+
+```bash
+# 查看状态
+launchctl print gui/$(id -u)/com.ezra.agents-kit-sync
+
+# 立即执行一次
+launchctl kickstart -k gui/$(id -u)/com.ezra.agents-kit-sync
+
+# 查看日志
+tail -n 20 ~/Library/Logs/agents-kit-sync.log
+```
+
 ## 文档与体检
 
 ```bash

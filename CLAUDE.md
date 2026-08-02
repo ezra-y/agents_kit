@@ -74,6 +74,26 @@ agents-kit mcp import "<上游>" \
 管理命令及完整参数见 `docs/cli.md`。模块职责和依赖方向见
 `docs/architecture.md`。
 
+## 本机自动同步
+
+本机使用 LaunchAgent `com.ezra.agents-kit-sync`，每 60 分钟把
+`origin/main` 快进同步到 `~/agents_kit`。配置和脚本分别位于：
+
+- `~/Library/LaunchAgents/com.ezra.agents-kit-sync.plist`
+- `~/Library/Application Support/agents-kit/sync-local.zsh`
+
+同步只在仓库位于 `main`、工作区干净且本地可 fast-forward 时执行。本地有未提交
+内容、独立提交或分叉时只写日志并跳过，不执行 stash、reset、自动合并或 push。
+全局软链接会直接读取更新后的仓库内容；项目级副本不会自动更新。
+
+检查状态或手动触发：
+
+```bash
+launchctl print gui/$(id -u)/com.ezra.agents-kit-sync
+launchctl kickstart -k gui/$(id -u)/com.ezra.agents-kit-sync
+tail -n 20 ~/Library/Logs/agents-kit-sync.log
+```
+
 ## 生成文件
 
 一般不直接编辑：
