@@ -4,7 +4,7 @@ description: A view that arranges its subviews in a vertical line.
 source: https://developer.apple.com/documentation/swiftui/vstack
 source_kind: apple-docc
 source_json: https://developer.apple.com/tutorials/data/documentation/swiftui/vstack.json
-timestamp: 2026-06-26T06:39:36.856Z
+timestamp: 2026-04-14T13:14:45.896Z
 ---
 
 **Navigation:** [SwiftUI](/documentation/swiftui)
@@ -18,7 +18,7 @@ timestamp: 2026-06-26T06:39:36.856Z
 > A view that arranges its subviews in a vertical line.
 
 ```swift
-@frozen nonisolated struct VStack<Content> where Content : View
+@frozen struct VStack<Content> where Content : View
 ```
 
 ## Overview

@@ -89,15 +89,7 @@ def search_truthsocial(
     try:
         response = http.request(
             "GET", url,
-            headers={
-                "Authorization": f"Bearer {token}",
-                # Cloudflare 403s the skill's default User-Agent regardless of token validity (#909).
-                # Reuse http.BROWSER_USER_AGENT, as the keyless Reddit path does.
-                "User-Agent": http.BROWSER_USER_AGENT,
-                "Accept": "application/json, text/plain, */*",
-                "Accept-Language": "en-US,en;q=0.9",
-                "Referer": "https://truthsocial.com/",
-            },
+            headers={"Authorization": f"Bearer {token}"},
             timeout=30,
         )
     except http.HTTPError as e:

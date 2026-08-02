@@ -4,7 +4,7 @@ description: A container view that defines its content as a function of its own 
 source: https://developer.apple.com/documentation/swiftui/geometryreader
 source_kind: apple-docc
 source_json: https://developer.apple.com/tutorials/data/documentation/swiftui/geometryreader.json
-timestamp: 2026-06-26T06:39:36.646Z
+timestamp: 2026-04-14T13:14:38.838Z
 ---
 
 **Navigation:** [SwiftUI](/documentation/swiftui)
@@ -18,7 +18,7 @@ timestamp: 2026-06-26T06:39:36.646Z
 > A container view that defines its content as a function of its own size and coordinate space.
 
 ```swift
-@frozen nonisolated struct GeometryReader<Content> where Content : View
+@frozen struct GeometryReader<Content> where Content : View
 ```
 
 ## Overview

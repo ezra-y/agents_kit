@@ -3,7 +3,7 @@ title: Background Tasks
 source: https://developer.apple.com/documentation/backgroundtasks
 source_kind: apple-docc
 source_json: https://developer.apple.com/tutorials/data/index/backgroundtasks
-timestamp: 2026-06-26T06:39:35.828Z
+timestamp: 2026-04-14T13:14:09.199Z
 ---
 
 **Navigation:** [BackgroundTasks](/documentation/backgroundtasks)
@@ -67,9 +67,6 @@ timestamp: 2026-06-26T06:39:35.828Z
 - [init?(rawValue: Int)](/documentation/backgroundtasks/bgtaskscheduler/error/code/init(rawvalue:))
 
 - [class let errorDomain: String](/documentation/backgroundtasks/bgtaskscheduler/errordomain)
-### Instance Methods
-
-- [func submitTaskRequest(BGTaskRequest, completionHandler: ((any Error)?) -> Void)](/documentation/backgroundtasks/bgtaskscheduler/submittaskrequest(_:completionhandler:))
 
 - [BGTask](/documentation/backgroundtasks/bgtask)
 ### Reading Task Information

@@ -3,7 +3,7 @@ title: StoreKit
 source: https://developer.apple.com/documentation/storekit
 source_kind: apple-docc
 source_json: https://developer.apple.com/tutorials/data/index/storekit
-timestamp: 2026-06-26T06:39:36.477Z
+timestamp: 2026-05-10T06:22:48.825Z
 ---
 
 **Navigation:** [StoreKit](/documentation/storekit)
@@ -967,9 +967,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 ###### Getting a localized description
 
 - [var localizedDescription: String](/documentation/storekit/product/subscriptioninfo/renewalinfo/expirationreason-swift.struct/localizeddescription)
-###### Type Properties
-
-- [static var unbundled: Product.SubscriptionInfo.RenewalInfo.ExpirationReason](/documentation/storekit/product/subscriptioninfo/renewalinfo/expirationreason-swift.struct/unbundled)
 
 ###### Getting offers
 
@@ -1096,12 +1093,8 @@ timestamp: 2026-06-26T06:39:36.477Z
 
 ###### Instance Properties
 
-- [var bundleOriginalTransactionID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundleoriginaltransactionid)
-- [var bundleProductID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundleproductid)
-- [var bundleSubscriptionGroupID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundlesubscriptiongroupid)
 - [let commitmentInfo: Product.SubscriptionInfo.RenewalInfo.CommitmentInfo?](/documentation/storekit/product/subscriptioninfo/renewalinfo/commitmentinfo-swift.property)
 - [let renewalBillingPlanType: SubscriptionInfo.BillingPlanType?](/documentation/storekit/product/subscriptioninfo/renewalinfo/renewalbillingplantype)
-- [var willUnbundle: Bool](/documentation/storekit/product/subscriptioninfo/renewalinfo/willunbundle)
 
 - [Product.SubscriptionInfo.RenewalState](/documentation/storekit/product/subscriptioninfo/renewalstate)
 ###### Getting the renewal state
@@ -1264,9 +1257,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 ###### Getting a localized description
 
 - [var localizedDescription: String](/documentation/storekit/product/subscriptioninfo/renewalinfo/expirationreason-swift.struct/localizeddescription)
-###### Type Properties
-
-- [static var unbundled: Product.SubscriptionInfo.RenewalInfo.ExpirationReason](/documentation/storekit/product/subscriptioninfo/renewalinfo/expirationreason-swift.struct/unbundled)
 
 ###### Getting offers
 
@@ -1393,12 +1383,8 @@ timestamp: 2026-06-26T06:39:36.477Z
 
 ###### Instance Properties
 
-- [var bundleOriginalTransactionID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundleoriginaltransactionid)
-- [var bundleProductID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundleproductid)
-- [var bundleSubscriptionGroupID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundlesubscriptiongroupid)
 - [let commitmentInfo: Product.SubscriptionInfo.RenewalInfo.CommitmentInfo?](/documentation/storekit/product/subscriptioninfo/renewalinfo/commitmentinfo-swift.property)
 - [let renewalBillingPlanType: SubscriptionInfo.BillingPlanType?](/documentation/storekit/product/subscriptioninfo/renewalinfo/renewalbillingplantype)
-- [var willUnbundle: Bool](/documentation/storekit/product/subscriptioninfo/renewalinfo/willunbundle)
 
 - [Product.SubscriptionInfo.RenewalState](/documentation/storekit/product/subscriptioninfo/renewalstate)
 ###### Getting the renewal state
@@ -1419,19 +1405,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 
 - [static let monthly: Product.SubscriptionInfo.BillingPlanType](/documentation/storekit/product/subscriptioninfo/billingplantype/monthly)
 - [static let upFront: Product.SubscriptionInfo.BillingPlanType](/documentation/storekit/product/subscriptioninfo/billingplantype/upfront)
-
-- [Product.SubscriptionInfo.BundledSubscription](/documentation/storekit/product/subscriptioninfo/bundledsubscription)
-###### Instance Properties
-
-- [let description: String](/documentation/storekit/product/subscriptioninfo/bundledsubscription/description)
-- [let displayName: String](/documentation/storekit/product/subscriptioninfo/bundledsubscription/displayname)
-- [let displayPrice: String](/documentation/storekit/product/subscriptioninfo/bundledsubscription/displayprice)
-- [let id: Product.ID](/documentation/storekit/product/subscriptioninfo/bundledsubscription/id)
-- [let isFamilyShareable: Bool](/documentation/storekit/product/subscriptioninfo/bundledsubscription/isfamilyshareable)
-- [let price: Decimal](/documentation/storekit/product/subscriptioninfo/bundledsubscription/price)
-- [let subscriptionGroupDisplayName: String](/documentation/storekit/product/subscriptioninfo/bundledsubscription/subscriptiongroupdisplayname)
-- [let subscriptionGroupID: String](/documentation/storekit/product/subscriptioninfo/bundledsubscription/subscriptiongroupid)
-- [let subscriptionGroupLevel: Int](/documentation/storekit/product/subscriptioninfo/bundledsubscription/subscriptiongrouplevel)
 
 - [Product.SubscriptionInfo.CommitmentInfo](/documentation/storekit/product/subscriptioninfo/commitmentinfo)
 ###### Instance Properties - generated
@@ -1455,7 +1428,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 
 ##### Instance Properties
 
-- [let bundledSubscriptions: [Product.SubscriptionInfo.BundledSubscription]](/documentation/storekit/product/subscriptioninfo/bundledsubscriptions)
 - [let pricingTerms: [Product.SubscriptionInfo.PricingTerms]](/documentation/storekit/product/subscriptioninfo/pricingterms-swift.property)
 ##### Type Aliases
 
@@ -1599,9 +1571,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 ###### Getting a localized description
 
 - [var localizedDescription: String](/documentation/storekit/product/subscriptioninfo/renewalinfo/expirationreason-swift.struct/localizeddescription)
-###### Type Properties
-
-- [static var unbundled: Product.SubscriptionInfo.RenewalInfo.ExpirationReason](/documentation/storekit/product/subscriptioninfo/renewalinfo/expirationreason-swift.struct/unbundled)
 
 ###### Getting offers
 
@@ -1728,12 +1697,8 @@ timestamp: 2026-06-26T06:39:36.477Z
 
 ###### Instance Properties
 
-- [var bundleOriginalTransactionID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundleoriginaltransactionid)
-- [var bundleProductID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundleproductid)
-- [var bundleSubscriptionGroupID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundlesubscriptiongroupid)
 - [let commitmentInfo: Product.SubscriptionInfo.RenewalInfo.CommitmentInfo?](/documentation/storekit/product/subscriptioninfo/renewalinfo/commitmentinfo-swift.property)
 - [let renewalBillingPlanType: SubscriptionInfo.BillingPlanType?](/documentation/storekit/product/subscriptioninfo/renewalinfo/renewalbillingplantype)
-- [var willUnbundle: Bool](/documentation/storekit/product/subscriptioninfo/renewalinfo/willunbundle)
 
 - [Product.SubscriptionInfo.RenewalState](/documentation/storekit/product/subscriptioninfo/renewalstate)
 ###### Getting the renewal state
@@ -1762,10 +1727,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 ##### Getting a Localized Description
 
 - [var localizedDescription: String](/documentation/storekit/product/producttype/localizeddescription)
-##### Type Properties
-
-- [static let subscriptionBundle: Product.ProductType](/documentation/storekit/product/producttype/subscriptionbundle)
-- [static let subscriptionSuite: Product.ProductType](/documentation/storekit/product/producttype/subscriptionsuite)
 
 #### Getting Family Sharing status
 
@@ -1891,9 +1852,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 ###### Getting a localized description
 
 - [var localizedDescription: String](/documentation/storekit/product/subscriptioninfo/renewalinfo/expirationreason-swift.struct/localizeddescription)
-###### Type Properties
-
-- [static var unbundled: Product.SubscriptionInfo.RenewalInfo.ExpirationReason](/documentation/storekit/product/subscriptioninfo/renewalinfo/expirationreason-swift.struct/unbundled)
 
 ###### Getting offers
 
@@ -2020,12 +1978,8 @@ timestamp: 2026-06-26T06:39:36.477Z
 
 ###### Instance Properties
 
-- [var bundleOriginalTransactionID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundleoriginaltransactionid)
-- [var bundleProductID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundleproductid)
-- [var bundleSubscriptionGroupID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundlesubscriptiongroupid)
 - [let commitmentInfo: Product.SubscriptionInfo.RenewalInfo.CommitmentInfo?](/documentation/storekit/product/subscriptioninfo/renewalinfo/commitmentinfo-swift.property)
 - [let renewalBillingPlanType: SubscriptionInfo.BillingPlanType?](/documentation/storekit/product/subscriptioninfo/renewalinfo/renewalbillingplantype)
-- [var willUnbundle: Bool](/documentation/storekit/product/subscriptioninfo/renewalinfo/willunbundle)
 
 - [Product.SubscriptionInfo.RenewalState](/documentation/storekit/product/subscriptioninfo/renewalstate)
 ###### Getting the renewal state
@@ -2188,9 +2142,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 ###### Getting a localized description
 
 - [var localizedDescription: String](/documentation/storekit/product/subscriptioninfo/renewalinfo/expirationreason-swift.struct/localizeddescription)
-###### Type Properties
-
-- [static var unbundled: Product.SubscriptionInfo.RenewalInfo.ExpirationReason](/documentation/storekit/product/subscriptioninfo/renewalinfo/expirationreason-swift.struct/unbundled)
 
 ##### Getting offers
 
@@ -2317,12 +2268,8 @@ timestamp: 2026-06-26T06:39:36.477Z
 
 ##### Instance Properties
 
-- [var bundleOriginalTransactionID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundleoriginaltransactionid)
-- [var bundleProductID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundleproductid)
-- [var bundleSubscriptionGroupID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundlesubscriptiongroupid)
 - [let commitmentInfo: Product.SubscriptionInfo.RenewalInfo.CommitmentInfo?](/documentation/storekit/product/subscriptioninfo/renewalinfo/commitmentinfo-swift.property)
 - [let renewalBillingPlanType: SubscriptionInfo.BillingPlanType?](/documentation/storekit/product/subscriptioninfo/renewalinfo/renewalbillingplantype)
-- [var willUnbundle: Bool](/documentation/storekit/product/subscriptioninfo/renewalinfo/willunbundle)
 
 - [Product.SubscriptionInfo.RenewalState](/documentation/storekit/product/subscriptioninfo/renewalstate)
 ##### Getting the renewal state
@@ -2343,19 +2290,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 
 - [static let monthly: Product.SubscriptionInfo.BillingPlanType](/documentation/storekit/product/subscriptioninfo/billingplantype/monthly)
 - [static let upFront: Product.SubscriptionInfo.BillingPlanType](/documentation/storekit/product/subscriptioninfo/billingplantype/upfront)
-
-- [Product.SubscriptionInfo.BundledSubscription](/documentation/storekit/product/subscriptioninfo/bundledsubscription)
-##### Instance Properties
-
-- [let description: String](/documentation/storekit/product/subscriptioninfo/bundledsubscription/description)
-- [let displayName: String](/documentation/storekit/product/subscriptioninfo/bundledsubscription/displayname)
-- [let displayPrice: String](/documentation/storekit/product/subscriptioninfo/bundledsubscription/displayprice)
-- [let id: Product.ID](/documentation/storekit/product/subscriptioninfo/bundledsubscription/id)
-- [let isFamilyShareable: Bool](/documentation/storekit/product/subscriptioninfo/bundledsubscription/isfamilyshareable)
-- [let price: Decimal](/documentation/storekit/product/subscriptioninfo/bundledsubscription/price)
-- [let subscriptionGroupDisplayName: String](/documentation/storekit/product/subscriptioninfo/bundledsubscription/subscriptiongroupdisplayname)
-- [let subscriptionGroupID: String](/documentation/storekit/product/subscriptioninfo/bundledsubscription/subscriptiongroupid)
-- [let subscriptionGroupLevel: Int](/documentation/storekit/product/subscriptioninfo/bundledsubscription/subscriptiongrouplevel)
 
 - [Product.SubscriptionInfo.CommitmentInfo](/documentation/storekit/product/subscriptioninfo/commitmentinfo)
 ##### Instance Properties - generated
@@ -2379,7 +2313,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 
 #### Instance Properties
 
-- [let bundledSubscriptions: [Product.SubscriptionInfo.BundledSubscription]](/documentation/storekit/product/subscriptioninfo/bundledsubscriptions)
 - [let pricingTerms: [Product.SubscriptionInfo.PricingTerms]](/documentation/storekit/product/subscriptioninfo/pricingterms-swift.property)
 #### Type Aliases
 
@@ -2449,9 +2382,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 ###### Getting a localized description
 
 - [var localizedDescription: String](/documentation/storekit/transaction/ownershiptype-swift.struct/localizeddescription)
-###### Type Properties
-
-- [static var assigned: Transaction.OwnershipType](/documentation/storekit/transaction/ownershiptype-swift.struct/assigned)
 
 - [let purchasedQuantity: Int](/documentation/storekit/transaction/purchasedquantity)
 ##### Getting subscription status
@@ -2508,9 +2438,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 ###### Getting a localized description
 
 - [var localizedDescription: String](/documentation/storekit/transaction/revocationreason-swift.struct/localizeddescription)
-###### Type Properties
-
-- [static var upgradedToBundle: Transaction.RevocationReason](/documentation/storekit/transaction/revocationreason-swift.struct/upgradedtobundle)
 
 ##### Correlating transactions with accounts
 
@@ -2569,9 +2496,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 
 - [case duplicateRequest](/documentation/storekit/transaction/refundrequesterror/duplicaterequest)
 - [case failed](/documentation/storekit/transaction/refundrequesterror/failed)
-##### Enumeration Cases
-
-- [case ineligible](/documentation/storekit/transaction/refundrequesterror/ineligible)
 
 - [Transaction.RefundRequestStatus](/documentation/storekit/transaction/refundrequeststatus)
 ##### Getting Refund Request Status
@@ -2596,7 +2520,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 - [let offer: Transaction.AdvancedCommerceInfo.Offer?](/documentation/storekit/transaction/advancedcommerceinfo-swift.struct/item/details-swift.struct/offer)
 - [let price: Decimal](/documentation/storekit/transaction/advancedcommerceinfo-swift.struct/item/details-swift.struct/price)
 - [let sku: String](/documentation/storekit/transaction/advancedcommerceinfo-swift.struct/item/details-swift.struct/sku)
-- [let partners: [Transaction.AdvancedCommerceInfo.Partner]](/documentation/storekit/transaction/advancedcommerceinfo-swift.struct/item/details-swift.struct/partners)
 
 ###### Instance Properties
 
@@ -2648,12 +2571,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 - [let reason: Transaction.AdvancedCommerceInfo.Refund.Reason](/documentation/storekit/transaction/advancedcommerceinfo-swift.struct/refund/reason-swift.property)
 - [let type: Transaction.AdvancedCommerceInfo.Refund.RefundType](/documentation/storekit/transaction/advancedcommerceinfo-swift.struct/refund/type)
 
-- [Transaction.AdvancedCommerceInfo.Partner](/documentation/storekit/transaction/advancedcommerceinfo-swift.struct/partner)
-###### Instance Properties
-
-- [let id: String](/documentation/storekit/transaction/advancedcommerceinfo-swift.struct/partner/id)
-- [let name: String?](/documentation/storekit/transaction/advancedcommerceinfo-swift.struct/partner/name)
-
 ##### Instance Properties
 
 - [let description: String?](/documentation/storekit/transaction/advancedcommerceinfo-swift.struct/description)
@@ -2697,7 +2614,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 - [Transaction.RevocationType](/documentation/storekit/transaction/revocationtype-swift.struct)
 ##### Type Properties
 
-- [static var assignmentRevocation: Transaction.RevocationType](/documentation/storekit/transaction/revocationtype-swift.struct/assignmentrevocation)
 - [static let familyRevocation: Transaction.RevocationType](/documentation/storekit/transaction/revocationtype-swift.struct/familyrevocation)
 - [static let fullRefund: Transaction.RevocationType](/documentation/storekit/transaction/revocationtype-swift.struct/fullrefund)
 - [static let proratedRefund: Transaction.RevocationType](/documentation/storekit/transaction/revocationtype-swift.struct/proratedrefund)
@@ -2705,12 +2621,7 @@ timestamp: 2026-06-26T06:39:36.477Z
 #### Instance Properties
 
 - [let billingPlanType: SubscriptionInfo.BillingPlanType?](/documentation/storekit/transaction/billingplantype)
-- [var bundleOriginalTransactionID: String?](/documentation/storekit/transaction/bundleoriginaltransactionid)
-- [var bundleProductID: String?](/documentation/storekit/transaction/bundleproductid)
-- [var bundleSubscriptionGroupID: String?](/documentation/storekit/transaction/bundlesubscriptiongroupid)
-- [var bundleTransactionID: String?](/documentation/storekit/transaction/bundletransactionid)
 - [let commitmentInfo: Transaction.CommitmentInfo?](/documentation/storekit/transaction/commitmentinfo-swift.property)
-- [var previousOriginalTransactionID: UInt64?](/documentation/storekit/transaction/previousoriginaltransactionid)
 - [var revocationPercentage: Decimal?](/documentation/storekit/transaction/revocationpercentage)
 - [let revocationType: Transaction.RevocationType?](/documentation/storekit/transaction/revocationtype-swift.property)
 - [var revocationTypeStringRepresentation: String?](/documentation/storekit/transaction/revocationtypestringrepresentation)
@@ -2829,9 +2740,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 ###### Getting a localized description
 
 - [var localizedDescription: String](/documentation/storekit/product/subscriptioninfo/renewalinfo/expirationreason-swift.struct/localizeddescription)
-###### Type Properties
-
-- [static var unbundled: Product.SubscriptionInfo.RenewalInfo.ExpirationReason](/documentation/storekit/product/subscriptioninfo/renewalinfo/expirationreason-swift.struct/unbundled)
 
 ##### Getting offers
 
@@ -2958,12 +2866,8 @@ timestamp: 2026-06-26T06:39:36.477Z
 
 ##### Instance Properties
 
-- [var bundleOriginalTransactionID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundleoriginaltransactionid)
-- [var bundleProductID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundleproductid)
-- [var bundleSubscriptionGroupID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundlesubscriptiongroupid)
 - [let commitmentInfo: Product.SubscriptionInfo.RenewalInfo.CommitmentInfo?](/documentation/storekit/product/subscriptioninfo/renewalinfo/commitmentinfo-swift.property)
 - [let renewalBillingPlanType: SubscriptionInfo.BillingPlanType?](/documentation/storekit/product/subscriptioninfo/renewalinfo/renewalbillingplantype)
-- [var willUnbundle: Bool](/documentation/storekit/product/subscriptioninfo/renewalinfo/willunbundle)
 
 - [Product.SubscriptionInfo.RenewalState](/documentation/storekit/product/subscriptioninfo/renewalstate)
 ##### Getting the renewal state
@@ -3013,9 +2917,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 ##### Getting a localized description
 
 - [var localizedDescription: String](/documentation/storekit/product/subscriptioninfo/renewalinfo/expirationreason-swift.struct/localizeddescription)
-##### Type Properties
-
-- [static var unbundled: Product.SubscriptionInfo.RenewalInfo.ExpirationReason](/documentation/storekit/product/subscriptioninfo/renewalinfo/expirationreason-swift.struct/unbundled)
 
 #### Getting offers
 
@@ -3142,12 +3043,8 @@ timestamp: 2026-06-26T06:39:36.477Z
 
 #### Instance Properties
 
-- [var bundleOriginalTransactionID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundleoriginaltransactionid)
-- [var bundleProductID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundleproductid)
-- [var bundleSubscriptionGroupID: String?](/documentation/storekit/product/subscriptioninfo/renewalinfo/bundlesubscriptiongroupid)
 - [let commitmentInfo: Product.SubscriptionInfo.RenewalInfo.CommitmentInfo?](/documentation/storekit/product/subscriptioninfo/renewalinfo/commitmentinfo-swift.property)
 - [let renewalBillingPlanType: SubscriptionInfo.BillingPlanType?](/documentation/storekit/product/subscriptioninfo/renewalinfo/renewalbillingplantype)
-- [var willUnbundle: Bool](/documentation/storekit/product/subscriptioninfo/renewalinfo/willunbundle)
 
 - [SubscriptionRenewalInfo](/documentation/storekit/subscriptionrenewalinfo)
 - [Product.SubscriptionInfo.RenewalState](/documentation/storekit/product/subscriptioninfo/renewalstate)
@@ -3302,9 +3199,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 - [static let macOS: AppStore.Platform](/documentation/storekit/appstore/platform/macos)
 - [static let tvOS: AppStore.Platform](/documentation/storekit/appstore/platform/tvos)
 - [static let visionOS: AppStore.Platform](/documentation/storekit/appstore/platform/visionos)
-##### Type Properties
-
-- [static var managed: AppStore.Platform](/documentation/storekit/appstore/platform/managed)
 
 #### Managing subscriptions
 
@@ -3325,9 +3219,10 @@ timestamp: 2026-06-26T06:39:36.477Z
 #### Presenting the offer code redemption sheet
 
 - [Supporting offer codes in your app](/documentation/storekit/supporting-offer-codes-in-your-app)
-- [static func presentOfferCodeRedeemSheet(from: UIViewController, options: Set<RedeemOption>) async throws -> VerificationResult<Transaction>](/documentation/storekit/appstore/presentoffercoderedeemsheet(from:options:)-89agc)
-- [func offerCodeRedemption(options: Set<RedeemOption>, isPresented: Binding<Bool>, onCompletion: (Result<VerificationResult<Transaction>, any Error>) -> Void) -> some View
-](/documentation/swiftui/view/offercoderedemption(options:ispresented:oncompletion:))
+- [static func presentOfferCodeRedeemSheet(in: UIWindowScene) async throws](/documentation/storekit/appstore/presentoffercoderedeemsheet(in:))
+- [func offerCodeRedemption(isPresented: Binding<Bool>, onCompletion: (Result<Void, any Error>) -> Void) -> some View
+](/documentation/swiftui/view/offercoderedemption(ispresented:oncompletion:))
+- [static func presentOfferCodeRedeemSheet(from: NSViewController) async throws](/documentation/storekit/appstore/presentoffercoderedeemsheet(from:))
 #### Restoring purchases
 
 - [static func sync() async throws](/documentation/storekit/appstore/sync())
@@ -3346,17 +3241,10 @@ timestamp: 2026-06-26T06:39:36.477Z
 - [case purchaseCompleted(Product.PurchaseResult)](/documentation/storekit/appstoremerchandisingkind/presentationresult/purchasecompleted(_:))
 
 
-#### Deprecated
-
-- [static func presentOfferCodeRedeemSheet(in: UIWindowScene) async throws](/documentation/storekit/appstore/presentoffercoderedeemsheet(in:))
-- [func offerCodeRedemption(isPresented: Binding<Bool>, onCompletion: (Result<Void, any Error>) -> Void) -> some View
-](/documentation/swiftui/view/offercoderedemption(ispresented:oncompletion:))
-- [static func presentOfferCodeRedeemSheet(from: NSViewController) async throws](/documentation/storekit/appstore/presentoffercoderedeemsheet(from:))
 #### Type Methods
 
 - [static func presentMerchandising(AppStoreMerchandisingKind, from: NSWindow) async throws -> AppStoreMerchandisingKind.PresentationResult](/documentation/storekit/appstore/presentmerchandising(_:from:)-8bblo)
 - [static func presentMerchandising(AppStoreMerchandisingKind, from: UIViewController) async throws -> AppStoreMerchandisingKind.PresentationResult](/documentation/storekit/appstore/presentmerchandising(_:from:)-hkrd)
-- [static func presentOfferCodeRedeemSheet(from: NSWindow, options: Set<RedeemOption>) async throws -> VerificationResult<Transaction>](/documentation/storekit/appstore/presentoffercoderedeemsheet(from:options:)-gj8m)
 
 - [AppTransaction](/documentation/storekit/apptransaction)
 #### Getting the signed app transaction
@@ -3392,9 +3280,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 - [static let macOS: AppStore.Platform](/documentation/storekit/appstore/platform/macos)
 - [static let tvOS: AppStore.Platform](/documentation/storekit/appstore/platform/tvos)
 - [static let visionOS: AppStore.Platform](/documentation/storekit/appstore/platform/visionos)
-##### Type Properties
-
-- [static var managed: AppStore.Platform](/documentation/storekit/appstore/platform/managed)
 
 #### Getting purchase dates
 
@@ -3414,24 +3299,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 #### Deprecated
 
 - [var originalPlatformStringRepresentation: String](/documentation/storekit/apptransaction/originalplatformstringrepresentation)
-#### Structures
-
-- [AppTransaction.AppTransactions](/documentation/storekit/apptransaction/apptransactions)
-- [AppTransaction.StoreType](/documentation/storekit/apptransaction/storetype-swift.struct)
-##### Type Properties
-
-- [static let consumer: AppTransaction.StoreType](/documentation/storekit/apptransaction/storetype-swift.struct/consumer)
-- [static let education: AppTransaction.StoreType](/documentation/storekit/apptransaction/storetype-swift.struct/education)
-- [static let enterprise: AppTransaction.StoreType](/documentation/storekit/apptransaction/storetype-swift.struct/enterprise)
-
-#### Instance Properties
-
-- [var revocationDate: Date?](/documentation/storekit/apptransaction/revocationdate)
-- [let storeType: AppTransaction.StoreType](/documentation/storekit/apptransaction/storetype-swift.property)
-- [var storeTypeStringRepresentation: String](/documentation/storekit/apptransaction/storetypestringrepresentation)
-#### Type Properties
-
-- [static var all: AppTransaction.AppTransactions](/documentation/storekit/apptransaction/all)
 
 ### Storefront information
 
@@ -3543,9 +3410,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 - [case notEntitled](/documentation/storekit/storekiterror/notentitled)
 - [case unknown](/documentation/storekit/storekiterror/unknown)
 - [case unsupported](/documentation/storekit/storekiterror/unsupported)
-#### Enumeration Cases
-
-- [case invalidPresentationContext](/documentation/storekit/storekiterror/invalidpresentationcontext)
 
 ### Deprecated
 
@@ -4243,9 +4107,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 - [static let macOS: AppStore.Platform](/documentation/storekit/appstore/platform/macos)
 - [static let tvOS: AppStore.Platform](/documentation/storekit/appstore/platform/tvos)
 - [static let visionOS: AppStore.Platform](/documentation/storekit/appstore/platform/visionos)
-#### Type Properties
-
-- [static var managed: AppStore.Platform](/documentation/storekit/appstore/platform/managed)
 
 ### Getting purchase dates
 
@@ -4265,24 +4126,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 ### Deprecated
 
 - [var originalPlatformStringRepresentation: String](/documentation/storekit/apptransaction/originalplatformstringrepresentation)
-### Structures
-
-- [AppTransaction.AppTransactions](/documentation/storekit/apptransaction/apptransactions)
-- [AppTransaction.StoreType](/documentation/storekit/apptransaction/storetype-swift.struct)
-#### Type Properties
-
-- [static let consumer: AppTransaction.StoreType](/documentation/storekit/apptransaction/storetype-swift.struct/consumer)
-- [static let education: AppTransaction.StoreType](/documentation/storekit/apptransaction/storetype-swift.struct/education)
-- [static let enterprise: AppTransaction.StoreType](/documentation/storekit/apptransaction/storetype-swift.struct/enterprise)
-
-### Instance Properties
-
-- [var revocationDate: Date?](/documentation/storekit/apptransaction/revocationdate)
-- [let storeType: AppTransaction.StoreType](/documentation/storekit/apptransaction/storetype-swift.property)
-- [var storeTypeStringRepresentation: String](/documentation/storekit/apptransaction/storetypestringrepresentation)
-### Type Properties
-
-- [static var all: AppTransaction.AppTransactions](/documentation/storekit/apptransaction/all)
 
 ## Messages
 
@@ -4957,9 +4800,6 @@ timestamp: 2026-06-26T06:39:36.477Z
 ## Articles
 
 - [Supporting subscription offer codes in your app](/documentation/storekit/supporting-subscription-offer-codes-in-your-app)
-## Structures
-
-- [RedeemOption](/documentation/storekit/redeemoption)
 
 ---
 
