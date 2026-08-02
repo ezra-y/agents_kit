@@ -9,6 +9,10 @@
 3. 怎样判断发布是否成功；
 4. 更新 Skill 后，哪些平台需要手动发新版本。
 
+自动化实现边界和架构见
+[Skill 发布助手实现规划](skill-publisher-plan.md)。两份文档分别维护“当前怎么
+发布”和“发布助手怎么实现”，不互相复制。
+
 平台变化很快，不存在永久固定的“全平台清单”。本文优先覆盖官方渠道、活跃的
 公共目录，以及有明确作者入口的平台。
 
@@ -124,9 +128,10 @@ gh repo view OWNER/REPO \
 
 ### 2. Claude Plugin Directory
 
-**入口**：<https://platform.claude.com/plugins/submissions>
+**入口**：<https://platform.claude.com/plugins/submit>
 
-这是 Claude Code 与 Claude Cowork 的官方插件目录提交通道。提交前准备：
+这是个人作者向 Claude 社区插件目录送审的官方 Console 入口。Team 或 Enterprise
+组织也可以使用 claude.ai 管理后台中的目录提交入口。提交前准备：
 
 - `.claude-plugin/plugin.json`；
 - 多插件仓库再提供 `.claude-plugin/marketplace.json`；
@@ -136,7 +141,7 @@ gh repo view OWNER/REPO \
 操作：
 
 1. 登录 Claude Console。
-2. 打开 `Plugin submissions`。
+2. 打开官方插件提交页。
 3. 选择 `New submission`。
 4. 阅读并接受目录条款。
 5. 填写插件信息和提交说明。

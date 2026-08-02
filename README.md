@@ -39,6 +39,7 @@ agents-kit check
 | `docs/architecture.md` | 架构、模块边界和数据流 |
 | `docs/skill-taxonomy.md` | 添加技能时供 AI 读取的分类与标签边界 |
 | `docs/skill-publishing.md` | Agent Skill 发布平台、操作流程和验收方法 |
+| `docs/skill-publisher-plan.md` | 跨平台 Skill 发布助手的实现规划、来源更新机制和验收标准 |
 | `docs/index.html` | 本地生成的可视化 Skill 与 MCP 清册，不进入 Git |
 
 `rules/`、`agents/`、`hooks/`、`prompts/` 目前只保留各自说明，不进入技能安装流程。
