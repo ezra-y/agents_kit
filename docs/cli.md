@@ -31,15 +31,17 @@ options:
   --json
 
 $ agents-kit source --help
-usage: agents-kit source [-h] {providers,inspect,detach,check,update} ...
+usage: agents-kit source [-h]
+                         {providers,inspect,detach,check,update,report} ...
 
 positional arguments:
-  {providers,inspect,detach,check,update}
+  {providers,inspect,detach,check,update,report}
     providers           列出来源适配器
     inspect             只检查来源，不写仓库
     detach              停止跟踪技能来源
     check               检查来源变化
     update              获取并应用经过确认的来源更新
+    report              把来源检查 JSON 渲染为人工审核 Markdown
 
 options:
   -h, --help            show this help message and exit
@@ -103,6 +105,16 @@ options:
   --safe      只应用相似度和文件结构满足自动更新条件的变化
   --yes
   --json
+
+$ agents-kit source report --help
+usage: agents-kit source report [-h] [--run-url RUN_URL] report
+
+positional arguments:
+  report
+
+options:
+  -h, --help         show this help message and exit
+  --run-url RUN_URL
 
 $ agents-kit skill --help
 usage: agents-kit skill [-h]

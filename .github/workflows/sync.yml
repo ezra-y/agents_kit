@@ -72,12 +72,21 @@ jobs:
             exit 1
           fi
 
+      - name: 生成人工审核报告
+        run: |
+          scripts/agents-kit source report "$RUNNER_TEMP/source-check.json" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            > "$RUNNER_TEMP/source-review.md"
+          cat "$RUNNER_TEMP/source-review.md" >> "$GITHUB_STEP_SUMMARY"
+
       - name: 上传检查报告
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: source-check-${{ github.run_id }}
-          path: ${{ runner.temp }}/source-check.json
+          path: |
+            ${{ runner.temp }}/source-check.json
+            ${{ runner.temp }}/source-review.md
           if-no-files-found: error
 
       - name: 提交自动更新
@@ -112,14 +121,8 @@ jobs:
             exit 0
           fi
 
-          review_names=$(jq -r '[.results[] | select(.status == "review_required") | .skill] | join(", ")' "$RUNNER_TEMP/source-check.json")
-          failed_names=$(jq -r '[.failures[] | .skill] | join(", ")' "$RUNNER_TEMP/source-check.json")
-          report_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          body=$(printf '自动更新：%s 个\n\n需人工确认：%s 个\n\n待确认来源：%s\n\n检查失败：%s\n\n失败来源：%s\n\n[查看完整报告](%s)' \
-            "$updated" "$review" "${review_names:-无}" "$failed" "${failed_names:-无}" "$report_url")
-
           if [ -n "$number" ]; then
-            gh issue comment "$number" --body "$body"
+            gh issue edit "$number" --body-file "$RUNNER_TEMP/source-review.md"
           else
-            gh issue create --title "$title" --body "$body"
+            gh issue create --title "$title" --body-file "$RUNNER_TEMP/source-review.md"
           fi

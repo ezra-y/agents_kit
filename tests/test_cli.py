@@ -131,7 +131,9 @@ class CliTests(unittest.TestCase):
 
         payload = json.loads(self.run_cli("source", "check", "alpha", "--json").stdout)
 
-        self.assertEqual(payload["results"][0]["status"], "safe_update")
+        result = payload["results"][0]
+        self.assertEqual(result["status"], "safe_update")
+        self.assertTrue(any("+Rule 21" in line for line in result["skill_diff"]))
 
     def test_source_check_requires_review_for_invalid_candidate(self):
         self.import_git_source()
@@ -169,6 +171,9 @@ class CliTests(unittest.TestCase):
         result = payload["results"][0]
         self.assertEqual(result["status"], "review_required")
         self.assertIn("content_change_too_large", result["reasons"])
+        self.assertEqual(result["changed_files"][0]["path"], "references/guide.md")
+        self.assertEqual(result["changed_files"][0]["added_lines"], 1000)
+        self.assertEqual(result["changed_files"][0]["deleted_lines"], 20)
 
     def test_source_check_allows_small_attachment_edit(self):
         self.import_git_source(
@@ -274,6 +279,37 @@ class CliTests(unittest.TestCase):
             "Rule 1",
             (self.root / "skills/tools/alpha/SKILL.md").read_text(encoding="utf-8"),
         )
+
+    def test_source_report_renders_markdown(self):
+        report = self.root / "source-check.json"
+        report.write_text(
+            json.dumps(
+                {
+                    "results": [
+                        {
+                            "skill": "alpha",
+                            "status": "review_required",
+                            "reasons": ["content_change_too_large"],
+                            "changed_lines": 700,
+                        }
+                    ],
+                    "failures": [],
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        result = self.run_cli(
+            "source",
+            "report",
+            str(report),
+            "--run-url",
+            "https://example.com/run",
+        )
+
+        self.assertIn("# 上游技能审核", result.stdout)
+        self.assertIn("变化超过 500 行", result.stdout)
+        self.assertIn("https://example.com/run", result.stdout)
 
     def test_one_command_local_import_and_status(self):
         result = self.run_cli(

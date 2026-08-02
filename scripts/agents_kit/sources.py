@@ -36,6 +36,7 @@ class SourceError(RuntimeError):
 SAFE_UPDATE_SIMILARITY = 0.90
 SAFE_UPDATE_CONTENT_SIMILARITY = 0.90
 SAFE_UPDATE_MAX_CHANGED_LINES = 500
+SOURCE_DIFF_LINE_LIMIT = 200
 
 
 def classify_source_change(
@@ -79,19 +80,27 @@ def classify_source_change(
     if added_paths or removed_paths or changed_path_types:
         reasons.append("file_layout_changed")
 
-    content_change: dict[str, Any] = {}
-    if not (added_paths or removed_paths or changed_path_types):
-        content_change = _managed_content_change(
-            local_path,
-            snapshot.path,
-            local_layout,
+    content_change = _managed_content_change(
+        local_path,
+        snapshot.path,
+        local_layout,
+        remote_layout,
+    )
+    if content_change["content_similarity"] < SAFE_UPDATE_CONTENT_SIMILARITY:
+        reasons.append("low_content_similarity")
+    if content_change["changed_lines"] > SAFE_UPDATE_MAX_CHANGED_LINES:
+        reasons.append("content_change_too_large")
+    if content_change["changed_binary_paths"]:
+        reasons.append("binary_content_changed")
+    skill_diff = list(
+        difflib.unified_diff(
+            local_lines,
+            remote_lines,
+            fromfile="local/SKILL.md",
+            tofile="upstream/SKILL.md",
+            lineterm="",
         )
-        if content_change["content_similarity"] < SAFE_UPDATE_CONTENT_SIMILARITY:
-            reasons.append("low_content_similarity")
-        if content_change["changed_lines"] > SAFE_UPDATE_MAX_CHANGED_LINES:
-            reasons.append("content_change_too_large")
-        if content_change["changed_binary_paths"]:
-            reasons.append("binary_content_changed")
+    )
 
     return {
         "status": "review_required" if reasons else "safe_update",
@@ -107,6 +116,8 @@ def classify_source_change(
         "removed_paths": removed_paths,
         "changed_path_types": changed_path_types,
         "reasons": reasons,
+        "skill_diff": skill_diff[:SOURCE_DIFF_LINE_LIMIT],
+        "skill_diff_truncated": len(skill_diff) > SOURCE_DIFF_LINE_LIMIT,
         **content_change,
     }
 
@@ -138,34 +149,53 @@ def _managed_file_layout(path: Path, content_mode: ContentMode) -> dict[str, str
 def _managed_content_change(
     local_path: Path,
     remote_path: Path,
-    layout: dict[str, str],
+    local_layout: dict[str, str],
+    remote_layout: dict[str, str],
 ) -> dict[str, Any]:
     matched_lines = 0
     total_lines = 0
     changed_lines = 0
     changed_binary_paths: list[str] = []
-    for relative_path, kind in layout.items():
-        if kind != "file":
-            continue
+    changed_files: list[dict[str, Any]] = []
+    common_files = sorted(
+        path
+        for path in local_layout.keys() & remote_layout.keys()
+        if local_layout[path] == remote_layout[path] == "file"
+    )
+    for relative_path in common_files:
         local_bytes = (local_path / relative_path).read_bytes()
         remote_bytes = (remote_path / relative_path).read_bytes()
+        if local_bytes == remote_bytes:
+            try:
+                line_count = len(local_bytes.decode("utf-8").splitlines())
+            except UnicodeDecodeError:
+                continue
+            matched_lines += line_count
+            total_lines += 2 * line_count
+            continue
         try:
             local_lines = local_bytes.decode("utf-8").splitlines()
             remote_lines = remote_bytes.decode("utf-8").splitlines()
         except UnicodeDecodeError:
-            if local_bytes != remote_bytes:
-                changed_binary_paths.append(relative_path)
+            changed_binary_paths.append(relative_path)
+            changed_files.append(
+                {
+                    "path": relative_path,
+                    "status": "modified",
+                    "binary": True,
+                }
+            )
             continue
         total_lines += len(local_lines) + len(remote_lines)
-        if local_bytes == remote_bytes:
-            matched_lines += len(local_lines)
-            continue
         matcher = difflib.SequenceMatcher(
             None,
             local_lines,
             remote_lines,
             autojunk=False,
         )
+        file_matched_lines = 0
+        added_lines = 0
+        deleted_lines = 0
         for (
             tag,
             local_start,
@@ -174,16 +204,44 @@ def _managed_content_change(
             remote_end,
         ) in matcher.get_opcodes():
             if tag == "equal":
-                matched_lines += local_end - local_start
+                file_matched_lines += local_end - local_start
             else:
-                changed_lines += (local_end - local_start) + (remote_end - remote_start)
+                deleted_lines += local_end - local_start
+                added_lines += remote_end - remote_start
+        matched_lines += file_matched_lines
+        file_changed_lines = added_lines + deleted_lines
+        changed_lines += file_changed_lines
+        file_total_lines = len(local_lines) + len(remote_lines)
+        file_similarity = (
+            2 * file_matched_lines / file_total_lines if file_total_lines else 1.0
+        )
+        changed_files.append(
+            {
+                "path": relative_path,
+                "status": "modified",
+                "binary": False,
+                "added_lines": added_lines,
+                "deleted_lines": deleted_lines,
+                "changed_lines": file_changed_lines,
+                "similarity": round(file_similarity, 4),
+            }
+        )
     content_similarity = 2 * matched_lines / total_lines if total_lines else 1.0
+    changed_files.sort(
+        key=lambda item: (
+            not item.get("binary", False),
+            item.get("changed_lines", 0),
+            item["path"],
+        ),
+        reverse=True,
+    )
     return {
         "content_similarity": round(content_similarity, 4),
         "content_similarity_threshold": SAFE_UPDATE_CONTENT_SIMILARITY,
         "changed_lines": changed_lines,
         "max_changed_lines": SAFE_UPDATE_MAX_CHANGED_LINES,
         "changed_binary_paths": changed_binary_paths,
+        "changed_files": changed_files,
     }
 
 

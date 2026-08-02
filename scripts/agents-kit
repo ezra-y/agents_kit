@@ -20,7 +20,15 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from agents_kit import checks, docs, installation, mcps, skills, ui
+from agents_kit import (
+    checks,
+    docs,
+    installation,
+    mcps,
+    skills,
+    source_reports,
+    ui,
+)
 from agents_kit.installation import InstallationError
 from agents_kit.mcps import McpError
 from agents_kit.models import ChangeSet, Effect
@@ -89,6 +97,14 @@ def build_parser() -> argparse.ArgumentParser:
     source_update.add_argument("--yes", action="store_true")
     _json_flag(source_update)
     source_update.set_defaults(handler=command_source_update)
+
+    source_report = source_commands.add_parser(
+        "report",
+        help="把来源检查 JSON 渲染为人工审核 Markdown",
+    )
+    source_report.add_argument("report", type=Path)
+    source_report.add_argument("--run-url", default="")
+    source_report.set_defaults(handler=command_source_report, streaming=True)
 
     skill = commands.add_parser("skill", help="管理中央技能库")
     skill_commands = skill.add_subparsers(dest="skill_command", required=True)
@@ -468,6 +484,22 @@ def command_source_update(args: argparse.Namespace, context: Context) -> dict[st
         result["results"] = results
         result["failures"] = failures
         return result
+
+
+def command_source_report(
+    args: argparse.Namespace,
+    context: Context,
+) -> dict[str, Any]:
+    report = json.loads(args.report.read_text(encoding="utf-8"))
+    if not isinstance(report, dict):
+        raise CommandError("来源检查报告顶层必须是对象")
+    markdown = source_reports.render_source_review_markdown(
+        report,
+        context.repo.read_sources()["skills"],
+        run_url=args.run_url,
+    )
+    print(markdown, end="")
+    return {"rendered": str(args.report)}
 
 
 def command_skill_import(args: argparse.Namespace, context: Context) -> dict[str, Any]:

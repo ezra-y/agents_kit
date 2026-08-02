@@ -19,7 +19,8 @@
    依赖由 `global apply` 连带安装，停用后无人依赖的会被自动回收。
 8. 上游默认使用 `review` 策略。定时任务只自动应用正文与全部文本内容相似度
    至少 90%、总增删不超过 500 行、受管文件结构不变、本地内容未漂移且候选
-   内容通过体检的小改动；其余变化开 Issue，确认后使用 `source update`。
+   内容通过体检的小改动；其余变化写入同一个 Issue 的审核表和展开详情，确认后
+   使用 `source update` 单独更新。
 9. HTTP 单文件来源只管理 `SKILL.md`；`references/`、`scripts/` 等附件由仓库保留。
 10. 修改 `rules/`、`agents/`、`hooks/` 或 `prompts/` 前，先读对应目录的 README。
 11. 第三方 MCP 集中记录在 `mcps.json`，不要为只有配置的 MCP 建独立目录。

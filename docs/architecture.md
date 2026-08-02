@@ -58,6 +58,7 @@ MCP 上游与分发
 | `repository.py` | 发现仓库、读写状态、锁、原子落盘、内容哈希 | 业务流程 |
 | `taxonomy.py` | 校验分类定义、标签词表和数量约束 | 根据语义替模型分类 |
 | `sources.py` | Git、HTTP、本地来源识别、获取、候选发现 | 修改仓库状态 |
+| `source_reports.py` | 把来源检查 JSON 渲染为 Issue 审核 Markdown | 获取或应用来源更新 |
 | `skills.py` | 导入、更新、移动、重命名、删除、metadata 和标签 | 全局或项目安装 |
 | `mcps.py` | MCP 导入、启停、版本更新、运行和客户端同步 | 保存凭据值、管理 Skill |
 | `installation.py` | 全局软链接和项目副本 | 修改技能正文 |
@@ -94,6 +95,11 @@ mcps -> repository 中的单一 MCP 清单
   Skill 通过格式、引用和附件检查；定时任务可自动应用。
 - `review_required`：大幅改写、二进制内容变化、文件结构变化、本地内容漂移或
   候选内容无效；保留本地版本并开 Issue 等待人工确认。
+
+定时任务把同一份审核 Markdown 写入 Actions Summary 和固定 Issue 正文。报告包含
+总表、中文原因、变化规模、文件清单、候选体检问题、截断后的 `SKILL.md` diff、
+精确上游链接和单项更新命令；完整 JSON 仅作为 Artifact 保留。Issue 每次覆盖为
+最新状态，避免评论累积成不可读的日志。
 
 `directory` 管理整个技能目录，适用于 Git 和压缩包。`skill_file` 只管理
 `SKILL.md`，适用于直接 HTTP 文件；更新时保留本地附件。增加新来源时，只扩展
