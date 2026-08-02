@@ -67,8 +67,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "c3245d1f8ae4a93f80c10cb4b21dec2cba3718968fcb5a316c44587da420e9d8"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "9dbafcb815265b3d1449cd36ffbccd0eb96e118e711153193c900506b2aa910c"
       }
     },
     "apple-aso": {
@@ -95,8 +95,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "d6ad28a8aa11b3a4245ec5516adb68b9d52f691311121392355305ac0b3ff610"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "c4d67003d4d013970ddaa5d3c5e8c206dd11aa7459af5e2613b875087a5dc31d"
       }
     },
     "ars-deep-research": {
@@ -148,8 +148,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "19d6f42a87fb167afc72c630a0a1e098125357ff3f0886b55514693144dc86f1"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "8154b3c4ae6bed712d4ad3079d52ff285fbbed7c6a3f4c1aa8b7f5a15a0b8f3b"
       }
     },
     "banner-design": {
@@ -852,8 +852,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "943bce5b3955f5957afb55336d2e2c854750a6c8178181b450c2fbc506e6cec2"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "fae114a736fba96bcd7ea7833241440a6a14015bf894e97d07df6edde932cc26"
       }
     },
     "guide-swiftui-view-refactor": {
@@ -894,8 +894,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "cf0db0eb7f5bfe4e6bb17ee2472d298c8e96d16a8e1dbd43ca44b22d0e283e51"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "8e3494767eaa8c6be5d23bcfd1e6ba9e11ace8a73bfc4adad124bf2291433e43"
       }
     },
     "hig": {
@@ -1358,8 +1358,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "e5a4241ab88bffdb00fbe0d73bec89b312cb1f2113ea192e4cbf5b8fdaea3d52"
+        "revision": "52f53312ff2f272e16bbc1785e1c04f9d9c19b31",
+        "content_sha256": "93fd52b7a196750b2075e97b5af4fb8874d196033023528df3a1bb9749255e24"
       }
     },
     "mapkit": {
@@ -1372,8 +1372,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "2659f65664c20d01ba0d74ddf8ec6e0faa46bad0194db3154c10e1aa7a0f83bb"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "82a74ed4d383f10a6b2c87072d9fc1dadd205813ad24ff80b5c9e70b2ff1e460"
       }
     },
     "nature-academic-search": {
@@ -1399,8 +1399,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": "d5c9dee63cb1679c22e2a6e4e488f5f23d4ec2e1",
-        "content_sha256": "96841e65ce01535cb8bf9a7c71948b1bc7d7fa72f79619a5925242882db3cf5f"
+        "revision": "4312c49e04c27aac9a719a03be17cf1a15501147",
+        "content_sha256": "0853b236f29e05777660674992f35640db02fed4532a73e4d528896ba7ae8570"
       }
     },
     "nextjs-mastery": {
@@ -1427,8 +1427,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "07befce2bcf3b41c8f47bd684dd856d8cda8830fb7290da444cfc4d95cfe7df4"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "5f56bd818a6a795dd64dd06e1b285afa78e1ee383353cf21d49ec735bf7e3d7c"
       }
     },
     "playground": {
@@ -1718,8 +1718,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "701a8358e7669f5e1e8396a2e299a1b94da370615af6e5ec4048a6dbd44d9118"
+        "revision": "b29e7cf65e5cb78a5ac33d582270551bc74a14eb",
+        "content_sha256": "953fca725f43bdcbb59ebf4dcf16d400c0ac771c1657ce7804639e5a36ea3fa9"
       }
     },
     "skill-development": {
@@ -1772,8 +1772,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "3aeee4192b87d9a7b16ca30906e6b9f3835c37b667af5a112e215ff78ff8602d"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "b6d2ca123a5c281804c49cf4bbc6fdd411b31adcd46475bb1ae079e39d6aee19"
       }
     },
     "swift-concurrency": {
@@ -1786,8 +1786,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "ec601ce1a706c3940e1da4445086a917272ab9555e0ee21a8c6d41e45e21bfb3"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "a0f4d8a86ce784972eddb9e93c6e3a447922471f16ccc60960162506a9761957"
       }
     },
     "swift-concurrency-pro": {
@@ -1814,8 +1814,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "dd76df61ebf15765dd83cc945d12f5fdcf493f0d6db1445017f788022e6e7127"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "59dd01a994c85bf921e5182d066077dde833adf3b2f187682c35409bddc20366"
       }
     },
     "swift-testing-pro": {
@@ -1842,8 +1842,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "93b765955a1ed2c6b5fbc7e9b2a9d6abc1ebd513392a288e4db5edda32ee2fc9"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "c380185a81baf504d1b9d68b29184fb8b4d7fa442a79e6fa46bb818b64bc4bf8"
       }
     },
     "swiftui": {
@@ -1856,8 +1856,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "f1aca0dd5023662673d49485ae3910e15dd65281f2bc56256c9667872206ae4a"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "44b47825c74ae2eeaf1f70a3d3d8e71c8a88a033fb41742c6f51e1e7cbf8c4cb"
       }
     },
     "swiftui-pro": {
@@ -1970,8 +1970,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "27f3876475a8bda82e7a912a42412d9e752c14090fe467f84192013a5e12f87a"
+        "revision": "14ddef5c05e52d7c253b8f0129de7bcd1045ae5b",
+        "content_sha256": "f0981e65090118b3fdffecbed460572c58d4a2df7bf92ee2be067aa85faaf990"
       }
     },
     "ui-ux-pro-max": {
@@ -1998,8 +1998,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "1539a7bd870003aeb43e68fa1310111ef63ef3a3b20cf0c18434fc3f88a55472"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "959739b3b5e750ecfd15352417c5f6b9b939662f019bba937218da6f34596985"
       }
     },
     "usernotifications": {
@@ -2012,8 +2012,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "23bf8a0af4ea820c0f711be6d17b05c05c9f7d8c3e411d05b5f17618cc0b2072"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "95e8feb6ba9b92fecd6c6b84614f6632392b4e603a4932e3a908486f00ebeb12"
       }
     },
     "vercel-cli-with-tokens": {
