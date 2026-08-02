@@ -12,8 +12,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": "5d93fad9f1371beafef4317642d4197a68f9b606",
-        "content_sha256": "e8b38fcc855dd85b4b018219012b21e0691cafe9116178d667d47a8e4a372865"
+        "revision": "9b8da01ffe6e9e47d16319fa683af701143afec4",
+        "content_sha256": "23be44594df855add15a0793ff649c307aace9e11954e71ad30f8d5f1900059e"
       }
     },
     "academic-research-suite": {
@@ -176,8 +176,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "77467b3dc5cfbc6c5bcc9a39f3d00dcebbc08c38e641768ffe85731c797215f9"
+        "revision": "14ddef5c05e52d7c253b8f0129de7bcd1045ae5b",
+        "content_sha256": "965ca89c3edf466b841c032f2249d87d8b9d7f8dd759e244ab16d1c672a0cecc"
       }
     },
     "build-mcp-app": {
@@ -501,8 +501,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "a02d9a1738ead0c03f59c0edeab14161eef7d2103bd520d6b324d4b6bd2dd8ad"
+        "revision": "14ddef5c05e52d7c253b8f0129de7bcd1045ae5b",
+        "content_sha256": "0fb8d6af9ae71f9173b23ffe74e6034a243df2d416dcd9603b4721fd441603d6"
       }
     },
     "diagnose": {
@@ -586,8 +586,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "2f7fa17fa3b373b8a77eb5b6c3795c8a0eb0e38278a868f549665a34bc55b2d3"
+        "revision": "9906a34d640d2111f724544cbc50f7f130569ae1",
+        "content_sha256": "e2b2fbc95cfc49558b72f9966904c3b0bb556e4aa9bf0954640d45fd41aca99a"
       }
     },
     "grill-me": {
@@ -1081,7 +1081,7 @@
       "policy": "review",
       "resolved": {
         "revision": null,
-        "content_sha256": "d9f7150664f23f6e75f3cbdf410df5fc448fd5cd90b7cc959420ca86b2287611"
+        "content_sha256": "0d45b5008f3484c714f71167518198c6830fd9ace8fd9040617eeb1487cbdf51"
       }
     },
     "lark-contact": {
@@ -1261,7 +1261,7 @@
       "policy": "review",
       "resolved": {
         "revision": null,
-        "content_sha256": "edd9faa1f576589211ec622aa00b9f2acb726641a9ff20ac19d932e5a291e216"
+        "content_sha256": "226552ad2dc8e3ae16d0562995363dec3e57ad99a3aa58ac5dc11a5e653eb417"
       }
     },
     "lark-task": {
@@ -1800,8 +1800,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "bcecf93e82f44fa9b75f3a68197373c8f1d356a66c080b1185b0dae3b4286c58"
+        "revision": "bee3f69ba17142da148d3c5406f148ed62592b69",
+        "content_sha256": "ca81148cb3cd240bbef9884aa42a971cb87a241495b136231b92d95f8c7bab1f"
       }
     },
     "swift-testing": {
@@ -1828,8 +1828,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "b0aed9949931b36388b62bbf914c2d2e0e609779990cfe377373e745181da202"
+        "revision": "2d6bba14a3c8bf3694f218b92fffe617c41ae43e",
+        "content_sha256": "b1d6765ab9dd6feba30c60bcc45042ae55dcd20d633e77b76fe0565f3740effe"
       }
     },
     "swiftdata": {
@@ -1870,8 +1870,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "3259b0bb873cf66cad156150b6a7a49f3ff1c44d8705cc63475977112fb6ae6c"
+        "revision": "be297ff80dddec529af1f9b1f1f114aab6c9d11c",
+        "content_sha256": "17559d5af82c9efc97f7027b8c1eb3b54812400696ee6243b8c3fe23f588dff9"
       }
     },
     "tdd": {
@@ -1984,8 +1984,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "9c5e400a34c85cc4235c6e7b6d31762062add5a0bd0efbd23c34493eb26d837d"
+        "revision": "14ddef5c05e52d7c253b8f0129de7bcd1045ae5b",
+        "content_sha256": "0711f74badb231c105e28d702d40a00cb8ba78603fd87d900e17dc75fdd4f2b0"
       }
     },
     "uikit": {
@@ -1998,8 +1998,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "1539a7bd870003aeb43e68fa1310111ef63ef3a3b20cf0c18434fc3f88a55472"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "959739b3b5e750ecfd15352417c5f6b9b939662f019bba937218da6f34596985"
       }
     },
     "usernotifications": {
