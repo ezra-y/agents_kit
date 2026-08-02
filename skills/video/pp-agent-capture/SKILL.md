@@ -89,6 +89,11 @@ click or keyboard action. Do not start with the UI action.
      Negative coordinates are normal on multi-display Macs.
    - When names are duplicated or the target is uncertain, capture a still of the
      candidate window and inspect it before proceeding.
+   - Bring the target window to the front, then capture the selected display or
+     region and inspect that still too. An accessibility tree or isolated window
+     screenshot does not prove that the window is visible in the real recording
+     surface. Do not start recording while the target is behind another window, on
+     another Space, or outside the selected display or region.
 2. **Choose the capture boundary.**
    - Use `--window-id` when the complete action remains inside one window.
    - Use the verified display or region when the action crosses windows, overlays,
