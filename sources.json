@@ -67,8 +67,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "c3245d1f8ae4a93f80c10cb4b21dec2cba3718968fcb5a316c44587da420e9d8"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "9dbafcb815265b3d1449cd36ffbccd0eb96e118e711153193c900506b2aa910c"
       }
     },
     "apple-aso": {
@@ -95,8 +95,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "d6ad28a8aa11b3a4245ec5516adb68b9d52f691311121392355305ac0b3ff610"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "c4d67003d4d013970ddaa5d3c5e8c206dd11aa7459af5e2613b875087a5dc31d"
       }
     },
     "ars-deep-research": {
@@ -1358,8 +1358,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "e5a4241ab88bffdb00fbe0d73bec89b312cb1f2113ea192e4cbf5b8fdaea3d52"
+        "revision": "52f53312ff2f272e16bbc1785e1c04f9d9c19b31",
+        "content_sha256": "93fd52b7a196750b2075e97b5af4fb8874d196033023528df3a1bb9749255e24"
       }
     },
     "mapkit": {
@@ -1427,8 +1427,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "07befce2bcf3b41c8f47bd684dd856d8cda8830fb7290da444cfc4d95cfe7df4"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "5f56bd818a6a795dd64dd06e1b285afa78e1ee383353cf21d49ec735bf7e3d7c"
       }
     },
     "playground": {
@@ -1856,8 +1856,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "f1aca0dd5023662673d49485ae3910e15dd65281f2bc56256c9667872206ae4a"
+        "revision": "a76633bad89fc740df3c2e0d125fc3e4092a5075",
+        "content_sha256": "44b47825c74ae2eeaf1f70a3d3d8e71c8a88a033fb41742c6f51e1e7cbf8c4cb"
       }
     },
     "swiftui-pro": {
