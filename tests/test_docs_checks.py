@@ -118,6 +118,28 @@ class DocsAndChecksTests(unittest.TestCase):
             any("Markdown 链接目标不存在" in problem for problem in report.problems)
         )
 
+    def test_candidate_text_can_use_preserved_local_attachment(self):
+        skill_root = self.root / "skills/tools/alpha"
+        reference = skill_root / "references/guide.md"
+        reference.parent.mkdir()
+        reference.write_text("Guide\n", encoding="utf-8")
+        candidate_text = (
+            "---\n"
+            "name: alpha\n"
+            "description: Updated Alpha\n"
+            "---\n\n"
+            "[Guide](references/guide.md)\n"
+        )
+
+        problems = checks.candidate_skill_problems(
+            "alpha",
+            skill_root,
+            self.repo.inventory(),
+            skill_text=candidate_text,
+        )
+
+        self.assertEqual(problems, [])
+
     def test_cross_category_skill_link_resolves_by_skill_name(self):
         beta = self.root / "skills/web/beta"
         beta.mkdir(parents=True)

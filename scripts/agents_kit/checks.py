@@ -242,11 +242,17 @@ def candidate_skill_problems(
     name: str,
     skill_root: Path,
     inventory: dict[str, Any],
+    *,
+    skill_text: str | None = None,
 ) -> list[str]:
     problems: list[str] = []
     skill_file = skill_root / "SKILL.md"
     try:
-        text = skill_file.read_text(encoding="utf-8", errors="replace")
+        text = (
+            skill_text
+            if skill_text is not None
+            else skill_file.read_text(encoding="utf-8", errors="replace")
+        )
         frontmatter = parse_skill_frontmatter(text)
     except (OSError, ValueError, RuntimeError) as exc:
         return [f"{name}: {exc}"]

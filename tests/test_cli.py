@@ -87,7 +87,7 @@ class CliTests(unittest.TestCase):
             check=True,
         )
 
-    def import_git_source(self, *, reference_text=None):
+    def import_git_source(self, *, reference_text=None, extra_files=None):
         subprocess.run(["git", "init", "-q", str(self.source)], check=True)
         (self.source / "SKILL.md").write_text(
             "---\n"
@@ -101,6 +101,10 @@ class CliTests(unittest.TestCase):
             reference = self.source / "references/guide.md"
             reference.parent.mkdir()
             reference.write_text(reference_text, encoding="utf-8")
+        for relative_path, content in (extra_files or {}).items():
+            extra = self.source / relative_path
+            extra.parent.mkdir(parents=True, exist_ok=True)
+            extra.write_text(content, encoding="utf-8")
         self.commit_source("initial")
         self.run_cli(
             "skill",
@@ -220,7 +224,7 @@ class CliTests(unittest.TestCase):
             (self.root / "skills/tools/alpha/SKILL.md").read_text(encoding="utf-8"),
         )
 
-    def test_source_update_safe_leaves_file_layout_change_for_review(self):
+    def test_source_update_safe_applies_small_file_addition(self):
         self.import_git_source()
         reference = self.source / "references/example.md"
         reference.parent.mkdir()
@@ -239,12 +243,178 @@ class CliTests(unittest.TestCase):
         )
 
         result = payload["results"][0]
+        self.assertEqual(result["status"], "safe_update")
+        self.assertTrue(result["applied"])
+        self.assertTrue(
+            (self.root / "skills/tools/alpha/references/example.md").is_file()
+        )
+
+    def test_source_update_safe_leaves_unique_file_removal_for_review(self):
+        self.import_git_source(reference_text="Unique reference\n")
+        (self.source / "references/guide.md").unlink()
+        (self.source / "references").rmdir()
+        self.commit_source("remove reference")
+
+        payload = json.loads(
+            self.run_cli(
+                "source",
+                "update",
+                "alpha",
+                "--safe",
+                "--yes",
+                "--json",
+            ).stdout
+        )
+
+        result = payload["results"][0]
         self.assertEqual(result["status"], "review_required")
         self.assertIn("file_layout_changed", result["reasons"])
         self.assertFalse(result["applied"])
-        self.assertFalse(
-            (self.root / "skills/tools/alpha/references/example.md").exists()
+
+    def test_source_update_safe_allows_duplicate_directory_cleanup(self):
+        self.import_git_source(
+            reference_text="Shared reference\n",
+            extra_files={"package/references/guide.md": "Shared reference\n"},
         )
+        nested = self.source / "package/references/guide.md"
+        nested.unlink()
+        nested.parent.rmdir()
+        self.commit_source("remove duplicate reference")
+
+        payload = json.loads(
+            self.run_cli(
+                "source",
+                "update",
+                "alpha",
+                "--safe",
+                "--yes",
+                "--json",
+            ).stdout
+        )
+
+        result = payload["results"][0]
+        self.assertEqual(result["status"], "safe_update")
+        self.assertIn(
+            "package/references/guide.md",
+            result["redundant_removed_paths"],
+        )
+
+    def test_source_update_safe_allows_internal_symlink_deduplication(self):
+        self.import_git_source(
+            reference_text="Shared reference\n",
+            extra_files={"package/references/guide.md": "Shared reference\n"},
+        )
+        nested = self.source / "package/references/guide.md"
+        nested.unlink()
+        nested.parent.rmdir()
+        nested.parent.symlink_to("../references")
+        self.commit_source("replace duplicate directory with symlink")
+
+        payload = json.loads(
+            self.run_cli(
+                "source",
+                "update",
+                "alpha",
+                "--safe",
+                "--yes",
+                "--json",
+            ).stdout
+        )
+
+        result = payload["results"][0]
+        self.assertEqual(result["status"], "safe_update")
+        self.assertTrue(
+            (self.root / "skills/tools/alpha/package/references").is_symlink()
+        )
+
+    def test_source_update_safe_requires_review_for_broken_symlink(self):
+        self.import_git_source()
+        package = self.source / "package"
+        package.mkdir()
+        (package / "references").symlink_to("../missing")
+        self.commit_source("add broken symlink")
+
+        payload = json.loads(
+            self.run_cli(
+                "source",
+                "update",
+                "alpha",
+                "--safe",
+                "--yes",
+                "--json",
+            ).stdout
+        )
+
+        result = payload["results"][0]
+        self.assertEqual(result["status"], "review_required")
+        self.assertEqual(
+            result["unsafe_added_paths"],
+            ["package/references"],
+        )
+        self.assertIn("file_layout_changed", result["reasons"])
+
+    def test_source_update_safe_allows_ancillary_file_cleanup(self):
+        self.import_git_source(extra_files={"README.md": "Packaging notes\n"})
+        (self.source / "README.md").unlink()
+        self.commit_source("remove packaging readme")
+
+        payload = json.loads(
+            self.run_cli(
+                "source",
+                "update",
+                "alpha",
+                "--safe",
+                "--yes",
+                "--json",
+            ).stdout
+        )
+
+        result = payload["results"][0]
+        self.assertEqual(result["status"], "safe_update")
+        self.assertEqual(result["ancillary_removed_paths"], ["README.md"])
+
+    def test_source_update_safe_allows_added_image_asset(self):
+        self.import_git_source()
+        asset = self.source / "assets/icon.png"
+        asset.parent.mkdir()
+        asset.write_bytes(b"\x89PNG\r\n\x1a\n\xff")
+        self.commit_source("add icon")
+
+        payload = json.loads(
+            self.run_cli(
+                "source",
+                "update",
+                "alpha",
+                "--safe",
+                "--yes",
+                "--json",
+            ).stdout
+        )
+
+        result = payload["results"][0]
+        self.assertEqual(result["status"], "safe_update")
+        self.assertEqual(result["added_binary_paths"], ["assets/icon.png"])
+
+    def test_source_update_safe_requires_review_for_added_unknown_binary(self):
+        self.import_git_source()
+        binary = self.source / "payload.bin"
+        binary.write_bytes(b"\xff\xfe\x00\x01")
+        self.commit_source("add binary")
+
+        payload = json.loads(
+            self.run_cli(
+                "source",
+                "update",
+                "alpha",
+                "--safe",
+                "--yes",
+                "--json",
+            ).stdout
+        )
+
+        result = payload["results"][0]
+        self.assertEqual(result["status"], "review_required")
+        self.assertIn("binary_content_changed", result["reasons"])
 
     def test_source_update_safe_leaves_large_content_change_for_review(self):
         self.import_git_source()

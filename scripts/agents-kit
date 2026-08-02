@@ -31,7 +31,7 @@ from agents_kit import (
 )
 from agents_kit.installation import InstallationError
 from agents_kit.mcps import McpError
-from agents_kit.models import ChangeSet, Effect
+from agents_kit.models import ChangeSet, ContentMode, Effect
 from agents_kit.repository import Repository, RepositoryError
 from agents_kit.skills import SkillError
 from agents_kit.sources import (
@@ -391,17 +391,27 @@ def _source_change(
     record: dict[str, Any],
     snapshot: Any,
 ) -> dict[str, Any]:
+    local_path = context.repo.require_skill(name).path
     comparison = classify_source_change(
-        context.repo.require_skill(name).path,
+        local_path,
         snapshot,
         resolved_sha256=record.get("resolved", {}).get("content_sha256"),
     )
-    if comparison["status"] != "safe_update":
+    if comparison["status"] == "unchanged":
         return comparison
+    validation_root = snapshot.path
+    skill_text = None
+    if snapshot.content_mode == ContentMode.SKILL_FILE:
+        validation_root = local_path
+        skill_text = (snapshot.path / "SKILL.md").read_text(
+            encoding="utf-8",
+            errors="replace",
+        )
     problems = checks.candidate_skill_problems(
         name,
-        snapshot.path,
+        validation_root,
         context.repo.inventory(),
+        skill_text=skill_text,
     )
     if problems:
         comparison["status"] = "review_required"

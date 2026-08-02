@@ -24,6 +24,7 @@ class SourceReportTests(unittest.TestCase):
                     "similarity": 0.95,
                     "content_similarity": 0.72,
                     "changed_lines": 840,
+                    "max_changed_lines": 1000,
                     "added_paths": ["references/new.md"],
                     "removed_paths": [],
                     "changed_files": [
@@ -71,7 +72,7 @@ class SourceReportTests(unittest.TestCase):
         self.assertIn("自动更新 | **1**", markdown)
         self.assertIn("待人工确认 | **1**", markdown)
         self.assertIn("全部内容变化较大", markdown)
-        self.assertIn("变化超过 500 行", markdown)
+        self.assertIn("变化超过 1000 行", markdown)
         self.assertIn(
             "https://github.com/example/skills/tree/abc123/skills/beta",
             markdown,

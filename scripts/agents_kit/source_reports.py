@@ -7,10 +7,10 @@ from typing import Any
 REASON_LABELS = {
     "local_content_modified": "本地内容已修改",
     "low_similarity": "SKILL.md 变化较大",
-    "file_layout_changed": "文件结构发生变化",
+    "file_layout_changed": "存在破坏性文件结构变化",
     "low_content_similarity": "全部内容变化较大",
     "content_change_too_large": "变化超过 500 行",
-    "binary_content_changed": "二进制内容发生变化",
+    "binary_content_changed": "未知或已修改的二进制内容",
     "candidate_validation_failed": "候选内容体检失败",
 }
 
@@ -175,9 +175,13 @@ def _review_details(
 
 def _reason_labels(row: Mapping[str, Any]) -> list[str]:
     reasons = list(row.get("reasons", []))
-    return [REASON_LABELS.get(reason, str(reason)) for reason in reasons] or [
-        "需要人工确认"
-    ]
+    labels: list[str] = []
+    for reason in reasons:
+        if reason == "content_change_too_large":
+            labels.append(f"变化超过 {row.get('max_changed_lines', 500)} 行")
+        else:
+            labels.append(REASON_LABELS.get(reason, str(reason)))
+    return labels or ["需要人工确认"]
 
 
 def _change_scale(row: Mapping[str, Any]) -> str:
