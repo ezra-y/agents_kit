@@ -18,7 +18,6 @@ from scripts.agents_kit.sources import (
     SourceError,
     SourceSession,
     _common_source_parent,
-    _safe_changed_line_limit,
 )
 
 SKILL = "---\nname: {name}\ndescription: {name} description\n---\n"
@@ -147,10 +146,6 @@ class SourceTests(unittest.TestCase):
             _common_source_parent(["skills/alpha", "packages/beta"]),
             "",
         )
-
-    def test_high_similarity_allows_larger_line_change(self):
-        self.assertEqual(_safe_changed_line_limit(0.9799), 500)
-        self.assertEqual(_safe_changed_line_limit(0.98), 1000)
 
     def test_git_failure_is_cached_for_same_repository(self):
         provider = GitProvider()

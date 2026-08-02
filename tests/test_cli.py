@@ -87,7 +87,7 @@ class CliTests(unittest.TestCase):
             check=True,
         )
 
-    def import_git_source(self, *, reference_text=None, extra_files=None):
+    def import_git_source(self, *, reference_text=None):
         subprocess.run(["git", "init", "-q", str(self.source)], check=True)
         (self.source / "SKILL.md").write_text(
             "---\n"
@@ -101,10 +101,6 @@ class CliTests(unittest.TestCase):
             reference = self.source / "references/guide.md"
             reference.parent.mkdir()
             reference.write_text(reference_text, encoding="utf-8")
-        for relative_path, content in (extra_files or {}).items():
-            extra = self.source / relative_path
-            extra.parent.mkdir(parents=True, exist_ok=True)
-            extra.write_text(content, encoding="utf-8")
         self.commit_source("initial")
         self.run_cli(
             "skill",
@@ -157,7 +153,7 @@ class CliTests(unittest.TestCase):
             )
         )
 
-    def test_source_check_requires_review_for_large_attachment_rewrite(self):
+    def test_source_check_allows_large_upstream_rewrite(self):
         self.import_git_source(
             reference_text="\n".join(
                 f"Original reference {index}" for index in range(1, 21)
@@ -173,32 +169,8 @@ class CliTests(unittest.TestCase):
         payload = json.loads(self.run_cli("source", "check", "alpha", "--json").stdout)
 
         result = payload["results"][0]
-        self.assertEqual(result["status"], "review_required")
-        self.assertIn("content_change_too_large", result["reasons"])
-        self.assertEqual(result["changed_files"][0]["path"], "references/guide.md")
-        self.assertEqual(result["changed_files"][0]["added_lines"], 1000)
-        self.assertEqual(result["changed_files"][0]["deleted_lines"], 20)
-
-    def test_source_check_allows_small_attachment_edit(self):
-        self.import_git_source(
-            reference_text="\n".join(
-                f"Reference line {index}" for index in range(1, 21)
-            )
-            + "\n"
-        )
-        reference = self.source / "references/guide.md"
-        reference.write_text(
-            reference.read_text(encoding="utf-8").replace(
-                "Reference line 20",
-                "Updated reference line 20",
-            ),
-            encoding="utf-8",
-        )
-        self.commit_source("edit attachment")
-
-        payload = json.loads(self.run_cli("source", "check", "alpha", "--json").stdout)
-
-        self.assertEqual(payload["results"][0]["status"], "safe_update")
+        self.assertEqual(result["status"], "safe_update")
+        self.assertEqual(result["reasons"], [])
 
     def test_source_update_safe_applies_small_change(self):
         self.import_git_source()
@@ -224,12 +196,12 @@ class CliTests(unittest.TestCase):
             (self.root / "skills/tools/alpha/SKILL.md").read_text(encoding="utf-8"),
         )
 
-    def test_source_update_safe_applies_small_file_addition(self):
-        self.import_git_source()
-        reference = self.source / "references/example.md"
-        reference.parent.mkdir()
-        reference.write_text("New reference\n", encoding="utf-8")
-        self.commit_source("add reference")
+    def test_source_update_safe_follows_upstream_tree(self):
+        self.import_git_source(reference_text="Unique reference\n")
+        (self.source / "references/guide.md").unlink()
+        (self.source / "references").rmdir()
+        (self.source / "payload.bin").write_bytes(b"\xff\xfe\x00\x01")
+        self.commit_source("replace source tree")
 
         payload = json.loads(
             self.run_cli(
@@ -245,15 +217,32 @@ class CliTests(unittest.TestCase):
         result = payload["results"][0]
         self.assertEqual(result["status"], "safe_update")
         self.assertTrue(result["applied"])
-        self.assertTrue(
-            (self.root / "skills/tools/alpha/references/example.md").is_file()
+        self.assertFalse(
+            (self.root / "skills/tools/alpha/references/guide.md").exists()
         )
+        self.assertTrue((self.root / "skills/tools/alpha/payload.bin").is_file())
 
-    def test_source_update_safe_leaves_unique_file_removal_for_review(self):
-        self.import_git_source(reference_text="Unique reference\n")
-        (self.source / "references/guide.md").unlink()
-        (self.source / "references").rmdir()
-        self.commit_source("remove reference")
+    def test_source_check_ignores_local_only_change(self):
+        self.import_git_source()
+        local = self.root / "skills/tools/alpha/SKILL.md"
+        with local.open("a", encoding="utf-8") as handle:
+            handle.write("Local customization\n")
+
+        payload = json.loads(self.run_cli("source", "check", "alpha", "--json").stdout)
+
+        result = payload["results"][0]
+        self.assertEqual(result["status"], "unchanged")
+        self.assertTrue(result["local_modified"])
+        self.run_cli("check", "--json")
+
+    def test_source_update_safe_reports_local_upstream_conflict(self):
+        self.import_git_source()
+        local = self.root / "skills/tools/alpha/SKILL.md"
+        with local.open("a", encoding="utf-8") as handle:
+            handle.write("Local customization\n")
+        with (self.source / "SKILL.md").open("a", encoding="utf-8") as handle:
+            handle.write("Upstream update\n")
+        self.commit_source("upstream update")
 
         payload = json.loads(
             self.run_cli(
@@ -268,187 +257,9 @@ class CliTests(unittest.TestCase):
 
         result = payload["results"][0]
         self.assertEqual(result["status"], "review_required")
-        self.assertIn("file_layout_changed", result["reasons"])
+        self.assertEqual(result["reasons"], ["local_upstream_conflict"])
         self.assertFalse(result["applied"])
-
-    def test_source_update_safe_allows_duplicate_directory_cleanup(self):
-        self.import_git_source(
-            reference_text="Shared reference\n",
-            extra_files={"package/references/guide.md": "Shared reference\n"},
-        )
-        nested = self.source / "package/references/guide.md"
-        nested.unlink()
-        nested.parent.rmdir()
-        self.commit_source("remove duplicate reference")
-
-        payload = json.loads(
-            self.run_cli(
-                "source",
-                "update",
-                "alpha",
-                "--safe",
-                "--yes",
-                "--json",
-            ).stdout
-        )
-
-        result = payload["results"][0]
-        self.assertEqual(result["status"], "safe_update")
-        self.assertIn(
-            "package/references/guide.md",
-            result["redundant_removed_paths"],
-        )
-
-    def test_source_update_safe_allows_internal_symlink_deduplication(self):
-        self.import_git_source(
-            reference_text="Shared reference\n",
-            extra_files={"package/references/guide.md": "Shared reference\n"},
-        )
-        nested = self.source / "package/references/guide.md"
-        nested.unlink()
-        nested.parent.rmdir()
-        nested.parent.symlink_to("../references")
-        self.commit_source("replace duplicate directory with symlink")
-
-        payload = json.loads(
-            self.run_cli(
-                "source",
-                "update",
-                "alpha",
-                "--safe",
-                "--yes",
-                "--json",
-            ).stdout
-        )
-
-        result = payload["results"][0]
-        self.assertEqual(result["status"], "safe_update")
-        self.assertTrue(
-            (self.root / "skills/tools/alpha/package/references").is_symlink()
-        )
-
-    def test_source_update_safe_requires_review_for_broken_symlink(self):
-        self.import_git_source()
-        package = self.source / "package"
-        package.mkdir()
-        (package / "references").symlink_to("../missing")
-        self.commit_source("add broken symlink")
-
-        payload = json.loads(
-            self.run_cli(
-                "source",
-                "update",
-                "alpha",
-                "--safe",
-                "--yes",
-                "--json",
-            ).stdout
-        )
-
-        result = payload["results"][0]
-        self.assertEqual(result["status"], "review_required")
-        self.assertEqual(
-            result["unsafe_added_paths"],
-            ["package/references"],
-        )
-        self.assertIn("file_layout_changed", result["reasons"])
-
-    def test_source_update_safe_allows_ancillary_file_cleanup(self):
-        self.import_git_source(extra_files={"README.md": "Packaging notes\n"})
-        (self.source / "README.md").unlink()
-        self.commit_source("remove packaging readme")
-
-        payload = json.loads(
-            self.run_cli(
-                "source",
-                "update",
-                "alpha",
-                "--safe",
-                "--yes",
-                "--json",
-            ).stdout
-        )
-
-        result = payload["results"][0]
-        self.assertEqual(result["status"], "safe_update")
-        self.assertEqual(result["ancillary_removed_paths"], ["README.md"])
-
-    def test_source_update_safe_allows_added_image_asset(self):
-        self.import_git_source()
-        asset = self.source / "assets/icon.png"
-        asset.parent.mkdir()
-        asset.write_bytes(b"\x89PNG\r\n\x1a\n\xff")
-        self.commit_source("add icon")
-
-        payload = json.loads(
-            self.run_cli(
-                "source",
-                "update",
-                "alpha",
-                "--safe",
-                "--yes",
-                "--json",
-            ).stdout
-        )
-
-        result = payload["results"][0]
-        self.assertEqual(result["status"], "safe_update")
-        self.assertEqual(result["added_binary_paths"], ["assets/icon.png"])
-
-    def test_source_update_safe_requires_review_for_added_unknown_binary(self):
-        self.import_git_source()
-        binary = self.source / "payload.bin"
-        binary.write_bytes(b"\xff\xfe\x00\x01")
-        self.commit_source("add binary")
-
-        payload = json.loads(
-            self.run_cli(
-                "source",
-                "update",
-                "alpha",
-                "--safe",
-                "--yes",
-                "--json",
-            ).stdout
-        )
-
-        result = payload["results"][0]
-        self.assertEqual(result["status"], "review_required")
-        self.assertIn("binary_content_changed", result["reasons"])
-
-    def test_source_update_safe_leaves_large_content_change_for_review(self):
-        self.import_git_source()
-        (self.source / "SKILL.md").write_text(
-            "---\n"
-            "name: alpha\n"
-            "description: Rewritten Alpha\n"
-            "---\n\n"
-            "# Rewritten\n\n"
-            + "\n".join(f"New behavior {index}" for index in range(1, 21))
-            + "\n",
-            encoding="utf-8",
-        )
-        self.commit_source("rewrite")
-
-        payload = json.loads(
-            self.run_cli(
-                "source",
-                "update",
-                "alpha",
-                "--safe",
-                "--yes",
-                "--json",
-            ).stdout
-        )
-
-        result = payload["results"][0]
-        self.assertEqual(result["status"], "review_required")
-        self.assertIn("low_similarity", result["reasons"])
-        self.assertFalse(result["applied"])
-        self.assertIn(
-            "Rule 1",
-            (self.root / "skills/tools/alpha/SKILL.md").read_text(encoding="utf-8"),
-        )
+        self.assertIn("Local customization", local.read_text(encoding="utf-8"))
 
     def test_source_report_renders_markdown(self):
         report = self.root / "source-check.json"
@@ -459,8 +270,8 @@ class CliTests(unittest.TestCase):
                         {
                             "skill": "alpha",
                             "status": "review_required",
-                            "reasons": ["content_change_too_large"],
-                            "changed_lines": 700,
+                            "reasons": ["local_upstream_conflict"],
+                            "changed_lines": 2,
                         }
                     ],
                     "failures": [],
@@ -478,7 +289,7 @@ class CliTests(unittest.TestCase):
         )
 
         self.assertIn("# 上游技能审核", result.stdout)
-        self.assertIn("变化超过 500 行", result.stdout)
+        self.assertIn("本地与上游同时修改", result.stdout)
         self.assertIn("https://example.com/run", result.stdout)
 
     def test_one_command_local_import_and_status(self):

@@ -110,10 +110,9 @@ def _check_sources(
         if not isinstance(record.get("locator"), dict):
             report.problems.append(f"{name}: source locator 必须是对象")
         try:
-            content_mode = ContentMode(record.get("content_mode"))
+            ContentMode(record.get("content_mode"))
         except (TypeError, ValueError):
             report.problems.append(f"{name}: source content_mode 无效")
-            content_mode = None
         if record.get("policy") not in {"review", "pinned"}:
             report.problems.append(f"{name}: source policy 无效")
         resolved = record.get("resolved")
@@ -121,12 +120,6 @@ def _check_sources(
             resolved.get("content_sha256"), str
         ):
             report.problems.append(f"{name}: source resolved 摘要不完整")
-        elif content_mode and name in inventory:
-            local_hash = repo.hash_skill_content(inventory[name].path, content_mode)
-            if local_hash != resolved["content_sha256"]:
-                report.problems.append(
-                    f"{name}: 本地受管内容与 source resolved 摘要不一致"
-                )
     report.sections["sources"] = {"count": len(records), "stale": stale}
 
 

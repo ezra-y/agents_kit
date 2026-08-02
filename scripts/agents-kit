@@ -397,7 +397,7 @@ def _source_change(
         snapshot,
         resolved_sha256=record.get("resolved", {}).get("content_sha256"),
     )
-    if comparison["status"] == "unchanged":
+    if comparison["status"] != "safe_update":
         return comparison
     validation_root = snapshot.path
     skill_text = None

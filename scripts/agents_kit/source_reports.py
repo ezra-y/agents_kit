@@ -5,12 +5,7 @@ from collections.abc import Mapping
 from typing import Any
 
 REASON_LABELS = {
-    "local_content_modified": "本地内容已修改",
-    "low_similarity": "SKILL.md 变化较大",
-    "file_layout_changed": "存在破坏性文件结构变化",
-    "low_content_similarity": "全部内容变化较大",
-    "content_change_too_large": "变化超过 500 行",
-    "binary_content_changed": "未知或已修改的二进制内容",
+    "local_upstream_conflict": "本地与上游同时修改",
     "candidate_validation_failed": "候选内容体检失败",
 }
 
@@ -110,32 +105,8 @@ def _review_details(
         lines.append(f"- 上游版本：[打开来源]({source_url})")
     if isinstance(row.get("similarity"), (int, float)):
         lines.append(f"- `SKILL.md` 相似度：{_percent(row['similarity'])}")
-    if isinstance(row.get("content_similarity"), (int, float)):
-        lines.append(f"- 全部文本相似度：{_percent(row['content_similarity'])}")
     if isinstance(row.get("changed_lines"), int):
         lines.append(f"- 文本增删：{row['changed_lines']} 行")
-
-    changed_files = list(row.get("changed_files", []))
-    added_paths = list(row.get("added_paths", []))
-    removed_paths = list(row.get("removed_paths", []))
-    if changed_files or added_paths or removed_paths:
-        lines.extend(["", "**文件变化**", ""])
-        for item in changed_files[:DETAIL_LIST_LIMIT]:
-            path = item.get("path", "unknown")
-            if item.get("binary"):
-                lines.append(f"- `{path}`：二进制内容变化")
-                continue
-            lines.append(
-                f"- `{path}`：+{item.get('added_lines', 0)} / "
-                f"-{item.get('deleted_lines', 0)}"
-            )
-        lines.extend(f"- 新增 `{path}`" for path in added_paths[:DETAIL_LIST_LIMIT])
-        lines.extend(f"- 删除 `{path}`" for path in removed_paths[:DETAIL_LIST_LIMIT])
-        hidden = max(0, len(changed_files) - DETAIL_LIST_LIMIT)
-        hidden += max(0, len(added_paths) - DETAIL_LIST_LIMIT)
-        hidden += max(0, len(removed_paths) - DETAIL_LIST_LIMIT)
-        if hidden:
-            lines.append(f"- 还有 {hidden} 项，见 Actions Artifact 中的 JSON")
 
     problems = list(row.get("validation_problems", []))
     if problems:
@@ -175,26 +146,16 @@ def _review_details(
 
 def _reason_labels(row: Mapping[str, Any]) -> list[str]:
     reasons = list(row.get("reasons", []))
-    labels: list[str] = []
-    for reason in reasons:
-        if reason == "content_change_too_large":
-            labels.append(f"变化超过 {row.get('max_changed_lines', 500)} 行")
-        else:
-            labels.append(REASON_LABELS.get(reason, str(reason)))
-    return labels or ["需要人工确认"]
+    return [REASON_LABELS.get(reason, str(reason)) for reason in reasons] or [
+        "需要人工确认"
+    ]
 
 
 def _change_scale(row: Mapping[str, Any]) -> str:
-    parts: list[str] = []
-    if isinstance(row.get("changed_lines"), int):
-        parts.append(f"{row['changed_lines']} 行")
-    added = len(row.get("added_paths", []))
-    removed = len(row.get("removed_paths", []))
-    if added or removed:
-        parts.append(f"+{added}/-{removed} 文件")
-    if isinstance(row.get("content_similarity"), (int, float)):
-        parts.append(f"{_percent(row['content_similarity'])} 相似")
-    return "；".join(parts) or "结构变化"
+    changed_lines = row.get("changed_lines")
+    if isinstance(changed_lines, int) and changed_lines:
+        return f"`SKILL.md` {changed_lines} 行"
+    return "受管内容变化"
 
 
 def _source_url(

@@ -33,20 +33,6 @@ class SourceError(RuntimeError):
     pass
 
 
-SAFE_UPDATE_SIMILARITY = 0.90
-SAFE_UPDATE_CONTENT_SIMILARITY = 0.90
-SAFE_UPDATE_MAX_CHANGED_LINES = 500
-SAFE_UPDATE_HIGH_SIMILARITY = 0.98
-SAFE_UPDATE_HIGH_SIMILARITY_MAX_CHANGED_LINES = 1000
-SAFE_BINARY_ADDITION_MAX_BYTES = 2 * 1024 * 1024
-SAFE_BINARY_ASSET_SUFFIXES = {
-    ".gif",
-    ".ico",
-    ".jpeg",
-    ".jpg",
-    ".png",
-    ".webp",
-}
 SOURCE_DIFF_LINE_LIMIT = 200
 
 
@@ -57,58 +43,29 @@ def classify_source_change(
     resolved_sha256: str | None,
 ) -> dict[str, Any]:
     local_sha256 = Repository.hash_skill_content(local_path, snapshot.content_mode)
-    local_modified = bool(resolved_sha256 and local_sha256 != resolved_sha256)
-    if local_sha256 == snapshot.content_sha256 and not local_modified:
+    remote_sha256 = snapshot.content_sha256
+    local_modified = resolved_sha256 is None or local_sha256 != resolved_sha256
+    upstream_modified = resolved_sha256 is None or remote_sha256 != resolved_sha256
+
+    if not upstream_modified:
         return {
             "status": "unchanged",
             "local_sha256": local_sha256,
-            "remote_sha256": snapshot.content_sha256,
+            "remote_sha256": remote_sha256,
+            "resolved_sha256": resolved_sha256,
+            "local_modified": local_modified,
+            "upstream_modified": False,
         }
 
     local_lines = _skill_lines(local_path)
     remote_lines = _skill_lines(snapshot.path)
-    similarity = difflib.SequenceMatcher(
+    matcher = difflib.SequenceMatcher(
         None,
         local_lines,
         remote_lines,
         autojunk=False,
-    ).ratio()
-    local_layout = _managed_file_layout(local_path, snapshot.content_mode)
-    remote_layout = _managed_file_layout(snapshot.path, snapshot.content_mode)
-    layout_change = _assess_layout_change(
-        local_path,
-        snapshot.path,
-        local_layout,
-        remote_layout,
     )
-
-    reasons: list[str] = []
-    if local_modified:
-        reasons.append("local_content_modified")
-    if similarity < SAFE_UPDATE_SIMILARITY:
-        reasons.append("low_similarity")
-    if (
-        layout_change["unsafe_added_paths"]
-        or layout_change["unsafe_removed_paths"]
-        or layout_change["unsafe_changed_path_types"]
-    ):
-        reasons.append("file_layout_changed")
-
-    content_change = _managed_content_change(
-        local_path,
-        snapshot.path,
-        local_layout,
-        remote_layout,
-        ignored_removed_paths=set(layout_change["safe_removed_paths"]),
-    )
-    if content_change["content_similarity"] < SAFE_UPDATE_CONTENT_SIMILARITY:
-        reasons.append("low_content_similarity")
-    max_changed_lines = _safe_changed_line_limit(content_change["content_similarity"])
-    content_change["max_changed_lines"] = max_changed_lines
-    if content_change["changed_lines"] > max_changed_lines:
-        reasons.append("content_change_too_large")
-    if content_change["unsafe_binary_paths"]:
-        reasons.append("binary_content_changed")
+    conflict = local_modified and local_sha256 != remote_sha256
     skill_diff = list(
         difflib.unified_diff(
             local_lines,
@@ -118,22 +75,26 @@ def classify_source_change(
             lineterm="",
         )
     )
+    changed_lines = sum(
+        (local_end - local_start) + (remote_end - remote_start)
+        for tag, local_start, local_end, remote_start, remote_end in matcher.get_opcodes()
+        if tag != "equal"
+    )
 
     return {
-        "status": "review_required" if reasons else "safe_update",
+        "status": "review_required" if conflict else "safe_update",
         "local_sha256": local_sha256,
-        "remote_sha256": snapshot.content_sha256,
-        "similarity": round(similarity, 4),
-        "similarity_threshold": SAFE_UPDATE_SIMILARITY,
+        "remote_sha256": remote_sha256,
+        "resolved_sha256": resolved_sha256,
+        "local_modified": local_modified,
+        "upstream_modified": True,
+        "similarity": round(matcher.ratio(), 4),
+        "changed_lines": changed_lines,
         "local_lines": len(local_lines),
         "remote_lines": len(remote_lines),
-        "local_attachments": max(0, len(local_layout) - 1),
-        "remote_attachments": max(0, len(remote_layout) - 1),
-        **layout_change,
-        "reasons": reasons,
+        "reasons": ["local_upstream_conflict"] if conflict else [],
         "skill_diff": skill_diff[:SOURCE_DIFF_LINE_LIMIT],
         "skill_diff_truncated": len(skill_diff) > SOURCE_DIFF_LINE_LIMIT,
-        **content_change,
     }
 
 
@@ -141,314 +102,6 @@ def _skill_lines(path: Path) -> list[str]:
     return (
         (path / "SKILL.md").read_text(encoding="utf-8", errors="replace").splitlines()
     )
-
-
-def _managed_file_layout(path: Path, content_mode: ContentMode) -> dict[str, str]:
-    if content_mode == ContentMode.SKILL_FILE:
-        return {"SKILL.md": "file"}
-    layout: dict[str, str] = {}
-    for item in sorted(path.rglob("*"), key=lambda candidate: candidate.as_posix()):
-        relative = item.relative_to(path)
-        if any(part in {".git", "__pycache__"} for part in relative.parts):
-            continue
-        if item.name == ".DS_Store" or item.suffix == ".pyc":
-            continue
-        relative_path = relative.as_posix()
-        if item.is_symlink():
-            layout[relative_path] = f"symlink:{os.readlink(item)}"
-        elif item.is_file():
-            layout[relative_path] = "file"
-    return layout
-
-
-def _assess_layout_change(
-    local_path: Path,
-    remote_path: Path,
-    local_layout: dict[str, str],
-    remote_layout: dict[str, str],
-) -> dict[str, list[str]]:
-    added_paths = sorted(remote_layout.keys() - local_layout.keys())
-    removed_paths = sorted(local_layout.keys() - remote_layout.keys())
-    changed_path_types = sorted(
-        path
-        for path in local_layout.keys() & remote_layout.keys()
-        if local_layout[path] != remote_layout[path]
-    )
-    safe_added_paths: list[str] = []
-    unsafe_added_paths: list[str] = []
-    for relative_path in added_paths:
-        if _is_safe_added_path(
-            remote_path,
-            relative_path,
-            remote_layout[relative_path],
-        ):
-            safe_added_paths.append(relative_path)
-        else:
-            unsafe_added_paths.append(relative_path)
-
-    remote_hash_paths = _file_hash_paths(remote_path, remote_layout)
-    redundant_removed_paths: list[str] = []
-    ancillary_removed_paths: list[str] = []
-    unsafe_removed_paths: list[str] = []
-    for relative_path in removed_paths:
-        if _is_ancillary_path(relative_path):
-            ancillary_removed_paths.append(relative_path)
-        elif _is_redundant_removed_file(
-            local_path,
-            relative_path,
-            local_layout,
-            remote_hash_paths,
-        ):
-            redundant_removed_paths.append(relative_path)
-        else:
-            unsafe_removed_paths.append(relative_path)
-
-    safe_changed_path_types: list[str] = []
-    unsafe_changed_path_types: list[str] = []
-    for relative_path in changed_path_types:
-        if _resolved_content_matches(local_path, remote_path, relative_path):
-            safe_changed_path_types.append(relative_path)
-        else:
-            unsafe_changed_path_types.append(relative_path)
-
-    return {
-        "added_paths": added_paths,
-        "safe_added_paths": safe_added_paths,
-        "unsafe_added_paths": unsafe_added_paths,
-        "removed_paths": removed_paths,
-        "changed_path_types": changed_path_types,
-        "redundant_removed_paths": redundant_removed_paths,
-        "ancillary_removed_paths": ancillary_removed_paths,
-        "safe_removed_paths": sorted(
-            [*redundant_removed_paths, *ancillary_removed_paths]
-        ),
-        "unsafe_removed_paths": unsafe_removed_paths,
-        "safe_changed_path_types": safe_changed_path_types,
-        "unsafe_changed_path_types": unsafe_changed_path_types,
-    }
-
-
-def _is_safe_added_path(
-    root: Path,
-    relative_path: str,
-    kind: str,
-) -> bool:
-    if kind == "file":
-        return True
-    if not kind.startswith("symlink:"):
-        return False
-    link = root / relative_path
-    if PurePosixPath(os.readlink(link)).is_absolute():
-        return False
-    try:
-        target = link.resolve(strict=True)
-    except OSError:
-        return False
-    root_real = root.resolve()
-    return target == root_real or root_real in target.parents
-
-
-def _file_hash_paths(
-    root: Path,
-    layout: dict[str, str],
-) -> dict[str, list[str]]:
-    paths: dict[str, list[str]] = {}
-    for relative_path, kind in layout.items():
-        if kind != "file":
-            continue
-        digest = Repository.hash_file(root / relative_path)
-        paths.setdefault(digest, []).append(relative_path)
-    return paths
-
-
-def _is_redundant_removed_file(
-    local_root: Path,
-    relative_path: str,
-    local_layout: dict[str, str],
-    remote_hash_paths: dict[str, list[str]],
-) -> bool:
-    if local_layout.get(relative_path) != "file":
-        return False
-    digest = Repository.hash_file(local_root / relative_path)
-    return any(
-        relative_path.endswith(f"/{remote_path}")
-        for remote_path in remote_hash_paths.get(digest, [])
-    )
-
-
-def _is_ancillary_path(relative_path: str) -> bool:
-    path = PurePosixPath(relative_path)
-    lowered_parts = tuple(part.lower() for part in path.parts)
-    if ".claude-plugin" in lowered_parts:
-        return True
-    return path.name.lower() in {
-        ".gitattributes",
-        ".gitignore",
-        ".npmignore",
-        "license",
-        "license.md",
-        "license.txt",
-        "privacy.md",
-        "readme",
-        "readme.md",
-        "readme_en.md",
-        "terms.md",
-    }
-
-
-def _resolved_content_matches(
-    local_root: Path,
-    remote_root: Path,
-    relative_path: str,
-) -> bool:
-    local = (local_root / relative_path).resolve()
-    remote = (remote_root / relative_path).resolve()
-    if not local.is_file() or not remote.is_file():
-        return False
-    return local.read_bytes() == remote.read_bytes()
-
-
-def _managed_content_change(
-    local_path: Path,
-    remote_path: Path,
-    local_layout: dict[str, str],
-    remote_layout: dict[str, str],
-    *,
-    ignored_removed_paths: set[str],
-) -> dict[str, Any]:
-    matched_lines = 0
-    total_lines = 0
-    changed_lines = 0
-    added_binary_paths: list[str] = []
-    unsafe_binary_paths: list[str] = []
-    changed_files: list[dict[str, Any]] = []
-    managed_files = sorted(
-        path
-        for path in local_layout.keys() | remote_layout.keys()
-        if local_layout.get(path) == "file" or remote_layout.get(path) == "file"
-    )
-    for relative_path in managed_files:
-        local_is_file = local_layout.get(relative_path) == "file"
-        remote_is_file = remote_layout.get(relative_path) == "file"
-        if (
-            local_is_file
-            and not remote_is_file
-            and relative_path in ignored_removed_paths
-        ):
-            continue
-        local_bytes = (
-            (local_path / relative_path).read_bytes() if local_is_file else b""
-        )
-        remote_bytes = (
-            (remote_path / relative_path).read_bytes() if remote_is_file else b""
-        )
-        if local_bytes == remote_bytes:
-            try:
-                line_count = len(local_bytes.decode("utf-8").splitlines())
-            except UnicodeDecodeError:
-                continue
-            matched_lines += line_count
-            total_lines += 2 * line_count
-            continue
-        try:
-            local_lines = local_bytes.decode("utf-8").splitlines()
-            remote_lines = remote_bytes.decode("utf-8").splitlines()
-        except UnicodeDecodeError:
-            status = _file_change_status(local_is_file, remote_is_file)
-            if status == "added":
-                added_binary_paths.append(relative_path)
-                if not _safe_binary_addition(relative_path, len(remote_bytes)):
-                    unsafe_binary_paths.append(relative_path)
-            else:
-                unsafe_binary_paths.append(relative_path)
-            changed_files.append(
-                {
-                    "path": relative_path,
-                    "status": status,
-                    "binary": True,
-                    "size_bytes": len(remote_bytes or local_bytes),
-                }
-            )
-            continue
-        total_lines += len(local_lines) + len(remote_lines)
-        matcher = difflib.SequenceMatcher(
-            None,
-            local_lines,
-            remote_lines,
-            autojunk=False,
-        )
-        file_matched_lines = 0
-        added_lines = 0
-        deleted_lines = 0
-        for (
-            tag,
-            local_start,
-            local_end,
-            remote_start,
-            remote_end,
-        ) in matcher.get_opcodes():
-            if tag == "equal":
-                file_matched_lines += local_end - local_start
-            else:
-                deleted_lines += local_end - local_start
-                added_lines += remote_end - remote_start
-        matched_lines += file_matched_lines
-        file_changed_lines = added_lines + deleted_lines
-        changed_lines += file_changed_lines
-        file_total_lines = len(local_lines) + len(remote_lines)
-        file_similarity = (
-            2 * file_matched_lines / file_total_lines if file_total_lines else 1.0
-        )
-        changed_files.append(
-            {
-                "path": relative_path,
-                "status": _file_change_status(local_is_file, remote_is_file),
-                "binary": False,
-                "added_lines": added_lines,
-                "deleted_lines": deleted_lines,
-                "changed_lines": file_changed_lines,
-                "similarity": round(file_similarity, 4),
-            }
-        )
-    content_similarity = 2 * matched_lines / total_lines if total_lines else 1.0
-    changed_files.sort(
-        key=lambda item: (
-            not item.get("binary", False),
-            item.get("changed_lines", 0),
-            item["path"],
-        ),
-        reverse=True,
-    )
-    return {
-        "content_similarity": round(content_similarity, 4),
-        "content_similarity_threshold": SAFE_UPDATE_CONTENT_SIMILARITY,
-        "changed_lines": changed_lines,
-        "added_binary_paths": added_binary_paths,
-        "unsafe_binary_paths": unsafe_binary_paths,
-        "changed_binary_paths": unsafe_binary_paths,
-        "changed_files": changed_files,
-    }
-
-
-def _file_change_status(local_is_file: bool, remote_is_file: bool) -> str:
-    if not local_is_file:
-        return "added"
-    if not remote_is_file:
-        return "removed"
-    return "modified"
-
-
-def _safe_binary_addition(relative_path: str, size_bytes: int) -> bool:
-    return (
-        PurePosixPath(relative_path).suffix.lower() in SAFE_BINARY_ASSET_SUFFIXES
-        and size_bytes <= SAFE_BINARY_ADDITION_MAX_BYTES
-    )
-
-
-def _safe_changed_line_limit(content_similarity: float) -> int:
-    if content_similarity >= SAFE_UPDATE_HIGH_SIMILARITY:
-        return SAFE_UPDATE_HIGH_SIMILARITY_MAX_CHANGED_LINES
-    return SAFE_UPDATE_MAX_CHANGED_LINES
 
 
 class SourceProvider(Protocol):

@@ -17,29 +17,9 @@ class SourceReportTests(unittest.TestCase):
                     "skill": "beta",
                     "status": "review_required",
                     "revision": "abc123",
-                    "reasons": [
-                        "low_content_similarity",
-                        "content_change_too_large",
-                    ],
+                    "reasons": ["local_upstream_conflict"],
                     "similarity": 0.95,
-                    "content_similarity": 0.72,
-                    "changed_lines": 840,
-                    "max_changed_lines": 1000,
-                    "added_paths": ["references/new.md"],
-                    "removed_paths": [],
-                    "changed_files": [
-                        {
-                            "path": "references/guide.md",
-                            "added_lines": 700,
-                            "deleted_lines": 140,
-                            "changed_lines": 840,
-                            "similarity": 0.4,
-                            "status": "modified",
-                        }
-                    ],
-                    "validation_problems": [
-                        "beta: Markdown 链接目标不存在 references/missing.md"
-                    ],
+                    "changed_lines": 12,
                     "skill_diff": [
                         "--- local/SKILL.md",
                         "+++ upstream/SKILL.md",
@@ -71,14 +51,12 @@ class SourceReportTests(unittest.TestCase):
         self.assertIn("# 上游技能审核", markdown)
         self.assertIn("自动更新 | **1**", markdown)
         self.assertIn("待人工确认 | **1**", markdown)
-        self.assertIn("全部内容变化较大", markdown)
-        self.assertIn("变化超过 1000 行", markdown)
+        self.assertIn("本地与上游同时修改", markdown)
+        self.assertIn("`SKILL.md` 12 行", markdown)
         self.assertIn(
             "https://github.com/example/skills/tree/abc123/skills/beta",
             markdown,
         )
-        self.assertIn("`references/guide.md`：+700 / -140", markdown)
-        self.assertIn("Markdown 链接目标不存在", markdown)
         self.assertIn("```diff", markdown)
         self.assertIn("agents-kit source update beta --yes", markdown)
 
