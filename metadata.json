@@ -89,14 +89,12 @@
     },
     "apple-design": {
       "recommendation": 5,
-      "description": "把 Apple 的流体物理动效**原理**翻译到 Web,278 行。消除延迟、1:1 直接操控、**可打断性**(作者认为最重要的一条)、用弹簧而非贝塞尔曲线、拖拽到动画的速度接力、动量投射、空间一致性。",
-      "trigger": "做手势驱动的界面(拖拽、滑动、下拉表单)时说「按 Apple 那套动效原理做」。讲的是原理不是 API,是这批里质量最高的之一。",
+      "description": "Apple 流体交互原则：1:1 跟手、可打断弹簧、速度继承与空间连续性。",
+      "trigger": "实现或审查 Mino 的拖拽 Tab、手势切换、弹簧动画和原生材质交互时。",
       "tags": [
         "role/guide",
         "focus/interaction-design",
-        "focus/motion-design",
-        "platform/web",
-        "output/code"
+        "focus/motion-design"
       ]
     },
     "apple-docs-index": {
