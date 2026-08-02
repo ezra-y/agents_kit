@@ -34,6 +34,8 @@ class SourceError(RuntimeError):
 
 
 SAFE_UPDATE_SIMILARITY = 0.90
+SAFE_UPDATE_CONTENT_SIMILARITY = 0.90
+SAFE_UPDATE_MAX_CHANGED_LINES = 500
 
 
 def classify_source_change(
@@ -77,6 +79,20 @@ def classify_source_change(
     if added_paths or removed_paths or changed_path_types:
         reasons.append("file_layout_changed")
 
+    content_change: dict[str, Any] = {}
+    if not (added_paths or removed_paths or changed_path_types):
+        content_change = _managed_content_change(
+            local_path,
+            snapshot.path,
+            local_layout,
+        )
+        if content_change["content_similarity"] < SAFE_UPDATE_CONTENT_SIMILARITY:
+            reasons.append("low_content_similarity")
+        if content_change["changed_lines"] > SAFE_UPDATE_MAX_CHANGED_LINES:
+            reasons.append("content_change_too_large")
+        if content_change["changed_binary_paths"]:
+            reasons.append("binary_content_changed")
+
     return {
         "status": "review_required" if reasons else "safe_update",
         "local_sha256": local_sha256,
@@ -91,6 +107,7 @@ def classify_source_change(
         "removed_paths": removed_paths,
         "changed_path_types": changed_path_types,
         "reasons": reasons,
+        **content_change,
     }
 
 
@@ -116,6 +133,58 @@ def _managed_file_layout(path: Path, content_mode: ContentMode) -> dict[str, str
         elif item.is_file():
             layout[relative_path] = "file"
     return layout
+
+
+def _managed_content_change(
+    local_path: Path,
+    remote_path: Path,
+    layout: dict[str, str],
+) -> dict[str, Any]:
+    matched_lines = 0
+    total_lines = 0
+    changed_lines = 0
+    changed_binary_paths: list[str] = []
+    for relative_path, kind in layout.items():
+        if kind != "file":
+            continue
+        local_bytes = (local_path / relative_path).read_bytes()
+        remote_bytes = (remote_path / relative_path).read_bytes()
+        try:
+            local_lines = local_bytes.decode("utf-8").splitlines()
+            remote_lines = remote_bytes.decode("utf-8").splitlines()
+        except UnicodeDecodeError:
+            if local_bytes != remote_bytes:
+                changed_binary_paths.append(relative_path)
+            continue
+        total_lines += len(local_lines) + len(remote_lines)
+        if local_bytes == remote_bytes:
+            matched_lines += len(local_lines)
+            continue
+        matcher = difflib.SequenceMatcher(
+            None,
+            local_lines,
+            remote_lines,
+            autojunk=False,
+        )
+        for (
+            tag,
+            local_start,
+            local_end,
+            remote_start,
+            remote_end,
+        ) in matcher.get_opcodes():
+            if tag == "equal":
+                matched_lines += local_end - local_start
+            else:
+                changed_lines += (local_end - local_start) + (remote_end - remote_start)
+    content_similarity = 2 * matched_lines / total_lines if total_lines else 1.0
+    return {
+        "content_similarity": round(content_similarity, 4),
+        "content_similarity_threshold": SAFE_UPDATE_CONTENT_SIMILARITY,
+        "changed_lines": changed_lines,
+        "max_changed_lines": SAFE_UPDATE_MAX_CHANGED_LINES,
+        "changed_binary_paths": changed_binary_paths,
+    }
 
 
 class SourceProvider(Protocol):

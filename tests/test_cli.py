@@ -87,7 +87,7 @@ class CliTests(unittest.TestCase):
             check=True,
         )
 
-    def import_git_source(self):
+    def import_git_source(self, *, reference_text=None):
         subprocess.run(["git", "init", "-q", str(self.source)], check=True)
         (self.source / "SKILL.md").write_text(
             "---\n"
@@ -97,6 +97,10 @@ class CliTests(unittest.TestCase):
             "# Alpha\n\n" + "\n".join(f"Rule {index}" for index in range(1, 21)) + "\n",
             encoding="utf-8",
         )
+        if reference_text is not None:
+            reference = self.source / "references/guide.md"
+            reference.parent.mkdir()
+            reference.write_text(reference_text, encoding="utf-8")
         self.commit_source("initial")
         self.run_cli(
             "skill",
@@ -146,6 +150,46 @@ class CliTests(unittest.TestCase):
                 for problem in result["validation_problems"]
             )
         )
+
+    def test_source_check_requires_review_for_large_attachment_rewrite(self):
+        self.import_git_source(
+            reference_text="\n".join(
+                f"Original reference {index}" for index in range(1, 21)
+            )
+            + "\n"
+        )
+        (self.source / "references/guide.md").write_text(
+            "\n".join(f"New reference {index}" for index in range(1, 1001)) + "\n",
+            encoding="utf-8",
+        )
+        self.commit_source("rewrite attachment")
+
+        payload = json.loads(self.run_cli("source", "check", "alpha", "--json").stdout)
+
+        result = payload["results"][0]
+        self.assertEqual(result["status"], "review_required")
+        self.assertIn("content_change_too_large", result["reasons"])
+
+    def test_source_check_allows_small_attachment_edit(self):
+        self.import_git_source(
+            reference_text="\n".join(
+                f"Reference line {index}" for index in range(1, 21)
+            )
+            + "\n"
+        )
+        reference = self.source / "references/guide.md"
+        reference.write_text(
+            reference.read_text(encoding="utf-8").replace(
+                "Reference line 20",
+                "Updated reference line 20",
+            ),
+            encoding="utf-8",
+        )
+        self.commit_source("edit attachment")
+
+        payload = json.loads(self.run_cli("source", "check", "alpha", "--json").stdout)
+
+        self.assertEqual(payload["results"][0]["status"], "safe_update")
 
     def test_source_update_safe_applies_small_change(self):
         self.import_git_source()
