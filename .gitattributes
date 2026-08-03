@@ -6,3 +6,6 @@ skills/academic/nature-academic-search/references/pubmed-28344011.ris binary
 # Preserve imported academic skill sources byte-for-byte.
 skills/academic/academic-research-suite/** -whitespace
 skills/academic/research-writing-skill/** -whitespace
+
+# Preserve imported security skill sources byte-for-byte.
+skills/security/reverse-skill-router/** -whitespace

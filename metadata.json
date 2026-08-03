@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "taxonomy_version": 3,
+  "taxonomy_version": 4,
   "skills": {
     "academic-pdf-translation": {
       "recommendation": 5,
@@ -1729,6 +1729,19 @@
         "platform/multi-platform",
         "output/article",
         "output/text"
+      ]
+    },
+    "reverse-skill-router": {
+      "recommendation": 3,
+      "description": "逆向工程与网络安全任务总路由：根据目标类型、用户意图和工具链选择 APK、二进制、前端 JS、恶意软件、固件、取证、渗透测试或安全报告工作流。",
+      "trigger": "遇到逆向工程、安全评估、恶意软件分析、固件分析、抓包、CTF，或不确定应使用哪套安全工具链时。",
+      "tags": [
+        "role/router",
+        "focus/reverse-engineering",
+        "focus/security-assessment",
+        "focus/tool-integration",
+        "platform/multi-platform",
+        "output/report"
       ]
     },
     "rust-systems": {

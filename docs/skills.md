@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **187** 个 · 常驻 **67** 个 · 有上游可检查更新 **159** 个
+共 **188** 个 · 常驻 **68** 个 · 有上游可检查更新 **160** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -127,6 +127,12 @@
 | `authentication-patterns` | 认证授权:JWT 访问令牌与刷新令牌的配对设计、鉴权中间件、OAuth2 授权码 + PKCE 完整流程、RBAC 角色模型,以及各自的反模 | `role/guide` `focus/authentication` `focus/authorization` `output/code` | ● | [github.com/rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit/tree/main/skills/authentication-patterns) |
 | `rust-systems` | Rust 系统编程:所有权与借用、错误处理(thiserror/anyhow)、trait 与泛型设计、async 运行时、builder  | `role/guide` `focus/systems-programming` `stack/rust` `output/code` | ● | [github.com/rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit/tree/main/skills/rust-systems) |
 | `security-hardening` | 应用安全加固:输入校验、输出编码、SQL 注入防护、CSRF、内容安全策略 CSP、安全响应头、密钥管理、依赖漏洞审计。 | `role/reviewer` `focus/application-security` `focus/dependency-security` `output/report` | ● | [github.com/rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit/tree/main/skills/security-hardening) |
+
+## 安全与逆向 (`security`，1 个)
+
+| 技能 | 说明 | 标签 | 常驻 | 来源 |
+|---|---|---|:--:|---|
+| `reverse-skill-router` | 逆向工程与网络安全任务总路由：根据目标类型、用户意图和工具链选择 APK、二进制、前端 JS、恶意软件、固件、取证、渗透测试或安全报告工作流 | `role/router` `focus/reverse-engineering` `focus/security-assessment` `focus/tool-integration` `platform/multi-platform` `output/report` | ● | [github.com/zhaoxuya520/reverse-skill](https://github.com/zhaoxuya520/reverse-skill) |
 
 ## 通用工程 (`engineering`，8 个)
 

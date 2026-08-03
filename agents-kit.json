@@ -21,6 +21,10 @@
       "label": "后端",
       "description": "非 iOS 专用的服务端、API、认证、数据和安全能力。"
     },
+    "security": {
+      "label": "安全与逆向",
+      "description": "授权范围内的安全评估、逆向工程、数字取证、恶意软件分析、漏洞研究、渗透测试和 CTF。"
+    },
     "engineering": {
       "label": "通用工程",
       "description": "跨平台的代码审查、测试、调试、架构、工具链和代码库维护。"
@@ -77,7 +81,7 @@
     "source_policy": "review",
     "network_timeout_seconds": 20
   },
-  "taxonomy_version": 3,
+  "taxonomy_version": 4,
   "tag_namespaces": {
     "role": {
       "label": "角色",
@@ -217,8 +221,10 @@
         "requirements-discovery",
         "requirements-synthesis",
         "research-question-refinement",
+        "reverse-engineering",
         "scroll-animation",
         "search-result-navigation",
+        "security-assessment",
         "simulator",
         "skill-authoring",
         "skill-evaluation",

@@ -1626,6 +1626,20 @@
         "content_sha256": "7e833ff632c6dafb6b1db927de7360c9e53f8b7f5662af48aa3ccbbbf01c4ecd"
       }
     },
+    "reverse-skill-router": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/zhaoxuya520/reverse-skill.git",
+        "ref": "",
+        "path": "skills"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "cab837a298fec6fa28a49ef746d0085e0b112cfa",
+        "content_sha256": "cfce122befa66de29e53b29cd0c70e8de69ef5f3f29c18f48eb0873076536104"
+      }
+    },
     "rust-systems": {
       "provider": "git",
       "locator": {
