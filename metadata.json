@@ -1836,6 +1836,19 @@
         "output/skill"
       ]
     },
+    "skill-publisher": {
+      "recommendation": 4,
+      "description": "将 Agent Skill 发布、更新并核验到 GitHub、ClawHub、AgentSkill.sh、skills.sh、Claude 社区目录和 OpenAI Plugins，保留可恢复的跨平台回执。",
+      "trigger": "当用户要求发布 Skill、上架多个 Skill 平台、更新已发布版本、核验公开状态或继续中断的发布流程时使用。",
+      "tags": [
+        "role/workflow",
+        "focus/release",
+        "focus/skill-authoring",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/skill"
+      ]
+    },
     "slides": {
       "recommendation": 3,
       "description": "策略性 HTML 演示:Chart.js 图表、design token、响应式布局、文案公式、按场景选幻灯片策略。",

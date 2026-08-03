@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **188** 个 · 常驻 **68** 个 · 有上游可检查更新 **160** 个
+共 **189** 个 · 常驻 **68** 个 · 有上游可检查更新 **160** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -230,7 +230,7 @@
 | `smart-search` | 基于本机 opencli 的智能搜索路由:指定站点、社交媒体、技术资料、新闻、购物、旅游、求职、金融、中文内容各走不同的源。含强制预检、单题 | `role/router` `focus/web-research` `platform/opencli` `output/research` | ● | — |
 | `watch` | 读取视频 URL 或本地视频:用 yt-dlp 下载、ffmpeg 抽帧,优先提取原生字幕,无字幕时可调用 Groq 或 OpenAI Wh | `role/researcher` `focus/video-analysis` `output/summary` `output/transcript` | ● | [github.com/bradautomates/claude-video](https://github.com/bradautomates/claude-video/tree/main/skills/watch) |
 
-## AI Building (`ai-building`，14 个)
+## AI Building (`ai-building`，15 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
@@ -246,6 +246,7 @@
 | `setup-matt-pocock-skills` | 给仓库搭脚手架:在 AGENTS.md / CLAUDE.md 写 ## Agent skills 块,建 docs/agents/,让上面 | `role/workflow` `focus/agent-setup` `focus/repository-context` `output/config` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/setup-matt-pocock-skills) |
 | `skill-creator` | 从零建技能、改进已有技能、衡量技能表现,481 行 + 17 个附件。含意图捕获、访谈调研、SKILL.md 写作指南。Anthropic  | `role/workflow` `focus/skill-authoring` `focus/skill-evaluation` `output/skill` | ● | [github.com/anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/skill-creator) |
 | `skill-development` | 往插件里加技能、渐进披露设计原则、技能创建流程、description 怎么写才能被正确触发,632 行。 | `role/guide` `focus/progressive-disclosure` `focus/skill-authoring` `output/skill` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/plugin-dev/skills/skill-development) |
+| `skill-publisher` | 将 Agent Skill 发布、更新并核验到 GitHub、ClawHub、AgentSkill.sh、skills.sh、Claude  | `role/workflow` `focus/release` `focus/skill-authoring` `focus/workflow-automation` `platform/multi-platform` `output/skill` |  | — |
 | `write-a-skill` | 建新技能:结构、渐进披露、附带资源,113 行。 | `role/builder` `focus/progressive-disclosure` `focus/skill-authoring` `output/skill` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/productivity/writing-great-skills) |
 | `writing-rules` | 写 hookify 规则:规则文件格式、frontmatter、多条件高级写法,369 行。 | `role/builder` `focus/agent-rules` `focus/hooks` `platform/claude` `output/config` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/hookify/skills/writing-rules) |
 

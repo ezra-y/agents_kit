@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "last_reviewed_at": "2026-08-02",
+  "source_review_ttl_hours": 6,
+  "profiles": {
+    "core": [
+      "github",
+      "clawhub",
+      "agentskill",
+      "skills_sh"
+    ],
+    "official": [
+      "github",
+      "clawhub",
+      "agentskill",
+      "skills_sh",
+      "claude",
+      "openai"
+    ]
+  },
+  "platforms": {
+    "github": {
+      "label": "GitHub",
+      "adapter": "github",
+      "automation": "full",
+      "planned_action": "Validate the repository and create a GitHub Skill release.",
+      "publish_url": "https://github.com",
+      "official_sources": [
+        "https://cli.github.com/manual/gh_skill_publish",
+        "https://github.com/cli/cli/releases"
+      ],
+      "cli_probes": [
+        [
+          "gh",
+          "--version"
+        ],
+        [
+          "gh",
+          "skill",
+          "publish",
+          "--help"
+        ]
+      ]
+    },
+    "clawhub": {
+      "label": "ClawHub",
+      "adapter": "clawhub",
+      "automation": "full",
+      "planned_action": "Run an official ClawHub dry-run, publish one semantic version, and inspect the remote scan result.",
+      "publish_url": "https://clawhub.ai",
+      "official_sources": [
+        "https://github.com/openclaw/clawhub/blob/main/docs/cli.md",
+        "https://github.com/openclaw/clawhub/blob/main/docs/publishing.md",
+        "https://github.com/openclaw/clawhub/blob/main/docs/skill-format.md"
+      ],
+      "cli_probes": [
+        [
+          "npx",
+          "-y",
+          "clawhub",
+          "--cli-version"
+        ],
+        [
+          "npx",
+          "-y",
+          "clawhub",
+          "skill",
+          "publish",
+          "--help"
+        ]
+      ]
+    },
+    "agentskill": {
+      "label": "AgentSkill.sh",
+      "adapter": "github_import",
+      "automation": "assisted",
+      "planned_action": "Import the public GitHub repository through the official AgentSkill.sh form and verify the public Skill page.",
+      "publish_url": "https://agentskill.sh/submit",
+      "official_sources": [
+        "https://agentskill.sh/submit"
+      ],
+      "cli_probes": []
+    },
+    "skills_sh": {
+      "label": "skills.sh",
+      "adapter": "auto_index",
+      "automation": "assisted",
+      "planned_action": "Confirm the Skill is installable with the official skills CLI, then verify its public index page.",
+      "publish_url": "https://skills.sh",
+      "official_sources": [
+        "https://skills.sh/docs",
+        "https://github.com/vercel-labs/skills"
+      ],
+      "cli_probes": [
+        [
+          "npx",
+          "-y",
+          "skills",
+          "--help"
+        ]
+      ]
+    },
+    "claude": {
+      "label": "Claude Community",
+      "adapter": "reviewed_form",
+      "automation": "assisted",
+      "planned_action": "Validate the Claude plugin and prepare a community-directory submission.",
+      "publish_url": "https://platform.claude.com/plugins/submit",
+      "handoff": "Open Anthropic's current official submission form, review the terms and submit. Save the submission status, then verify the public community catalog after approval.",
+      "official_sources": [
+        "https://code.claude.com/docs/en/plugins",
+        "https://code.claude.com/docs/en/plugin-marketplaces",
+        "https://platform.claude.com/plugins/submit",
+        "https://github.com/anthropics/claude-plugins-community"
+      ],
+      "cli_probes": [
+        [
+          "claude",
+          "--version"
+        ],
+        [
+          "claude",
+          "plugin",
+          "validate",
+          "--help"
+        ]
+      ]
+    },
+    "openai": {
+      "label": "OpenAI Plugins",
+      "adapter": "reviewed_form",
+      "automation": "assisted",
+      "planned_action": "Prepare the package and inspect the signed-in official OpenAI Plugins console.",
+      "publish_url": "https://platform.openai.com/plugins",
+      "handoff": "Open the signed-in official OpenAI Plugins console. Keep identity review separate from Skill review, submit only through the current official interface, and record the resulting status before claiming success.",
+      "official_sources": [
+        "https://platform.openai.com/plugins"
+      ],
+      "cli_probes": []
+    }
+  }
+}

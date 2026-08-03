@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill 发布"
+  short_description: "跨平台规划、发布、恢复并核验 Agent Skill"
+  default_prompt: "使用 $skill-publisher 把这个 Skill 发布到核心平台，并在任何外部操作前让我确认。"
