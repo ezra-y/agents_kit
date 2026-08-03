@@ -1,5 +1,22 @@
 # API Reference — Nature Figure Making
 
+## Contents
+
+- [Constants](#constants)
+- [MANDATORY font + SVG rules (always first, no exceptions)](#mandatory-font-svg-rules-always-first-no-exceptions)
+- [apply_publication_style()](#apply_publication_style)
+- [is_dark(hex_color, threshold=128)](#is_darkhex_color-threshold128)
+- [add_panel_label(ax, label, ...)](#add_panel_labelax-label)
+- [style_dark_image_ax(ax, ...)](#style_dark_image_axax)
+- [make_grouped_bar(ax, categories, series, labels, ...)](#make_grouped_barax-categories-series-labels)
+- [make_trend(ax, x, y_series, labels, ...)](#make_trendax-x-y_series-labels)
+- [make_forest_plot(ax, labels, estimates, ci_low, ci_high, ...)](#make_forest_plotax-labels-estimates-ci_low-ci_high)
+- [make_heatmap(ax, matrix, ...)](#make_heatmapax-matrix)
+- [finalize_figure(fig, out_path, ...)](#finalize_figurefig-out_path)
+- [Validation Rules](#validation-rules)
+- [Conventions](#conventions)
+
+
 Conventions, constants, and reusable code blocks. Implement in your script or adapt as needed.
 
 ---

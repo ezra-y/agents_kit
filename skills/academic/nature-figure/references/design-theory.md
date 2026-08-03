@@ -1,7 +1,24 @@
 # Nature Figure Design Theory
 
-Derived from scripts in the [figures4papers](https://github.com/ChenLiu-1996/figures4papers) repository
-(published in *Nature Machine Intelligence* and top ML/bioinformatics venues).
+## Contents
+
+- [1) Typography](#1-typography)
+- [2) Axes & Spines](#2-axes-spines)
+- [3) Color Palette](#3-color-palette)
+- [4) Layout and Composition](#4-layout-and-composition)
+- [5) Bar Chart Rules](#5-bar-chart-rules)
+- [6) Line / Trend Plots](#6-line-trend-plots)
+- [7) Heatmap Rules](#7-heatmap-rules)
+- [8) Radar / Polar Charts](#8-radar-polar-charts)
+- [9) Export Policy](#9-export-policy)
+- [10) Multi-Panel Information Architecture](#10-multi-panel-information-architecture)
+- [11) Reproduction Checklist](#11-reproduction-checklist)
+
+
+This file is an original synthesis of publication-figure typography, color,
+composition, and export rules. External repositories may be consulted only as
+visual references after their license and reuse terms have been verified; see
+[demos.md](demos.md).
 
 ---
 
@@ -353,7 +370,7 @@ be set before any `savefig` call.
 
 ---
 
-## 11) Multi-Panel Information Architecture
+## 10) Multi-Panel Information Architecture
 
 ### Rule: Every panel must answer a unique scientific question
 
@@ -417,7 +434,7 @@ Label quadrants ("Immune-hot / low tumor", "Immune-desert / high tumor", …) wi
 
 ---
 
-## 10) Reproduction Checklist
+## 11) Reproduction Checklist
 
 To match Nature publication standards:
 

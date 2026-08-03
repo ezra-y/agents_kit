@@ -12,8 +12,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": "9b8da01ffe6e9e47d16319fa683af701143afec4",
-        "content_sha256": "23be44594df855add15a0793ff649c307aace9e11954e71ad30f8d5f1900059e"
+        "revision": "01f797ac2759ecf3b6d890c3b5f9d960ad4f81ed",
+        "content_sha256": "253a3ffc6401b49065e30320da90d85b3ef0a0fe8772c427dbd6465feb79cc90"
       }
     },
     "academic-research-suite": {
@@ -1141,7 +1141,7 @@
       "policy": "review",
       "resolved": {
         "revision": null,
-        "content_sha256": "287bed8d773465befcf3da93bfb3c829e111c3ae6c8fa087724f9d69d0f2e5cf"
+        "content_sha256": "a89d46830b599b4f521a10e0834530ff866e0d97000310060982ab7a4eedbdb8"
       }
     },
     "lark-mail": {
@@ -1385,8 +1385,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": "\"956aa373e61c63a7328faecb462707db4dc3581b01dc8d9b596a83ee05c40547\"",
-        "content_sha256": "f10186dbf8254808ba3e7fbcbf528073132e72b7d4ef097a5ab0ce9f4ac5762f"
+        "revision": "\"2fbf541dd342fc394286c8157feba0f2c0d7459e1da17aa3d3c6e7f4ad6e6751\"",
+        "content_sha256": "b0a643cd83d36939f86603b300c1e2052f2f9927045637d0602a91bf2b9a3b84"
       }
     },
     "nature-figure": {
@@ -1399,8 +1399,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": "4312c49e04c27aac9a719a03be17cf1a15501147",
-        "content_sha256": "0853b236f29e05777660674992f35640db02fed4532a73e4d528896ba7ae8570"
+        "revision": "10cf80f4ba3350f23f8188fffb88b7a3f531a4c0",
+        "content_sha256": "1389096e7b9b9c5947ca10b00c0c6560c055cace978732e638c0972397de903b"
       }
     },
     "nextjs-mastery": {
@@ -1636,8 +1636,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": "cab837a298fec6fa28a49ef746d0085e0b112cfa",
-        "content_sha256": "cfce122befa66de29e53b29cd0c70e8de69ef5f3f29c18f48eb0873076536104"
+        "revision": "62ba932019a7a30afac13afb1fb157a17e19f1bf",
+        "content_sha256": "5777ba15d6bcfcab309f2b0b498b1e7cb43da87fca52450405b0fc596a094f23"
       }
     },
     "rust-systems": {

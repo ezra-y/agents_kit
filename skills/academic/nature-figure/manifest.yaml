@@ -1,5 +1,5 @@
 name: nature-figure
-version: 2.1.0
+version: 2.1.1
 description: >
   Declarative manifest for the static/dynamic split. SKILL.md uses this to
   decide which fragments to load for a given figure request. The main axis is
@@ -83,5 +83,5 @@ references:
       path: references/template-catalog.md
     - condition: "radar, 3D sphere, fill_between, scatter, ablation-line, probability/manifold concept patterns"
       path: references/chart-types.md
-    - condition: bundled figures4papers Python scripts and output previews for concrete pattern adaptation
+    - condition: third-party figures4papers demo lookup, copyright-aware reference use, or original pattern reimplementation
       path: references/demos.md

@@ -61,7 +61,7 @@ Apply the loaded material in this order:
 1. Figure contract (`core/contract.md`) — write the core conclusion, map the evidence chain, classify the archetype, set the journal/export contract, before any code.
 2. Default stance (`core/stance.md`) — archetype-first composition, hero panel, restrained palette, statistics/integrity as part of the figure.
 3. Backend fragment — the exclusive Python or R quick-start and execution rule.
-4. Template adaptation — when reusing bundled examples or user-provided plotting code, load `references/asset-adaptation.md` before mapping data or changing the script.
+4. Template adaptation — when reusing built-in original examples, licensed external material, or user-provided plotting code, load `references/asset-adaptation.md` before mapping data or changing the script.
 5. Delivery preflight — before final delivery, load `references/qa-contract.md`, run `scripts/validate_figure.py` on the plotting source, then inspect the rendered outputs at final size.
 
 The chart serves the scientific logic; aesthetic polish is subordinate to making the core conclusion clear, defensible, and reviewable.

@@ -1,5 +1,15 @@
 # QA Contract
 
+## Contents
+
+- [Current official references to verify](#current-official-references-to-verify)
+- [Pre-submission checklist](#pre-submission-checklist)
+- [Statistics legend minimum](#statistics-legend-minimum)
+- [Image-integrity minimum](#image-integrity-minimum)
+- [Automated source preflight](#automated-source-preflight)
+- [Export checks](#export-checks)
+
+
 Use this before final delivery, before a revision package, and whenever the figure
 contains microscopy, blots, gels, clinical subgroup analysis, or statistical claims.
 Journal rules change, so verify the latest target journal author guide for final
