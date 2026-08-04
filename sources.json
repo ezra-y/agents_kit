@@ -1636,8 +1636,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": "62ba932019a7a30afac13afb1fb157a17e19f1bf",
-        "content_sha256": "5777ba15d6bcfcab309f2b0b498b1e7cb43da87fca52450405b0fc596a094f23"
+        "revision": "79cdde737e0bf3ce7000eb3a084d47e124d70504",
+        "content_sha256": "5c79c832f0d234ee01e69423690ffa34cdde272eee077d16b9597adfb11a4662"
       }
     },
     "rust-systems": {
