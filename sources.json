@@ -628,8 +628,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "de5ccbb35c6f6b9fe8deb3d7f02693cd6d31ea2fbba0c14d06d07b154cc8eab7"
+        "revision": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+        "content_sha256": "3fe073664d788ec182bbd74f3bcee49c8e908d4f3031aa4a8d89f7ed1b1a2561"
       }
     },
     "gsap-core": {
@@ -1081,7 +1081,7 @@
       "policy": "review",
       "resolved": {
         "revision": null,
-        "content_sha256": "0d45b5008f3484c714f71167518198c6830fd9ace8fd9040617eeb1487cbdf51"
+        "content_sha256": "9110f1adc306d04ccf4ea7c439039e95448b12757a5a8e7d76bc62d48553bcb8"
       }
     },
     "lark-contact": {
@@ -1105,7 +1105,7 @@
       "policy": "review",
       "resolved": {
         "revision": null,
-        "content_sha256": "249110f21116d2e1eb09cc1b9b266889f290be57944975236254945dada65c0c"
+        "content_sha256": "164de4ed954112c948952b28d4cde5ffe92cdbf8b1db4e69d73dc93fccd52f3b"
       }
     },
     "lark-drive": {
@@ -1225,7 +1225,7 @@
       "policy": "review",
       "resolved": {
         "revision": null,
-        "content_sha256": "036e6fe4f45ee16dfd9271d4f4bfcaa97069de1e96a8e19a28b0bb9f45193296"
+        "content_sha256": "22e60b0684ee78cb3420af198203ee4f564433a486f4936c96632782fa2dfb54"
       }
     },
     "lark-sheets": {
@@ -1321,7 +1321,7 @@
       "policy": "review",
       "resolved": {
         "revision": null,
-        "content_sha256": "ef3c2f766db1a85426bcae9609a0ecfcfe931962c27d95231cfd6dd7c75d18dd"
+        "content_sha256": "a4ccfe6b3708f03fcdbcde69207d4082c2bfed7ac83e8b8c55a0cfea7c1e743f"
       }
     },
     "lark-workflow-meeting-summary": {
@@ -1399,8 +1399,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": "10cf80f4ba3350f23f8188fffb88b7a3f531a4c0",
-        "content_sha256": "1389096e7b9b9c5947ca10b00c0c6560c055cace978732e638c0972397de903b"
+        "revision": "9410400815df189d3e76d4be19c74afa68d03412",
+        "content_sha256": "42558565eb8400626a6af1f23939283059a75a2cad67e7282e2d6372d486de04"
       }
     },
     "nextjs-mastery": {
@@ -1515,8 +1515,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "3db8a0ee4c237f38b14b8243f9f062d96fbc6552b7be16d7e20a38a88d79f285"
+        "revision": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+        "content_sha256": "a85e1fadcd9d3a3c62a1f0c7fcf759e705440403671c6fb6a9f987ca7aaab8dd"
       }
     },
     "pubmed": {
@@ -1636,8 +1636,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": "79cdde737e0bf3ce7000eb3a084d47e124d70504",
-        "content_sha256": "5c79c832f0d234ee01e69423690ffa34cdde272eee077d16b9597adfb11a4662"
+        "revision": "d8bf34540cbc1aa34052e1b142576fc36a1f1437",
+        "content_sha256": "26e667f0358081be9d6bbff4f224ef3cab883fd618c25b37bbd99f89cdb36ca6"
       }
     },
     "rust-systems": {
@@ -1704,8 +1704,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "14c2ce7db49609b35dc0b51792a42123ba6e58cb0a7ed7a7630734ed15e4852d"
+        "revision": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+        "content_sha256": "409ebd44963217bd97da34dde50345c83cdf173a2b1149da5fd3a4a8fc4276d2"
       }
     },
     "simulator-utils": {
@@ -1898,8 +1898,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "31a6e15f9eee52ab7c47b5704a1008455c4f1aa3021bf9f9175d65ce3083788e"
+        "revision": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+        "content_sha256": "14854822d8bb2e2ca72780c36326f084eee26bdbfd1d559cee78dc01931f39ec"
       }
     },
     "theme-factory": {
@@ -1956,8 +1956,8 @@
       "source_name": "to-spec",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "9ef8fdddf5f8874500f655f7c435064a6fa06f4d48c25367999758e6efdc643a"
+        "revision": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+        "content_sha256": "b093b171f391cbec360662e09704f4e0a1f44d3bc68e07228a37999953cb4419"
       }
     },
     "triage": {
@@ -1970,8 +1970,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "156e146980d5d9dbdf2249e971a5883be689eba4f74416b136e67cfc342a72f9"
+        "revision": "8b36d4fb2635b3c21998dcd8144439c9e5ba7302",
+        "content_sha256": "481f58d9705d0b5b6106d0a01a42e9efc1c2e579e16c57063d92d5dd1b2786a8"
       }
     },
     "ui-styling": {
