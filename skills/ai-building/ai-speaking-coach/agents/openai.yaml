@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI 口语教练"
+  short_description: "用本地知识库、复习记录和 GPT Live 持续练口语"
+  default_prompt: "使用 $ai-speaking-coach 准备并开始今天的英语口语课。"

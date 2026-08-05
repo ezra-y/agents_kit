@@ -41,6 +41,19 @@
         "output/code"
       ]
     },
+    "ai-speaking-coach": {
+      "recommendation": 5,
+      "description": "基于个人课程语料、长期学习记录和遗忘曲线的一对一英语口语教练",
+      "trigger": "开始或准备英语口语课、复习到期表达、查看口语进度、导入新的口语课程或美剧对话时使用",
+      "tags": [
+        "role/workflow",
+        "focus/database",
+        "focus/knowledge-base",
+        "focus/workflow-automation",
+        "platform/macos",
+        "output/skill"
+      ]
+    },
     "animation-vocabulary": {
       "recommendation": 3,
       "description": "反查词典:把「弹窗弹出时那个弹弹的感觉」翻译成准确术语(Pop in)、「iOS 那个橡皮筋滚动」→ Rubber-banding。",

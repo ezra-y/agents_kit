@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **189** 个 · 常驻 **68** 个 · 有上游可检查更新 **160** 个
+共 **190** 个 · 常驻 **68** 个 · 有上游可检查更新 **160** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -230,10 +230,11 @@
 | `smart-search` | 基于本机 opencli 的智能搜索路由:指定站点、社交媒体、技术资料、新闻、购物、旅游、求职、金融、中文内容各走不同的源。含强制预检、单题 | `role/router` `focus/web-research` `platform/opencli` `output/research` | ● | — |
 | `watch` | 读取视频 URL 或本地视频:用 yt-dlp 下载、ffmpeg 抽帧,优先提取原生字幕,无字幕时可调用 Groq 或 OpenAI Wh | `role/researcher` `focus/video-analysis` `output/summary` `output/transcript` | ● | [github.com/bradautomates/claude-video](https://github.com/bradautomates/claude-video/tree/main/skills/watch) |
 
-## AI Building (`ai-building`，15 个)
+## AI Building (`ai-building`，16 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
+| `ai-speaking-coach` | 基于个人课程语料、长期学习记录和遗忘曲线的一对一英语口语教练 | `role/workflow` `focus/database` `focus/knowledge-base` `focus/workflow-automation` `platform/macos` `output/skill` |  | — |
 | `build-mcp-app` | 给 MCP 服务加交互式 UI / widget。什么时候 widget 胜过纯文本、widget 与 elicitation 怎么区分、两 | `role/builder` `focus/mcp-ui` `focus/tool-integration` `platform/mcp` `output/app` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/mcp-server-dev/skills/build-mcp-app) |
 | `build-mcp-server` | 建 MCP 服务。先盘问用途(连什么、谁用、暴露几个动作、要不要中途要用户输入、上游怎么认证),再推荐部署形态,默认推荐远程 streama | `role/builder` `focus/api-integration` `focus/mcp-server` `platform/mcp` `output/code` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/mcp-server-dev/skills/build-mcp-server) |
 | `caveman` | 超压缩沟通模式,砍掉虚词和客套,据称省约 75% token。 | `role/guide` `focus/agent-communication` `focus/token-efficiency` `output/text` |  | — |
