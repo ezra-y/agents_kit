@@ -926,6 +926,20 @@
         "content_sha256": "4a29bc45a1965e49f12a2ab668f75a5a31f70dacc6564dd49f330b1f3528319f"
       }
     },
+    "human-writing": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/KKKKhazix/human-writing.git",
+        "ref": "",
+        "path": "human-writing"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "4fda173f3fef7fb808f3eba991eeb2528ea4b189",
+        "content_sha256": "9ae704e7de9f0133a1d3eecb6cdc0ea4b8e3cc6f4da5c784c7d9025bd54c20fd"
+      }
+    },
     "improve-codebase-architecture": {
       "provider": "git",
       "locator": {

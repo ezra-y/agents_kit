@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **190** 个 · 常驻 **68** 个 · 有上游可检查更新 **160** 个
+共 **191** 个 · 常驻 **69** 个 · 有上游可检查更新 **161** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -59,7 +59,7 @@
 | `widgetkit` | WidgetKit API 离线镜像。widget 时间线(Timeline / TimelineEntry / TimelineProvi | `role/reference` `focus/widgets` `platform/apple` `stack/swiftui` `output/reference` |  | [github.com/Prisma-Labs-Dev/apple-skills](https://github.com/Prisma-Labs-Dev/apple-skills/tree/main/skills/widgetkit) |
 | `xcuitest` | XCUITest UI 自动化测试 API 离线镜像,19 个附件(元素查询、等待策略、权限弹窗处理、启动参数、截图、排错)。刚更新到上游最 | `role/reference` `focus/ui-testing` `platform/apple` `stack/xctest` `output/reference` |  | [github.com/Prisma-Labs-Dev/apple-skills](https://github.com/Prisma-Labs-Dev/apple-skills/tree/main/skills/xcuitest) |
 
-## 运营与内容 (`operations`，8 个)
+## 运营与内容 (`operations`，9 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
@@ -68,6 +68,7 @@
 | `brand` | 品牌声音、视觉识别、信息框架、资产管理、品牌一致性检查,16 个附件含参考、脚本、模板。 | `role/workflow` `focus/brand-consistency` `focus/brand-strategy` `output/brand-system` |  | [github.com/nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/tree/main/.claude/skills/brand) |
 | `canvas-design` | 用设计哲学做 .png / .pdf 视觉作品(海报、艺术品),82 个附件。核心主张是先生成一套视觉哲学再落地,并明确要求原创、不抄在世艺 | `role/builder` `focus/graphic-design` `focus/poster` `output/image` |  | [github.com/anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/canvas-design) |
 | `frontend-slides` | 动画丰富的 HTML 演示文稿,376 行 + 161 个附件。可从零做,也能把 PPTX 转成网页。含固定舞台规则、内容密度模式、三种工作 | `role/builder` `focus/presentation-design` `stack/html` `output/slides` |  | [github.com/zarazhangrui/frontend-slides](https://github.com/zarazhangrui/frontend-slides/tree/main/plugins/frontend-slides/skills/frontend-slides) |
+| `human-writing` | 通用中文写作与改稿。动笔前先数手里有几件真材料,不够就研究、追问或缩短篇幅;再按知乎回答、论坛长帖、公众号、博客、人物稿、科普、评测、小说、 | `role/builder` `focus/copy-editing` `focus/long-form-writing` `focus/voice-tone` `output/article` | ● | [github.com/KKKKhazix/human-writing](https://github.com/KKKKhazix/human-writing) |
 | `khazix-writer` | 按数字生命卡兹克的写作方法产出公众号长文，可根据 brief、链接、PDF、语音转写或已有草稿完成撰写、扩写和续写。 | `role/builder` `focus/long-form-writing` `platform/wechat` `output/article` | ● | [github.com/KKKKhazix/khazix-skills](https://github.com/KKKKhazix/khazix-skills/tree/main/khazix-writer) |
 | `slides` | 策略性 HTML 演示:Chart.js 图表、design token、响应式布局、文案公式、按场景选幻灯片策略。 | `role/builder` `focus/data-visualization` `focus/presentation-design` `stack/html` `output/slides` |  | [github.com/nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/tree/main/.claude/skills/slides) |
 | `writing-guidelines` | 按 Vercel 的 Writing Guidelines 审查文档与文案的语气、用词、结构。 | `role/reviewer` `focus/copy-editing` `focus/voice-tone` `output/report` | ● | [github.com/vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills/tree/main/skills/writing-guidelines) |

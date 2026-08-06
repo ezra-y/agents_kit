@@ -69,3 +69,4 @@ last30days
 watch
 pp-agent-capture
 reverse-skill-router
+human-writing

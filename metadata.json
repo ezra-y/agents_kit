@@ -960,6 +960,18 @@
         "output/code"
       ]
     },
+    "human-writing": {
+      "recommendation": 4,
+      "description": "通用中文写作与改稿。动笔前先数手里有几件真材料,不够就研究、追问或缩短篇幅;再按知乎回答、论坛长帖、公众号、博客、人物稿、科普、评测、小说、口播等文体写出有具体说话人的稿子,并清掉机构腔、营销腔和模型腔。",
+      "trigger": "说「把这些素材写成一篇有活人感的文章」「帮我把这段的 AI 味改掉」。与 khazix-writer 的分工:那个只写卡兹克风格公众号长文,这个覆盖通用中文文体。自带 check_prose.py 复查冒号、破折号、「不是……而是……」和黑话等硬禁令。",
+      "tags": [
+        "role/builder",
+        "focus/copy-editing",
+        "focus/long-form-writing",
+        "focus/voice-tone",
+        "output/article"
+      ]
+    },
     "impeccable": {
       "recommendation": 4,
       "description": "前端界面设计与评审的总入口,92 个附件。含绝对禁令清单和一套「AI slop 测试」,用来判断产出是不是模板货。",
