@@ -1155,7 +1155,7 @@
       "policy": "review",
       "resolved": {
         "revision": null,
-        "content_sha256": "9223830c9bcc8db80eb87b71d5619480839f4ed32afe41571e54f7a51a9bbfdb"
+        "content_sha256": "74bbb7dde225e6ffd7e44f2a7bd03f78d235723742f5d19befa9ecfd762210e8"
       }
     },
     "lark-mail": {
@@ -1323,7 +1323,7 @@
       "policy": "review",
       "resolved": {
         "revision": null,
-        "content_sha256": "bb4e249612ad80f8be13c4c555a220db5192f1311651613f36ad0933d832d595"
+        "content_sha256": "78a3fbffa0da5c561b3e7035543fe1e80dbd7854c38d84e35e1392598b288f07"
       }
     },
     "lark-wiki": {
@@ -1650,8 +1650,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": "d8bf34540cbc1aa34052e1b142576fc36a1f1437",
-        "content_sha256": "26e667f0358081be9d6bbff4f224ef3cab883fd618c25b37bbd99f89cdb36ca6"
+        "revision": "a5171e038d678eb5c6d3589b9a988da4492eb5ad",
+        "content_sha256": "b2d4c7e1efc91093ca5fc816063e29d8fa87daa2796e2076422742130e35201f"
       }
     },
     "rust-systems": {
