@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **191** 个 · 常驻 **69** 个 · 有上游可检查更新 **161** 个
+共 **219** 个 · 常驻 **97** 个 · 有上游可检查更新 **189** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -148,7 +148,7 @@
 | `tdd` | 已更新到最新:从 110 行精简成 36 行 + tests.md / mocking.md 两个附件。核心不再是硬套红绿重构,而是讲清「什 | `role/guide` `focus/test-design` `focus/testing` `output/test-code` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/tdd) |
 | `zoom-out` | 让 agent 抬升一个抽象层,给出相关模块和调用方的地图。正文只有 2 行,标了仅手动调用。 | `role/researcher` `focus/codebase-navigation` `focus/software-architecture` `output/report` |  | — |
 
-## 产品 (`product`，8 个)
+## 产品 (`product`，36 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
@@ -157,6 +157,34 @@
 | `grill-with-docs` | 拷问 + 落文档版本:边问边更新 CONTEXT.md 和 ADR,现在是 7 行入口,跑 grilling + domain-modeli | `role/workflow` `focus/architecture-decisions` `focus/requirements-discovery` `output/design-spec` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs) |
 | `grilling` | 拷问式访谈的引擎,12 行。一次一个问题走完决策树,每问都给推荐答案。grill-me 和 grill-with-docs 都靠它。 | `role/workflow` `focus/decision-making` `focus/stakeholder-interview` `output/decision` |  | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling) |
 | `prototype` | 做一次性原型回答一个具体问题。分两支:状态/业务逻辑问题走可运行的终端应用,UI 问题走一个路由下可切换的多套截然不同的方案。 | `role/builder` `focus/product-validation` `focus/prototyping` `output/prototype` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/prototype) |
+| `thinking-bounded-rationality` | 有限理性。搜索或调研可能无止境时，先定一个明确的“够用”阈值，遇到第一个达标的选项就收手，不追最优解。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-circle-of-competence` | 能力圈。判断某个断言自己有没有依据时，先划出证据边界，再估错判的代价，然后选择回答、去查还是明说不知道，不硬编。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-cynefin` | Cynefin 框架。不清楚该用哪种应对方式时，先把问题归到简单、繁杂、复杂或混乱域，混乱域先拆解再定策略。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-effectuation` | 效果推理。真正无法预测时不做预测，盘点手里已有的资源，把下行风险压在可承受损失内，靠承诺推进，目标从可控行动里长出来。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-first-principles` | 第一性原理。某个约束被当成铁律时，把物理限制和行业惯例分开，只保留能独立成立的基本事实，再重建满足真实约束的最简方案。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-five-whys-plus` | 五问法增强版。故障已定位、直接原因已知但系统性根因未明时，每一层 why 都挂上证据，用反事实判断何时停，最后必须落到对策。 | `role/workflow` `focus/debugging` `focus/mental-models` `output/report` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-jobs-to-be-done` | JTBD。决定做什么功能或排查为什么没人用时，还原用户在特定情境下雇这个方案取得什么进展，再按结果和现有替代方案排序。 | `role/workflow` `focus/mental-models` `focus/product-validation` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-kepner-tregoe` | KT 法。用 IS/IS-NOT 差异分析定位只在部分场景出现的缺陷，或用 must/want 加权加不利后果对比做重大选型。 | `role/workflow` `focus/debugging` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-lindy-effect` | 林迪效应。非易逝事物的存续时长可当作剩余寿命的先验，但要先检查领域有没有漂移，再决定要不要押已被时间验证的一方。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-map-territory` | 地图不是疆域。文档、测试、指标或假设和实际行为对不上时，停止从地图推理，去看活代码和真实数据，以实际观测为准。 | `role/workflow` `focus/debugging` `focus/mental-models` `output/report` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-margin-of-safety` | 安全边际。做容量规划、设限额或给估算承诺时，按残余误差和击穿代价来定缓冲，而不是贴着乐观值。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-model-combination` | 模型组合。单个思维模型在跨领域或高风险问题上留有实质盲区时，按分工顺序组合互补模型，并事先定好冲突时听谁的。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-model-router` | 思维模型路由。不确定该用哪个 thinking-* 框架时，按领域×问题类型匹配，默认只给一个主模型或直接返回 NONE，最多三个互补。整套 | `role/router` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-ooda` | OODA 循环。时间压力下局势还在变、必须在确定之前行动时，按观察→定向→决策→行动在七成把握上转起来，然后立刻重新观察。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-opportunity-cost` | 机会成本。投入稀缺的时间、人力或钱之前，点名这些资源被放弃的最佳用途，并算出选中方案相对它的价值差。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-pre-mortem` | 事前验尸。方案或上线定稿前先假设它已经失败，倒推具体死因，再把失败路径转成缓解措施、卡点和终止条件。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/report` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-probabilistic` | 概率思维。预测、估算或量化风险时锚定基础率，给区间而不是点值，按先验→似然→后验随证据更新，未测量的量用数量级边界兜住。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/report` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-red-team` | 红队视角。对自己有授权的代码、认证和 API 做安全审查，建攻击者模型、画攻击面，只报有可复现利用路径且验证过缓解措施的发现。 | `role/workflow` `focus/mental-models` `focus/security-assessment` `output/report` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-reversibility` | 可逆性分类。投入大量思考之前先分清这个决定撤回是便宜还是昂贵，双向门快速定，单向门分阶段走以保留选项。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-scientific-method` | 科学方法。一个症状有多个可能原因时，把假设排成可证伪的序列，先跑最便宜的区分性观察，证据过关后才偏向假设最少的那个。 | `role/workflow` `focus/debugging` `focus/mental-models` `output/report` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-second-order` | 二阶效应。改动会波及激励、规模和反馈回路时，带上时间和概率把后果链追一遍再拍板，不停在直接修复上。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-socratic` | 苏格拉底提问。需求含糊、预设很多或被说成“这还用问”时，先问出那几个真正承重的问题，暴露隐藏要求再动手。 | `role/workflow` `focus/mental-models` `focus/requirements-discovery` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-steel-manning` | 钢人论证。否掉一个提案或条件反射同意之前，先如实建出对立面最强的版本，写明什么条件下你会改变立场，再更新或维持。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-systems` | 系统思考。行为跨组件涌现、改这里坏那里、回路和延迟起主导时，画出边界、存量流量、反馈和系统原型，再排杠杆点。 | `role/workflow` `focus/mental-models` `focus/software-architecture` `output/report` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-theory-of-constraints` | 约束理论。吞吐或延迟受管道限制时，找出唯一的binding约束，按识别→挖尽→迁就→提升→重查走一遍，不去优化非约束环节。 | `role/workflow` `focus/mental-models` `focus/performance` `output/report` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-thought-experiment` | 思想实验。真实验太罕见、太大或不可逆时，做受控反事实：隔离单个变量、固定其余条件、追机制链，并界定这个结果能推出什么、不能推出什么。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/report` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-triz` | TRIZ。两个设计要求看起来互斥时，先把矛盾本身说清楚，分离冲突的状态，再造一个不折中的具体解法。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `thinking-via-negativa` | 减法思维。反射性想加功能、加层、加流程时，先删掉有害和非必要的部分，删之前过一道不可逆性检查。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
 | `to-issues` | 把计划/规格拆成可独立认领的 issue,用 tracer bullet 纵向切片。已更新到上游最新(上游改名 to-tickets,105 | `role/builder` `focus/delivery-planning` `focus/work-breakdown` `output/issues` |  | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/to-tickets) |
 | `to-prd` | 把当前对话合成规格文档并发到 issue tracker。已更新到上游最新(上游改名 to-spec,75 行)。明确不访谈你,只综合已知信 | `role/builder` `focus/product-specification` `focus/requirements-synthesis` `output/prd` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/to-spec) |
 | `triage` | 用状态机和五种 triage 角色流转 issue,要求每条评论带免责声明。 | `role/workflow` `focus/delivery-planning` `focus/issue-triage` `output/issues` |  | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/triage) |

@@ -1930,6 +1930,398 @@
         "content_sha256": "0c109146c090fa50d3829266d56bee03caeb08d5d463e06a5d3ea8d9cf191ef9"
       }
     },
+    "thinking-bounded-rationality": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-bounded-rationality"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "c1a699b0636d5c7bc1be05912a1e072c714a0f90546c80faf07f070f583bd049"
+      }
+    },
+    "thinking-circle-of-competence": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-circle-of-competence"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "e3910b74c7f08b84fab2fc6ef5b38dceacbafccecefa407b4161aeec0e05380b"
+      }
+    },
+    "thinking-cynefin": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-cynefin"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "a105edbd5e0b7e0835b203d06ed5d4d798e21a408aa8aaae429de85c682ea560"
+      }
+    },
+    "thinking-effectuation": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-effectuation"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "bec1e64af129c237f80ec272c6239b98edaa6e0d4975ce6e805118885f7647db"
+      }
+    },
+    "thinking-first-principles": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-first-principles"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "5fd460917948afc124f41f482b9774bd1311ffe7d06d1d0437a722fa089f7c27"
+      }
+    },
+    "thinking-five-whys-plus": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-five-whys-plus"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "aff4630ad2a5b3d8f0e0c25ddb52ee258ef483f1bee5a333e779a51f94901205"
+      }
+    },
+    "thinking-jobs-to-be-done": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-jobs-to-be-done"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "e4cb70e304e6603660ef4a2e3b65cbfe847785bab521af683cb0b97aa23e3da0"
+      }
+    },
+    "thinking-kepner-tregoe": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-kepner-tregoe"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "0602158c4065c763b6c39037d5c05d57c4420b6e80e9ae109c89b0b77952dfcb"
+      }
+    },
+    "thinking-lindy-effect": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-lindy-effect"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "5ec7c98ed403f6f9487044b3042c34a7318e39ab2eaf88c585c458a36bd64741"
+      }
+    },
+    "thinking-map-territory": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-map-territory"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "45184cc2c9fac63c381a41757e85e9cb38613c0004713142b048780a597f7676"
+      }
+    },
+    "thinking-margin-of-safety": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-margin-of-safety"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "95e6118df55373e5f788d653718ff82526c0c704ba71eb9f6c0b20c5ef9d8f4d"
+      }
+    },
+    "thinking-model-combination": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-model-combination"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "1c3f41341a07b5488d131e1981db4f7016379ac3c963fb1e68ceae0b2d5a4ab4"
+      }
+    },
+    "thinking-model-router": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-model-router"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "4658dccde455d5129bdefe23687c0d482a2da9e503abc8523a8653122a96820e"
+      }
+    },
+    "thinking-ooda": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-ooda"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "8afd0183b65c9682dd68a703050d9a4bcbe048156428634f412a9ee79b2b5b04"
+      }
+    },
+    "thinking-opportunity-cost": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-opportunity-cost"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "03697c99bb8882d4dd7ac5852b40d7486607802e942b6e2a418a65d66f38cae2"
+      }
+    },
+    "thinking-pre-mortem": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-pre-mortem"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "45c4b35cd6564827e498ecc46c90b1259b354a41e1a601e95be94b5723cff03a"
+      }
+    },
+    "thinking-probabilistic": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-probabilistic"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "24da8a02697514809d78cc4193f8bcc0e9fc9d8f620cc10a166c116a1d93b16c"
+      }
+    },
+    "thinking-red-team": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-red-team"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "639afcf3f4a12bcfb3851389e06311e08fbe71aea857b693fda8bc848642b389"
+      }
+    },
+    "thinking-reversibility": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-reversibility"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "90d3ecbe472d2d43994a7f436e3bd82a6265d9fd545ed32f5724f3c3edbe4929"
+      }
+    },
+    "thinking-scientific-method": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-scientific-method"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "f83d391215fc09c00a0fdf1ba4e15f16cc90b4fb3b30d912604e6a426928c1b9"
+      }
+    },
+    "thinking-second-order": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-second-order"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "bc246603dfad6b9ca538ae692be8b8cfd888ec78059f9a3c6c889472d59643c9"
+      }
+    },
+    "thinking-socratic": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-socratic"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "cc640df77ed08aa0ca83a586fbe247ee0080221d914001ad82753788ea30b590"
+      }
+    },
+    "thinking-steel-manning": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-steel-manning"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "bf4c4f1c1ed1d095d1ee711f111fbea32033076990f36c993d5d603a62ee7d00"
+      }
+    },
+    "thinking-systems": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-systems"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "14ca7e97581796f1cdbae5ba9dfe9d0cfef7d7d624098da60f6d0403af7f3478"
+      }
+    },
+    "thinking-theory-of-constraints": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-theory-of-constraints"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "ab6fe1db6fc6ed4ed750b054c63a95886b552841a3364ac68a71c772dfb27fed"
+      }
+    },
+    "thinking-thought-experiment": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-thought-experiment"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "f462bd609a31fede0735229e4c1cd0750240c1ccc51d597cab1e44e4f655625c"
+      }
+    },
+    "thinking-triz": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-triz"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "6cbec035c23a94d947b7e250ccbfae85bc61b3975433418bc6e5e43d4c721fba"
+      }
+    },
+    "thinking-via-negativa": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
+        "ref": "",
+        "path": "skills/thinking-via-negativa"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "969947f1bf9c083a9d9a9f6f230aea5d09330747",
+        "content_sha256": "751d19ff3e173ab5bc1f4fd09df83d4e6f3387e35b46cdfb88f5c8680971d173"
+      }
+    },
     "tipkit": {
       "provider": "git",
       "locator": {

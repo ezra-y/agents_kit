@@ -2094,6 +2094,314 @@
         "output/diagram"
       ]
     },
+    "thinking-bounded-rationality": {
+      "recommendation": 3,
+      "description": "有限理性。搜索或调研可能无止境时，先定一个明确的“够用”阈值，遇到第一个达标的选项就收手，不追最优解。",
+      "trigger": "说「这个选型再查下去没完了，定个标准就停」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-circle-of-competence": {
+      "recommendation": 3,
+      "description": "能力圈。判断某个断言自己有没有依据时，先划出证据边界，再估错判的代价，然后选择回答、去查还是明说不知道，不硬编。",
+      "trigger": "说「这块我到底懂不懂，别瞎猜」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-cynefin": {
+      "recommendation": 3,
+      "description": "Cynefin 框架。不清楚该用哪种应对方式时，先把问题归到简单、繁杂、复杂或混乱域，混乱域先拆解再定策略。",
+      "trigger": "说「这事儿该怎么下手都没想清楚」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-effectuation": {
+      "recommendation": 3,
+      "description": "效果推理。真正无法预测时不做预测，盘点手里已有的资源，把下行风险压在可承受损失内，靠承诺推进，目标从可控行动里长出来。",
+      "trigger": "说「完全没法预测，先按手里有的干起来」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-first-principles": {
+      "recommendation": 3,
+      "description": "第一性原理。某个约束被当成铁律时，把物理限制和行业惯例分开，只保留能独立成立的基本事实，再重建满足真实约束的最简方案。",
+      "trigger": "说「这个限制是真的，还是大家一直这么干」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-five-whys-plus": {
+      "recommendation": 3,
+      "description": "五问法增强版。故障已定位、直接原因已知但系统性根因未明时，每一层 why 都挂上证据，用反事实判断何时停，最后必须落到对策。",
+      "trigger": "说「表面原因找到了，根因还没挖到」。",
+      "tags": [
+        "role/workflow",
+        "focus/debugging",
+        "focus/mental-models",
+        "output/report"
+      ]
+    },
+    "thinking-jobs-to-be-done": {
+      "recommendation": 3,
+      "description": "JTBD。决定做什么功能或排查为什么没人用时，还原用户在特定情境下雇这个方案取得什么进展，再按结果和现有替代方案排序。",
+      "trigger": "说「这功能该不该做」「为什么用户不用」。",
+      "tags": [
+        "role/workflow",
+        "focus/mental-models",
+        "focus/product-validation",
+        "output/decision"
+      ]
+    },
+    "thinking-kepner-tregoe": {
+      "recommendation": 3,
+      "description": "KT 法。用 IS/IS-NOT 差异分析定位只在部分场景出现的缺陷，或用 must/want 加权加不利后果对比做重大选型。",
+      "trigger": "说「只有部分场景出问题」「几个方案要正式比一遍」。",
+      "tags": [
+        "role/workflow",
+        "focus/debugging",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-lindy-effect": {
+      "recommendation": 3,
+      "description": "林迪效应。非易逝事物的存续时长可当作剩余寿命的先验，但要先检查领域有没有漂移，再决定要不要押已被时间验证的一方。",
+      "trigger": "说「选老牌稳的还是选新的」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-map-territory": {
+      "recommendation": 3,
+      "description": "地图不是疆域。文档、测试、指标或假设和实际行为对不上时，停止从地图推理，去看活代码和真实数据，以实际观测为准。",
+      "trigger": "说「文档写的和跑出来的不一样」。",
+      "tags": [
+        "role/workflow",
+        "focus/debugging",
+        "focus/mental-models",
+        "output/report"
+      ]
+    },
+    "thinking-margin-of-safety": {
+      "recommendation": 3,
+      "description": "安全边际。做容量规划、设限额或给估算承诺时，按残余误差和击穿代价来定缓冲，而不是贴着乐观值。",
+      "trigger": "说「这个容量/工期该留多少余量」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-model-combination": {
+      "recommendation": 3,
+      "description": "模型组合。单个思维模型在跨领域或高风险问题上留有实质盲区时，按分工顺序组合互补模型，并事先定好冲突时听谁的。",
+      "trigger": "说「一个角度不够，得多看几面」。先用 thinking-model-router 定主模型。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-model-router": {
+      "recommendation": 4,
+      "description": "思维模型路由。不确定该用哪个 thinking-* 框架时，按领域×问题类型匹配，默认只给一个主模型或直接返回 NONE，最多三个互补。整套 28 个技能的入口。",
+      "trigger": "说「这问题用哪个思维模型」。这套 thinking-* 的 START HERE，不确定时先叫它。",
+      "tags": [
+        "role/router",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-ooda": {
+      "recommendation": 3,
+      "description": "OODA 循环。时间压力下局势还在变、必须在确定之前行动时，按观察→定向→决策→行动在七成把握上转起来，然后立刻重新观察。",
+      "trigger": "说「等不到想清楚，得先动起来」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-opportunity-cost": {
+      "recommendation": 3,
+      "description": "机会成本。投入稀缺的时间、人力或钱之前，点名这些资源被放弃的最佳用途，并算出选中方案相对它的价值差。",
+      "trigger": "说「这事值不值得投人」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-pre-mortem": {
+      "recommendation": 3,
+      "description": "事前验尸。方案或上线定稿前先假设它已经失败，倒推具体死因，再把失败路径转成缓解措施、卡点和终止条件。",
+      "trigger": "说「上线前把风险过一遍」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/report"
+      ]
+    },
+    "thinking-probabilistic": {
+      "recommendation": 3,
+      "description": "概率思维。预测、估算或量化风险时锚定基础率，给区间而不是点值，按先验→似然→后验随证据更新，未测量的量用数量级边界兜住。",
+      "trigger": "说「这个大概多大概率」「给个区间别给个数」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/report"
+      ]
+    },
+    "thinking-red-team": {
+      "recommendation": 3,
+      "description": "红队视角。对自己有授权的代码、认证和 API 做安全审查，建攻击者模型、画攻击面，只报有可复现利用路径且验证过缓解措施的发现。",
+      "trigger": "说「按攻击者视角审一遍这段认证」。仅限自己有授权的系统。",
+      "tags": [
+        "role/workflow",
+        "focus/mental-models",
+        "focus/security-assessment",
+        "output/report"
+      ]
+    },
+    "thinking-reversibility": {
+      "recommendation": 3,
+      "description": "可逆性分类。投入大量思考之前先分清这个决定撤回是便宜还是昂贵，双向门快速定，单向门分阶段走以保留选项。",
+      "trigger": "说「这个决定要不要慎重」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-scientific-method": {
+      "recommendation": 3,
+      "description": "科学方法。一个症状有多个可能原因时，把假设排成可证伪的序列，先跑最便宜的区分性观察，证据过关后才偏向假设最少的那个。",
+      "trigger": "说「几种原因都有可能，怎么排查」。",
+      "tags": [
+        "role/workflow",
+        "focus/debugging",
+        "focus/mental-models",
+        "output/report"
+      ]
+    },
+    "thinking-second-order": {
+      "recommendation": 3,
+      "description": "二阶效应。改动会波及激励、规模和反馈回路时，带上时间和概率把后果链追一遍再拍板，不停在直接修复上。",
+      "trigger": "说「这么改了以后面会怎样」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-socratic": {
+      "recommendation": 3,
+      "description": "苏格拉底提问。需求含糊、预设很多或被说成“这还用问”时，先问出那几个真正承重的问题，暴露隐藏要求再动手。",
+      "trigger": "说「需求说得太模糊，先问清楚」。",
+      "tags": [
+        "role/workflow",
+        "focus/mental-models",
+        "focus/requirements-discovery",
+        "output/decision"
+      ]
+    },
+    "thinking-steel-manning": {
+      "recommendation": 3,
+      "description": "钢人论证。否掉一个提案或条件反射同意之前，先如实建出对立面最强的版本，写明什么条件下你会改变立场，再更新或维持。",
+      "trigger": "说「帮我把反方最强的说法建出来」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-systems": {
+      "recommendation": 3,
+      "description": "系统思考。行为跨组件涌现、改这里坏那里、回路和延迟起主导时，画出边界、存量流量、反馈和系统原型，再排杠杆点。",
+      "trigger": "说「改一处坏一处，整体到底怎么运转的」。",
+      "tags": [
+        "role/workflow",
+        "focus/mental-models",
+        "focus/software-architecture",
+        "output/report"
+      ]
+    },
+    "thinking-theory-of-constraints": {
+      "recommendation": 3,
+      "description": "约束理论。吞吐或延迟受管道限制时，找出唯一的binding约束，按识别→挖尽→迁就→提升→重查走一遍，不去优化非约束环节。",
+      "trigger": "说「整条链路到底哪儿卡住了」。",
+      "tags": [
+        "role/workflow",
+        "focus/mental-models",
+        "focus/performance",
+        "output/report"
+      ]
+    },
+    "thinking-thought-experiment": {
+      "recommendation": 3,
+      "description": "思想实验。真实验太罕见、太大或不可逆时，做受控反事实：隔离单个变量、固定其余条件、追机制链，并界定这个结果能推出什么、不能推出什么。",
+      "trigger": "说「没法真跑一遍，先推演一下」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/report"
+      ]
+    },
+    "thinking-triz": {
+      "recommendation": 3,
+      "description": "TRIZ。两个设计要求看起来互斥时，先把矛盾本身说清楚，分离冲突的状态，再造一个不折中的具体解法。",
+      "trigger": "说「又要快又要稳，只能二选一吗」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
+    "thinking-via-negativa": {
+      "recommendation": 3,
+      "description": "减法思维。反射性想加功能、加层、加流程时，先删掉有害和非必要的部分，删之前过一道不可逆性检查。",
+      "trigger": "说「先别加，看看能删掉什么」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ]
+    },
     "tipkit": {
       "recommendation": 2,
       "description": "TipKit API 离线镜像。Tip 协议、内联提示 TipView 与浮层 PopoverTipView、显示规则与频率控制、Tips.configure 初始化。",
