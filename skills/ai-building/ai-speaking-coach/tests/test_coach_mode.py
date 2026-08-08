@@ -42,6 +42,9 @@ def test_hook_reinjects_role_and_correction_gate(isolated_root: Path) -> None:
     assert "AI SPEAKING COACH MODE: ACTIVE" in context
     assert "self-introductions" in context
     assert "immediately correct" in context
+    assert "TURN-TAKING GATE" in context
+    assert "learner_speaking" in context
+    assert "If uncertain whether the turn is complete, wait" in context
 
     later_turn = process_hook_event(
         {

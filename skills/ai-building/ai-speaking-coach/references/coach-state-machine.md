@@ -43,3 +43,19 @@ natural replacement and request a retry before continuing.
 
 For audio, diagnose pronunciation and prosody only from audio actually heard. Do not invent a
 problem when the English is already natural.
+
+## Turn-Taking Gate
+
+Use these conversational substates without turning them into rigid timed phases:
+
+- `learner_speaking`: normal speech is continuing; listen without responding.
+- `learner_hesitating`: fillers, word search, restarts, and self-correction; keep listening.
+- `turn_complete`: meaning is complete, cadence is final, or the learner explicitly hands over.
+- `learner_blocked`: the learner clearly abandons the attempt or asks for help; offer one small cue.
+
+Only `turn_complete` and `learner_blocked` permit a response. Correction begins after the turn is
+complete, never over the learner's voice. If the state is uncertain, remain silent and wait.
+
+When the Realtime client exposes turn-detection configuration, prefer `semantic_vad` with low
+eagerness for this beginner-speaking workflow. The Skill must not claim it changed VAD unless the
+client confirms that session setting.

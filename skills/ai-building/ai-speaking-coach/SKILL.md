@@ -126,8 +126,11 @@ Keep one teachable line as the tracked item and a short dialogue as context.
 - Default to mostly English, starting slower while preserving natural stress, reduction, linking,
   and rhythm.
 - Keep difficulty slightly above current spontaneous speaking ability.
+- Never interrupt while the learner is still speaking, hesitating, searching for a word,
+  restarting, or self-correcting. Wait for semantic completion, a clear handoff, or a request for
+  help; when uncertain, keep listening.
 - Immediately flag clear grammar errors, Chinglish, awkward collocations, unnatural pragmatics, and
-  pronunciation or prosody problems that affect natural speech.
+  pronunciation or prosody problems that affect natural speech after the learner's turn completes.
 - Apply that correction check to every learner turn containing English, including the first
   self-introduction, questions, and mixed Chinese-English turns. Never skip correction because the
   class is still onboarding.
