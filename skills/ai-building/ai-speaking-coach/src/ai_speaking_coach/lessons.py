@@ -294,23 +294,23 @@ def _write_lesson(
 ) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     lines = [
-        f"# 备课输入：{date}",
+        f"# Lesson Preparation Input: {date}",
         "",
         "Status: preparation-draft",
         f"Topic: {topic}",
         "",
-        "## 教师目标",
+        "## Teacher Goals",
         "",
-        "- 尽可能使用英语，以较慢但自然的语速开始。",
-        "- 学生说完一两句话后及时处理高价值错误。",
-        "- 明确指出中式表达、别扭搭配和不符合场景的语气。",
-        "- 快速检查已会内容，重点练习未知、到期和反复出错内容。",
+        "- Use English whenever feasible and begin at a slower but natural pace.",
+        "- Address high-value errors promptly after each short learner turn.",
+        "- Call out clear Chinglish, awkward collocations, and scene-inappropriate register.",
+        "- Check familiar content quickly and focus on unseen, due, and recurring weak points.",
         "",
-        "## 到期复习",
+        "## Due Reviews",
         "",
     ]
-    lines.extend(_item_lines(due_items, empty="今天没有到期内容。"))
-    lines.extend(["", "## 旧错误", ""])
+    lines.extend(_item_lines(due_items, empty="No content is due today."))
+    lines.extend(["", "## Unresolved Errors", ""])
     if errors:
         lines.extend(
             f"- `{item['error_id']}` {item['user_said']} -> "
@@ -318,15 +318,16 @@ def _write_lesson(
             for item in errors
         )
     else:
-        lines.append("- 今天没有到期错误。")
-    lines.extend(["", "## 新内容候选", ""])
-    lines.extend(_item_lines(new_candidates, empty="没有可用的新内容候选。"))
+        lines.append("- No errors are due today.")
+    lines.extend(["", "## New Content Candidates", ""])
+    lines.extend(_item_lines(new_candidates, empty="No new content candidates are available."))
     lines.extend(
         [
             "",
-            "## 情景要求",
+            "## Scenario Requirement",
             "",
-            "围绕今日话题组织自然多轮对话。不要逐项朗读清单，也不要为了数量强塞表达。",
+            "Build a natural multi-turn exchange around today's topic. Do not read the list "
+            "item by item or force expressions into the conversation to reach a quota.",
         ]
     )
     destination.write_text("\n".join(lines) + "\n", encoding="utf-8")

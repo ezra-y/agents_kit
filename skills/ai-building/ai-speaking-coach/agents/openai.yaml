@@ -1,4 +1,4 @@
 interface:
-  display_name: "AI 口语教练"
-  short_description: "制定个性化计划，用 GPT Live 练习、复习并按时提醒"
-  default_prompt: "使用 $ai-speaking-coach。先检查我是否已有学习档案；如果没有，通过文字简短了解我的水平和目标，不要要求开启语音。"
+  display_name: "AI Speaking Coach"
+  short_description: "Build a personal plan, practice live, review, and keep momentum"
+  default_prompt: "Use $ai-speaking-coach. First check whether I already have a learner profile. If not, briefly learn my current level and goals through text, and do not ask me to turn on voice."

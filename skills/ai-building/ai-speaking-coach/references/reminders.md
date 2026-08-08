@@ -7,8 +7,8 @@ Scheduled class reminders are optional. They support consistency but do not coun
 When reminder status is `unconfigured`, ask one open question:
 
 ```text
-你希望什么时候上口语课？直接告诉我日期、重复方式和当地时间就行。
-也可以说“先不设置，直接上课”。
+When would you like to have speaking class? Give me the date, recurrence, and local time.
+You can also say, "Skip the reminder and start the lesson."
 ```
 
 Accept any schedule the host Scheduled-task system can represent. Ask for the timezone only when it
@@ -20,7 +20,7 @@ request a reminder.
 1. Use the host scheduled-task tool named `automation_update`.
 2. Use a standalone scheduled task, not a heartbeat.
 3. Before creating, read the saved Automation ID and inspect existing tasks with the stable name
-   `AI 口语教练上课提醒`.
+   `AI Speaking Coach Class Reminder`.
 4. Update an existing task instead of creating a duplicate.
 5. Let the scheduled-task system represent the learner's complete recurrence request rather than
    narrowing it to a Skill-defined list.

@@ -16,4 +16,4 @@ def test_first_use_is_text_only() -> None:
     assert "A text task cannot turn on the microphone or switch itself into GPT Live" in skill
     assert "Do not ask the learner to open GPT Live" in skill
     assert "The first Skill invocation is a text setup" in goals
-    assert "不要要求开启语音" in interface["interface"]["default_prompt"]
+    assert "do not ask me to turn on voice" in interface["interface"]["default_prompt"]
