@@ -230,6 +230,7 @@
         "skill-authoring",
         "skill-evaluation",
         "software-architecture",
+        "sound-design",
         "spreadsheets",
         "stakeholder-interview",
         "state-management",
@@ -253,6 +254,7 @@
         "ux",
         "ux-audit",
         "video-analysis",
+        "video-production",
         "visual-content",
         "visual-design",
         "visual-direction",
@@ -307,6 +309,7 @@
         "quartzcore",
         "react",
         "react-native",
+        "remotion",
         "rest",
         "rust",
         "shadcn",
@@ -371,7 +374,8 @@
         "tasks",
         "test-code",
         "text",
-        "transcript"
+        "transcript",
+        "video"
       ]
     },
     "collection": {

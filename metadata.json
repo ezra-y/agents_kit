@@ -1679,6 +1679,18 @@
         "output/paper-metadata"
       ]
     },
+    "ponytail": {
+      "recommendation": 4,
+      "description": "以 YAGNI、标准库优先、复用现有代码和最小可行改动约束编码决策，减少不必要的抽象、依赖、样板代码与未来式设计；支持 lite、full、ultra 三档强度。",
+      "trigger": "用户点名 ponytail、lazy mode、最简单方案、YAGNI，抱怨过度工程或要求用最短路径编写、修复、重构、审查代码时使用；不用于非编程任务。",
+      "tags": [
+        "role/guide",
+        "focus/code-quality",
+        "focus/modularity",
+        "focus/software-architecture",
+        "output/code"
+      ]
+    },
     "pp-agent-capture": {
       "recommendation": 5,
       "description": "使用 macOS ScreenCaptureKit 精确定位窗口或显示器并录制、截图、生成 GIF 与视觉证据包；要求先等录制就绪，再触发界面动作并校验成片。",
@@ -2598,6 +2610,19 @@
         "focus/performance",
         "platform/vercel",
         "output/report"
+      ]
+    },
+    "video-shotcraft": {
+      "recommendation": 5,
+      "description": "基于 Remotion、真实页面截图、2.5D 运镜、节奏卡点与声音设计制作电影感产品视频；提供镜头配方卡、动态示例源码、完整模板和分阶段验收流程。",
+      "trigger": "当用户要求把前端项目或网页制作成产品宣传片、点名 video-shotcraft 或 Ink Press 模板，或需要复用某张镜头卡实现单个视频动效时使用。",
+      "tags": [
+        "role/workflow",
+        "focus/motion-design",
+        "focus/sound-design",
+        "focus/video-production",
+        "stack/remotion",
+        "output/video"
       ]
     },
     "watch": {

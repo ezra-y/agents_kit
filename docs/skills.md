@@ -1,16 +1,17 @@
 # 技能清单
 
-共 **224** 个 · 常驻 **98** 个 · 有上游可检查更新 **199** 个
+共 **226** 个 · 常驻 **98** 个 · 有上游可检查更新 **201** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
 `●` = 常驻
 
-## 视频制作 (`video`，1 个)
+## 视频制作 (`video`，2 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
 | `pp-agent-capture` | 使用 macOS ScreenCaptureKit 精确定位窗口或显示器并录制、截图、生成 GIF 与视觉证据包；要求先等录制就绪，再触发界 | `role/integration` `focus/tool-integration` `focus/ui-testing` `focus/workflow-automation` `platform/macos` `output/screenshot` | ● | — |
+| `video-shotcraft` | 基于 Remotion、真实页面截图、2.5D 运镜、节奏卡点与声音设计制作电影感产品视频；提供镜头配方卡、动态示例源码、完整模板和分阶段验 | `role/workflow` `focus/motion-design` `focus/sound-design` `focus/video-production` `stack/remotion` `output/video` |  | [github.com/Vincentwei1021/video-shotcraft](https://github.com/Vincentwei1021/video-shotcraft) |
 
 ## iOS (`ios`，42 个)
 
@@ -139,7 +140,7 @@
 |---|---|---|:--:|---|
 | `reverse-skill-router` | 逆向工程与网络安全任务总路由：根据目标类型、用户意图和工具链选择 APK、二进制、前端 JS、恶意软件、固件、取证、渗透测试或安全报告工作流 | `role/router` `focus/reverse-engineering` `focus/security-assessment` `focus/tool-integration` `platform/multi-platform` `output/report` | ● | [github.com/zhaoxuya520/reverse-skill](https://github.com/zhaoxuya520/reverse-skill) |
 
-## 通用工程 (`engineering`，8 个)
+## 通用工程 (`engineering`，9 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
@@ -149,6 +150,7 @@
 | `improve-codebase-architecture` | 找「深化机会」——把浅模块改造成深模块,目标是可测试性和 AI 可导航性。已更新到上游最新。强制使用固定术语表。 | `role/reviewer` `focus/modularity` `focus/software-architecture` `output/report` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/improve-codebase-architecture) |
 | `opencli-adapter-author` | 给新站点写 opencli 适配器,或给已有站点加命令,15 个附件。从初次侦察、字段解码、写适配器到验证,含决策树、逐步 runbook  | `role/builder` `focus/adapter-development` `platform/opencli` `output/code` |  | — |
 | `opencli-autofix` | opencli 命令失败时自动修适配器:收集 trace、打补丁、重试,修好后再去上游提 issue。含「空结果 ≠ 坏了」的前置判断。 | `role/workflow` `focus/adapter-development` `focus/debugging` `platform/opencli` `output/code` | ● | — |
+| `ponytail` | 以 YAGNI、标准库优先、复用现有代码和最小可行改动约束编码决策，减少不必要的抽象、依赖、样板代码与未来式设计；支持 lite、full、 | `role/guide` `focus/code-quality` `focus/modularity` `focus/software-architecture` `output/code` |  | [github.com/DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) |
 | `tdd` | 已更新到最新:从 110 行精简成 36 行 + tests.md / mocking.md 两个附件。核心不再是硬套红绿重构,而是讲清「什 | `role/guide` `focus/test-design` `focus/testing` `output/test-code` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/tdd) |
 | `zoom-out` | 让 agent 抬升一个抽象层,给出相关模块和调用方的地图。正文只有 2 行,标了仅手动调用。 | `role/researcher` `focus/codebase-navigation` `focus/software-architecture` `output/report` |  | — |
 

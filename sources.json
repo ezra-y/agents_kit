@@ -1646,6 +1646,20 @@
         "content_sha256": "a7ea8d8317d5592a858eb61caaa7bcb2f94d99ae926fc478d049486412aa6cc5"
       }
     },
+    "ponytail": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/DietrichGebert/ponytail.git",
+        "ref": "",
+        "path": "skills/ponytail"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "2ed6c52c9d7e5e56942508591085fd45dea277d3",
+        "content_sha256": "b9d7d1326ca6ae0397ebaad5dc6237b38b7a6b7a7986b7a6d54e5e1b06e05c84"
+      }
+    },
     "prototype": {
       "provider": "git",
       "locator": {
@@ -2603,6 +2617,20 @@
       "resolved": {
         "revision": null,
         "content_sha256": "a8f320b5441e3149812f738a34f2da832198287e2e9d0243862cc6f514340155"
+      }
+    },
+    "video-shotcraft": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Vincentwei1021/video-shotcraft.git",
+        "ref": "",
+        "path": ""
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "0022ec45d28800cecb5b16624a3179093c93f4e9",
+        "content_sha256": "9e8f0457c1d5006b1add856a241a4aa05cbe0964bed24b47ca66f3a41862facf"
       }
     },
     "watch": {
