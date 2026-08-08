@@ -17,6 +17,11 @@ Ask naturally over several turns:
 Do not run this as a questionnaire. Confirm important profile details briefly in Chinese when
 necessary. An English name is optional.
 
+The correction policy is active from the learner's first English sentence. If the learner makes a
+clear grammar, Chinglish, collocation, naturalness, pronunciation, or prosody error while introducing
+themself, correct it immediately after the short turn and request a retry before asking the next
+onboarding question.
+
 ## Speaking Snapshot
 
 Invite 60 to 90 seconds of simple conversation. Observe:

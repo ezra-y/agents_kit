@@ -19,9 +19,7 @@ def isolated_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     (root / "runtime" / "sessions").mkdir()
     (root / "runtime" / "backups").mkdir()
     shutil.copy2(source_root / "config" / "defaults.json", root / "config" / "defaults.json")
-    shutil.copy2(
-        source_root / "migrations" / "001_initial.sql",
-        root / "migrations" / "001_initial.sql",
-    )
+    for migration in sorted((source_root / "migrations").glob("*.sql")):
+        shutil.copy2(migration, root / "migrations" / migration.name)
     monkeypatch.setenv("AI_SPEAKING_COACH_ROOT", str(root))
     return root

@@ -18,6 +18,19 @@ uv run --project "$SKILL_DIR" python "$SKILL_DIR/scripts/<script>.py"
 
 Do not depend on `OPENAI_API_KEY`. Text embeddings use the bundled local E5 configuration.
 
+## Keep Coach Mode Active
+
+Read [coach-state-machine.md](references/coach-state-machine.md) for state transitions.
+
+- At the start of a learner-facing lesson, review, or speaking practice, run
+  `scripts/coach_mode.py start` before the first teaching response.
+- Coach mode is scoped to the current Codex task and remains active across turns, resume, and
+  context compaction.
+- When the learner says to end or finish the lesson, says class is over, or explicitly exits coach
+  mode, save the session and run `scripts/coach_mode.py stop` in that closing turn.
+- Topic changes and off-lesson questions are detours, not exits. Answer as a teacher and return to
+  the class.
+
 ## Keep Roles Separate
 
 - Strong Codex model: prepare and finalize the daily lesson before Live class.
@@ -51,7 +64,7 @@ Read [lesson-preparation.md](references/lesson-preparation.md) and
 Read [teacher-policy.md](references/teacher-policy.md). For a first meeting, also read
 [first-session.md](references/first-session.md).
 
-1. Load `runtime/lessons/YYYY-MM-DD.md`.
+1. Run `scripts/coach_mode.py start`, then load `runtime/lessons/YYYY-MM-DD.md`.
 2. If this is a normal class and no finalized lesson exists, do not silently create a new daily
    course as GPT Live. Tell the learner the lesson needs preparation and route to the preparation
    workflow. The first-session conversation is the exception.
@@ -73,6 +86,8 @@ unpracticed result learned.
 7. Continue the prepared scene after answering the special question.
 8. At class end, produce a session JSON matching
    [database-schema.md](references/database-schema.md), then run `scripts/record_session.py`.
+9. Run `scripts/coach_mode.py phase after_class`, finish the class summary, then run
+   `scripts/coach_mode.py stop`.
 
 ### First Meeting
 
@@ -113,6 +128,9 @@ Keep one teachable line as the tracked item and a short dialogue as context.
 - Keep difficulty slightly above current spontaneous speaking ability.
 - Immediately flag clear grammar errors, Chinglish, awkward collocations, unnatural pragmatics, and
   pronunciation or prosody problems that affect natural speech.
+- Apply that correction check to every learner turn containing English, including the first
+  self-introduction, questions, and mixed Chinese-English turns. Never skip correction because the
+  class is still onboarding.
 - Give one best natural replacement for the current scene, ask for an immediate retry, then return
   to meaningful conversation.
 - Distinguish wrong from acceptable-but-less-natural.

@@ -20,6 +20,9 @@ short. Reduce linguistic load when needed, not the maturity of the topic.
 Let the learner finish the current short sentence or one-to-two-sentence turn. Then correct a
 high-value problem immediately before continuing.
 
+Run this check on every turn containing English, including the first self-introduction, learner
+questions, quoted attempts, and mixed Chinese-English. Onboarding never suspends correction.
+
 Correct:
 
 - Meaning-changing grammar errors.

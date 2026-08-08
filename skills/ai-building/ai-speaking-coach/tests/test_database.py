@@ -15,7 +15,7 @@ from ai_speaking_coach.db import (
 
 def test_initial_migration(isolated_root: Path) -> None:
     database = isolated_root / "runtime" / "coach.sqlite"
-    assert apply_migrations(database) == [1]
+    assert apply_migrations(database) == [1, 2]
     assert apply_migrations(database) == []
     with connect(database) as connection:
         tables = {
