@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **219** 个 · 常驻 **97** 个 · 有上游可检查更新 **189** 个
+共 **220** 个 · 常驻 **98** 个 · 有上游可检查更新 **190** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -225,10 +225,11 @@
 | `social-science-paper-writing` | 面向社会科学与设计研究的论文工作流：支持选题诊断、研究问题细化、文献综述规划、CNKI/Google Scholar 到 Zotero 的资 | `role/workflow` `focus/literature-review` `focus/long-form-writing` `focus/research-question-refinement` `platform/zotero` `output/article` `output/report` |  | [raw.githubusercontent.com](https://raw.githubusercontent.com/fakerqwq/social-science-paper-writing-skill/main/social-science-paper-writing-skill/SKILL.md) |
 | `thesis-figure-skill` | 面向论文研究框架、方法流程、概念模型、服务蓝图和系统关系的可编辑配图工作流：先明确关系与布局，再用 TikZ 或 draw.io 实现、渲染 | `role/workflow` `focus/design-analysis` `focus/visual-design` `output/diagram` |  | — |
 
-## 研究与办公 (`research-office`，29 个)
+## 研究与办公 (`research-office`，30 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
+| `agent-reach` | 为 Agent 提供网页、社交平台、视频、GitHub、RSS 与语义搜索的统一检索路由；根据 doctor 状态选择当前可用的上游 CLI | `role/researcher` `focus/web-research` `platform/social-media` `platform/web` `output/research` | ● | [github.com/Panniantong/Agent-Reach](https://github.com/Panniantong/Agent-Reach) |
 | `deep-dive` | 不依赖外部 API 的深度研究:把问题拆成 DAG、按依赖顺序并行跑子代理、按缺口迭代一轮。 | `role/researcher` `focus/deep-research` `focus/evidence-synthesis` `output/report` | ● | [github.com/rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit/tree/main/skills/deep-dive) |
 | `lark-approval` | 审批:查处理待办已办实例、搜可发起的审批定义、看详情并发起原生审批实例。 | `role/integration` `focus/approvals` `platform/lark` `output/approval` |  | [open.feishu.cn](https://open.feishu.cn/.well-known/skills/lark-approval/SKILL.md) |
 | `lark-attendance` | 考勤打卡:只能查自己的打卡记录。 | `role/integration` `focus/attendance` `platform/lark` `output/report` |  | [open.feishu.cn](https://open.feishu.cn/.well-known/skills/lark-attendance/SKILL.md) |

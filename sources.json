@@ -43,6 +43,20 @@
         "content_sha256": "a6cf1bd691d2b867f0ccdb681523dce5811462b3fe603f21a682a7eaeaea1da4"
       }
     },
+    "agent-reach": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/Panniantong/Agent-Reach.git",
+        "ref": "",
+        "path": "agent_reach/skill"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "1221ecd0c3e0502ee37406f03543bedf7503f2c7",
+        "content_sha256": "f94a1d9ce6d4f818a79afa9828ca04387f7b01a25e3e5cf94d1dba821f44f6a2"
+      }
+    },
     "api-design-patterns": {
       "provider": "git",
       "locator": {

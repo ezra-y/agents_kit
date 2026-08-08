@@ -41,6 +41,18 @@
         "output/code"
       ]
     },
+    "agent-reach": {
+      "recommendation": 4,
+      "description": "为 Agent 提供网页、社交平台、视频、GitHub、RSS 与语义搜索的统一检索路由；根据 doctor 状态选择当前可用的上游 CLI、MCP 或网页后端。",
+      "trigger": "当用户要求联网搜索、调研或读取 URL，或点名 Twitter/X、Reddit、YouTube、B站、小红书、GitHub、V2EX、LinkedIn、雪球、RSS 等平台时使用；已有更专门的连接器时优先使用专门连接器。",
+      "tags": [
+        "role/researcher",
+        "focus/web-research",
+        "platform/social-media",
+        "platform/web",
+        "output/research"
+      ]
+    },
     "ai-speaking-coach": {
       "recommendation": 5,
       "description": "基于个人课程语料、长期学习记录和遗忘曲线的一对一英语口语教练",
