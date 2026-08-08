@@ -30,7 +30,7 @@ def test_coach_mode_persists_per_task(isolated_root: Path) -> None:
     assert get_coach_mode("thread-one") == stopped
 
 
-def test_hook_reinjects_small_adaptive_reminder(isolated_root: Path) -> None:
+def test_hook_routes_before_reinjecting_live_teaching(isolated_root: Path) -> None:
     activation = process_hook_event(
         {
             "hook_event_name": "UserPromptSubmit",
@@ -41,15 +41,14 @@ def test_hook_reinjects_small_adaptive_reminder(isolated_root: Path) -> None:
     assert activation is not None
     context = activation["hookSpecificOutput"]["additionalContext"]
     assert "AI SPEAKING COACH MODE: ACTIVE" in context
-    assert "usually correct only the single highest-value issue" in context
-    assert "Reply promptly" in context
-    assert "do not wait for an imagined continuation" in context
-    assert "let minor or self-corrected slips pass" in context
-    assert "Text setup only" in context
-    assert "Never ask for a microphone" in context
-    assert "Leave oral ability unverified" in context
+    assert "route table in SKILL.md" in context
+    assert "enter the selected workflow" in context
+    assert "actual audio input and output capabilities" in context
+    assert "persistent learner files" in context
+    assert "usually correct only the single highest-value issue" not in context
     assert len(context) < 1100
 
+    set_coach_phase("teaching", "thread-live")
     later_turn = process_hook_event(
         {
             "hook_event_name": "UserPromptSubmit",

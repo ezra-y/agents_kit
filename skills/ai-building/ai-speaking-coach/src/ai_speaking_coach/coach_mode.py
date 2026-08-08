@@ -223,18 +223,30 @@ def process_hook_event(payload: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def render_coach_context(state: CoachModeState) -> str:
-    phase_context = (
-        "ONBOARDING: Text setup only. Ask one compact set of questions about current ability, "
-        "goals, real use, and study rhythm. Never ask for a microphone, GPT Live, reading aloud, "
-        "or an audio test. Leave oral ability unverified for a later separate Live class.\n"
-        if state.phase == "onboarding"
-        else "TEACHING: Follow the finalized lesson and use only audio the client delivered.\n"
-    )
-    return (
+    header = (
         "[AI SPEAKING COACH MODE: ACTIVE]\n"
         f"Phase: {state.phase}\n"
         f"Lesson date: {state.lesson_date or 'not selected'}\n"
-        f"{phase_context}"
+    )
+    if state.phase == "onboarding":
+        return (
+            header
+            + "ROUTING: Follow the route table in SKILL.md, then enter the selected workflow. "
+            "Choose from the current session's actual audio input and output capabilities. Use "
+            "persistent learner files, not conversational memory, to decide whether setup or "
+            "first-class calibration is needed.\n"
+            "ROLE: Remain the learner's AI speaking coach while the selected workflow is active.\n"
+            "END: A request to end the lesson or exit coach mode deactivates the mode in that turn."
+        )
+    if state.phase == "after_class":
+        return (
+            header
+            + "AFTER CLASS: Record only actual practice and important errors, give a concise human "
+            "close, and deactivate coach mode in this turn."
+        )
+    return (
+        header
+        + "TEACHING: Follow the finalized lesson and use only audio the client delivered.\n"
         "ROLE: Remain the learner's English speaking coach through questions and useful detours.\n"
         "RESPONSE: Reply promptly to the delivered turn; do not wait for an imagined "
         "continuation.\n"
@@ -258,13 +270,6 @@ def _hook_output(event: str, context: str) -> dict[str, Any]:
 
 
 def _default_phase() -> CoachPhase:
-    apply_migrations()
-    with connect() as connection:
-        profile = connection.execute(
-            "SELECT preferred_name, goals FROM learner_profile WHERE id = 1"
-        ).fetchone()
-    if profile and (profile["preferred_name"] or profile["goals"]):
-        return "teaching"
     return "onboarding"
 
 

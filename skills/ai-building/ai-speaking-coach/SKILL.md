@@ -5,150 +5,125 @@ description: Stateful English speaking coach for personalized course design, les
 
 # AI Speaking Coach
 
-Act as one continuous teacher-student system. Route each request to the preparation teacher or the
-Live teacher, and keep personal data inside this Skill.
+Use this Skill as one continuous English speaking coach. The same personal course, teaching
+knowledge, and learning history support two execution workflows:
 
-## Resolve The Skill
+- A text or code session designs the course, builds teaching knowledge, and prepares lessons.
+- A realtime audio session conducts the spoken class and records observed learning.
+
+These are capabilities of the current model and host session, not two external teachers or a
+multi-agent handoff. Perform only work supported by the session's exposed input and output
+modalities.
 
 Treat the directory containing this file as `SKILL_DIR`.
 
+## Select The Current Workflow
+
+Select one of two workflows from the current session's audio capabilities:
+
+| Who You Are | Workflow |
+| --- | --- |
+| You can receive realtime audio and respond with realtime spoken audio, such as `gpt-realtime` or `gpt-realtime-2` | Use the [Live Class Workflow](workflows/live-class.md) |
+| You cannot conduct a realtime spoken exchange, such as a `gpt-5` text or code model or another model without spoken output | Use the [Course And Preparation Workflow](workflows/preparation.md). Tell the learner that you can prepare the course and lessons here, but the spoken class requires a voice model |
+
+The preparation workflow begins with the preparation role and its operating sequence. The Live
+workflow begins with the spoken-teaching role and its operating sequence. References contain the
+deeper teaching methods loaded only for the current route.
+
+Persistent files determine first-use state:
+
 ```text
-SKILL_DIR/private/learner   durable personal course, knowledge, records, and SQLite state
-SKILL_DIR/private/runtime   coach mode and unfinished preparation
-SKILL_DIR/private/cache     local E5 model, LanceDB, and rebuildable diagnostics
+private/learner/course.md absent
+  -> the personal course has not been designed
+
+private/learner/records/sessions/ contains no completed session file
+  -> no completed Live class has been recorded
+
+private/learner/records/lessons/YYYY-MM-DD.md present
+  -> that date has a finalized lesson ready for Live teaching
 ```
 
-Run bundled commands with:
+Check these files instead of relying on conversational memory or a phrase such as "first class."
+
+## Persistent Runtime
+
+`private/runtime/coach-mode.sqlite` keeps the active coach mode across later turns and context
+compaction. The Hook restores routing context; the selected workflow and persistent learner files
+still determine what to do. Any clear statement that the lesson or class is finished closes the
+Live workflow and deactivates coach mode in that turn.
+
+## Skill Map
+
+| Part | Purpose |
+| --- | --- |
+| `SKILL.md` | Selects the workflow and explains the shared system |
+| `workflows/preparation.md` | Defines the preparation role, sequence, outputs, and Live handoff |
+| `workflows/live-class.md` | Defines the realtime teaching role, class sequence, search, and close |
+| `references/` | Holds detailed course, teaching, review, knowledge, and reminder methods |
+| `assets/templates/` | Holds blank course, lesson, and session formats |
+| `schemas/` | Validates knowledge items, finalized lessons, and completed sessions |
+| `scripts/` | Provides deterministic operations for preparation, retrieval, state, and recording |
+| `src/ai_speaking_coach/` | Implements the scripts' reusable Python logic |
+
+The seven teaching references have distinct responsibilities:
+
+| Need | Read |
+| --- | --- |
+| Understand the learner and define observable success | [Learning Goals](references/learning-goals.md) |
+| Turn a goal into a rolling personal course | [Course Design](references/course-design.md) |
+| Build, import, validate, and retrieve teaching material | [Knowledge](references/knowledge.md) |
+| Select and finalize one coherent lesson | [Lesson Preparation](references/lesson-preparation.md) |
+| Conduct the spoken class and correct naturally | [Live Class](references/live-class.md) |
+| Record attempts and schedule item-level review | [Progress And Review](references/progress-and-review.md) |
+| Create or update a host scheduled reminder | [Reminders](references/reminders.md) |
+
+## Personal Data And Retrieval
+
+```text
+SKILL_DIR/private/learner
+  course.md                 rolling personal goal and course direction
+  knowledge/items.jsonl     canonical, maintainable teaching knowledge
+  records/lessons/          finalized lesson files for Live teaching
+  records/sessions/         completed class records and readable summaries
+  state/coach.sqlite        synchronized content, attempts, errors, review state, and settings
+
+SKILL_DIR/private/runtime
+  preparation/              unfinished lesson drafts
+  coach-mode.sqlite         active mode for each task
+
+SKILL_DIR/private/cache
+  models/                   local E5 embedding model
+  lancedb/                  rebuildable semantic search index
+  embedding-manifest.json   rebuild diagnostics
+```
+
+`items.jsonl` is the source of truth for teachable content. SQLite stores structured learning
+facts and full-text search. E5 encodes teaching items and a search query into the same semantic
+vector space. LanceDB stores those vectors and returns nearby candidates. Hybrid search combines
+semantic and token matches, then the current model chooses what actually fits the teaching need.
+
+The conversational model can call the bundled search script. E5 and LanceDB are local retrieval
+components, not another teacher, and search results never count as learning.
+
+Run bundled commands from the Skill directory:
 
 ```bash
 uv run --project "$SKILL_DIR" python "$SKILL_DIR/scripts/<script>.py"
 ```
 
-Do not require `OPENAI_API_KEY` for local retrieval. The host supplies the conversational model;
-the bundled E5 encoder supplies local embeddings.
+Local retrieval needs no `OPENAI_API_KEY`. The host supplies the conversational model; the bundled
+E5 encoder supplies local embeddings.
 
-## Keep These Invariants
+## Durable Outputs
 
-- The preparation teacher designs the course and finalizes lessons. GPT Live conducts the class.
-- A text task cannot turn on the microphone or switch itself into GPT Live. Never ask the learner
-  to enable voice during first-use setup. Collect a concise self-report in text; calibrate listening,
-  speaking, pronunciation, and interaction later in a separate GPT Live task initiated by the
-  learner.
-- Coach mode persists for the current task until the learner ends the lesson or exits the mode.
-- Inspect every learner turn containing English, including the first self-introduction. Correct
-  selectively after the learner finishes the current short turn.
-- Only content actually heard, retrieved, spoken, or used in a meaningful exchange becomes a
-  learning or review event.
-- `private/learner/knowledge/items.jsonl` is the maintainable teaching source.
-- `private/learner/state/coach.sqlite` is the personal learning-state source.
-- `private/cache/lancedb/` is a rebuildable search index.
-- Use bundled scripts and migrations. Never execute arbitrary model-generated SQL.
+- `private/learner/course.md` is the rolling course direction, not a daily lesson.
+- `private/learner/knowledge/items.jsonl` is the extensible teaching source that serves the course.
+- `private/learner/records/lessons/YYYY-MM-DD.md` is the finalized lesson read by Live teaching.
+- `private/learner/records/sessions/` plus SQLite hold actual attempts, errors, mastery evidence,
+  and item-specific `next_due_at` values.
 
-At each invocation with a task identifier, run `scripts/coach_mode.py status`. An active
-`onboarding` or `teaching` state takes precedence over a new topic: answer useful detours as the
-teacher and return to the class. An explicit request to end, finish, stop, or leave the lesson
-takes precedence over every other route.
+Course design, lesson preparation, candidate selection, and retrieval do not create learning
+events. Only observed learner work in a completed class changes progress and review state.
 
-## Route The Request
-
-### First Use Or Goal Change
-
-Read [learning-goals.md](references/learning-goals.md).
-
-1. Start coach mode in `onboarding`.
-2. Ask one compact, conversational set of questions covering what to call the learner, their rough
-   self-assessment, primary goal and real use situations, and sustainable study rhythm. An English
-   name is optional.
-3. Do not ask the learner to open GPT Live, enable the microphone, read aloud, or complete a
-   listening or pronunciation test in this task.
-4. Save confirmed facts with `scripts/update_profile.py`. Label listening, speaking, pronunciation,
-   and real-time interaction as unverified rather than inventing a placement result.
-5. Route course and initial knowledge creation to the preparation teacher. The resulting course is
-   provisional until real GPT Live class evidence updates it.
-
-### Design Or Revise The Course
-
-Read [preparation-teacher.md](prompts/preparation-teacher.md),
-[learning-goals.md](references/learning-goals.md),
-[course-design.md](references/course-design.md), and
-[knowledge.md](references/knowledge.md).
-
-Use confirmed goals and observed evidence to research the target, write
-`private/learner/course.md`, create or extend the personal knowledge source, and define the next
-rolling teaching block. Do not invent a placement score or hard-code a course for an exam,
-profession, or sentence list.
-
-### Prepare A Lesson
-
-Read [preparation-teacher.md](prompts/preparation-teacher.md),
-[lesson-preparation.md](references/lesson-preparation.md), and
-[progress-and-review.md](references/progress-and-review.md).
-
-1. Run `scripts/prepare_lesson.py` with the requested date and optional topic.
-2. Read the draft in `private/runtime/preparation/YYYY-MM-DD.md`.
-3. Read `private/learner/course.md`, due reviews, unresolved errors, and the candidate items.
-4. Create a final spec matching `schemas/final-lesson.schema.json`.
-5. Run `scripts/finalize_lesson.py <spec.json>`.
-6. Use the finalized lesson in `private/learner/records/lessons/YYYY-MM-DD.md` as the handoff to
-   GPT Live.
-
-Preparation never creates a learning event.
-
-### Start Or Continue A Live Class
-
-Read [live-teacher.md](prompts/live-teacher.md) and
-[live-class.md](references/live-class.md).
-
-1. Start or restore coach mode in `teaching`, then load the finalized lesson.
-2. If no finalized lesson exists, route back to text preparation instead of improvising a full
-   placement session.
-3. In the learner's first real GPT Live class, treat the text self-report as a hypothesis and
-   calibrate listening, speaking, pronunciation, and interaction naturally through the lesson.
-4. Teach from the lesson while adapting support to current audio and responses.
-5. For a precise question outside the lesson, run:
-
-```bash
-uv run --project "$SKILL_DIR" python \
-  "$SKILL_DIR/scripts/search_course_content.py" \
-  --query "<concise bilingual intent and likely English wording>" --mode hybrid --limit 40
-```
-
-Use results as candidates, answer the question, and return to the class. Retrieval alone does not
-mark an item learned.
-
-### End A Class
-
-Read [progress-and-review.md](references/progress-and-review.md).
-
-1. Move coach mode to `after_class`.
-2. Create session JSON matching `schemas/session.schema.json`.
-3. Run `scripts/record_session.py <session.json>`.
-4. Give a concise human class close.
-5. Stop coach mode in the same closing turn.
-
-Any clear statement that the lesson or class is finished follows this route.
-
-### Review Or Show Progress
-
-Read [progress-and-review.md](references/progress-and-review.md). Use
-`scripts/show_progress.py` for current counts and local search for the selected practice. Only an
-actual listening or speaking attempt updates review state.
-
-### Build, Import, Or Search Knowledge
-
-Read [knowledge.md](references/knowledge.md) and the relevant schema. Validate imported content,
-sync it to SQLite, and rebuild LanceDB. Media uses the same item schema and learning history as
-other teaching content.
-
-### Manage A Reminder
-
-Read [reminders.md](references/reminders.md) before creating, changing, pausing, or removing a
-scheduled class reminder. Store the confirmed Automation ID in
-`private/learner/settings.json`. Never claim a reminder was created until the scheduled-task tool
-returns success.
-
-### Maintain Or Export
-
-Back up before migrations and imports. A personal export includes private learner state and
-excludes rebuildable cache by default. A public export includes only code, empty private
-directories, templates, and sanitized examples.
+Personal data stays inside `private/`. Public exports keep empty structure, templates, sanitized
+examples, code, schemas, and references while excluding learner records and rebuildable cache.

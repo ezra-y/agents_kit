@@ -1,0 +1,1 @@
+{"id":"example-expression-0001","type":"expression","text":"Could you say that again?","meaning":"请你再说一遍，可以吗？","topics":["conversation_repair"],"examples":[],"usage_note":"A polite way to request repetition.","source_ref":{"file":"sanitized-example","order":1},"approved":true,"context":""}

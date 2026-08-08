@@ -8,8 +8,8 @@ __pycache__/
 *.egg-info/
 
 # Old local prototype data is never part of the reusable Skill.
-knowledge/
-runtime/
+/knowledge/
+/runtime/
 
 # Durable learner data. Keep only examples and directory markers public.
 private/learner/course.md
