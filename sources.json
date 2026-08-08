@@ -163,8 +163,8 @@
       "content_mode": "skill_file",
       "policy": "review",
       "resolved": {
-        "revision": "\"63e1819e08c3a50a41f14a42ec0c7698104db53e5ef317b43026e9fbece56952\"",
-        "content_sha256": "f903840f07c447abe51fc7f52c6fe2354a9b15af25bfd254728a199cd26985be"
+        "revision": "\"e75b4c9081bf9a3a6d08eb32ae38d977e870d11f60f6cb9ffa352e41f15b7aeb\"",
+        "content_sha256": "9453c545da7b54e361baddd9b22a6d8b0b33c6fbd41f129c1bafa812cb844621"
       },
       "source_name": "deep-research"
     },
@@ -1485,8 +1485,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": "52f53312ff2f272e16bbc1785e1c04f9d9c19b31",
-        "content_sha256": "93fd52b7a196750b2075e97b5af4fb8874d196033023528df3a1bb9749255e24"
+        "revision": "1004324ad35a3ba656e6df0faabd54749e398455",
+        "content_sha256": "a1483a355b1a1cc14ff6c70b7376e3f7746e9804f934e8048db689a9c91e93c1"
       }
     },
     "mapkit": {
@@ -1526,8 +1526,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": "9410400815df189d3e76d4be19c74afa68d03412",
-        "content_sha256": "42558565eb8400626a6af1f23939283059a75a2cad67e7282e2d6372d486de04"
+        "revision": "adb7b8a5a7d72ed6fe9f71e085785e9972dd8db2",
+        "content_sha256": "2b0ca9964b889a037abe71c5f501234e475f60045a9f29fc51f5bc276dec8660"
       }
     },
     "nextjs-mastery": {
@@ -1777,8 +1777,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": "a5171e038d678eb5c6d3589b9a988da4492eb5ad",
-        "content_sha256": "b2d4c7e1efc91093ca5fc816063e29d8fa87daa2796e2076422742130e35201f"
+        "revision": "7427eb0dd28bd30d6c36b6793936acb4b0226cc4",
+        "content_sha256": "517675a5bf7aad23a22b566500fcda2b57977b99496d6f935bd52668f962991e"
       }
     },
     "review-animations": {

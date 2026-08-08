@@ -229,12 +229,13 @@ User: "Research [topic]"
      |   - Writing quality (clarity, conciseness, flow)
      |   - Verdict: ACCEPT / MINOR REVISION / MAJOR REVISION / REJECT
      |
-     |-> [ethics_review_agent] -> Ethics Clearance
+     |-> [ethics_review_agent] -> Research-Integrity Review + Human-Subjects Administrative Status
      |   - AI disclosure compliance
      |   - Attribution integrity
      |   - Dual-use screening
      |   - Fair representation check
-     |   - Verdict: CLEARED / CONDITIONAL / BLOCKED
+     |   - Integrity verdict only: CLEARED / CONDITIONAL / BLOCKED
+     |   - Human subjects: readiness and authorization reported separately; institutional determination required
      |
      +-> [devils_advocate_agent] -- CHECKPOINT 3
          - Final vulnerability scan
