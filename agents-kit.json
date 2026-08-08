@@ -81,7 +81,7 @@
     "source_policy": "review",
     "network_timeout_seconds": 20
   },
-  "taxonomy_version": 4,
+  "taxonomy_version": 5,
   "tag_namespaces": {
     "role": {
       "label": "角色",
@@ -372,6 +372,14 @@
         "test-code",
         "text",
         "transcript"
+      ]
+    },
+    "collection": {
+      "label": "来源合集",
+      "min": 0,
+      "max": 1,
+      "values": [
+        "emilkowalski-skills"
       ]
     }
   },

@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "taxonomy_version": 4,
+  "taxonomy_version": 5,
   "skills": {
     "academic-pdf-translation": {
       "recommendation": 5,
@@ -75,7 +75,8 @@
         "focus/interaction-design",
         "focus/motion-design",
         "platform/web",
-        "output/code"
+        "output/code",
+        "collection/emilkowalski-skills"
       ]
     },
     "animation-vocabulary": {
@@ -86,7 +87,8 @@
         "role/reference",
         "focus/motion-design",
         "platform/web",
-        "output/reference"
+        "output/reference",
+        "collection/emilkowalski-skills"
       ]
     },
     "api-design-patterns": {
@@ -133,7 +135,8 @@
         "focus/interaction-design",
         "focus/motion-design",
         "platform/web",
-        "output/design-spec"
+        "output/design-spec",
+        "collection/emilkowalski-skills"
       ]
     },
     "apple-docs-index": {
@@ -618,7 +621,8 @@
         "focus/motion-design",
         "focus/ui-design",
         "platform/web",
-        "output/design-spec"
+        "output/design-spec",
+        "collection/emilkowalski-skills"
       ]
     },
     "emil-ui-prototype": {
@@ -630,7 +634,8 @@
         "focus/prototyping",
         "focus/ui-design",
         "platform/web",
-        "output/prototype"
+        "output/prototype",
+        "collection/emilkowalski-skills"
       ]
     },
     "eventkit": {
@@ -666,7 +671,8 @@
         "focus/motion-design",
         "focus/ux-audit",
         "platform/web",
-        "output/report"
+        "output/report",
+        "collection/emilkowalski-skills"
       ]
     },
     "frontend-design": {
@@ -1031,7 +1037,8 @@
         "focus/motion-design",
         "focus/performance",
         "platform/web",
-        "output/report"
+        "output/report",
+        "collection/emilkowalski-skills"
       ]
     },
     "improve-codebase-architecture": {
@@ -1577,7 +1584,8 @@
         "focus/component-architecture",
         "focus/ui-components",
         "platform/web",
-        "output/decision"
+        "output/decision",
+        "collection/emilkowalski-skills"
       ]
     },
     "playground": {
@@ -1829,7 +1837,8 @@
         "focus/motion-design",
         "focus/performance",
         "platform/web",
-        "output/report"
+        "output/report",
+        "collection/emilkowalski-skills"
       ]
     },
     "rust-systems": {
