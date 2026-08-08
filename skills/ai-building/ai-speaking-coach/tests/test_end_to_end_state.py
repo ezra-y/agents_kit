@@ -39,7 +39,10 @@ def test_prepare_teach_record_and_retrieve_cycle(isolated_root: Path) -> None:
     write_jsonl(items)
     import_content_items(items)
     provider = HashEmbeddingProvider()
-    LanceDBRetrievalIndex(provider, isolated_root / "runtime" / "lancedb").rebuild(items)
+    LanceDBRetrievalIndex(
+        provider,
+        isolated_root / "private" / "cache" / "lancedb",
+    ).rebuild(items)
 
     preparation = prepare_lesson(
         provider=provider,

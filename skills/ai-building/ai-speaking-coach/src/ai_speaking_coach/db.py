@@ -5,9 +5,12 @@ import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Literal
 
 from .paths import database_path, skill_root
 from .time_utils import isoformat, now
+
+MigrationGroup = Literal["learner", "runtime"]
 
 
 def connect(path: Path | None = None) -> sqlite3.Connection:
@@ -21,7 +24,10 @@ def connect(path: Path | None = None) -> sqlite3.Connection:
     return connection
 
 
-def apply_migrations(path: Path | None = None) -> list[int]:
+def apply_migrations(
+    path: Path | None = None,
+    group: MigrationGroup = "learner",
+) -> list[int]:
     applied: list[int] = []
     with connect(path) as connection:
         connection.execute(
@@ -37,7 +43,9 @@ def apply_migrations(path: Path | None = None) -> list[int]:
             row["version"]
             for row in connection.execute("SELECT version FROM schema_migrations").fetchall()
         }
-        migration_dir = skill_root() / "migrations"
+        migration_dir = skill_root() / "migrations" / group
+        if not migration_dir.is_dir():
+            raise FileNotFoundError(f"Missing migration group: {migration_dir}")
         for migration in sorted(migration_dir.glob("*.sql")):
             version_text = migration.name.split("_", 1)[0]
             version = int(version_text)

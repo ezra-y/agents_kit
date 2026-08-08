@@ -1,10 +1,4 @@
-CREATE TABLE IF NOT EXISTS schema_migrations (
-    version INTEGER PRIMARY KEY,
-    filename TEXT NOT NULL UNIQUE,
-    applied_at TEXT NOT NULL
-);
-
-CREATE TABLE learner_profile (
+CREATE TABLE IF NOT EXISTS learner_profile (
     id INTEGER PRIMARY KEY CHECK (id = 1),
     preferred_name TEXT,
     english_name TEXT,
@@ -17,7 +11,7 @@ CREATE TABLE learner_profile (
     updated_at TEXT NOT NULL
 );
 
-CREATE TABLE content_items (
+CREATE TABLE IF NOT EXISTS content_items (
     id TEXT PRIMARY KEY,
     type TEXT NOT NULL CHECK (type IN ('expression', 'pattern', 'screen_line')),
     group_id TEXT,
@@ -37,7 +31,7 @@ CREATE TABLE content_items (
     UNIQUE (source_file, source_order)
 );
 
-CREATE TABLE sessions (
+CREATE TABLE IF NOT EXISTS sessions (
     id TEXT PRIMARY KEY,
     started_at TEXT NOT NULL,
     ended_at TEXT,
@@ -47,7 +41,7 @@ CREATE TABLE sessions (
     notes TEXT NOT NULL DEFAULT ''
 );
 
-CREATE TABLE session_items (
+CREATE TABLE IF NOT EXISTS session_items (
     session_id TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
     item_id TEXT NOT NULL REFERENCES content_items(id) ON DELETE RESTRICT,
     studied_at TEXT NOT NULL,
@@ -58,7 +52,7 @@ CREATE TABLE session_items (
     PRIMARY KEY (session_id, item_id)
 );
 
-CREATE TABLE review_state (
+CREATE TABLE IF NOT EXISTS review_state (
     item_id TEXT PRIMARY KEY REFERENCES content_items(id) ON DELETE CASCADE,
     status TEXT NOT NULL CHECK (status IN ('learning', 'usable', 'fluent')),
     first_learned_at TEXT NOT NULL,
@@ -71,7 +65,7 @@ CREATE TABLE review_state (
     scheduler_version TEXT NOT NULL
 );
 
-CREATE TABLE errors (
+CREATE TABLE IF NOT EXISTS errors (
     id TEXT PRIMARY KEY,
     session_id TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
     item_id TEXT REFERENCES content_items(id) ON DELETE SET NULL,
@@ -94,16 +88,15 @@ CREATE TABLE errors (
     next_due_at TEXT NOT NULL
 );
 
-CREATE INDEX idx_content_type_approved
+CREATE INDEX IF NOT EXISTS idx_content_type_approved
     ON content_items(type, approved);
-CREATE INDEX idx_session_items_item_time
+CREATE INDEX IF NOT EXISTS idx_session_items_item_time
     ON session_items(item_id, studied_at);
-CREATE INDEX idx_review_state_due
+CREATE INDEX IF NOT EXISTS idx_review_state_due
     ON review_state(next_due_at);
-CREATE INDEX idx_review_state_status_due
+CREATE INDEX IF NOT EXISTS idx_review_state_status_due
     ON review_state(status, next_due_at);
-CREATE INDEX idx_errors_due
+CREATE INDEX IF NOT EXISTS idx_errors_due
     ON errors(resolved_at, next_due_at);
-CREATE INDEX idx_errors_item
+CREATE INDEX IF NOT EXISTS idx_errors_item
     ON errors(item_id, occurred_at);
-

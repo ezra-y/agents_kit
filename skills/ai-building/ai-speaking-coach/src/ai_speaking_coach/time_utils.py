@@ -7,8 +7,10 @@ from .paths import load_settings
 
 
 def now() -> datetime:
-    timezone = ZoneInfo(load_settings()["timezone"])
-    return datetime.now(timezone)
+    timezone_name = load_settings().get("timezone", "local")
+    if timezone_name == "local":
+        return datetime.now().astimezone()
+    return datetime.now(ZoneInfo(timezone_name))
 
 
 def parse_timestamp(value: str) -> datetime:
@@ -22,4 +24,3 @@ def isoformat(value: datetime) -> str:
     if value.tzinfo is None:
         raise ValueError("Datetime must include a timezone")
     return value.isoformat(timespec="seconds")
-

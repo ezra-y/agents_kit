@@ -1,5 +1,5 @@
 {
-  "timezone": "Asia/Shanghai",
+  "timezone": "local",
   "session_minutes": 30,
   "candidate_items": {
     "minimum": 30,

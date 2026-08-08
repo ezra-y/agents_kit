@@ -41,7 +41,14 @@ def test_finalize_lesson_validates_ids_and_writes_final_file(isolated_root: Path
 
     destination = finalize_lesson(spec)
 
-    assert destination == isolated_root / "runtime" / "lessons" / "2026-08-06.md"
+    assert destination == (
+        isolated_root
+        / "private"
+        / "learner"
+        / "records"
+        / "lessons"
+        / "2026-08-06.md"
+    )
     text = destination.read_text(encoding="utf-8")
     assert "Status: finalized" in text
     assert "Target task: Agree on one activity and settle the time." in text

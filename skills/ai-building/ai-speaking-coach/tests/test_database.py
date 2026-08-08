@@ -14,8 +14,8 @@ from ai_speaking_coach.db import (
 
 
 def test_initial_migration(isolated_root: Path) -> None:
-    database = isolated_root / "runtime" / "coach.sqlite"
-    assert apply_migrations(database) == [1, 2]
+    database = isolated_root / "private" / "learner" / "state" / "coach.sqlite"
+    assert apply_migrations(database) == [1]
     assert apply_migrations(database) == []
     with connect(database) as connection:
         tables = {
@@ -32,10 +32,21 @@ def test_initial_migration(isolated_root: Path) -> None:
         "review_state",
         "errors",
     }.issubset(tables)
+    assert "coach_mode_state" not in tables
+
+    mode_database = isolated_root / "private" / "runtime" / "coach-mode.sqlite"
+    assert apply_migrations(mode_database, group="runtime") == [1]
+    with connect(mode_database) as connection:
+        assert (
+            connection.execute(
+                "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'coach_mode_state'"
+            ).fetchone()
+            is not None
+        )
 
 
 def test_foreign_key_rejects_unknown_item(isolated_root: Path) -> None:
-    database = isolated_root / "runtime" / "coach.sqlite"
+    database = isolated_root / "private" / "learner" / "state" / "coach.sqlite"
     apply_migrations(database)
     with connect(database) as connection:
         connection.execute(
@@ -55,7 +66,7 @@ def test_foreign_key_rejects_unknown_item(isolated_root: Path) -> None:
 
 
 def test_transaction_rolls_back_completely(isolated_root: Path) -> None:
-    database = isolated_root / "runtime" / "coach.sqlite"
+    database = isolated_root / "private" / "learner" / "state" / "coach.sqlite"
     apply_migrations(database)
     with pytest.raises(RuntimeError), transaction(database) as connection:
         connection.execute(
@@ -70,8 +81,8 @@ def test_transaction_rolls_back_completely(isolated_root: Path) -> None:
 
 
 def test_backup_can_be_restored(isolated_root: Path) -> None:
-    database = isolated_root / "runtime" / "coach.sqlite"
-    backup = isolated_root / "runtime" / "backups" / "backup.sqlite"
+    database = isolated_root / "private" / "learner" / "state" / "coach.sqlite"
+    backup = isolated_root / "private" / "learner" / "backups" / "backup.sqlite"
     apply_migrations(database)
     with connect(database) as connection:
         connection.execute(

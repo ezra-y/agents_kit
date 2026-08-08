@@ -1,87 +1,55 @@
 # Lesson Preparation
 
-The strong Codex model prepares and finalizes the lesson. GPT Live teaches it.
+This document governs one finalized lesson. The preparation teacher uses it after the personal
+course already exists.
 
 ## Inputs
 
-Use:
+Read:
 
-- Due review items from SQLite.
-- Unresolved and repeated errors.
-- Current status for each content item.
-- Long-uncovered and unseen course content.
-- Learner profile, goals, interests, and recent topics.
-- The primary outcome, active target tasks, current bottleneck, and latest adaptation evidence in
-  `runtime/learning-plan.md`, when present.
-- A clear communication goal for today.
-- Hybrid retrieval candidates from local E5 and LanceDB.
+- `private/learner/course.md`.
+- Due review items and unresolved high-value errors from SQLite.
+- Recent session evidence and learner preferences.
+- Approved teaching content returned by local retrieval.
+- The requested date and any learner-requested topic.
 
-## Selection Order
+## Select One Coherent Lesson
 
-1. Direction: choose one active target task and one current bottleneck from the plan.
-2. Required: include due retrieval and high-value unresolved errors, favoring items that fit the
-   target task while preserving genuinely urgent reviews.
-3. Input: choose a short listening demand the learner can mostly follow but cannot yet handle
+1. Choose one active target task and one current bottleneck from the course.
+2. Include genuinely due retrieval and important error repair, favoring items that fit the task.
+3. Define a short listening demand the learner can mostly follow but cannot yet handle
    independently.
-4. Output: define an information exchange, decision, explanation, or repair task rather than a
-   recital.
-5. Focus: add only the language, naturalness, or pronunciation work needed for the bottleneck.
-6. Transfer: change one meaningful variable and require familiar language to be retrieved again.
-7. Judgment: remove candidates that would make the scene forced or overloaded.
+4. Define a meaningful information exchange, decision, explanation, or repair task.
+5. Add only the language, naturalness, or pronunciation work needed for the bottleneck.
+6. Change one meaningful variable so familiar language must be retrieved again.
+7. Remove candidates that make the scene forced or overloaded.
 
-SQLite determines what cannot be forgotten. LanceDB supplies relevant candidates. The strong model
-decides the final teaching combination.
+SQLite determines what should not be forgotten. Retrieval supplies relevant candidates. The
+preparation teacher decides the final combination.
 
-Prepare 30 to 50 candidates for a 30-minute class, then divide them into:
+For a normal 30-minute lesson, prepare 30 to 50 candidates and organize them as:
 
-- Quick checks for short expressions the learner may already know.
+- Quick checks for short or possibly familiar content.
 - Focus practice for new, weak, awkward, or repeatedly missed content.
-- Optional extensions if the learner moves quickly.
+- Optional extensions when the learner moves quickly.
 
-Do not expect 40 unfamiliar items to receive deep practice in one class.
+This is a candidate pool, not a requirement to teach 40 unfamiliar items deeply.
 
-## Final Lesson
+## Finalize
 
-Run `scripts/prepare_lesson.py` to create `runtime/preparation/YYYY-MM-DD.md`, then write the final
-lesson spec as JSON and pass it to `scripts/finalize_lesson.py`.
+Run `scripts/prepare_lesson.py` to write
+`private/runtime/preparation/YYYY-MM-DD.md`. Then create a final spec that passes
+`schemas/final-lesson.schema.json` and run `scripts/finalize_lesson.py`.
 
-The JSON contract is:
+The finalized lesson should contain:
 
-```json
-{
-  "date": "2026-08-06",
-  "topic": "making weekend plans",
-  "communication_goal": "Invite a new friend to do something together.",
-  "scene": "Two classmates finish class and discuss their weekend.",
-  "target_task": "Agree on one weekend activity and settle the time and place.",
-  "current_bottleneck": "Asking natural follow-up questions without translating first.",
-  "success_evidence": [
-    "The learner reaches an agreement with no model-provided sentence.",
-    "The learner asks at least one relevant follow-up in time."
-  ],
-  "input_task": "Understand the friend's availability and one preference.",
-  "transfer_task": "Repeat with a different activity and one scheduling conflict.",
-  "required_reviews": [],
-  "error_repairs": [],
-  "focus_targets": ["pattern220-p0179"],
-  "quick_checks": ["pattern220-p0041"],
-  "optional_extensions": ["pattern220-p0180"],
-  "live_notes": []
-}
-```
-
-The final lesson must include:
-
-- Topic and real communication goal.
-- A concise scene and roles.
-- The target task, current bottleneck, and observable success evidence.
-- A listening demand and a meaningful transfer variation.
-- Stable IDs for required reviews.
-- Stable IDs for target expressions and patterns.
+- Topic, scene, roles, and a real communication goal.
+- Target task, current bottleneck, and observable success evidence.
+- Listening demand and meaningful transfer variation.
+- Stable IDs for required review, focus targets, quick checks, and extensions.
 - Known errors to watch for.
-- Quick checks and optional extensions.
-- Enough usage notes and examples for GPT Live to teach accurately.
-- Permission to reduce or extend content based on live performance.
+- Enough usage examples and notes for accurate Live teaching.
+- Permission to reduce support or extend the task from live performance.
 
-Do not write a minute-by-minute schedule or a complete dialogue script. Do not update learning state
-during preparation.
+Write the result to `private/learner/records/lessons/YYYY-MM-DD.md`. Do not create a complete
+dialogue script, minute-by-minute schedule, or learning event during preparation.

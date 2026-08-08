@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from .paths import runtime_dir
+from .paths import settings_path
 
 
 @dataclass(frozen=True)
@@ -94,7 +94,7 @@ def _timezone(value: str) -> ZoneInfo:
 
 
 def _settings_path() -> Path:
-    return runtime_dir() / "settings.json"
+    return settings_path()
 
 
 def _read_settings() -> dict[str, object]:
@@ -103,7 +103,7 @@ def _read_settings() -> dict[str, object]:
         return {"learner_id": 1}
     loaded = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(loaded, dict):
-        raise ValueError("runtime/settings.json must contain a JSON object")
+        raise ValueError("private/learner/settings.json must contain a JSON object")
     return loaded
 
 

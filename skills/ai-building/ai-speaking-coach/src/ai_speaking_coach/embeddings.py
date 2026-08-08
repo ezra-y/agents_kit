@@ -7,7 +7,7 @@ import re
 from collections.abc import Sequence
 from typing import Protocol
 
-from .paths import load_settings, runtime_dir
+from .paths import load_settings, model_cache_dir
 
 
 class EmbeddingProvider(Protocol):
@@ -46,7 +46,7 @@ class LocalE5EmbeddingProvider:
 
         from sentence_transformers import SentenceTransformer
 
-        cache_folder = runtime_dir() / "models"
+        cache_folder = model_cache_dir()
         cache_folder.mkdir(parents=True, exist_ok=True)
         self._model = SentenceTransformer(
             self._model_id,

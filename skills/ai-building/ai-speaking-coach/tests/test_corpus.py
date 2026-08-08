@@ -2,36 +2,45 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from ai_speaking_coach.corpus import (
-    parse_common_500,
-    parse_pattern_220,
+    read_jsonl,
     validate_items,
+    write_jsonl,
 )
+from ai_speaking_coach.models import ContentItem, SourceRef
 
 
-def source_path(filename: str) -> Path:
-    project_root = Path(__file__).resolve().parents[2]
-    source = project_root / "邵艾伦三合一" / "课件" / filename
-    if not source.exists():
-        pytest.skip("original course document is not part of the portable Skill bundle")
-    return source
+def item(item_id: str, order: int, text: str = "Could you say that again?") -> ContentItem:
+    return ContentItem(
+        id=item_id,
+        type="expression",
+        text=text,
+        source_ref=SourceRef(file="test-source", order=order),
+    )
 
 
-def test_parse_common_500() -> None:
-    items = parse_common_500(source_path("(4)-常用英语500句.doc"))
-    assert len(items) == 502
-    assert items[0].id == "common500-s0001"
-    assert items[0].text == "What's up?"
-    assert items[-1].id == "common500-s0502"
-    assert not validate_items(items)
+def test_jsonl_round_trip(tmp_path: Path) -> None:
+    destination = tmp_path / "items.jsonl"
+    expected = [item("repair-request", 1)]
+
+    write_jsonl(expected, destination)
+
+    assert read_jsonl(destination) == expected
+    assert validate_items(expected) == []
 
 
-def test_parse_pattern_220() -> None:
-    items = parse_pattern_220(source_path("(5)-万能造句公式(220个).doc"))
-    assert len(items) == 220
-    assert items[0].id == "pattern220-p0001"
-    assert items[0].text
-    assert items[-1].id == "pattern220-p0220"
-    assert not validate_items(items)
+def test_validation_rejects_duplicate_ids_and_sources() -> None:
+    duplicate_id = item("same-id", 1)
+    duplicate_source = item("same-id", 2)
+    same_position = item("different-id", 1)
+
+    errors = validate_items([duplicate_id, duplicate_source, same_position])
+
+    assert "Duplicate content IDs found" in errors
+    assert "Duplicate source positions found" in errors
+
+
+def test_validation_rejects_chinese_in_teaching_text() -> None:
+    errors = validate_items([item("mixed-text", 1, "Please 再说一次.")])
+
+    assert errors == ["mixed-text: Chinese characters found in teaching text"]

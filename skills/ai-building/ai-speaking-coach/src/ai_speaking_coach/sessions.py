@@ -4,7 +4,7 @@ from pathlib import Path
 
 from .db import apply_migrations, transaction
 from .models import SessionRecord
-from .paths import runtime_dir
+from .paths import sessions_dir
 from .scheduler import upsert_review_state
 from .time_utils import parse_timestamp
 
@@ -97,7 +97,7 @@ def record_session(record: SessionRecord) -> bool:
 
 def _write_summary(record: SessionRecord) -> Path:
     date = record.started_at[:10]
-    destination = runtime_dir() / "sessions" / f"{date}.md"
+    destination = sessions_dir() / f"{date}.md"
     destination.parent.mkdir(parents=True, exist_ok=True)
     lines = [
         f"# 口语课记录：{date}",
@@ -126,4 +126,3 @@ def _write_summary(record: SessionRecord) -> Path:
         lines.extend(["", "## 教师记录", "", record.notes])
     destination.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return destination
-

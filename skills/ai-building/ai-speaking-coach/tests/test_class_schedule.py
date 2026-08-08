@@ -51,7 +51,7 @@ def test_schedule_requires_a_real_rrule(isolated_root: Path) -> None:
 
 
 def test_save_schedule_preserves_other_settings(isolated_root: Path) -> None:
-    settings_path = isolated_root / "runtime" / "settings.json"
+    settings_path = isolated_root / "private" / "learner" / "settings.json"
     settings_path.write_text(
         json.dumps({"learner_id": 1, "custom": {"keep": True}}),
         encoding="utf-8",

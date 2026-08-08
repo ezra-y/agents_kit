@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field, field_validator
 
 from .db import apply_migrations, connect
 from .embeddings import EmbeddingProvider
-from .paths import load_settings, runtime_dir
+from .paths import lessons_dir, load_settings, preparation_dir
 from .retrieval import LanceDBRetrievalIndex, public_result
 from .time_utils import isoformat, now
 
@@ -64,7 +64,7 @@ def prepare_lesson(
     apply_migrations()
     current = now()
     lesson_date = date or current.date().isoformat()
-    destination = runtime_dir() / "preparation" / f"{lesson_date}.md"
+    destination = preparation_dir() / f"{lesson_date}.md"
     if destination.exists() and not force:
         return _read_existing_plan(destination)
 
@@ -148,7 +148,7 @@ def finalize_lesson(spec: FinalLessonSpec) -> Path:
     if missing:
         raise ValueError(f"Unknown or unapproved lesson items: {', '.join(missing)}")
 
-    destination = runtime_dir() / "lessons" / f"{spec.date}.md"
+    destination = lessons_dir() / f"{spec.date}.md"
     destination.parent.mkdir(parents=True, exist_ok=True)
     lines = [
         f"# Speaking Lesson: {spec.date}",

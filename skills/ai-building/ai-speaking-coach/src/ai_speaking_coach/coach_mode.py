@@ -3,9 +3,11 @@ from __future__ import annotations
 import os
 import re
 from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any, Literal
 
 from .db import apply_migrations, connect, transaction
+from .paths import coach_mode_database_path
 from .time_utils import isoformat, now
 
 CoachPhase = Literal["onboarding", "teaching", "after_class"]
@@ -78,11 +80,11 @@ def activate_coach_mode(
     phase: CoachPhase | None = None,
     lesson_date: str | None = None,
 ) -> CoachModeState:
-    apply_migrations()
+    mode_database = _prepare_mode_database()
     resolved = resolve_thread_id(thread_id)
     timestamp = isoformat(now())
     selected_phase = phase or _default_phase()
-    with transaction() as connection:
+    with transaction(mode_database) as connection:
         existing = connection.execute(
             "SELECT * FROM coach_mode_state WHERE thread_id = ?",
             (resolved,),
@@ -127,10 +129,10 @@ def activate_coach_mode(
 
 
 def deactivate_coach_mode(thread_id: str | None = None) -> CoachModeState | None:
-    apply_migrations()
+    mode_database = _prepare_mode_database()
     resolved = resolve_thread_id(thread_id)
     timestamp = isoformat(now())
-    with transaction() as connection:
+    with transaction(mode_database) as connection:
         existing = connection.execute(
             "SELECT 1 FROM coach_mode_state WHERE thread_id = ?",
             (resolved,),
@@ -152,10 +154,10 @@ def set_coach_phase(
     phase: CoachPhase,
     thread_id: str | None = None,
 ) -> CoachModeState:
-    apply_migrations()
+    mode_database = _prepare_mode_database()
     resolved = resolve_thread_id(thread_id)
     timestamp = isoformat(now())
-    with transaction() as connection:
+    with transaction(mode_database) as connection:
         cursor = connection.execute(
             """
             UPDATE coach_mode_state
@@ -173,9 +175,9 @@ def set_coach_phase(
 
 
 def get_coach_mode(thread_id: str | None = None) -> CoachModeState | None:
-    apply_migrations()
+    mode_database = _prepare_mode_database()
     resolved = resolve_thread_id(thread_id)
-    with connect() as connection:
+    with connect(mode_database) as connection:
         row = connection.execute(
             "SELECT * FROM coach_mode_state WHERE thread_id = ?",
             (resolved,),
@@ -221,13 +223,21 @@ def process_hook_event(payload: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def render_coach_context(state: CoachModeState) -> str:
+    phase_context = (
+        "ONBOARDING: Text setup only. Ask one compact set of questions about current ability, "
+        "goals, real use, and study rhythm. Never ask for a microphone, GPT Live, reading aloud, "
+        "or an audio test. Leave oral ability unverified for a later separate Live class.\n"
+        if state.phase == "onboarding"
+        else "TEACHING: Follow the finalized lesson and use only audio the client delivered.\n"
+    )
     return (
         "[AI SPEAKING COACH MODE: ACTIVE]\n"
         f"Phase: {state.phase}\n"
         f"Lesson date: {state.lesson_date or 'not selected'}\n"
+        f"{phase_context}"
         "ROLE: Remain the learner's English speaking coach through questions and useful detours.\n"
-        "RESPONSE: The client has delivered the learner's current turn. Reply promptly and "
-        "naturally; do not stay silent waiting for an imagined continuation.\n"
+        "RESPONSE: Reply promptly to the delivered turn; do not wait for an imagined "
+        "continuation.\n"
         "FEEDBACK: Inspect English, but usually correct only the single highest-value issue. "
         "Prioritize meaning, today's target, clear Chinglish, and repeated errors. Keep feedback "
         "brief and proportional. Recast lesser awkwardness only when useful; let minor or "
@@ -248,6 +258,7 @@ def _hook_output(event: str, context: str) -> dict[str, Any]:
 
 
 def _default_phase() -> CoachPhase:
+    apply_migrations()
     with connect() as connection:
         profile = connection.execute(
             "SELECT preferred_name, goals FROM learner_profile WHERE id = 1"
@@ -255,6 +266,12 @@ def _default_phase() -> CoachPhase:
     if profile and (profile["preferred_name"] or profile["goals"]):
         return "teaching"
     return "onboarding"
+
+
+def _prepare_mode_database() -> Path:
+    path = coach_mode_database_path()
+    apply_migrations(path, group="runtime")
+    return path
 
 
 def _state_from_row(row: Any) -> CoachModeState:

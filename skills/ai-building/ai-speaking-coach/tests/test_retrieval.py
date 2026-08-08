@@ -35,7 +35,7 @@ def test_rebuild_and_search(isolated_root: Path) -> None:
     ]
     index = LanceDBRetrievalIndex(
         HashEmbeddingProvider(),
-        isolated_root / "runtime" / "lancedb",
+        isolated_root / "private" / "cache" / "lancedb",
     )
     assert index.rebuild(items) == 2
     fts_results = index.search("free weekend", mode="fts", limit=2)

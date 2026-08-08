@@ -31,7 +31,10 @@ def test_search_includes_learning_state_and_errors(isolated_root: Path) -> None:
     ]
     import_content_items(items)
     provider = HashEmbeddingProvider()
-    LanceDBRetrievalIndex(provider, isolated_root / "runtime" / "lancedb").rebuild(items)
+    LanceDBRetrievalIndex(
+        provider,
+        isolated_root / "private" / "cache" / "lancedb",
+    ).rebuild(items)
 
     with transaction() as connection:
         connection.execute(

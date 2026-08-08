@@ -11,7 +11,7 @@ from lancedb.index import FTS
 
 from .corpus import ContentItem, read_jsonl
 from .embeddings import EmbeddingProvider
-from .paths import lancedb_path, load_settings, runtime_dir
+from .paths import embedding_manifest_path, lancedb_path, load_settings
 from .time_utils import isoformat, now
 
 SearchMode = Literal["fts", "vector", "hybrid"]
@@ -135,7 +135,7 @@ class LanceDBRetrievalIndex:
             "content_hash": content_digest,
             "built_at": isoformat(now()),
         }
-        destination = runtime_dir() / "embedding-manifest.json"
+        destination = embedding_manifest_path()
         destination.write_text(
             json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",

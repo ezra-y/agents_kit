@@ -9,6 +9,7 @@ from ai_speaking_coach.coach_mode import (
     deactivate_coach_mode,
     get_coach_mode,
     process_hook_event,
+    render_coach_context,
     set_coach_phase,
 )
 
@@ -41,10 +42,13 @@ def test_hook_reinjects_small_adaptive_reminder(isolated_root: Path) -> None:
     context = activation["hookSpecificOutput"]["additionalContext"]
     assert "AI SPEAKING COACH MODE: ACTIVE" in context
     assert "usually correct only the single highest-value issue" in context
-    assert "Reply promptly and naturally" in context
-    assert "do not stay silent" in context
+    assert "Reply promptly" in context
+    assert "do not wait for an imagined continuation" in context
     assert "let minor or self-corrected slips pass" in context
-    assert len(context) < 900
+    assert "Text setup only" in context
+    assert "Never ask for a microphone" in context
+    assert "Leave oral ability unverified" in context
+    assert len(context) < 1100
 
     later_turn = process_hook_event(
         {
@@ -56,7 +60,7 @@ def test_hook_reinjects_small_adaptive_reminder(isolated_root: Path) -> None:
     assert later_turn is not None
     later_context = later_turn["hookSpecificOutput"]["additionalContext"]
     assert "ROLE:" in later_context
-    assert "Reply promptly and naturally" in later_context
+    assert "Reply promptly" in later_context
     assert "If uncertain, wait" not in later_context
 
     after_compaction = process_hook_event(
@@ -70,6 +74,15 @@ def test_hook_reinjects_small_adaptive_reminder(isolated_root: Path) -> None:
     compacted_context = after_compaction["hookSpecificOutput"]["additionalContext"]
     assert "FEEDBACK:" in compacted_context
     assert "usually correct only the single highest-value issue" in compacted_context
+
+
+def test_teaching_context_uses_delivered_audio(isolated_root: Path) -> None:
+    state = activate_coach_mode("thread-teaching", phase="teaching")
+    context = render_coach_context(state)
+
+    assert "Follow the finalized lesson" in context
+    assert "use only audio the client delivered" in context
+    assert "Text setup only" not in context
 
 
 @pytest.mark.parametrize(

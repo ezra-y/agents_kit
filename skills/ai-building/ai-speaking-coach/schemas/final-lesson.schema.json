@@ -1,0 +1,131 @@
+{
+  "$defs": {
+    "LessonErrorRepair": {
+      "properties": {
+        "focus": {
+          "default": "",
+          "title": "Focus",
+          "type": "string"
+        },
+        "learner_version": {
+          "title": "Learner Version",
+          "type": "string"
+        },
+        "natural_version": {
+          "title": "Natural Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "learner_version",
+        "natural_version"
+      ],
+      "title": "LessonErrorRepair",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "communication_goal": {
+      "minLength": 1,
+      "title": "Communication Goal",
+      "type": "string"
+    },
+    "current_bottleneck": {
+      "minLength": 1,
+      "title": "Current Bottleneck",
+      "type": "string"
+    },
+    "date": {
+      "title": "Date",
+      "type": "string"
+    },
+    "error_repairs": {
+      "items": {
+        "$ref": "#/$defs/LessonErrorRepair"
+      },
+      "title": "Error Repairs",
+      "type": "array"
+    },
+    "focus_targets": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Focus Targets",
+      "type": "array"
+    },
+    "input_task": {
+      "minLength": 1,
+      "title": "Input Task",
+      "type": "string"
+    },
+    "live_notes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Live Notes",
+      "type": "array"
+    },
+    "optional_extensions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Optional Extensions",
+      "type": "array"
+    },
+    "quick_checks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Quick Checks",
+      "type": "array"
+    },
+    "required_reviews": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Reviews",
+      "type": "array"
+    },
+    "scene": {
+      "minLength": 1,
+      "title": "Scene",
+      "type": "string"
+    },
+    "success_evidence": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Success Evidence",
+      "type": "array"
+    },
+    "target_task": {
+      "minLength": 1,
+      "title": "Target Task",
+      "type": "string"
+    },
+    "topic": {
+      "minLength": 1,
+      "title": "Topic",
+      "type": "string"
+    },
+    "transfer_task": {
+      "minLength": 1,
+      "title": "Transfer Task",
+      "type": "string"
+    }
+  },
+  "required": [
+    "date",
+    "topic",
+    "communication_goal",
+    "scene",
+    "target_task",
+    "current_bottleneck",
+    "success_evidence",
+    "input_task",
+    "transfer_task"
+  ],
+  "title": "FinalLessonSpec",
+  "type": "object"
+}

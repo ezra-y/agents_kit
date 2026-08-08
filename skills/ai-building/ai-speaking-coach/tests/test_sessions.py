@@ -19,7 +19,7 @@ def test_record_session_is_idempotent(isolated_root: Path) -> None:
     import_content_items(
         [
             ContentItem(
-                id="common500-s0001",
+                id="casual-greeting",
                 type="expression",
                 text="What's up?",
                 source_ref=SourceRef(file="test", order=1),
@@ -33,7 +33,7 @@ def test_record_session_is_idempotent(isolated_root: Path) -> None:
         topic="meeting a friend",
         items=[
             SessionItemResult(
-                item_id="common500-s0001",
+                item_id="casual-greeting",
                 activity="new",
                 grade="easy",
                 status_after="fluent",
@@ -43,7 +43,7 @@ def test_record_session_is_idempotent(isolated_root: Path) -> None:
         errors=[
             ErrorObservation(
                 id="err-1",
-                item_id="common500-s0001",
+                item_id="casual-greeting",
                 occurred_at="2026-08-05T19:36:00+08:00",
                 user_said="I very like it.",
                 natural_version="I really like it.",
@@ -59,4 +59,3 @@ def test_record_session_is_idempotent(isolated_root: Path) -> None:
         assert connection.execute("SELECT COUNT(*) FROM session_items").fetchone()[0] == 1
         assert connection.execute("SELECT review_count FROM review_state").fetchone()[0] == 1
         assert connection.execute("SELECT COUNT(*) FROM errors").fetchone()[0] == 1
-
