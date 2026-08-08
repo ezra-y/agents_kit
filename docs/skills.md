@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **226** 个 · 常驻 **98** 个 · 有上游可检查更新 **201** 个
+共 **231** 个 · 常驻 **104** 个 · 有上游可检查更新 **206** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -140,7 +140,7 @@
 |---|---|---|:--:|---|
 | `reverse-skill-router` | 逆向工程与网络安全任务总路由：根据目标类型、用户意图和工具链选择 APK、二进制、前端 JS、恶意软件、固件、取证、渗透测试或安全报告工作流 | `role/router` `focus/reverse-engineering` `focus/security-assessment` `focus/tool-integration` `platform/multi-platform` `output/report` | ● | [github.com/zhaoxuya520/reverse-skill](https://github.com/zhaoxuya520/reverse-skill) |
 
-## 通用工程 (`engineering`，9 个)
+## 通用工程 (`engineering`，14 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
@@ -150,7 +150,12 @@
 | `improve-codebase-architecture` | 找「深化机会」——把浅模块改造成深模块,目标是可测试性和 AI 可导航性。已更新到上游最新。强制使用固定术语表。 | `role/reviewer` `focus/modularity` `focus/software-architecture` `output/report` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/improve-codebase-architecture) |
 | `opencli-adapter-author` | 给新站点写 opencli 适配器,或给已有站点加命令,15 个附件。从初次侦察、字段解码、写适配器到验证,含决策树、逐步 runbook  | `role/builder` `focus/adapter-development` `platform/opencli` `output/code` |  | — |
 | `opencli-autofix` | opencli 命令失败时自动修适配器:收集 trace、打补丁、重试,修好后再去上游提 issue。含「空结果 ≠ 坏了」的前置判断。 | `role/workflow` `focus/adapter-development` `focus/debugging` `platform/opencli` `output/code` | ● | — |
-| `ponytail` | 以 YAGNI、标准库优先、复用现有代码和最小可行改动约束编码决策，减少不必要的抽象、依赖、样板代码与未来式设计；支持 lite、full、 | `role/guide` `focus/code-quality` `focus/modularity` `focus/software-architecture` `output/code` |  | [github.com/DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) |
+| `ponytail` | 以 YAGNI、标准库优先、复用现有代码和最小可行改动约束编码决策，减少不必要的抽象、依赖、样板代码与未来式设计；支持 lite、full、 | `role/guide` `focus/code-quality` `focus/modularity` `focus/software-architecture` `output/code` | ● | [github.com/DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) |
+| `ponytail-audit` | 扫描整个代码仓库中的过度工程，按预计可删除规模排序，识别死代码、重复标准库实现、原生能力替代、单实现抽象、无效配置与多余依赖；输出审计清单， | `role/reviewer` `focus/code-quality` `focus/modularity` `focus/software-architecture` `output/report` | ● | [github.com/DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) |
+| `ponytail-debt` | 扫描仓库中的 ponytail: 注释并汇总为技术债台账，提取每项简化的上限、升级路径和重访触发条件，标记缺少触发条件的条目；默认只读，不修 | `role/researcher` `focus/code-quality` `focus/repository-context` `output/report` | ● | [github.com/DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) |
+| `ponytail-gain` | 展示 Ponytail 作者发布的基准测试中代码量、成本与速度的中位收益看板；数据来自固定的五项任务和三个模型，不冒充当前仓库的真实节省量， | `role/reference` `focus/code-quality` `output/reference` | ● | [github.com/DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) |
+| `ponytail-help` | 提供 Ponytail 的 lite、full、ultra 模式、六个配套 Skill、启停方式、默认模式配置和多客户端调用方式的速查卡；一 | `role/reference` `focus/agent-instructions` `focus/in-app-guidance` `platform/multi-platform` `output/reference` | ● | [github.com/DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) |
+| `ponytail-review` | 专门审查当前代码差异中的过度工程：识别可删除代码、标准库或平台原生替代、不必要依赖、单实现抽象与可压缩逻辑；只给精简建议，不检查正确性、安全 | `role/reviewer` `focus/code-quality` `focus/modularity` `focus/software-architecture` `output/report` | ● | [github.com/DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) |
 | `tdd` | 已更新到最新:从 110 行精简成 36 行 + tests.md / mocking.md 两个附件。核心不再是硬套红绿重构,而是讲清「什 | `role/guide` `focus/test-design` `focus/testing` `output/test-code` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/tdd) |
 | `zoom-out` | 让 agent 抬升一个抽象层,给出相关模块和调用方的地图。正文只有 2 行,标了仅手动调用。 | `role/researcher` `focus/codebase-navigation` `focus/software-architecture` `output/report` |  | — |
 

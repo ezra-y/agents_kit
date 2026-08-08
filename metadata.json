@@ -1691,6 +1691,63 @@
         "output/code"
       ]
     },
+    "ponytail-audit": {
+      "recommendation": 4,
+      "description": "扫描整个代码仓库中的过度工程，按预计可删除规模排序，识别死代码、重复标准库实现、原生能力替代、单实现抽象、无效配置与多余依赖；输出审计清单，不直接修改。",
+      "trigger": "用户说「审计整个仓库的过度工程」「这个仓库能删什么」「找代码膨胀」、点名 ponytail-audit 或 /ponytail-audit 时使用。",
+      "tags": [
+        "role/reviewer",
+        "focus/code-quality",
+        "focus/modularity",
+        "focus/software-architecture",
+        "output/report"
+      ]
+    },
+    "ponytail-debt": {
+      "recommendation": 3,
+      "description": "扫描仓库中的 ponytail: 注释并汇总为技术债台账，提取每项简化的上限、升级路径和重访触发条件，标记缺少触发条件的条目；默认只读，不修改代码。",
+      "trigger": "用户询问 Ponytail 延期了什么、要求列出简化项或技术债、点名 ponytail-debt、ponytail ledger 或 /ponytail-debt 时使用。",
+      "tags": [
+        "role/researcher",
+        "focus/code-quality",
+        "focus/repository-context",
+        "output/report"
+      ]
+    },
+    "ponytail-gain": {
+      "recommendation": 2,
+      "description": "展示 Ponytail 作者发布的基准测试中代码量、成本与速度的中位收益看板；数据来自固定的五项任务和三个模型，不冒充当前仓库的真实节省量，也不修改任何状态。",
+      "trigger": "用户询问 Ponytail 能节省多少、要求查看影响看板、点名 ponytail-gain、ponytail scoreboard 或 /ponytail-gain 时使用。",
+      "tags": [
+        "role/reference",
+        "focus/code-quality",
+        "output/reference"
+      ]
+    },
+    "ponytail-help": {
+      "recommendation": 3,
+      "description": "提供 Ponytail 的 lite、full、ultra 模式、六个配套 Skill、启停方式、默认模式配置和多客户端调用方式的速查卡；一次性展示，不改变当前模式。",
+      "trigger": "用户询问如何使用 Ponytail、有哪些命令或模式，或点名 ponytail-help、ponytail help、/ponytail-help 时使用。",
+      "tags": [
+        "role/reference",
+        "focus/agent-instructions",
+        "focus/in-app-guidance",
+        "platform/multi-platform",
+        "output/reference"
+      ]
+    },
+    "ponytail-review": {
+      "recommendation": 4,
+      "description": "专门审查当前代码差异中的过度工程：识别可删除代码、标准库或平台原生替代、不必要依赖、单实现抽象与可压缩逻辑；只给精简建议，不检查正确性、安全或性能，也不直接修改。",
+      "trigger": "用户说「审查是否过度工程」「这个 diff 能删什么」「简化 review」、点名 ponytail-review 或 /ponytail-review 时使用。",
+      "tags": [
+        "role/reviewer",
+        "focus/code-quality",
+        "focus/modularity",
+        "focus/software-architecture",
+        "output/report"
+      ]
+    },
     "pp-agent-capture": {
       "recommendation": 5,
       "description": "使用 macOS ScreenCaptureKit 精确定位窗口或显示器并录制、截图、生成 GIF 与视觉证据包；要求先等录制就绪，再触发界面动作并校验成片。",

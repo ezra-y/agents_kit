@@ -1660,6 +1660,76 @@
         "content_sha256": "b9d7d1326ca6ae0397ebaad5dc6237b38b7a6b7a7986b7a6d54e5e1b06e05c84"
       }
     },
+    "ponytail-audit": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/DietrichGebert/ponytail.git",
+        "ref": "",
+        "path": "skills/ponytail-audit"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "2ed6c52c9d7e5e56942508591085fd45dea277d3",
+        "content_sha256": "936208d4b42aaaac0ec2201218404f312a229fff6a10b1e4e50acc2749f4ff23"
+      }
+    },
+    "ponytail-debt": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/DietrichGebert/ponytail.git",
+        "ref": "",
+        "path": "skills/ponytail-debt"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "2ed6c52c9d7e5e56942508591085fd45dea277d3",
+        "content_sha256": "6154b54c26172c231374d280f517706a74d8e83d998ba54cb484f5ed8253df31"
+      }
+    },
+    "ponytail-gain": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/DietrichGebert/ponytail.git",
+        "ref": "",
+        "path": "skills/ponytail-gain"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "2ed6c52c9d7e5e56942508591085fd45dea277d3",
+        "content_sha256": "d88dd670eff9c7e42922ec79d872f7ffd81ae2d64eca970f8600333590ab4e8e"
+      }
+    },
+    "ponytail-help": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/DietrichGebert/ponytail.git",
+        "ref": "",
+        "path": "skills/ponytail-help"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "2ed6c52c9d7e5e56942508591085fd45dea277d3",
+        "content_sha256": "99de4a6eb7909ddab8c12997fa07160d7f8ded15730284c30bdc41c2f65e797a"
+      }
+    },
+    "ponytail-review": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/DietrichGebert/ponytail.git",
+        "ref": "",
+        "path": "skills/ponytail-review"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "2ed6c52c9d7e5e56942508591085fd45dea277d3",
+        "content_sha256": "0368981e747ed117b369b8beacd3981fbd9253c4bad43893b83345c5546a32c3"
+      }
+    },
     "prototype": {
       "provider": "git",
       "locator": {

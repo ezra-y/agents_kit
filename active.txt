@@ -99,3 +99,9 @@ thinking-thought-experiment
 thinking-triz
 thinking-via-negativa
 agent-reach
+ponytail-review
+ponytail-audit
+ponytail-debt
+ponytail-gain
+ponytail-help
+ponytail
