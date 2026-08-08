@@ -11,14 +11,16 @@ Use:
 - Current status for each content item.
 - Long-uncovered and unseen course content.
 - Learner profile, goals, interests, and recent topics.
+- The active targets and adaptation evidence in `runtime/learning-plan.md`, when present.
 - A clear communication goal for today.
 - Hybrid retrieval candidates from local E5 and LanceDB.
 
 ## Selection Order
 
 1. Required: overdue reviews and high-value unresolved errors.
-2. Related: new expressions and patterns that form one natural scene.
-3. Judgment: remove candidates that would make the scene forced or overloaded.
+2. Direction: one active real-world target from the learner's current plan.
+3. Related: new expressions and patterns that form one natural scene.
+4. Judgment: remove candidates that would make the scene forced or overloaded.
 
 SQLite determines what cannot be forgotten. LanceDB supplies relevant candidates. The strong model
 decides the final teaching combination.

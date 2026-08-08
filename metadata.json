@@ -55,8 +55,8 @@
     },
     "ai-speaking-coach": {
       "recommendation": 5,
-      "description": "基于个人课程语料、长期学习记录和遗忘曲线的一对一英语口语教练",
-      "trigger": "开始或准备英语口语课、复习到期表达、查看口语进度、导入新的口语课程或美剧对话时使用",
+      "description": "根据学习者目标和听说表现维护个性化计划，结合 GPT Live、间隔复习、知识库和定时提醒的一对一英语口语教练",
+      "trigger": "制定或开始个性化口语学习计划、上口语课、复习弱点、查看进度、设置上课提醒、导入课程或媒体时使用",
       "tags": [
         "role/workflow",
         "focus/database",

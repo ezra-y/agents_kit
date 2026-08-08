@@ -1,6 +1,6 @@
 ---
 name: ai-speaking-coach
-description: Local, stateful English speaking coach for preparing lessons, teaching with GPT Live, correcting spoken English, reviewing weak points, and tracking sentence-level progress. Use when the learner asks to prepare or start a speaking lesson, continue a lesson, practice a scenario, review errors, check progress, import new course material, or manage this coach's SQLite and LanceDB knowledge system.
+description: Stateful English speaking coach for assessing a learner, maintaining a personalized learning plan, preparing lessons, teaching with GPT Live, correcting spoken English, reviewing weak points, scheduling class reminders, and tracking sentence-level progress. Use when the learner asks to plan or start speaking study, continue a lesson, practice a scenario, review errors, check progress, set a study reminder, import course material, or manage this coach's SQLite and LanceDB knowledge system.
 ---
 
 # AI Speaking Coach
@@ -17,6 +17,25 @@ uv run --project "$SKILL_DIR" python "$SKILL_DIR/scripts/<script>.py"
 ```
 
 Do not depend on `OPENAI_API_KEY`. Text embeddings use the bundled local E5 configuration.
+
+## Personalize The Coach
+
+Read [adaptive-learning-plan.md](references/adaptive-learning-plan.md) during onboarding, after a
+material change in goals or availability, and when revising the learning plan. Keep
+`runtime/learning-plan.md` as the current working plan. Treat the bundled 722-item corpus as one
+optional content source, not as the curriculum definition.
+
+On the first explicit invocation, run:
+
+```bash
+uv run --project "$SKILL_DIR" python "$SKILL_DIR/scripts/class_reminder.py" status
+```
+
+If reminder setup is `unconfigured`, or the status command fails during an explicitly stated first
+use, ask one concise question covering cadence, local time, and timezone. Offer daily, every two
+days, or selected weekdays. The learner may say "later" and continue without a reminder. Read
+[class-reminders.md](references/class-reminders.md) before creating, changing, pausing, or removing
+a scheduled reminder. Do not create a duplicate reminder or claim success when status is unknown.
 
 ## Keep Coach Mode Active
 
@@ -51,13 +70,15 @@ Read [lesson-preparation.md](references/lesson-preparation.md) and
 1. Run `scripts/prepare_lesson.py` with the requested date and optional topic.
 2. Read its draft at `runtime/preparation/YYYY-MM-DD.md`; it contains required reviews, errors, and
    candidates.
-3. As the strong model, choose the final teaching combination and create a JSON spec using the
+3. If `runtime/learning-plan.md` exists, read it and align the communication goal with its active
+   target scenario and current evidence.
+4. As the strong model, choose the final teaching combination and create a JSON spec using the
    contract in [lesson-preparation.md](references/lesson-preparation.md).
-4. Preserve every selected item's stable ID and omit unrelated candidates.
-5. Run `scripts/finalize_lesson.py <spec.json>`. It validates selected IDs and writes
+5. Preserve every selected item's stable ID and omit unrelated candidates.
+6. Run `scripts/finalize_lesson.py <spec.json>`. It validates selected IDs and writes
    `runtime/lessons/YYYY-MM-DD.md`.
-6. GPT Live may read only this finalized file, never the preparation draft.
-7. Do not mark any item learned during preparation.
+7. GPT Live may read only this finalized file, never the preparation draft.
+8. Do not mark any item learned during preparation.
 
 ### Start Or Continue A Live Lesson
 

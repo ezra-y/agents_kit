@@ -3,6 +3,9 @@
 The first meeting establishes a teacher-student relationship and a low-pressure speaking baseline.
 It is the only class that may proceed without a previously finalized daily lesson.
 
+Read [adaptive-learning-plan.md](adaptive-learning-plan.md). Use the first meeting to create
+`runtime/learning-plan.md`; do not assume the bundled corpus defines the learner's curriculum.
+
 ## Conversation
 
 Ask naturally over several turns:
@@ -40,4 +43,5 @@ Teach two or three useful, slightly more natural expressions drawn from what the
 to say. Use them in a short exchange and obtain one successful retry before ending.
 
 Save only confirmed profile details with `scripts/update_profile.py`. The first session's practiced
-items and errors still go through the normal `record_session.py` workflow.
+items and errors still go through the normal `record_session.py` workflow. Write the first working
+plan from `assets/templates/learning-plan.md`, grounded in the conversation and speaking snapshot.
