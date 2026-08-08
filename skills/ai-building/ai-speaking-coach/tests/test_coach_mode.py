@@ -29,7 +29,7 @@ def test_coach_mode_persists_per_task(isolated_root: Path) -> None:
     assert get_coach_mode("thread-one") == stopped
 
 
-def test_hook_reinjects_role_and_correction_gate(isolated_root: Path) -> None:
+def test_hook_reinjects_small_adaptive_reminder(isolated_root: Path) -> None:
     activation = process_hook_event(
         {
             "hook_event_name": "UserPromptSubmit",
@@ -40,11 +40,11 @@ def test_hook_reinjects_role_and_correction_gate(isolated_root: Path) -> None:
     assert activation is not None
     context = activation["hookSpecificOutput"]["additionalContext"]
     assert "AI SPEAKING COACH MODE: ACTIVE" in context
-    assert "self-introductions" in context
-    assert "immediately correct" in context
-    assert "TURN-TAKING GATE" in context
-    assert "learner_speaking" in context
-    assert "If uncertain whether the turn is complete, wait" in context
+    assert "usually correct only the single highest-value issue" in context
+    assert "Reply promptly and naturally" in context
+    assert "do not stay silent" in context
+    assert "let minor or self-corrected slips pass" in context
+    assert len(context) < 900
 
     later_turn = process_hook_event(
         {
@@ -54,7 +54,10 @@ def test_hook_reinjects_role_and_correction_gate(isolated_root: Path) -> None:
         }
     )
     assert later_turn is not None
-    assert "ROLE LOCK" in later_turn["hookSpecificOutput"]["additionalContext"]
+    later_context = later_turn["hookSpecificOutput"]["additionalContext"]
+    assert "ROLE:" in later_context
+    assert "Reply promptly and naturally" in later_context
+    assert "If uncertain, wait" not in later_context
 
     after_compaction = process_hook_event(
         {
@@ -64,7 +67,9 @@ def test_hook_reinjects_role_and_correction_gate(isolated_root: Path) -> None:
         }
     )
     assert after_compaction is not None
-    assert "ENGLISH CORRECTION GATE" in after_compaction["hookSpecificOutput"]["additionalContext"]
+    compacted_context = after_compaction["hookSpecificOutput"]["additionalContext"]
+    assert "FEEDBACK:" in compacted_context
+    assert "usually correct only the single highest-value issue" in compacted_context
 
 
 @pytest.mark.parametrize(
