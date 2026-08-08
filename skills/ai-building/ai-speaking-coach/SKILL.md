@@ -60,8 +60,11 @@ Read [coach-state-machine.md](references/coach-state-machine.md) for state trans
 
 ## Keep Roles Separate
 
-- Strong Codex model: prepare and finalize the daily lesson before Live class.
-- GPT Live: teach from the finalized lesson, listen, demonstrate, correct, and adapt in real time.
+- Strong Codex model: use
+  [preparation-teacher-prompt.md](references/preparation-teacher-prompt.md) to prepare and finalize
+  the daily lesson before Live class.
+- GPT Live: use [live-teacher-prompt.md](references/live-teacher-prompt.md) to teach from the
+  finalized lesson, listen, demonstrate, correct, and adapt in real time.
 - GPT Live does not regenerate the daily lesson when one already exists.
 - Both may call `search_course_content.py`; during class, use it only for a question or topic outside
   the prepared lesson, or when a precise content lookup is necessary.
@@ -72,8 +75,9 @@ Read [coach-state-machine.md](references/coach-state-machine.md) for state trans
 
 ### Prepare A Lesson
 
-Read [lesson-preparation.md](references/lesson-preparation.md) and
-[review-policy.md](references/review-policy.md).
+Read [preparation-teacher-prompt.md](references/preparation-teacher-prompt.md). It loads
+[lesson-preparation.md](references/lesson-preparation.md) and
+[review-policy.md](references/review-policy.md) as its detailed operating rules.
 
 1. Run `scripts/prepare_lesson.py` with the requested date and optional topic.
 2. Read its draft at `runtime/preparation/YYYY-MM-DD.md`; it contains required reviews, errors, and
@@ -90,8 +94,9 @@ Read [lesson-preparation.md](references/lesson-preparation.md) and
 
 ### Start Or Continue A Live Lesson
 
-Read [teacher-policy.md](references/teacher-policy.md). For a first meeting, also read
-[first-session.md](references/first-session.md).
+Read [live-teacher-prompt.md](references/live-teacher-prompt.md). It loads
+[teacher-policy.md](references/teacher-policy.md) and the state-machine rules. For a first meeting,
+also read [first-session.md](references/first-session.md).
 
 1. Run `scripts/coach_mode.py start`, then load `runtime/lessons/YYYY-MM-DD.md`.
 2. If this is a normal class and no finalized lesson exists, do not silently create a new daily
