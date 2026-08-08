@@ -20,10 +20,10 @@ Do not depend on `OPENAI_API_KEY`. Text embeddings use the bundled local E5 conf
 
 ## Personalize The Coach
 
-Read [adaptive-learning-plan.md](references/adaptive-learning-plan.md) during onboarding, after a
+Read [curriculum-framework.md](references/curriculum-framework.md) and
+[adaptive-learning-plan.md](references/adaptive-learning-plan.md) during onboarding, after a
 material change in goals or availability, and when revising the learning plan. Keep
-`runtime/learning-plan.md` as the current working plan. Treat the bundled 722-item corpus as one
-optional content source, not as the curriculum definition.
+`runtime/learning-plan.md` as the current working plan.
 
 Generate the plan by working backward from one learner-confirmed real-world outcome. Use multiple
 short listening and speaking tasks to create a provisional, evidence-linked profile; select a
@@ -65,9 +65,7 @@ Read [coach-state-machine.md](references/coach-state-machine.md) for state trans
   the daily lesson before Live class.
 - GPT Live: use [live-teacher-prompt.md](references/live-teacher-prompt.md) to teach from the
   finalized lesson, listen, demonstrate, correct, and adapt in real time.
-- GPT Live does not regenerate the daily lesson when one already exists.
-- Both may call `search_course_content.py`; during class, use it only for a question or topic outside
-  the prepared lesson, or when a precise content lookup is necessary.
+- The finalized lesson is the handoff between the two roles.
 - Persist learning changes only through `record_session.py`. Never write arbitrary model-generated
   SQL against the learning database.
 
@@ -89,8 +87,6 @@ Read [preparation-teacher-prompt.md](references/preparation-teacher-prompt.md). 
 5. Preserve every selected item's stable ID and omit unrelated candidates.
 6. Run `scripts/finalize_lesson.py <spec.json>`. It validates selected IDs and writes
    `runtime/lessons/YYYY-MM-DD.md`.
-7. GPT Live may read only this finalized file, never the preparation draft.
-8. Do not mark any item learned during preparation.
 
 ### Start Or Continue A Live Lesson
 
@@ -156,29 +152,9 @@ validate all items, import them into SQLite, and rebuild LanceDB.
 For subtitle or video-derived content, also read [media-learning.md](references/media-learning.md).
 Keep one teachable line as the tracked item and a short dialogue as context.
 
-## Required Teaching Behavior
-
-- Default to mostly English, starting slower while preserving natural stress, reduction, linking,
-  and rhythm.
-- Keep difficulty slightly above current spontaneous speaking ability.
-- Never interrupt while the learner is still speaking, hesitating, searching for a word,
-  restarting, or self-correcting. Wait for semantic completion, a clear handoff, or a request for
-  help. Once the client delivers the turn, respond promptly instead of waiting indefinitely.
-- Inspect every learner turn containing English, including the first self-introduction, questions,
-  and mixed Chinese-English turns.
-- Correct at most one highest-value issue per turn. Prioritize meaning-changing errors, today's
-  target, clear Chinglish, and repeated problems.
-- Briefly recast acceptable-but-less-natural wording. Require an immediate retry only for the
-  selected high-value issue or current focus.
-- Let one-off minor slips and successful self-corrections pass unless they become a pattern.
-- Distinguish wrong from acceptable-but-less-natural.
-- Keep learner speaking time greater than teacher explanation time.
-- Do not use fixed minute-by-minute scripts, childish gamification, or empty praise.
-- Never claim that a sentence was learned merely because it appeared in a lesson or search result.
-
 ## Data Rules
 
-- `knowledge/items.jsonl` is the maintainable content source.
+- `knowledge/items.jsonl` is the maintainable private teaching corpus.
 - SQLite `runtime/coach.sqlite` is the source of truth for personal learning history.
 - LanceDB is a rebuildable search index, not a learning-history source.
 - Use stable content IDs in lessons, sessions, reviews, and errors.
@@ -186,5 +162,6 @@ Keep one teachable line as the tracked item and a short dialogue as context.
 - Keep `runtime/` when updating or packaging this Skill.
 
 Read [database-schema.md](references/database-schema.md) before changing tables or session payloads.
+Read [knowledge-schema.md](references/knowledge-schema.md) before changing teaching content.
 Read [pedagogy.md](references/pedagogy.md) only when revising teaching policy rather than conducting a
 normal class.

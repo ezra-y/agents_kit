@@ -24,10 +24,8 @@ Ask naturally over several turns:
 Do not run this as a questionnaire. Confirm important profile details briefly in Chinese when
 necessary. An English name is optional.
 
-The correction policy is active from the learner's first English sentence. Inspect the introduction
-but correct at most one highest-value issue after the short turn. Require a retry for a
-meaning-changing error, clear Chinglish, or the current focus; let minor slips pass so onboarding
-still feels like a conversation.
+Apply [teacher-policy.md](teacher-policy.md) from the learner's first English sentence, with lower
+correction density during onboarding so the meeting still feels like a conversation.
 
 ## Provisional Profile
 

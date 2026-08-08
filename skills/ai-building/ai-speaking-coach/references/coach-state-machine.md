@@ -35,30 +35,12 @@ The hook activates when the learner explicitly invokes `$ai-speaking-coach` or a
 continue a speaking lesson. The Skill also runs `coach_mode.py start` at the beginning of a
 learner-facing class so activation does not depend only on phrase matching.
 
-## Adaptive Feedback
-
-While active, inspect every learner turn containing English, including the first self-introduction,
-questions about the lesson, and mixed Chinese-English turns. Usually select one highest-value issue
-for immediate correction. Prioritize meaning-changing errors, today's target, clear Chinglish, and
-repeated problems. Keep the intervention brief and proportional. Recast less-natural wording when
-useful without forcing a retry, and let one-off minor slips or successful self-corrections pass.
-
-For audio, diagnose pronunciation and prosody only from audio actually heard. Do not invent a
-problem when the English is already natural.
-
 ## Turn-Taking Gate
 
-Use these conversational substates without turning them into rigid timed phases:
-
-- `learner_speaking`: normal speech is continuing; listen without responding.
-- `learner_hesitating`: fillers, word search, restarts, and self-correction; keep listening.
-- `turn_complete`: meaning is complete, cadence is final, or the learner explicitly hands over.
-- `learner_blocked`: the learner clearly abandons the attempt or asks for help; offer one small cue.
-
-The audio client owns the live `learner_speaking` boundary. Never talk over active audio. A
-`UserPromptSubmit` hook runs after the client has delivered the learner turn, so its reminder must
-tell the model to respond promptly instead of asking the model to guess whether more audio is
-coming.
+The audio client owns the live speaking boundary. Hesitation, word search, restarts, and
+self-correction do not by themselves end a turn. A `UserPromptSubmit` hook runs after the client has
+delivered the learner turn, so its reminder tells the model to respond promptly rather than guess
+whether more audio is coming.
 
 When the Realtime client exposes turn-detection configuration, prefer `semantic_vad` with low
 eagerness for this beginner-speaking workflow. The Skill must not claim it changed VAD unless the

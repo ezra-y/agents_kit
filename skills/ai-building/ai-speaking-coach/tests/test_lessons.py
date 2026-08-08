@@ -51,6 +51,8 @@ def test_finalize_lesson_validates_ids_and_writes_final_file(isolated_root: Path
     assert "Transfer task: Repeat with one scheduling conflict." in text
     assert "`target-1` Would you like to join me?" in text
     assert "Example: Would you like to join me for coffee?" in text
+    assert "No lesson-specific notes." in text
+    assert "Start slower while preserving natural English rhythm." not in text
 
 
 def test_finalize_lesson_rejects_unknown_item(isolated_root: Path) -> None:

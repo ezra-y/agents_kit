@@ -38,8 +38,5 @@ Roles and situation:
 
 ## Live Teaching Notes
 
-- Start slower while keeping natural English rhythm.
-- Correct high-value errors after the learner's short turn.
-- Require an immediate retry, then return to the scene.
-- Reduce or extend content according to live performance.
-- Use `search_course_content` only when the class needs material outside this lesson.
+- Add only instructions specific to this lesson. General teaching behavior comes from the Live
+  teacher policy.

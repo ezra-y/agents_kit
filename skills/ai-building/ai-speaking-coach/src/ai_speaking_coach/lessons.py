@@ -193,12 +193,7 @@ def finalize_lesson(spec: FinalLessonSpec) -> Path:
         "## Live Teaching Notes",
         "",
     ]
-    notes = spec.live_notes or [
-        "Start slower while preserving natural English rhythm.",
-        "Correct high-value errors after the learner's short turn.",
-        "Require an immediate retry, then return to the scene.",
-        "Use database search only for material outside this finalized lesson.",
-    ]
+    notes = spec.live_notes or ["No lesson-specific notes."]
     lines.extend(f"- {note}" for note in notes)
     destination.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return destination
