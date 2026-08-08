@@ -25,6 +25,12 @@ material change in goals or availability, and when revising the learning plan. K
 `runtime/learning-plan.md` as the current working plan. Treat the bundled 722-item corpus as one
 optional content source, not as the curriculum definition.
 
+Generate the plan by working backward from one learner-confirmed real-world outcome. Use multiple
+short listening and speaking tasks to create a provisional, evidence-linked profile; select a
+small active set of target tasks and one or two current bottlenecks; then write the next rolling
+teaching block. Do not substitute a fixed sentence order, fixed four-week calendar, or
+model-invented CEFR/ACTFL score for this process.
+
 On the first explicit invocation, run:
 
 ```bash
@@ -32,8 +38,10 @@ uv run --project "$SKILL_DIR" python "$SKILL_DIR/scripts/class_reminder.py" stat
 ```
 
 If reminder setup is `unconfigured`, or the status command fails during an explicitly stated first
-use, ask one concise question covering cadence, local time, and timezone. Offer daily, every two
-days, or selected weekdays. The learner may say "later" and continue without a reminder. Read
+use, ask one concise, open-ended question asking when the learner wants to study. Confirm the
+timezone only when needed. Do not present a short list as the supported schedule boundary; the
+learner may describe any schedule that Scheduled tasks can represent. The learner may say "later"
+and continue without a reminder. Read
 [class-reminders.md](references/class-reminders.md) before creating, changing, pausing, or removing
 a scheduled reminder. Do not create a duplicate reminder or claim success when status is unknown.
 
@@ -70,8 +78,8 @@ Read [lesson-preparation.md](references/lesson-preparation.md) and
 1. Run `scripts/prepare_lesson.py` with the requested date and optional topic.
 2. Read its draft at `runtime/preparation/YYYY-MM-DD.md`; it contains required reviews, errors, and
    candidates.
-3. If `runtime/learning-plan.md` exists, read it and align the communication goal with its active
-   target scenario and current evidence.
+3. If `runtime/learning-plan.md` exists, read it and choose one active target task, its current
+   bottleneck, and the evidence that should count as success today.
 4. As the strong model, choose the final teaching combination and create a JSON spec using the
    contract in [lesson-preparation.md](references/lesson-preparation.md).
 5. Preserve every selected item's stable ID and omit unrelated candidates.
@@ -114,7 +122,8 @@ unpracticed result learned.
 
 Use the conversational onboarding in [first-session.md](references/first-session.md).
 Save confirmed profile information with `scripts/update_profile.py`. English names are optional.
-Do not present a numerical placement score.
+Create a provisional learning plan from more than one short task. Do not present a numerical
+placement score.
 
 ### Review Weak Points
 

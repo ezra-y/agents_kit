@@ -35,6 +35,11 @@ class FinalLessonSpec(BaseModel):
     topic: str = Field(min_length=1)
     communication_goal: str = Field(min_length=1)
     scene: str = Field(min_length=1)
+    target_task: str = Field(min_length=1)
+    current_bottleneck: str = Field(min_length=1)
+    success_evidence: list[str] = Field(min_length=1)
+    input_task: str = Field(min_length=1)
+    transfer_task: str = Field(min_length=1)
     required_reviews: list[str] = Field(default_factory=list)
     error_repairs: list[LessonErrorRepair] = Field(default_factory=list)
     focus_targets: list[str] = Field(default_factory=list)
@@ -157,6 +162,14 @@ def finalize_lesson(spec: FinalLessonSpec) -> Path:
         "",
         spec.scene,
         "",
+        "## Task Evidence",
+        "",
+        f"- Target task: {spec.target_task}",
+        f"- Current bottleneck: {spec.current_bottleneck}",
+        f"- Listening demand: {spec.input_task}",
+        f"- Transfer task: {spec.transfer_task}",
+        *_render_success_evidence(spec.success_evidence),
+        "",
         "## Required Reviews",
         "",
         *_render_items(spec.required_reviews, items, "No required reviews."),
@@ -234,6 +247,13 @@ def _render_error_repairs(errors: list[LessonErrorRepair]) -> list[str]:
         f"- {error.learner_version} -> {error.natural_version}"
         + (f" | {error.focus}" if error.focus else "")
         for error in errors
+    ]
+
+
+def _render_success_evidence(evidence: list[str]) -> list[str]:
+    return [
+        "- Success evidence:",
+        *(f"  - {criterion}" for criterion in evidence),
     ]
 
 

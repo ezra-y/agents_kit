@@ -2,50 +2,38 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict, dataclass
-from datetime import datetime, time, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from .paths import runtime_dir
 
-Cadence = Literal["daily", "every_other_day", "weekly"]
-
-WEEKDAY_CODES = ("MO", "TU", "WE", "TH", "FR", "SA", "SU")
-
 
 @dataclass(frozen=True)
 class ClassSchedule:
-    cadence: Cadence
-    local_time: str
+    schedule_text: str
     timezone: str
-    weekdays: list[str]
-    starts_at: str
     rrule: str
 
-    def to_dict(self) -> dict[str, object]:
+    def to_dict(self) -> dict[str, str]:
         return asdict(self)
 
 
-def plan_class_schedule(
-    cadence: Cadence,
-    local_time: str,
+def class_schedule(
+    schedule_text: str,
     timezone: str,
-    weekdays: list[str] | None = None,
-    reference: datetime | None = None,
+    rrule: str,
 ) -> ClassSchedule:
+    description = schedule_text.strip()
+    recurrence = rrule.strip()
+    if not description:
+        raise ValueError("schedule_text cannot be empty")
     zone = _timezone(timezone)
-    clock = _clock(local_time)
-    selected_days = _weekdays(cadence, weekdays or [])
-    current = reference.astimezone(zone) if reference else datetime.now(zone)
-    start = _next_start(current, clock, cadence, selected_days)
-    recurrence = _rrule(cadence, start, timezone, selected_days)
+    if "RRULE:" not in recurrence.upper():
+        raise ValueError("rrule must contain an RFC 5545 RRULE")
     return ClassSchedule(
-        cadence=cadence,
-        local_time=clock.strftime("%H:%M"),
-        timezone=timezone,
-        weekdays=selected_days,
-        starts_at=start.isoformat(),
+        schedule_text=description,
+        timezone=zone.key,
         rrule=recurrence,
     )
 
@@ -98,67 +86,11 @@ def dismiss_reminder_setup() -> dict[str, object]:
     return reminder_status()
 
 
-def _next_start(
-    current: datetime,
-    clock: time,
-    cadence: Cadence,
-    weekdays: list[str],
-) -> datetime:
-    if cadence == "weekly":
-        for offset in range(8):
-            day = current.date() + timedelta(days=offset)
-            candidate = datetime.combine(day, clock, current.tzinfo)
-            if WEEKDAY_CODES[candidate.weekday()] in weekdays and candidate > current:
-                return candidate
-        raise RuntimeError("Could not resolve the next weekly class")
-
-    candidate = datetime.combine(current.date(), clock, current.tzinfo)
-    if candidate <= current:
-        candidate += timedelta(days=1)
-    return candidate
-
-
-def _rrule(
-    cadence: Cadence,
-    start: datetime,
-    timezone: str,
-    weekdays: list[str],
-) -> str:
-    start_line = f"DTSTART;TZID={timezone}:{start.strftime('%Y%m%dT%H%M%S')}"
-    if cadence == "daily":
-        rule = "RRULE:FREQ=DAILY"
-    elif cadence == "every_other_day":
-        rule = "RRULE:FREQ=DAILY;INTERVAL=2"
-    else:
-        rule = f"RRULE:FREQ=WEEKLY;BYDAY={','.join(weekdays)}"
-    return f"{start_line}\n{rule}"
-
-
 def _timezone(value: str) -> ZoneInfo:
     try:
         return ZoneInfo(value)
     except ZoneInfoNotFoundError as error:
         raise ValueError(f"Unknown timezone: {value}") from error
-
-
-def _clock(value: str) -> time:
-    try:
-        parsed = datetime.strptime(value, "%H:%M")
-    except ValueError as error:
-        raise ValueError("local_time must use HH:MM in 24-hour time") from error
-    return parsed.time()
-
-
-def _weekdays(cadence: Cadence, values: list[str]) -> list[str]:
-    normalized = list(dict.fromkeys(value.strip().upper() for value in values if value.strip()))
-    invalid = [value for value in normalized if value not in WEEKDAY_CODES]
-    if invalid:
-        raise ValueError(f"Unknown weekday codes: {', '.join(invalid)}")
-    if cadence == "weekly" and not normalized:
-        raise ValueError("weekly cadence requires at least one weekday")
-    if cadence != "weekly" and normalized:
-        raise ValueError("weekdays are only valid for weekly cadence")
-    return sorted(normalized, key=WEEKDAY_CODES.index)
 
 
 def _settings_path() -> Path:

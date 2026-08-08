@@ -8,6 +8,14 @@ Communication goal:
 
 Roles and situation:
 
+## Task Evidence
+
+- Target task:
+- Current bottleneck:
+- Listening demand:
+- Transfer task:
+- Success evidence:
+
 ## Required Reviews
 
 - `item-id` Teaching text | reason due

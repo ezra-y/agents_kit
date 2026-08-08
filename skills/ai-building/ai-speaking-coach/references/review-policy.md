@@ -26,9 +26,10 @@ The scheduler uses:
 R(t) = exp(-t / S)
 ```
 
-`S` is item-specific memory stability. A successful review increases it; a lapse reduces it. The
-next due time targets the configured retention probability rather than applying one fixed calendar
-to every sentence.
+`S` is item-specific memory stability. A successful review increases it; a lapse reduces it. This
+is a versioned exponential forgetting model, not a claim that the Skill has reproduced one
+universal Ebbinghaus schedule. The next due time targets the configured retention probability
+rather than applying one fixed calendar to every sentence.
 
 Initial intervals:
 

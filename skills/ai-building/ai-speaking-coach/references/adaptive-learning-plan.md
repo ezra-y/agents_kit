@@ -1,91 +1,183 @@
 # Adaptive Learning Plan
 
-Use a working plan instead of treating a fixed sentence list as the curriculum. The plan is
-personal to one learner and is revised from observed performance.
+Build a working plan from the learner's real communication needs and observed performance. A
+sentence list is a content source, not the curriculum. Read this file during onboarding, after a
+material goal or availability change, and whenever the current evidence calls for replanning.
 
-## First Plan
+## Evidence Boundary
 
-During the first meeting, gather these details naturally rather than as one long questionnaire:
+Research supports the following design constraints:
 
-- The real situations in which the learner wants to understand and speak English.
+- Work backward from real-world target tasks and can-do outcomes.
+- Use more than one speaking or listening task to form a provisional profile.
+- Observe communication, listening, interaction, language resources, fluency, and intelligibility
+  separately.
+- Include meaningful input, meaningful output, focused language work, and fluency development
+  across a rolling set of lessons.
+- Use selective oral correction, pronunciation transfer checks, and spaced retrieval.
+- Change the next teaching step from formative evidence gathered in class.
+
+Research does not provide one universal calendar, number of active tasks, promotion threshold, or
+perfect review interval. Treat numerical defaults as versioned product policy, not scientific
+facts.
+
+## Gather The Inputs
+
+Learn these details naturally over several turns:
+
+- The real situations in which the learner needs English, including roles, medium, speed,
+  formality, and consequences of a breakdown.
+- Which situation matters most now, how often it occurs, and whether there is a deadline.
 - Current listening and spontaneous speaking experience.
-- Available class frequency, session length, and realistic practice outside class.
-- Interests, preferred topics, accent exposure, and preferred balance of English and Chinese.
-- Correction tolerance and any deadline such as travel, an interview, or a presentation.
+- Available study opportunities, typical class length, and realistic independent practice.
+- Interests, preferred topics, accent exposure, language balance, and correction tolerance.
+- Available learner-owned courses, media, work material, or other approved content.
 
-Use short communicative samples to observe:
+Do not turn the conversation into a long form. Do not start by assigning everyone the same set of
+daily expressions.
 
-- Live listening comprehension.
-- Interpersonal interaction and turn maintenance.
-- Functional range: asking, clarifying, describing, narrating, and expressing an opinion.
-- Accuracy and naturalness.
-- Pronunciation, rhythm, intelligibility, and fluency from audio actually heard.
+## Build A Provisional Profile
 
-Do not claim an official CEFR or ACTFL rating. Record a provisional functional profile and the
-evidence supporting it.
+Collect short samples from at least two different tasks and cover all three communication modes
+when feasible:
 
-## Plan File
+1. Interpretive: understand a short spoken message and identify its purpose or key details.
+2. Interpersonal: exchange information, take turns, ask a follow-up, or repair a misunderstanding.
+3. Presentational: describe, narrate, explain, or give a short opinion.
 
-Create or update `runtime/learning-plan.md` from
-`assets/templates/learning-plan.md`. Include:
+For each sample, record concrete evidence in these dimensions:
 
-- One primary real-world outcome.
-- Two to four active communication scenarios.
-- A concise current functional snapshot.
-- Listening, interaction, naturalness, pronunciation, and fluency priorities.
-- A four-week direction with the next one or two weeks stated more concretely.
-- Available cadence and session length.
-- Evidence that would cause the plan to become easier, harder, or change direction.
+| Dimension | Evidence to record |
+| --- | --- |
+| Task completion | Whether the intended real-world result was achieved |
+| Listening | Main idea, key details, connected-speech decoding, and use of clarification |
+| Interaction | Turn taking, follow-up, confirmation, and repair |
+| Language resources | Whether vocabulary, chunks, grammar, and pragmatics were sufficient |
+| Fluency | Whether pausing, restarting, chunking, or speed blocked communication |
+| Intelligibility | Whether pronunciation, stress, and rhythm made the message easy to understand |
 
-Keep the plan versioned by date. Preserve old plans in session summaries rather than overwriting
-historical evidence.
+Label the profile `provisional`. Confidence belongs to each observation and should reflect the
+amount and variety of evidence, not the model's certainty of tone. Do not claim an official CEFR or
+ACTFL rating.
 
-## Lesson Adaptation
+## Generate The Plan
 
-Choose lesson content in this order:
+Create or update `runtime/learning-plan.md` from `assets/templates/learning-plan.md`.
 
-1. Due retrieval and unresolved high-value errors.
-2. One active real-world communication goal.
-3. Input the learner can mostly follow but cannot yet use comfortably.
-4. A speaking task that requires negotiation of meaning rather than recitation.
-5. Brief attention to form, pronunciation, or naturalness based on observed need.
-6. Fluency reuse of familiar language under a small change of person, time, place, or purpose.
+### 1. Confirm One Primary Outcome
 
-Balance meaning-focused input, meaning-focused output, language-focused learning, and fluency
-development across the week. Do not force all four into equal blocks in every lesson.
+Phrase it as a real result, such as completing an initial job interview or handling a hotel
+problem. If several goals compete, compare importance, frequency, urgency, and current difficulty,
+then let the learner confirm the current priority. Do not collapse these judgments into a
+pseudo-precise scientific score.
 
-After each class, update the next lesson from actual evidence:
+### 2. Decompose The Outcome Into Target Tasks
 
-- Raise challenge after independent comprehension and successful transfer.
-- Keep or narrow the target after prompted success.
-- Reduce linguistic load, not topic maturity, after repeated breakdown.
-- Change scenarios when the learner's real needs or deadline changes.
-- Never infer mastery from exposure alone.
+Keep a small active set that the next teaching block can genuinely address. Two to four tasks is
+the default policy, not a research law. For each task specify:
+
+- Scenario and roles.
+- A functional can-do target.
+- Listening and interaction demands.
+- Necessary language and pragmatic choices.
+- Pronunciation or rhythm features that may affect intelligibility.
+- Baseline evidence and observable success evidence.
+
+Select expressions and examples after defining the task. Do not randomly draw sentences and then
+invent a scene around them.
+
+### 3. Identify The Main Bottleneck
+
+Compare the task requirements with the current evidence. Name one or two near-term constraints:
+
+- The learner cannot decode the input.
+- The meaning is known but retrieval is too slow.
+- Necessary language is missing.
+- The wording is understandable but unnatural or pragmatically wrong.
+- Pronunciation or rhythm reduces intelligibility.
+- The learner cannot maintain or repair the interaction.
+
+Teach the bottleneck most likely to improve the target task, not every weakness visible in the
+same sample.
+
+### 4. Create The Next Teaching Block
+
+A teaching block is a rolling group of upcoming study opportunities, not a fixed four-week
+calendar. Include:
+
+- One active target task.
+- Due retrieval and unresolved high-value errors.
+- Comprehensible listening input related to the task.
+- Meaningful output or interaction that requires information exchange.
+- Brief language, naturalness, or pronunciation work selected from observed need.
+- Fluency or transfer with familiar language under a changed person, place, time, or purpose.
+
+Use Nation's Four Strands as a rolling balance check. Do not divide every class into four equal
+time boxes. Content quantity follows task complexity and live performance; exposure alone never
+counts as learning.
+
+### 5. Define Observable Success
+
+Use evidence such as:
+
+- The task is completed independently.
+- The learner understands the information needed to respond.
+- Fewer or lighter prompts are needed.
+- Target language is retrieved in time rather than only recognized.
+- The learner repairs a breakdown or asks for clarification.
+- The skill transfers to a changed version of the scene.
+- Pronunciation remains intelligible in spontaneous use, not only imitation.
+
+## Update From Each Class
+
+Use this evidence ladder as product policy `adaptive-plan-v1`:
+
+| Evidence | Next teaching move |
+| --- | --- |
+| Repeated breakdown despite support | Reduce linguistic or input load and teach the missing subskill |
+| Success with substantial prompting | Keep the task and fade one support |
+| Independent success in the familiar task | Add a meaningful scene variation |
+| Independent transfer plus delayed retrieval | Advance the task or move the bottleneck |
+
+This ladder guides judgment; it is not a proficiency scale. After every class:
+
+1. Update practiced items, errors, and item-level review state.
+2. Add one or two representative task-level observations to the plan or session summary.
+3. Identify whether the current bottleneck changed.
+4. Write the next teaching move and the evidence supporting it.
+5. Preserve uncertainty when evidence is thin or conflicting.
+
+Replan when the main goal or availability changes, evidence contradicts the provisional profile,
+the active tasks transfer reliably, or repeated lessons show no progress. A routine review can
+happen after a short block of lessons, but no fixed number is scientifically mandatory.
 
 ## Content Sources
 
-The local 722-item corpus is an optional private content pack. A reusable installation may instead
-use:
+The bundled 722-item corpus is an optional private content pack. A reusable installation may use:
 
 - Learner-provided course material.
-- Reviewed, licensed starter content organized by communication scenario.
-- Public professional proficiency descriptors to select functions and difficulty.
-- Model-created examples for the current scene, reviewed before they become tracked content.
+- Reviewed and licensed starter content organized by communication task.
+- Public proficiency descriptors to choose functions and working difficulty.
+- Model-created examples for the current task, reviewed before becoming tracked content.
 - Media lines imported with source and usage metadata.
 
-Do not copy proprietary sentence banks into a distributable package without permission. Store
-source, license, level rationale, scenario, and approval state for reusable content packs.
+Do not redistribute proprietary sentence banks without permission. Store source, license, scenario,
+difficulty rationale, and approval state for reusable content packs.
 
-## Reference Frameworks
+## Research Basis
 
 - The [CEFR Companion Volume](https://rm.coe.int/cefr-companion-volume-with-new-descriptors-2020/16809ea0d4)
-  provides action-oriented "can do" descriptors for listening, spoken interaction, phonology, and
-  real-world curriculum design.
-- The [NCSSFL-ACTFL Can-Do Statements](https://www.actfl.org/educator-resources/ncssfl-actfl-can-do-statements)
-  organize growth across interpretive, interpersonal, and presentational communication and support
-  self-assessment and goal setting.
-- Paul Nation's [Four Strands](https://www.wgtn.ac.nz/lals/resources/paul-nations-resources/paul-nations-publications/publications/documents/2007-Four-strands.pdf)
-  provides a course-balance check across input, output, form-focused learning, and fluency.
-- Task-based needs analysis starts from the learner's target real-world tasks rather than a fixed
-  grammar sequence. See the
-  [Cambridge Handbook of Task-Based Language Teaching](https://www.cambridge.org/core/books/cambridge-handbook-of-taskbased-language-teaching/tasks-and-needs-analysis/6F423C6640E470A31C09358607D59973).
+  supports action-oriented, real-world can-do design.
+- [NCSSFL-ACTFL Can-Do Statements](https://www.actfl.org/educator-resources/ncssfl-actfl-can-do-statements)
+  cover interpretive, interpersonal, and presentational communication for goal setting and
+  self-assessment.
+- [Serafini, Lake, and Long](https://doi.org/10.1016/j.esp.2015.05.002) support multi-source,
+  multi-method needs analysis.
+- [De Jong](https://doi.org/10.1146/annurev-linguistics-030521-052114) reviews the
+  multi-component nature and validity constraints of second-language speaking assessment.
+- [Nation's Four Strands](https://www.wgtn.ac.nz/lals/resources/paul-nations-resources/paul-nations-publications/publications/documents/2007-Four-strands.pdf)
+  provides a course-balance framework, not a universal minute allocation.
+- Meta-analyses support selective [oral corrective feedback](https://doi.org/10.1017/S0272263109990520),
+  [pronunciation instruction](https://doi.org/10.1093/applin/amu040), and
+  [spaced practice](https://doi.org/10.1111/lang.12479), with effects depending on task and
+  measurement conditions.

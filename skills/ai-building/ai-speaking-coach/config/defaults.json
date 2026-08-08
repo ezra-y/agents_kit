@@ -27,7 +27,7 @@
     "approved_only": true
   },
   "scheduler": {
-    "version": "ebbinghaus-v1",
+    "version": "exponential-stability-v1",
     "initial_intervals_hours": {
       "forgot": 8,
       "hard": 24,

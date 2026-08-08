@@ -1,48 +1,77 @@
 # Speaking Learning Plan
 
-Updated:
+- Plan version:
+- Generated at:
+- Evidence status: provisional
+- Product policy: adaptive-plan-v1
 
 ## Primary Outcome
 
-Real-world outcome:
+- Real-world result:
+- Why it matters now:
+- Deadline or pressure:
 
-## Active Scenarios
+## Learner Constraints
 
-- Scenario:
-  Can-do target:
-  Success evidence:
+- Available study opportunities:
+- Typical class length:
+- Independent practice:
+- Language and correction preferences:
+- Available content:
 
-## Current Functional Snapshot
+## Target Task Inventory
 
-- Listening:
-- Interaction:
-- Naturalness and accuracy:
-- Pronunciation and rhythm:
-- Fluency:
+### Active Task
 
-## Current Priorities
+- Scenario and roles:
+- Can-do target:
+- Listening and interaction demands:
+- Necessary language and pragmatics:
+- Intelligibility focus:
+- Baseline evidence:
+- Success evidence:
+
+## Current Evidence Profile
+
+| Dimension | Representative evidence | Confidence |
+| --- | --- | --- |
+| Task completion |  |  |
+| Listening |  |  |
+| Interaction |  |  |
+| Language resources |  |  |
+| Fluency |  |  |
+| Intelligibility |  |  |
+
+## Current Bottlenecks
 
 1.
 2.
-3.
 
-## Four-Week Direction
+## Next Teaching Block
 
-- Week 1:
-- Week 2:
-- Weeks 3-4:
+- Target task:
+- Due retrieval and old errors:
+- Listening input:
+- Meaningful interaction or output:
+- Language, naturalness, or pronunciation focus:
+- Fluency or transfer variation:
+- Support to provide:
+- Challenge to add after success:
 
-## Study Cadence
+## Rolling Balance Check
 
-- Class frequency:
-- Session length:
-- Reminder:
+- Meaning-focused input:
+- Meaning-focused output:
+- Language-focused learning:
+- Fluency development:
 
-## Adaptation Evidence
+## Adaptation Record
 
-- Increase challenge when:
-- Keep or narrow the target when:
-- Reduce language load when:
+- Latest evidence:
+- Next teaching move:
+- Keep or reduce support when:
+- Add a scene variation when:
+- Advance the task when:
 - Replan when:
 
 ## Content Sources

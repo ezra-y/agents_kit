@@ -11,16 +11,23 @@ Use:
 - Current status for each content item.
 - Long-uncovered and unseen course content.
 - Learner profile, goals, interests, and recent topics.
-- The active targets and adaptation evidence in `runtime/learning-plan.md`, when present.
+- The primary outcome, active target tasks, current bottleneck, and latest adaptation evidence in
+  `runtime/learning-plan.md`, when present.
 - A clear communication goal for today.
 - Hybrid retrieval candidates from local E5 and LanceDB.
 
 ## Selection Order
 
-1. Required: overdue reviews and high-value unresolved errors.
-2. Direction: one active real-world target from the learner's current plan.
-3. Related: new expressions and patterns that form one natural scene.
-4. Judgment: remove candidates that would make the scene forced or overloaded.
+1. Direction: choose one active target task and one current bottleneck from the plan.
+2. Required: include due retrieval and high-value unresolved errors, favoring items that fit the
+   target task while preserving genuinely urgent reviews.
+3. Input: choose a short listening demand the learner can mostly follow but cannot yet handle
+   independently.
+4. Output: define an information exchange, decision, explanation, or repair task rather than a
+   recital.
+5. Focus: add only the language, naturalness, or pronunciation work needed for the bottleneck.
+6. Transfer: change one meaningful variable and require familiar language to be retrieved again.
+7. Judgment: remove candidates that would make the scene forced or overloaded.
 
 SQLite determines what cannot be forgotten. LanceDB supplies relevant candidates. The strong model
 decides the final teaching combination.
@@ -46,6 +53,14 @@ The JSON contract is:
   "topic": "making weekend plans",
   "communication_goal": "Invite a new friend to do something together.",
   "scene": "Two classmates finish class and discuss their weekend.",
+  "target_task": "Agree on one weekend activity and settle the time and place.",
+  "current_bottleneck": "Asking natural follow-up questions without translating first.",
+  "success_evidence": [
+    "The learner reaches an agreement with no model-provided sentence.",
+    "The learner asks at least one relevant follow-up in time."
+  ],
+  "input_task": "Understand the friend's availability and one preference.",
+  "transfer_task": "Repeat with a different activity and one scheduling conflict.",
   "required_reviews": [],
   "error_repairs": [],
   "focus_targets": ["pattern220-p0179"],
@@ -59,6 +74,8 @@ The final lesson must include:
 
 - Topic and real communication goal.
 - A concise scene and roles.
+- The target task, current bottleneck, and observable success evidence.
+- A listening demand and a meaningful transfer variation.
 - Stable IDs for required reviews.
 - Stable IDs for target expressions and patterns.
 - Known errors to watch for.

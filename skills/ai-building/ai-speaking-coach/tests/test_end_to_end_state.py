@@ -55,6 +55,11 @@ def test_prepare_teach_record_and_retrieve_cycle(isolated_root: Path) -> None:
             topic="inviting a friend",
             communication_goal="Invite someone and respond naturally.",
             scene="Two classmates make a plan after class.",
+            target_task="Make one plan and agree on the details.",
+            current_bottleneck="Invitations need a grammar repair.",
+            success_evidence=["Complete the invitation without a prompt."],
+            input_task="Understand whether the friend accepts or declines.",
+            transfer_task="Invite the friend to a different activity.",
             focus_targets=["invite"],
             quick_checks=["reply"],
         )
