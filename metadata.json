@@ -66,10 +66,22 @@
         "output/skill"
       ]
     },
+    "animate": {
+      "recommendation": 5,
+      "description": "从零实现高质量 Web 动效：依次判断是否该动、动效目的、工具、属性、缓动、时长、中断和退出，并直接写实现。",
+      "trigger": "用户要求为组件添加动画、过渡或动效实现时使用；审查已有动画改用 review-animations。",
+      "tags": [
+        "role/builder",
+        "focus/interaction-design",
+        "focus/motion-design",
+        "platform/web",
+        "output/code"
+      ]
+    },
     "animation-vocabulary": {
       "recommendation": 3,
-      "description": "反查词典:把「弹窗弹出时那个弹弹的感觉」翻译成准确术语(Pop in)、「iOS 那个橡皮筋滚动」→ Rubber-banding。",
-      "trigger": "你想要某个效果但说不出名字时说「那个 XXX 的效果叫什么」。拿到准确术语再去下指令,效果好很多。",
+      "description": "动效术语反查词典：把模糊的视觉描述映射为准确的 Web 动画名称，便于向设计师或 AI 清楚表达。",
+      "trigger": "当用户描述一个动效但不知道名称，或询问“这个动画效果叫什么”时使用。",
       "tags": [
         "role/reference",
         "focus/motion-design",
@@ -114,12 +126,14 @@
     },
     "apple-design": {
       "recommendation": 5,
-      "description": "Apple 流体交互原则：1:1 跟手、可打断弹簧、速度继承与空间连续性。",
-      "trigger": "实现或审查 Mino 的拖拽 Tab、手势切换、弹簧动画和原生材质交互时。",
+      "description": "将 Apple 的流体界面原则转译到 Web：覆盖跟手手势、可中断弹簧、速度继承、材质层次、排版和减少动态效果。",
+      "trigger": "构建或审查 Web 上的手势交互、拖拽、弹簧动画、面板切换和 Apple 风格界面时使用。",
       "tags": [
         "role/guide",
         "focus/interaction-design",
-        "focus/motion-design"
+        "focus/motion-design",
+        "platform/web",
+        "output/design-spec"
       ]
     },
     "apple-docs-index": {
@@ -597,14 +611,26 @@
     },
     "emil-design-eng": {
       "recommendation": 4,
-      "description": "Emil Kowalski 的 UI 打磨哲学,675 行单文件。品味是练出来的、看不见的细节会累积、美是杠杆。含**动画决策框架**(第一问:这东西到底该不该动)和强制的评审输出格式。",
-      "trigger": "说「按 Emil 那套标准审一下动效」。信息密度很高。",
+      "description": "Emil Kowalski 的设计工程规范，覆盖 UI 打磨、组件细节、动画取舍、缓动时长与严格评审格式。",
+      "trigger": "需要按 Emil Kowalski 的设计工程标准构建或审查 Web 界面与动效时使用。",
       "tags": [
         "role/guide",
         "focus/motion-design",
         "focus/ui-design",
         "platform/web",
         "output/design-spec"
+      ]
+    },
+    "emil-ui-prototype": {
+      "recommendation": 4,
+      "description": "围绕一个 UI 组件构建三到五个真正不同、可交互的方案，通过固定选择器逐个比较，并在用户选择后晋升胜出方案。",
+      "trigger": "仅在用户明确要求用 Emil 的多方案 UI 选择器做设计探索，或调用 emil-ui-prototype 时使用。",
+      "tags": [
+        "role/builder",
+        "focus/prototyping",
+        "focus/ui-design",
+        "platform/web",
+        "output/prototype"
       ]
     },
     "eventkit": {
@@ -633,8 +659,8 @@
     },
     "find-animation-opportunities": {
       "recommendation": 3,
-      "description": "扫代码库找「该动却没动」的地方,并**否掉不该动的**。四道闸:频率(用户会看到多少次)、目的、速度(能否进预算)、功能(帮忙还是添乱)。只读,只出方案不改代码。",
-      "trigger": "说「看看这个项目哪儿该加动效」。",
+      "description": "只读扫描界面，找出真正值得增加动效的位置，并依据频率、目的、速度与功能否决不该动的元素。",
+      "trigger": "用户询问“哪里适合加动效”或希望让界面更有生命力但暂时不要求实施时使用。",
       "tags": [
         "role/reviewer",
         "focus/motion-design",
@@ -998,8 +1024,8 @@
     },
     "improve-animations": {
       "recommendation": 3,
-      "description": "以资深动效顾问身份通盘审已有动画代码,产出优先级排序的审计报告 + 可交给更便宜模型执行的自包含实施计划。只读。",
-      "trigger": "说「把这个项目的动效整体提升一下」。",
+      "description": "以资深动效顾问视角审计整个代码库的动画，产出按优先级排列的发现和可独立执行的实施计划，不直接修改源码。",
+      "trigger": "用户要求整体改善、审计或规划项目动效，而不是只审查单个改动时使用。",
       "tags": [
         "role/reviewer",
         "focus/motion-design",
@@ -1542,6 +1568,18 @@
         "output/reference"
       ]
     },
+    "pick-ui-library": {
+      "recommendation": 4,
+      "description": "从一份有明确偏好的清单中为前端任务选择 UI、动效、图表、状态和性能库，并优先复用项目已安装方案。",
+      "trigger": "仅在用户明确要求选择 UI 库或调用 pick-ui-library 时使用。",
+      "tags": [
+        "role/guide",
+        "focus/component-architecture",
+        "focus/ui-components",
+        "platform/web",
+        "output/decision"
+      ]
+    },
     "playground": {
       "recommendation": 4,
       "description": "生成自包含单文件 HTML 交互式 playground——带控件面板、实时预览、可导出配置。Anthropic 官方出品。",
@@ -1778,6 +1816,19 @@
         "focus/security-assessment",
         "focus/tool-integration",
         "platform/multi-platform",
+        "output/report"
+      ]
+    },
+    "review-animations": {
+      "recommendation": 4,
+      "description": "按严格动效标准审查现有动画代码，检查必要性、频率、缓动、时长、物理来源、中断性、性能、无障碍和一致性。",
+      "trigger": "用户明确要求审查动画、动效代码或调用 review-animations 时使用。",
+      "tags": [
+        "role/reviewer",
+        "focus/accessibility",
+        "focus/motion-design",
+        "focus/performance",
+        "platform/web",
         "output/report"
       ]
     },

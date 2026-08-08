@@ -57,6 +57,34 @@
         "content_sha256": "f94a1d9ce6d4f818a79afa9828ca04387f7b01a25e3e5cf94d1dba821f44f6a2"
       }
     },
+    "animate": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/emilkowalski/skills.git",
+        "ref": "",
+        "path": "skills/animate"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "de33dbed000212b54400a33767d1e4d03654db2a",
+        "content_sha256": "1734208b31ea571400900d3fb8b796018e163b9390beb280f72de1609a823566"
+      }
+    },
+    "animation-vocabulary": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/emilkowalski/skills.git",
+        "ref": "",
+        "path": "skills/animation-vocabulary"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "de33dbed000212b54400a33767d1e4d03654db2a",
+        "content_sha256": "6b40af93a79bce703f508cb85a443bcb551cc91472ccc4f7ba58bfab23bf1809"
+      }
+    },
     "api-design-patterns": {
       "provider": "git",
       "locator": {
@@ -97,6 +125,20 @@
       "resolved": {
         "revision": null,
         "content_sha256": "9eb86c4a380c0b6602e7a3cd771062cd833abaa7b3e1f5e782ea90ed70879184"
+      }
+    },
+    "apple-design": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/emilkowalski/skills.git",
+        "ref": "",
+        "path": "skills/apple-design"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "de33dbed000212b54400a33767d1e4d03654db2a",
+        "content_sha256": "f4d600886849b4a8f2d914184a494e138a67c0d02f09425d5b37b36908d3c8d5"
       }
     },
     "apple-docs-index": {
@@ -548,6 +590,35 @@
         "content_sha256": "5071178d5a430f461590021b3a3582643182c5ba310a928aedcf27f17708e9cf"
       }
     },
+    "emil-design-eng": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/emilkowalski/skills.git",
+        "ref": "",
+        "path": "skills/emil-design-eng"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "de33dbed000212b54400a33767d1e4d03654db2a",
+        "content_sha256": "908667087f836501a1e7ffbefd467b182ddec91fcec68d5c7ea8aae165aeac31"
+      }
+    },
+    "emil-ui-prototype": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/emilkowalski/skills.git",
+        "ref": "",
+        "path": "skills/prototype"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "de33dbed000212b54400a33767d1e4d03654db2a",
+        "content_sha256": "4af32c8d611f6f615b58107d9a3d34cb50799e1f07d010765afdcc7adaca9117"
+      },
+      "source_name": "prototype"
+    },
     "eventkit": {
       "provider": "git",
       "locator": {
@@ -574,6 +645,20 @@
       "resolved": {
         "revision": null,
         "content_sha256": "1ac20c6d7b760e0bae51728a5ee83d44e9c4cf782725ed23d0772b507d4021b8"
+      }
+    },
+    "find-animation-opportunities": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/emilkowalski/skills.git",
+        "ref": "",
+        "path": "skills/find-animation-opportunities"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "de33dbed000212b54400a33767d1e4d03654db2a",
+        "content_sha256": "52f1d7dbe45da84e472f6190c43f2a3b4dd9703bc4ca45fd55f93c2d2685d204"
       }
     },
     "frontend-design": {
@@ -952,6 +1037,20 @@
       "resolved": {
         "revision": "4fda173f3fef7fb808f3eba991eeb2528ea4b189",
         "content_sha256": "9ae704e7de9f0133a1d3eecb6cdc0ea4b8e3cc6f4da5c784c7d9025bd54c20fd"
+      }
+    },
+    "improve-animations": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/emilkowalski/skills.git",
+        "ref": "",
+        "path": "skills/improve-animations"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "de33dbed000212b54400a33767d1e4d03654db2a",
+        "content_sha256": "fb5a2ca589df7179b8f849106ad4ba555dbe78f090dfa0dab06e04b10c42fd27"
       }
     },
     "improve-codebase-architecture": {
@@ -1459,6 +1558,20 @@
         "content_sha256": "5f56bd818a6a795dd64dd06e1b285afa78e1ee383353cf21d49ec735bf7e3d7c"
       }
     },
+    "pick-ui-library": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/emilkowalski/skills.git",
+        "ref": "",
+        "path": "skills/pick-ui-library"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "de33dbed000212b54400a33767d1e4d03654db2a",
+        "content_sha256": "6c2f99328ce251404d3cb072030ab4c9c458e2371447ec3c99fefd2c52ce19d5"
+      }
+    },
     "playground": {
       "provider": "git",
       "locator": {
@@ -1666,6 +1779,20 @@
       "resolved": {
         "revision": "a5171e038d678eb5c6d3589b9a988da4492eb5ad",
         "content_sha256": "b2d4c7e1efc91093ca5fc816063e29d8fa87daa2796e2076422742130e35201f"
+      }
+    },
+    "review-animations": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/emilkowalski/skills.git",
+        "ref": "",
+        "path": "skills/review-animations"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "de33dbed000212b54400a33767d1e4d03654db2a",
+        "content_sha256": "d9a4132d8829cb1b0c6ab24833ff9fe38eadb0ae2ca58bb28e9a41406aba45f3"
       }
     },
     "rust-systems": {
