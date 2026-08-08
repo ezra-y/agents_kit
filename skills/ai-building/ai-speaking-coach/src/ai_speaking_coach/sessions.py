@@ -100,29 +100,29 @@ def _write_summary(record: SessionRecord) -> Path:
     destination = sessions_dir() / f"{date}.md"
     destination.parent.mkdir(parents=True, exist_ok=True)
     lines = [
-        f"# Speaking Class Record: {date}",
+        f"# 口语课记录：{date}",
         "",
         f"- Session: `{record.id}`",
         f"- Topic: {record.topic}",
         f"- Started: {record.started_at}",
         f"- Ended: {record.ended_at}",
         "",
-        "## Practiced Content",
+        "## 练习内容",
         "",
     ]
     lines.extend(
         f"- `{item.item_id}`: {item.activity}, {item.grade}, {item.status_after}"
         for item in record.items
     )
-    lines.extend(["", "## Errors", ""])
+    lines.extend(["", "## 错误", ""])
     if record.errors:
         lines.extend(
             f"- {error.user_said} -> {error.natural_version} ({error.error_type})"
             for error in record.errors
         )
     else:
-        lines.append("- No errors from this class need long-term review.")
+        lines.append("- 本节没有需要进入长期复习的错误。")
     if record.notes:
-        lines.extend(["", "## Teacher Notes", "", record.notes])
+        lines.extend(["", "## 教师记录", "", record.notes])
     destination.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return destination
