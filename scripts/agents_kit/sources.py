@@ -548,9 +548,15 @@ class SourceSession(AbstractContextManager["SourceSession"]):
         return matched[0].normalize(raw_source, options)
 
     def candidates(self, spec: SourceSpec) -> list[SkillCandidate]:
+        return self.scan(spec)[1]
+
+    def scan(self, spec: SourceSpec) -> tuple[str | None, list[SkillCandidate]]:
         resolved = self._resolve(spec)
         roots = self._candidate_roots(resolved)
-        return [self._candidate(root, resolved.root) for root in roots]
+        return (
+            resolved.revision,
+            [self._candidate(root, resolved.root) for root in roots],
+        )
 
     def snapshot(
         self, spec: SourceSpec, *, candidate_path: str | None = None

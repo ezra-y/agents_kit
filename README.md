@@ -32,8 +32,10 @@ agents-kit check
 | `active.txt` | 全局常驻技能名 |
 | `sources.json` | 上游 provider、定位信息、更新策略和内容摘要 |
 | `metadata.json` | 中文说明、触发方式、推荐指数、标签和可选依赖 |
+| `scout.json` | 收藏索引：未安装技能的名字、用途和来源定位，不含内容 |
 | `mcps.json` | MCP 上游、锁定版本、启动方式、凭据来源和启用状态 |
 | `docs/skills.md` | 自动生成的技能清册 |
+| `docs/catalog.md` | 自动生成的收藏总目录：未收录索引 + 未常驻 + 常驻 |
 | `docs/mcps.md` | 自动生成的 MCP 清单 |
 | `docs/cli.md` | 自动生成的完整命令参考 |
 | `docs/architecture.md` | 架构、模块边界和数据流 |
@@ -75,6 +77,29 @@ agents-kit skill import "<来源>" \
 
 来源中有多个技能时，先运行 `agents-kit source inspect <来源>`，再用
 `--candidate <相对路径>` 选择。
+
+## 收藏总目录：大仓库不整个收录，看上先记一笔
+
+有的上游仓库一个就带几十个技能，不必全部导入。`source inspect --save`
+只登记索引（每个技能的名字和上游原文描述），内容不落地：
+
+```bash
+agents-kit source inspect https://github.com/emilkowalski/skills --save
+agents-kit source inspect --refresh-index   # 重扫全部已收藏来源
+```
+
+索引存进 `scout.json`，`docs build` 把它和仓库清册一起渲染成
+`docs/catalog.md` 收藏总目录，分三层：
+
+1. **未收录索引**：看上但还没进仓库的，每条带上游原文描述、指向默认分支
+   最新版的全文链接和现成的 `skill import --candidate` 命令模板；
+2. **已收录、未常驻**：仓库现成的技能，`global enable` 即可用，零下载；
+3. **常驻**：备查名单。
+
+AI 的入口是全局 `~/.claude/CLAUDE.md` / `AGENTS.md` 里的一句指引：需要
+新能力时先读 `~/agents_kit/docs/catalog.md`。上游改目录导致链接失效时，
+`--refresh-index` 重扫即可恢复；移除来源直接编辑 `scout.json` 后运行
+`agents-kit docs build`。
 
 ## 收录 MCP
 

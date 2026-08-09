@@ -37,7 +37,7 @@ usage: agents-kit source [-h]
 positional arguments:
   {providers,inspect,detach,check,update,report}
     providers           列出来源适配器
-    inspect             只检查来源，不写仓库
+    inspect             检查来源；--save 把技能索引存入收藏（scout.json）
     detach              停止跟踪技能来源
     check               检查来源变化
     update              获取并应用经过确认的来源更新
@@ -55,8 +55,10 @@ options:
 
 $ agents-kit source inspect --help
 usage: agents-kit source inspect [-h] [--provider PROVIDER] [--ref REF]
-                                 [--source-path SOURCE_PATH] [--json]
-                                 source
+                                 [--source-path SOURCE_PATH] [--save]
+                                 [--name NAME] [--note NOTE] [--refresh-index]
+                                 [--json]
+                                 [source]
 
 positional arguments:
   source
@@ -66,6 +68,10 @@ options:
   --provider PROVIDER
   --ref REF
   --source-path SOURCE_PATH
+  --save
+  --name NAME           --save 时的索引名，默认从来源推导
+  --note NOTE           --save 时的备注
+  --refresh-index       重扫 scout.json 里已保存的全部来源
   --json
 
 $ agents-kit source detach --help

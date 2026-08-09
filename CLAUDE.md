@@ -8,6 +8,9 @@
    `docs/cli.md`，一般不直接调用 `scripts/agents_kit/` 内部模块。
 2. 用户未说明安装范围时，先确认全局还是当前项目；只收录、不安装时使用
    `library`。新技能先进入本仓库，不直接复制到客户端或项目的技能目录。
+   上游仓库技能太多、暂不安装时，用 `agents-kit source inspect <来源> --save`
+   记入收藏索引（scout.json，渲染成 `docs/catalog.md` 收藏总目录），之后
+   按需启用或安装；找技能先查 `docs/catalog.md`。
 3. 添加技能、移动分类或修改标签前，读取 `docs/skill-taxonomy.md`，按主要产出
    选择分类，只使用 `agents-kit.json` 的中央词表。
 4. 优先通过 CLI 修改技能目录及 `active.txt`、`sources.json`、`metadata.json`

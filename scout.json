@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "sources": {
+    "emilkowalski-skills": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/emilkowalski/skills.git",
+        "ref": "",
+        "path": ""
+      },
+      "revision": "de33dbed000212b54400a33767d1e4d03654db2a",
+      "skills": [
+        {
+          "path": "skills/animate",
+          "name": "animate",
+          "description": "Build an animation from scratch, making the decisions in the order that determines whether it feels right — should it animate at all, what purpose, which tool, which properties, which curve and duration, how it interrupts, how it exits. Writes the implementation. Use when asked to animate something, add motion, make a component feel alive, or build a transition. For critiquing existing motion use review-animations; for auditing a whole codebase use improve-animations."
+        },
+        {
+          "path": "skills/animation-vocabulary",
+          "name": "animation-vocabulary",
+          "description": "Reverse-lookup glossary that turns a vague description of a web animation or motion effect into its exact term (\"the bouncy thing when a popover opens\" → Pop in; \"the iOS rubber-band scroll\" → Rubber-banding). Use when the user asks \"what's it called when…\", or describes a motion effect without knowing its name and wants the right word to prompt an AI or designer with. For naming an effect, not designing or building one."
+        },
+        {
+          "path": "skills/apple-design",
+          "name": "apple-design",
+          "description": "Apple's approach to interface design and fluid, physical motion, translated for the web. Use when building or reviewing gesture-driven UI, spring animations, drag/swipe/sheet interactions, momentum and interruptible transitions, translucent materials and depth, typography (optical sizing, tracking, leading), reduced-motion, or the design foundations (feedback, spatial consistency, restraint) behind Apple-style interfaces."
+        },
+        {
+          "path": "skills/emil-design-eng",
+          "name": "emil-design-eng",
+          "description": "This skill encodes Emil Kowalski's philosophy on UI polish, component design, animation decisions, and the invisible details that make software feel great."
+        },
+        {
+          "path": "skills/find-animation-opportunities",
+          "name": "find-animation-opportunities",
+          "description": "Search a codebase or UI for places that don't animate but should, and reject everything that shouldn't. Read-only; it proposes motion with exact values, it does not implement it. Use when the user asks \"what could be animated here?\" or wants to \"make this feel more alive\". For fixing existing animations, use improve-animations or review-animations instead."
+        },
+        {
+          "path": "skills/improve-animations",
+          "name": "improve-animations",
+          "description": "Survey a codebase's animation and motion code as a senior motion advisor, then produce a prioritized audit and self-contained implementation plans for other agents (or cheaper models) to execute. Read-only on source code — it plans improvements, it does not apply them. Use when the user asks to \"improve the animations\", \"audit the motion\", \"make this app feel better\", or wants a roadmap of animation fixes rather than a review of a single diff."
+        },
+        {
+          "path": "skills/pick-ui-library",
+          "name": "pick-ui-library",
+          "description": "Pick the right library for a given frontend task from a curated, opinionated list — numbers, OTP inputs, charts, command menus, virtualization, drag and drop, toasts, state, styling, and more. Only runs when explicitly invoked; it does not trigger on its own."
+        },
+        {
+          "path": "skills/prototype",
+          "name": "prototype",
+          "description": "Build multiple genuinely different versions of a UI piece you describe, rendered behind a visual picker so you can flip through them live and promote the one that feels right. Only runs when explicitly invoked; it does not trigger on its own."
+        },
+        {
+          "path": "skills/review-animations",
+          "name": "review-animations",
+          "description": "Reviews animation and motion code against a high craft bar derived from Emil Kowalski's design engineering philosophy. Default to flagging; approval is earned."
+        }
+      ],
+      "note": "Emil Kowalski 的动效与 UI 设计技能合集"
+    }
+  }
+}

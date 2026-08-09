@@ -25,6 +25,7 @@ from agents_kit import (
     docs,
     installation,
     mcps,
+    scout,
     skills,
     source_reports,
     ui,
@@ -33,6 +34,7 @@ from agents_kit.installation import InstallationError
 from agents_kit.mcps import McpError
 from agents_kit.models import ChangeSet, ContentMode, Effect
 from agents_kit.repository import Repository, RepositoryError
+from agents_kit.scout import ScoutError
 from agents_kit.skills import SkillError
 from agents_kit.sources import (
     SourceError,
@@ -67,9 +69,19 @@ def build_parser() -> argparse.ArgumentParser:
     _json_flag(providers)
     providers.set_defaults(handler=command_source_providers)
 
-    inspect = source_commands.add_parser("inspect", help="只检查来源，不写仓库")
-    inspect.add_argument("source")
+    inspect = source_commands.add_parser(
+        "inspect", help="检查来源；--save 把技能索引存入收藏（scout.json）"
+    )
+    inspect.add_argument("source", nargs="?")
     _source_flags(inspect)
+    inspect.add_argument("--save", action="store_true")
+    inspect.add_argument("--name", help="--save 时的索引名，默认从来源推导")
+    inspect.add_argument("--note", default="", help="--save 时的备注")
+    inspect.add_argument(
+        "--refresh-index",
+        action="store_true",
+        help="重扫 scout.json 里已保存的全部来源",
+    )
     _json_flag(inspect)
     inspect.set_defaults(handler=command_source_inspect)
 
@@ -341,6 +353,11 @@ def command_status(args: argparse.Namespace, context: Context) -> dict[str, Any]
         "enabled_mcps": sum(
             1 for record in repo.read_mcps()["servers"].values() if record["enabled"]
         ),
+        "scout_sources": len(repo.read_scout()["sources"]),
+        "scout_skills": sum(
+            len(record.get("skills", []))
+            for record in repo.read_scout()["sources"].values()
+        ),
         "categories": dict(sorted(by_category.items())),
     }
 
@@ -355,12 +372,19 @@ def command_source_providers(
 def command_source_inspect(
     args: argparse.Namespace, context: Context
 ) -> dict[str, Any]:
+    if args.refresh_index:
+        if args.source:
+            raise CommandError("--refresh-index 重扫全部已存来源，不接受来源参数")
+        return _refresh_scout_index(context)
+    if not args.source:
+        raise CommandError("需要提供来源，或使用 --refresh-index")
     with SourceSession(context.repo.network_timeout) as session:
         spec = _source_spec(session, args)
-        candidates = session.candidates(spec)
-        return {
+        revision, candidates = session.scan(spec)
+        result = {
             "provider": spec.provider,
             "locator": spec.locator,
+            "revision": revision,
             "candidates": [
                 {
                     "path": candidate.relative_path,
@@ -370,6 +394,43 @@ def command_source_inspect(
                 for candidate in candidates
             ],
         }
+        if not args.save:
+            return result
+        name = args.name or scout.default_name(spec)
+        record = scout.build_record(spec, revision, candidates, note=args.note)
+    with context.repo.write_lock():
+        change = scout.save_source(context.repo, name, record)
+    finished = context.finish(change)
+    finished["candidates"] = result["candidates"]
+    return finished
+
+
+def _refresh_scout_index(context: Context) -> dict[str, Any]:
+    names = sorted(context.repo.read_scout()["sources"])
+    results: list[dict[str, Any]] = []
+    failures: list[dict[str, str]] = []
+    combined = ChangeSet()
+    with SourceSession(context.repo.network_timeout) as session:
+        for name in names:
+            record = context.repo.read_scout()["sources"][name]
+            try:
+                revision, candidates = session.scan(scout.source_spec(record))
+                updated = scout.build_record(
+                    scout.source_spec(record),
+                    revision,
+                    candidates,
+                    note=record.get("note", ""),
+                )
+                with context.repo.write_lock():
+                    change = scout.save_source(context.repo, name, updated)
+                results.append({"index": name, **change.details})
+                combined.merge(change)
+            except (OSError, RuntimeError, ValueError) as exc:
+                failures.append({"index": name, "error": str(exc)})
+    finished = context.finish(combined)
+    finished["results"] = results
+    finished["failures"] = failures
+    return finished
 
 
 def command_source_detach(args: argparse.Namespace, context: Context) -> dict[str, Any]:
@@ -1127,6 +1188,7 @@ def main() -> int:
         RepositoryError,
         SourceError,
         SkillError,
+        ScoutError,
         McpError,
         InstallationError,
         TaxonomyError,

@@ -33,6 +33,7 @@ class Repository:
         self.sources_path = self.root / "sources.json"
         self.metadata_path = self.root / "metadata.json"
         self.mcps_path = self.root / "mcps.json"
+        self.scout_path = self.root / "scout.json"
         self.config_path = self.root / CONFIG_NAME
         self._config: dict[str, Any] | None = None
         self._inventory: dict[str, SkillEntry] | None = None
@@ -163,6 +164,22 @@ class Repository:
         normalized["schema_version"] = 1
         normalized["servers"] = dict(sorted(normalized.get("servers", {}).items()))
         return self.write_json_if_changed(self.mcps_path, normalized)
+
+    def read_scout(self) -> dict[str, Any]:
+        if not self.scout_path.is_file():
+            return {"schema_version": 1, "sources": {}}
+        data = self._load_json(self.scout_path)
+        if data.get("schema_version") != 1:
+            raise RepositoryError("scout.json schema_version 必须是 1")
+        if not isinstance(data.get("sources"), dict):
+            raise RepositoryError("scout.json 缺 sources 对象")
+        return data
+
+    def write_scout(self, data: dict[str, Any]) -> bool:
+        normalized = dict(data)
+        normalized["schema_version"] = 1
+        normalized["sources"] = dict(sorted(normalized.get("sources", {}).items()))
+        return self.write_json_if_changed(self.scout_path, normalized)
 
     def write_metadata(self, data: dict[str, Any]) -> bool:
         normalized = dict(data)

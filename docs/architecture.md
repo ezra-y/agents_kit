@@ -10,6 +10,7 @@
 - 常驻：104
 - 来源记录：206
 - metadata：231
+- 收藏索引：1 个来源，9 个技能
 - MCP：5
 - MCP 已启用：5
 - 分类：视频制作(2), iOS(42), 运营与内容(9), 前端与 UI/UX(46), 后端(4), 安全与逆向(1), 通用工程(14), 产品(36), 学术研究(31), 研究与办公(30), AI Building(16)
@@ -20,6 +21,7 @@
 - `active.txt`：全局常驻技能名
 - `sources.json`：provider 来源记录
 - `metadata.json`：中文清册、标签和依赖
+- `scout.json`：收藏索引，未安装技能的名字、用途和来源定位
 - `mcps.json`：MCP 清单、上游、锁定版本、启动方式和启用状态
 
 <!-- END GENERATED -->
@@ -60,6 +62,7 @@ MCP 上游与分发
 | `sources.py` | Git、HTTP、本地来源识别、获取、候选发现 | 修改仓库状态 |
 | `source_reports.py` | 把来源检查 JSON 渲染为 Issue 审核 Markdown | 获取或应用来源更新 |
 | `skills.py` | 导入、更新、移动、重命名、删除、metadata 和标签 | 全局或项目安装 |
+| `scout.py` | 收藏索引的登记、来源定位和全文链接 | 获取来源内容、安装技能 |
 | `mcps.py` | MCP 导入、启停、版本更新、运行和客户端同步 | 保存凭据值、管理 Skill |
 | `installation.py` | 全局软链接和项目副本 | 修改技能正文 |
 | `docs.py` | 纯渲染、write-if-changed、文档过期检查 | 修改事实状态 |
@@ -104,6 +107,20 @@ mcps -> repository 中的单一 MCP 清单
 `SKILL.md`，适用于直接 HTTP 文件；更新时保留本地附件。增加新来源时，只扩展
 `sources.py` 的 provider 注册和对应测试，不修改技能、安装和文档流程。
 
+## 收藏索引模型
+
+`scout.json` 登记「看过但未安装」的上游来源：每条保存 provider、locator、
+扫描版本和全部技能条目（path、name、原文 description），不下载内容。
+`source inspect --save` 写入，`--refresh-index` 重扫全部来源。
+
+消费端是生成文档 `docs/catalog.md` 收藏总目录，分三层：未收录索引
+（scout.json）、已收录未常驻（仓库清册减 active）、常驻备查。AI 通过全局
+`CLAUDE.md` / `AGENTS.md` 里的一句指引找到该文件，按描述匹配后走最便宜
+路径：启用已收录技能，或按 `HEAD` 原文链接读上游最新全文、用条目 path 作为
+`--candidate` 走 `skill import` 的同一条导入流程。描述允许滞后（只用于
+初筛），全文和安装始终实时。索引条目不参与安装体检；只有真正安装后才进入
+`skills/`、`sources.json` 和 `metadata.json`。
+
 ## 分类与标签模型
 
 目录 `skills/<分类>/<技能名>` 表达唯一一级分类。`metadata.json` 保存标签，
@@ -147,6 +164,7 @@ launcher 管理的记录；同名外部配置默认停止并报告。
 `docs.py` 从事实状态生成：
 
 - `docs/skills.md`
+- `docs/catalog.md`
 - `docs/mcps.md`
 - `docs/cli.md`
 - 本文件的生成区块

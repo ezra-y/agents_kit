@@ -30,6 +30,7 @@ def run(repo: Repository, *, command_help: str, repo_only: bool = False) -> Chec
     _check_active(repo, inventory, report)
     _check_sources(repo, inventory, report)
     _check_metadata(repo, inventory, report)
+    _check_scout(repo, report)
     _check_mcps(repo, report, repo_only=repo_only)
     _check_references(inventory, report)
     _check_docs(repo, command_help, report)
@@ -175,6 +176,43 @@ def _check_metadata(
         "missing": missing,
         "stale": stale,
     }
+
+
+def _check_scout(repo: Repository, report: CheckReport) -> None:
+    try:
+        sources = repo.read_scout()["sources"]
+    except RepositoryError as exc:
+        report.problems.append(str(exc))
+        report.sections["scout"] = {"sources": 0, "skills": 0}
+        return
+    total = 0
+    for name, record in sorted(sources.items()):
+        if not isinstance(record, dict):
+            report.problems.append(f"scout {name}: 记录必须是对象")
+            continue
+        if not isinstance(record.get("provider"), str) or not record["provider"]:
+            report.problems.append(f"scout {name}: provider 不能为空")
+        if not isinstance(record.get("locator"), dict):
+            report.problems.append(f"scout {name}: locator 必须是对象")
+        indexed = record.get("skills")
+        if not isinstance(indexed, list) or not indexed:
+            report.problems.append(f"scout {name}: skills 必须是非空数组")
+            continue
+        paths: set[str] = set()
+        for item in indexed:
+            if not isinstance(item, dict) or not all(
+                isinstance(item.get(key), str)
+                for key in ("path", "name", "description")
+            ):
+                report.problems.append(
+                    f"scout {name}: 条目必须包含 path、name、description 字符串"
+                )
+                continue
+            if item["path"] in paths:
+                report.problems.append(f"scout {name}: 条目路径重复 {item['path']}")
+            paths.add(item["path"])
+        total += len(indexed)
+    report.sections["scout"] = {"sources": len(sources), "skills": total}
 
 
 def _check_mcps(repo: Repository, report: CheckReport, *, repo_only: bool) -> None:
@@ -347,9 +385,14 @@ def _check_global(repo: Repository, report: CheckReport) -> None:
     report.sections["global"] = plan
 
 
+IGNORED_TREE_DIRS = {".git", "__pycache__", ".venv", "venv", "node_modules"}
+
+
 def _check_symlinks(root: Path, report: CheckReport) -> None:
     root_real = root.resolve()
     for path in root.rglob("*"):
+        if any(part in IGNORED_TREE_DIRS for part in path.relative_to(root).parts):
+            continue
         if not path.is_symlink():
             continue
         target = path.resolve()
