@@ -28,6 +28,11 @@ def test_skill_selects_workflow_from_session_modality_and_persistent_files() -> 
     assert "Search During Class](workflows/" not in skill
     assert "private/learner/course.md absent" in skill
     assert "contains no completed session file" in skill
+    assert "GPT Live opens as a separate voice task" in skill
+    assert "one globally installed `SKILL_DIR`" in skill
+    assert "project-local copies must not hold" in skill
+    assert "~/.agents/skills/ai-speaking-coach/SKILL.md" in skill
+    assert "resolve that symlink" in skill
     assert "A text task cannot turn on the microphone" not in skill
     assert "Route each request to the preparation teacher" not in skill
     assert "prompts/" not in skill
@@ -37,10 +42,16 @@ def test_skill_selects_workflow_from_session_modality_and_persistent_files() -> 
     assert "../references/course-design.md" in preparation_workflow
     assert "../references/lesson-preparation.md" in preparation_workflow
     assert "before preparing the lesson" in preparation_workflow
-    assert "You can open GPT Live and start class now" in preparation_workflow
+    assert "Open the standalone GPT Live entry" in preparation_workflow
+    assert "current text task can start, open, or switch itself into GPT Live" in (
+        preparation_workflow
+    )
+    assert "You can open GPT Live and start class now" not in preparation_workflow
     assert "../references/live-class.md" in live_workflow
     assert "Read today's local date" in live_workflow
     assert "first_recorded_class" in live_workflow
+    assert "Treat this as a standalone voice task" in live_workflow
+    assert "pending-status phrase" in live_workflow
     assert "first GPT Live class" not in live_workflow
     assert not (root / "prompts").exists()
 

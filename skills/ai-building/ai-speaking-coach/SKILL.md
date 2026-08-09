@@ -15,7 +15,16 @@ These are capabilities of the current model and host session, not two external t
 multi-agent handoff. Perform only work supported by the session's exposed input and output
 modalities.
 
-Treat the directory containing this file as `SKILL_DIR`.
+Resolve `SKILL_DIR` before reading or writing course data:
+
+1. If `~/.agents/skills/ai-speaking-coach/SKILL.md` exists, resolve that symlink and use its
+   containing directory.
+2. Otherwise, use the directory containing the currently loaded `SKILL.md`.
+
+In Codex Desktop, GPT Live opens as a separate voice task. A text task cannot turn itself into
+Live or carry its conversational context into that new task. The two tasks continue the same
+course through durable files in one globally installed `SKILL_DIR`; do not depend on a project
+working directory or the previous task's conversation.
 
 ## Select The Current Workflow
 
@@ -44,6 +53,20 @@ private/learner/records/lessons/YYYY-MM-DD.md present
 ```
 
 Check these files instead of relying on conversational memory or a phrase such as "first class."
+
+## Cross-Task Handoff
+
+The finalized lesson is the handoff between preparation and Live:
+
+1. The text task writes `private/learner/records/lessons/YYYY-MM-DD.md`.
+2. It tells the learner to open the standalone GPT Live entry, which creates a new voice task.
+3. In that task, the learner selects or invokes `ai-speaking-coach` and asks to start today's
+   lesson.
+4. The Live task reads the local date and the matching lesson from the same `SKILL_DIR`.
+
+This Skill must be globally available in Codex Desktop so a projectless Live task can resolve it.
+Keep the global installation as the canonical course package; project-local copies must not hold
+separate learner state.
 
 ## Persistent Runtime
 

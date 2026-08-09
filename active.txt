@@ -105,3 +105,4 @@ ponytail-debt
 ponytail-gain
 ponytail-help
 ponytail
+ai-speaking-coach

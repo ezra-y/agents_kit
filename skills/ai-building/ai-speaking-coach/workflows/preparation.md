@@ -81,8 +81,13 @@ Read [Lesson Preparation](../references/lesson-preparation.md) and
 The finalized output is `private/learner/records/lessons/YYYY-MM-DD.md`. This finished lesson, not
 `references/lesson-preparation.md` and not `assets/templates/lesson.md`, is the file the Live
 workflow reads in class.
-When a finalized lesson is ready, give its date and path, then tell the learner: "The lesson is
-ready. You can open GPT Live and start class now."
+When a finalized lesson is ready, give its date and path, then explain the handoff in one sentence:
+"Today's lesson is ready. Open the standalone GPT Live entry; in the new voice task, select or
+invoke AI Speaking Coach and say, 'Start today's lesson.'"
+
+Do not claim that the current text task can start, open, or switch itself into GPT Live. The new
+Live task resumes the course from the globally installed Skill's durable files, not from this
+task's conversational context.
 
 Preparation does not create learning events. A sentence appearing in a lesson candidate pool has
 not yet been studied.

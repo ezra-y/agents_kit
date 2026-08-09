@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **231** 个 · 常驻 **104** 个 · 有上游可检查更新 **206** 个
+共 **231** 个 · 常驻 **105** 个 · 有上游可检查更新 **206** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -275,7 +275,7 @@
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
-| `ai-speaking-coach` | 根据学习者目标和听说表现维护个性化计划，结合 GPT Live、间隔复习、知识库和定时提醒的一对一英语口语教练 | `role/workflow` `focus/database` `focus/knowledge-base` `focus/workflow-automation` `platform/macos` `output/skill` |  | — |
+| `ai-speaking-coach` | 根据学习者目标和听说表现维护个性化计划，结合 GPT Live、间隔复习、知识库和定时提醒的一对一英语口语教练 | `role/workflow` `focus/database` `focus/knowledge-base` `focus/workflow-automation` `platform/macos` `output/skill` | ● | — |
 | `build-mcp-app` | 给 MCP 服务加交互式 UI / widget。什么时候 widget 胜过纯文本、widget 与 elicitation 怎么区分、两 | `role/builder` `focus/mcp-ui` `focus/tool-integration` `platform/mcp` `output/app` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/mcp-server-dev/skills/build-mcp-app) |
 | `build-mcp-server` | 建 MCP 服务。先盘问用途(连什么、谁用、暴露几个动作、要不要中途要用户输入、上游怎么认证),再推荐部署形态,默认推荐远程 streama | `role/builder` `focus/api-integration` `focus/mcp-server` `platform/mcp` `output/code` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/mcp-server-dev/skills/build-mcp-server) |
 | `caveman` | 超压缩沟通模式,砍掉虚词和客套,据称省约 75% token。 | `role/guide` `focus/agent-communication` `focus/token-efficiency` `output/text` |  | — |

@@ -9,6 +9,9 @@ Teach from the finalized lesson and audio actually delivered by the client. Adap
 exchange, answer precise questions with local course search when needed, and return to the lesson.
 Do not redesign the whole course or prepare a replacement lesson while teaching.
 
+Treat this as a standalone voice task. Recover course continuity from this globally installed
+Skill's persistent files, not from a prior text task or a project working directory.
+
 Read [Live Class](../references/live-class.md) before teaching. At class close, read
 [Progress And Review](../references/progress-and-review.md) before creating the session record.
 
@@ -67,6 +70,10 @@ uv run --project "$SKILL_DIR" python \
 
 Use the results as candidates, answer the question, and return to the current class task. Do not
 let retrieval redesign the lesson. Retrieval alone does not mark an item learned.
+
+Keep retrieval bounded in conversation: acknowledge the lookup once, then either use the result
+or state briefly that the lookup did not complete and continue from the finalized lesson. Do not
+repeat a pending-status phrase while waiting.
 
 ## Close The Class
 
