@@ -426,8 +426,8 @@ Image Editing Mode:
         # No logo provided - ask user what to do
         action = check_logo_required(args.brand, skip_prompt=args.no_logo_prompt)
         if action == 'generate':
-            print("\n💡 To generate a logo, use the logo-design skill:")
-            print(f"   python ~/.claude/skills/design/scripts/logo/generate.py --brand \"{args.brand}\" --industry \"{args.industry}\"")
+            print("\n💡 Generate the logo with the design skill's GPT Image 2 workflow in Codex Imagegen.")
+            print(f"   Brand: {args.brand} | Industry: {args.industry}")
             print("\n   Then re-run this command with --logo <generated_logo.png>")
             sys.exit(0)
         elif action == 'exit':

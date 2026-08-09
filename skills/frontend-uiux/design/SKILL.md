@@ -1,11 +1,11 @@
 ---
 name: design
-description: "Comprehensive design skill: brand identity, design tokens, UI styling, logo generation (55 styles, Gemini AI), corporate identity program (50 deliverables, CIP mockups), HTML presentations (Chart.js), banner design (22 styles, social/ads/web/print), icon design (15 styles, SVG, Gemini 3.1 Pro), social photos (HTML→screenshot, multi-platform). Actions: design logo, create CIP, generate mockups, build slides, design banner, generate icon, create social photos, social media images, brand identity, design system. Platforms: Facebook, Twitter, LinkedIn, YouTube, Instagram, Pinterest, TikTok, Threads, Google Ads."
+description: "Comprehensive design skill: brand identity, design tokens, UI styling, logo generation (55 styles, GPT Image 2 through Codex Imagegen), corporate identity program (50 deliverables, CIP mockups), HTML presentations (Chart.js), banner design (22 styles, social/ads/web/print), icon design (15 styles, SVG, Gemini 3.1 Pro), social photos (HTML→screenshot, multi-platform). Actions: design logo, create CIP, generate mockups, build slides, design banner, generate icon, create social photos, social media images, brand identity, design system. Platforms: Facebook, Twitter, LinkedIn, YouTube, Instagram, Pinterest, TikTok, Threads, Google Ads."
 argument-hint: "[design-type] [context]"
 license: MIT
 metadata:
   author: claudekit
-  version: "2.1.0"
+  version: "2.2.0"
 ---
 
 # Design
@@ -39,7 +39,7 @@ Unified design skill: brand, tokens, UI, logo, CIP, slides, banners, social phot
 
 ## Logo Design (Built-in)
 
-55+ styles, 30 color palettes, 25 industry guides. Gemini Nano Banana models.
+55+ styles, 30 color palettes, 25 industry guides. GPT Image 2 through Codex's native Imagegen capability.
 
 ### Logo: Generate Design Brief
 
@@ -55,18 +55,18 @@ python3 ~/.claude/skills/design/scripts/logo/search.py "tech professional" --dom
 python3 ~/.claude/skills/design/scripts/logo/search.py "healthcare medical" --domain industry
 ```
 
-### Logo: Generate with AI
+### Logo: Generate with GPT Image 2
 
-**ALWAYS** generate output logo images with white background.
+Read and follow the Codex `imagegen` skill. Use its built-in tool mode so generation reuses the current Codex runtime configuration and does not require a separate API key.
 
-```bash
-python3 ~/.claude/skills/design/scripts/logo/generate.py --brand "TechFlow" --style minimalist --industry tech
-python3 ~/.claude/skills/design/scripts/logo/generate.py --prompt "coffee shop vintage badge" --style vintage
-```
+- Use GPT Image 2. Do not silently switch models.
+- Default to an opaque white background. For transparency, follow the `imagegen` skill's chroma-key removal workflow.
+- Generate each concept with a separate Imagegen call. Do not use one prompt to request a contact sheet.
+- Start with 3 distinct concepts unless the user requests a different count.
+- Show every result inline and state that generated PNGs are visual concepts, not production SVGs.
+- Move selected project-bound outputs from Codex's generated-images directory into the project before finishing.
 
-**IMPORTANT:** When scripts fail, try to fix them directly.
-
-After generation, **ALWAYS** ask user about HTML preview via `AskUserQuestion`. If yes, invoke `/ui-ux-pro-max` for gallery.
+After generation, ask the user which direction to refine. Build an HTML gallery only when comparison across many saved variants would materially help.
 
 ## CIP Design (Built-in)
 
@@ -244,7 +244,7 @@ Load `references/social-photos-design.md` for sizes, templates, best practices.
 
 ### Complete Brand Package
 
-1. **Logo** → `scripts/logo/generate.py` → Generate logo variants
+1. **Logo** → Design brief + Codex Imagegen (`gpt-image-2`) → Generate logo variants
 2. **CIP** → `scripts/cip/generate.py --logo ...` → Create deliverable mockups
 3. **Presentation** → Load `references/slides-create.md` → Build pitch deck
 
@@ -281,7 +281,6 @@ Load `references/social-photos-design.md` for sizes, templates, best practices.
 | Script | Purpose |
 |--------|---------|
 | `scripts/logo/search.py` | Search logo styles, colors, industries |
-| `scripts/logo/generate.py` | Generate logos with Gemini AI |
 | `scripts/logo/core.py` | BM25 search engine for logo data |
 | `scripts/cip/search.py` | Search CIP deliverables, styles, industries |
 | `scripts/cip/generate.py` | Generate CIP mockups with Gemini |
@@ -300,6 +299,10 @@ python3 --version || python --version
 
 ## Setup
 
+Logo generation uses Codex's native Imagegen capability and the current Codex runtime configuration. Do not request or read `OPENAI_API_KEY`, `GEMINI_API_KEY`, or Codex auth files for Logo tasks.
+
+CIP and icon generation still use Gemini:
+
 ```bash
 export GEMINI_API_KEY="your-key"  # https://aistudio.google.com/apikey
 pip install google-genai pillow
@@ -310,4 +313,4 @@ pip install google-genai pillow
 ## Integration
 
 **External sub-skills:** brand, design-system, ui-styling
-**Related Skills:** frontend-design, ui-ux-pro-max, ai-multimodal, chrome-devtools
+**Related Skills:** imagegen, frontend-design, ui-ux-pro-max, ai-multimodal, chrome-devtools

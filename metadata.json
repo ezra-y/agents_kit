@@ -534,7 +534,7 @@
     },
     "design": {
       "recommendation": 3,
-      "description": "**刚更新**,现在是设计总入口:品牌识别、设计 token、UI 样式、logo 生成(55 风格,走 Gemini)、CIP 企业识别(50 项交付物 + mockup)、HTML 演示(Chart.js)、banner(22 风格)、图标(15 风格 SVG,走 Gemini 3.1 Pro)、社交配图(HTML 转截图,多平台)。",
+      "description": "设计总入口：品牌识别、设计 token、UI 样式、Logo 生成（55 风格，通过 Codex Imagegen 使用 GPT Image 2，无需单独 API key）、CIP 企业识别（50 项交付物 + mockup）、HTML 演示（Chart.js）、banner（22 风格）、图标（15 风格 SVG，走 Gemini 3.1 Pro）、社交配图（HTML 转截图，多平台）。",
       "trigger": "说「设计一个 logo」「做一套 VI」「做张社交配图」。职责很杂,直接说要哪一样最省事。",
       "tags": [
         "role/builder",

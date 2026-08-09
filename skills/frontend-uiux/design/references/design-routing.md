@@ -9,7 +9,7 @@ When to use each design sub-skill.
 | brand | Brand identity, voice, assets | SKILL.md + 10 references + 3 scripts |
 | design-system | Token architecture, specs | SKILL.md + 7 references + 2 scripts |
 | ui-styling | Component implementation | SKILL.md + 7 references + 2 scripts |
-| logo-design | AI logo generation (55 styles, 30 palettes) | SKILL.md + 4 references + 2 scripts |
+| logo-design | GPT Image 2 logo generation (55 styles, 30 palettes) | SKILL.md + 4 references + 1 script |
 | cip-design | Corporate Identity Program (50 deliverables) | SKILL.md + 3 references + 3 scripts |
 | slides | HTML presentations with Chart.js | SKILL.md + 4 references |
 | banner-design | Banners for social, ads, web, print (22 styles) | SKILL.md + 1 reference |
@@ -49,7 +49,7 @@ When to use each design sub-skill.
 ### Logo Design Tasks
 **→ logo-design**
 
-- Create logos with AI (Gemini Nano Banana)
+- Create logo concepts with GPT Image 2 through Codex Imagegen
 - Search logo styles, color palettes, industry guidelines
 - Generate design briefs
 - Explore 55+ styles (minimalist, vintage, luxury, geometric, etc.)
