@@ -1,4 +1,0 @@
-interface:
-  display_name: "AI 口语教练"
-  short_description: "制定个性化计划，用 GPT Live 练习、复习并按时提醒"
-  default_prompt: "使用 $ai-speaking-coach。先检查当前会话暴露的输入和输出模态：同时具备实时音频输入输出时进入 Live 课堂，否则说明当前只能完成课程设计与备课；根据已有个人文件判断是首次设置还是继续。"

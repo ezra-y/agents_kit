@@ -4,15 +4,19 @@
 
 ```text
 usage: agents-kit [-h]
-                  {status,source,skill,mcp,global,project,docs,ui,check} ...
+                  {status,migrate,source,skill,plugin,marketplace,mcp,global,project,docs,ui,check}
+                  ...
 
 统一管理 agents_kit 中的技能、来源、安装和生成文档
 
 positional arguments:
-  {status,source,skill,mcp,global,project,docs,ui,check}
+  {status,migrate,source,skill,plugin,marketplace,mcp,global,project,docs,ui,check}
     status              查看仓库摘要
+    migrate             迁移旧状态到当前 Schema
     source              检查和更新技能来源
     skill               管理中央技能库
+    plugin              管理完整 Plugin 包
+    marketplace         生成和检查平台 Marketplace 索引
     mcp                 管理中央 MCP 清单和客户端配置
     global              管理全局技能链接
     project             向项目复制技能
@@ -28,6 +32,14 @@ usage: agents-kit status [-h] [--json]
 
 options:
   -h, --help  show this help message and exit
+  --json
+
+$ agents-kit migrate --help
+usage: agents-kit migrate [-h] [--dry-run] [--json]
+
+options:
+  -h, --help  show this help message and exit
+  --dry-run
   --json
 
 $ agents-kit source --help
@@ -97,18 +109,19 @@ options:
   --json
 
 $ agents-kit source update --help
-usage: agents-kit source update [-h] [--all] [--dry-run] [--safe] [--yes]
-                                [--json]
+usage: agents-kit source update [-h] [--all] [--dry-run] [--safe]
+                                [--auto-docs] [--yes] [--json]
                                 [name]
 
 positional arguments:
   name
 
 options:
-  -h, --help  show this help message and exit
+  -h, --help   show this help message and exit
   --all
   --dry-run
-  --safe      只应用相似度和文件结构满足自动更新条件的变化
+  --safe       兼容别名；等同 --auto-docs
+  --auto-docs  只自动应用无本地冲突的纯 README/License/Changelog 变化
   --yes
   --json
 
@@ -277,6 +290,201 @@ options:
   --yes
   --json
 
+$ agents-kit plugin --help
+usage: agents-kit plugin [-h]
+                         {inspect,import,list,show,open,enable,disable,update,detach,remove}
+                         ...
+
+positional arguments:
+  {inspect,import,list,show,open,enable,disable,update,detach,remove}
+    inspect             检查 Plugin 来源
+    import              导入完整 Plugin 并迁移同内容独立 Skill
+    list                列出 Plugin
+    show                查看 Plugin
+    open                在 Finder 中打开 Plugin
+    enable              加入期望安装清单
+    disable             移出期望安装清单
+    update              检查或更新 Plugin
+    detach              停止跟踪 Plugin 来源
+    remove              删除完整 Plugin
+
+options:
+  -h, --help            show this help message and exit
+
+$ agents-kit plugin inspect --help
+usage: agents-kit plugin inspect [-h] [--candidate CANDIDATE]
+                                 [--provider PROVIDER] [--ref REF]
+                                 [--source-path SOURCE_PATH] [--json]
+                                 source
+
+positional arguments:
+  source
+
+options:
+  -h, --help            show this help message and exit
+  --candidate CANDIDATE
+  --provider PROVIDER
+  --ref REF
+  --source-path SOURCE_PATH
+  --json
+
+$ agents-kit plugin import --help
+usage: agents-kit plugin import [-h] [--candidate CANDIDATE] --category
+                                CATEGORY [--target {claude,codex}] --tag TAG
+                                [--replace] [--dry-run] [--yes]
+                                [--provider PROVIDER] [--ref REF]
+                                [--source-path SOURCE_PATH] [--json]
+                                source
+
+positional arguments:
+  source
+
+options:
+  -h, --help            show this help message and exit
+  --candidate CANDIDATE
+  --category CATEGORY
+  --target {claude,codex}
+  --tag TAG
+  --replace
+  --dry-run
+  --yes
+  --provider PROVIDER
+  --ref REF
+  --source-path SOURCE_PATH
+  --json
+
+$ agents-kit plugin list --help
+usage: agents-kit plugin list [-h] [--json]
+
+options:
+  -h, --help  show this help message and exit
+  --json
+
+$ agents-kit plugin show --help
+usage: agents-kit plugin show [-h] [--json] name
+
+positional arguments:
+  name
+
+options:
+  -h, --help  show this help message and exit
+  --json
+
+$ agents-kit plugin open --help
+usage: agents-kit plugin open [-h] [--dry-run] [--json] name
+
+positional arguments:
+  name
+
+options:
+  -h, --help  show this help message and exit
+  --dry-run
+  --json
+
+$ agents-kit plugin enable --help
+usage: agents-kit plugin enable [-h] --target {claude,codex}
+                                [--distribution {skills-dir,marketplace}]
+                                [--dry-run] [--json]
+                                name
+
+positional arguments:
+  name
+
+options:
+  -h, --help            show this help message and exit
+  --target {claude,codex}
+  --distribution {skills-dir,marketplace}
+  --dry-run
+  --json
+
+$ agents-kit plugin disable --help
+usage: agents-kit plugin disable [-h] --target {claude,codex}
+                                 [--distribution {skills-dir,marketplace}]
+                                 [--dry-run] [--json]
+                                 name
+
+positional arguments:
+  name
+
+options:
+  -h, --help            show this help message and exit
+  --target {claude,codex}
+  --distribution {skills-dir,marketplace}
+  --dry-run
+  --json
+
+$ agents-kit plugin update --help
+usage: agents-kit plugin update [-h] [--all] [--auto-docs] [--dry-run] [--yes]
+                                [--json]
+                                [name]
+
+positional arguments:
+  name
+
+options:
+  -h, --help   show this help message and exit
+  --all
+  --auto-docs
+  --dry-run
+  --yes
+  --json
+
+$ agents-kit plugin detach --help
+usage: agents-kit plugin detach [-h] [--dry-run] [--json] name
+
+positional arguments:
+  name
+
+options:
+  -h, --help  show this help message and exit
+  --dry-run
+  --json
+
+$ agents-kit plugin remove --help
+usage: agents-kit plugin remove [-h] [--dry-run] [--yes] [--json] name
+
+positional arguments:
+  name
+
+options:
+  -h, --help  show this help message and exit
+  --dry-run
+  --yes
+  --json
+
+$ agents-kit marketplace --help
+usage: agents-kit marketplace [-h] {build,check,status} ...
+
+positional arguments:
+  {build,check,status}
+    build               生成 Marketplace 索引
+    check               检查 Marketplace 索引
+    status              查看 Marketplace 状态
+
+options:
+  -h, --help            show this help message and exit
+
+$ agents-kit marketplace build --help
+usage: agents-kit marketplace build [-h] [--json]
+
+options:
+  -h, --help  show this help message and exit
+  --json
+
+$ agents-kit marketplace check --help
+usage: agents-kit marketplace check [-h] [--json]
+
+options:
+  -h, --help  show this help message and exit
+  --json
+
+$ agents-kit marketplace status --help
+usage: agents-kit marketplace status [-h] [--json]
+
+options:
+  -h, --help  show this help message and exit
+  --json
+
 $ agents-kit mcp --help
 usage: agents-kit mcp [-h]
                       {import,list,show,enable,disable,apply,update,remove,run}
@@ -351,24 +559,30 @@ options:
   --json
 
 $ agents-kit mcp enable --help
-usage: agents-kit mcp enable [-h] [--dry-run] [--json] name
+usage: agents-kit mcp enable [-h] [--target {claude,codex}] [--dry-run]
+                             [--json]
+                             name
 
 positional arguments:
   name
 
 options:
-  -h, --help  show this help message and exit
+  -h, --help            show this help message and exit
+  --target {claude,codex}
   --dry-run
   --json
 
 $ agents-kit mcp disable --help
-usage: agents-kit mcp disable [-h] [--dry-run] [--json] name
+usage: agents-kit mcp disable [-h] [--target {claude,codex}] [--dry-run]
+                              [--json]
+                              name
 
 positional arguments:
   name
 
 options:
-  -h, --help  show this help message and exit
+  -h, --help            show this help message and exit
+  --target {claude,codex}
   --dry-run
   --json
 
@@ -435,32 +649,40 @@ options:
   -h, --help            show this help message and exit
 
 $ agents-kit global enable --help
-usage: agents-kit global enable [-h] [--dry-run] [--json] name
+usage: agents-kit global enable [-h] [--target {claude,codex}] [--dry-run]
+                                [--json]
+                                name
 
 positional arguments:
   name
 
 options:
-  -h, --help  show this help message and exit
+  -h, --help            show this help message and exit
+  --target {claude,codex}
   --dry-run
   --json
 
 $ agents-kit global disable --help
-usage: agents-kit global disable [-h] [--dry-run] [--json] name
+usage: agents-kit global disable [-h] [--target {claude,codex}] [--dry-run]
+                                 [--json]
+                                 name
 
 positional arguments:
   name
 
 options:
-  -h, --help  show this help message and exit
+  -h, --help            show this help message and exit
+  --target {claude,codex}
   --dry-run
   --json
 
 $ agents-kit global apply --help
-usage: agents-kit global apply [-h] [--dry-run] [--json]
+usage: agents-kit global apply [-h] [--target {claude,codex}] [--dry-run]
+                               [--json]
 
 options:
-  -h, --help  show this help message and exit
+  -h, --help            show this help message and exit
+  --target {claude,codex}
   --dry-run
   --json
 

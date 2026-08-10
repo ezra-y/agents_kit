@@ -12,6 +12,7 @@ import argparse
 import json
 import os
 import shlex
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -24,15 +25,20 @@ from agents_kit import (
     checks,
     docs,
     installation,
+    marketplace,
     mcps,
+    migration,
+    plugins,
     scout,
     skills,
     source_reports,
     ui,
 )
 from agents_kit.installation import InstallationError
+from agents_kit.marketplace import MarketplaceError
 from agents_kit.mcps import McpError
-from agents_kit.models import ChangeSet, ContentMode, Effect
+from agents_kit.models import AssetRef, ChangeSet, ContentMode, Effect, SourceSpec
+from agents_kit.plugins import PluginError
 from agents_kit.repository import Repository, RepositoryError
 from agents_kit.scout import ScoutError
 from agents_kit.skills import SkillError
@@ -61,6 +67,11 @@ def build_parser() -> argparse.ArgumentParser:
     status = commands.add_parser("status", help="查看仓库摘要")
     _json_flag(status)
     status.set_defaults(handler=command_status)
+
+    migrate = commands.add_parser("migrate", help="迁移旧状态到当前 Schema")
+    migrate.add_argument("--dry-run", action="store_true")
+    _json_flag(migrate)
+    migrate.set_defaults(handler=command_migrate)
 
     source = commands.add_parser("source", help="检查和更新技能来源")
     source_commands = source.add_subparsers(dest="source_command", required=True)
@@ -104,7 +115,12 @@ def build_parser() -> argparse.ArgumentParser:
     source_update.add_argument(
         "--safe",
         action="store_true",
-        help="只应用相似度和文件结构满足自动更新条件的变化",
+        help="兼容别名；等同 --auto-docs",
+    )
+    source_update.add_argument(
+        "--auto-docs",
+        action="store_true",
+        help="只自动应用无本地冲突的纯 README/License/Changelog 变化",
     )
     source_update.add_argument("--yes", action="store_true")
     _json_flag(source_update)
@@ -200,6 +216,99 @@ def build_parser() -> argparse.ArgumentParser:
     _json_flag(remove)
     remove.set_defaults(handler=command_skill_remove)
 
+    plugin = commands.add_parser("plugin", help="管理完整 Plugin 包")
+    plugin_commands = plugin.add_subparsers(dest="plugin_command", required=True)
+
+    plugin_inspect = plugin_commands.add_parser("inspect", help="检查 Plugin 来源")
+    plugin_inspect.add_argument("source")
+    plugin_inspect.add_argument("--candidate")
+    _source_flags(plugin_inspect)
+    _json_flag(plugin_inspect)
+    plugin_inspect.set_defaults(handler=command_plugin_inspect)
+
+    plugin_import = plugin_commands.add_parser(
+        "import", help="导入完整 Plugin 并迁移同内容独立 Skill"
+    )
+    plugin_import.add_argument("source")
+    plugin_import.add_argument("--candidate")
+    plugin_import.add_argument("--category", required=True)
+    plugin_import.add_argument(
+        "--target",
+        action="append",
+        choices=("claude", "codex"),
+        dest="targets",
+    )
+    plugin_import.add_argument("--tag", action="append", required=True)
+    plugin_import.add_argument("--replace", action="store_true")
+    plugin_import.add_argument("--dry-run", action="store_true")
+    plugin_import.add_argument("--yes", action="store_true")
+    _source_flags(plugin_import)
+    _json_flag(plugin_import)
+    plugin_import.set_defaults(handler=command_plugin_import)
+
+    plugin_list = plugin_commands.add_parser("list", help="列出 Plugin")
+    _json_flag(plugin_list)
+    plugin_list.set_defaults(handler=command_plugin_list)
+
+    plugin_show = plugin_commands.add_parser("show", help="查看 Plugin")
+    plugin_show.add_argument("name")
+    _json_flag(plugin_show)
+    plugin_show.set_defaults(handler=command_plugin_show)
+
+    plugin_open = plugin_commands.add_parser("open", help="在 Finder 中打开 Plugin")
+    plugin_open.add_argument("name")
+    plugin_open.add_argument("--dry-run", action="store_true")
+    _json_flag(plugin_open)
+    plugin_open.set_defaults(handler=command_plugin_open)
+
+    for name, help_text, handler in (
+        ("enable", "加入期望安装清单", command_plugin_enable),
+        ("disable", "移出期望安装清单", command_plugin_disable),
+    ):
+        item = plugin_commands.add_parser(name, help=help_text)
+        item.add_argument("name")
+        item.add_argument("--target", required=True, choices=("claude", "codex"))
+        item.add_argument("--distribution", choices=("skills-dir", "marketplace"))
+        item.add_argument("--dry-run", action="store_true")
+        _json_flag(item)
+        item.set_defaults(handler=handler)
+
+    plugin_update = plugin_commands.add_parser("update", help="检查或更新 Plugin")
+    _name_or_all(plugin_update)
+    plugin_update.add_argument("--auto-docs", action="store_true")
+    plugin_update.add_argument("--dry-run", action="store_true")
+    plugin_update.add_argument("--yes", action="store_true")
+    _json_flag(plugin_update)
+    plugin_update.set_defaults(handler=command_plugin_update)
+
+    plugin_detach = plugin_commands.add_parser("detach", help="停止跟踪 Plugin 来源")
+    plugin_detach.add_argument("name")
+    plugin_detach.add_argument("--dry-run", action="store_true")
+    _json_flag(plugin_detach)
+    plugin_detach.set_defaults(handler=command_plugin_detach)
+
+    plugin_remove = plugin_commands.add_parser("remove", help="删除完整 Plugin")
+    plugin_remove.add_argument("name")
+    plugin_remove.add_argument("--dry-run", action="store_true")
+    plugin_remove.add_argument("--yes", action="store_true")
+    _json_flag(plugin_remove)
+    plugin_remove.set_defaults(handler=command_plugin_remove)
+
+    marketplace_parser = commands.add_parser(
+        "marketplace", help="生成和检查平台 Marketplace 索引"
+    )
+    marketplace_commands = marketplace_parser.add_subparsers(
+        dest="marketplace_command", required=True
+    )
+    for name, help_text, handler in (
+        ("build", "生成 Marketplace 索引", command_marketplace_build),
+        ("check", "检查 Marketplace 索引", command_marketplace_check),
+        ("status", "查看 Marketplace 状态", command_marketplace_status),
+    ):
+        item = marketplace_commands.add_parser(name, help=help_text)
+        _json_flag(item)
+        item.set_defaults(handler=handler)
+
     mcp = commands.add_parser("mcp", help="管理中央 MCP 清单和客户端配置")
     mcp_commands = mcp.add_subparsers(dest="mcp_command", required=True)
 
@@ -257,6 +366,7 @@ def build_parser() -> argparse.ArgumentParser:
     ):
         item = mcp_commands.add_parser(name, help=help_text)
         item.add_argument("name")
+        item.add_argument("--target", choices=("claude", "codex"))
         item.add_argument("--dry-run", action="store_true")
         _json_flag(item)
         item.set_defaults(handler=handler)
@@ -295,10 +405,12 @@ def build_parser() -> argparse.ArgumentParser:
     ):
         item = global_commands.add_parser(name, help=help_text)
         item.add_argument("name")
+        item.add_argument("--target", choices=("claude", "codex"))
         item.add_argument("--dry-run", action="store_true")
         _json_flag(item)
         item.set_defaults(handler=handler)
     global_apply = global_commands.add_parser("apply", help="收敛全部全局链接")
+    global_apply.add_argument("--target", choices=("claude", "codex"))
     global_apply.add_argument("--dry-run", action="store_true")
     _json_flag(global_apply)
     global_apply.set_defaults(handler=command_global_apply)
@@ -339,15 +451,21 @@ def build_parser() -> argparse.ArgumentParser:
 
 def command_status(args: argparse.Namespace, context: Context) -> dict[str, Any]:
     repo = context.repo
-    inventory = repo.inventory()
+    inventory = repo.skill_registry()
     by_category: dict[str, int] = {}
     for entry in inventory.values():
         by_category[entry.category] = by_category.get(entry.category, 0) + 1
     return {
         "root": str(repo.root),
         "skills": len(inventory),
+        "plugins": len(repo.plugin_inventory()),
         "active": len(repo.read_active()),
-        "sources": len(repo.read_sources()["skills"]),
+        "desired_installations": sum(
+            len(record.get("skills", [])) + len(record.get("plugins", []))
+            for record in repo.read_desired_installations()["targets"].values()
+        ),
+        "sources": len(repo.read_sources()["skills"])
+        + len(repo.read_sources()["plugins"]),
         "metadata": len(repo.read_metadata()["skills"]),
         "mcps": len(repo.read_mcps()["servers"]),
         "enabled_mcps": sum(
@@ -360,6 +478,21 @@ def command_status(args: argparse.Namespace, context: Context) -> dict[str, Any]
         ),
         "categories": dict(sorted(by_category.items())),
     }
+
+
+def command_migrate(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    if args.dry_run:
+        metadata = context.repo.read_metadata()
+        sources = context.repo.read_sources()
+        return {
+            "dry_run": True,
+            "metadata_schema": metadata["schema_version"],
+            "sources_schema": sources["schema_version"],
+            "desired_exists": context.repo.desired_installations_path.is_file(),
+        }
+    with context.repo.write_lock():
+        change = migration.migrate_legacy_state(context.repo)
+    return context.finish(change)
 
 
 def command_source_providers(
@@ -434,15 +567,28 @@ def _refresh_scout_index(context: Context) -> dict[str, Any]:
 
 
 def command_source_detach(args: argparse.Namespace, context: Context) -> dict[str, Any]:
-    context.repo.require_skill(args.name)
+    entry = context.repo.require_skill(args.name)
+    if entry.owner_kind == "plugin":
+        plugin_id = entry.owner_id or ""
+        if args.dry_run:
+            return {
+                "dry_run": True,
+                "asset": AssetRef.plugin(plugin_id).canonical,
+                "tracked": context.repo.read_sources()["plugins"].get(plugin_id)
+                is not None,
+            }
+        with context.repo.write_lock():
+            change = plugins.detach_plugin(context.repo, plugin_id)
+        change.details["lifted_from"] = entry.qualified_id
+        return context.finish(change)
     if args.dry_run:
         return {
             "dry_run": True,
-            "skill": args.name,
-            "tracked": context.repo.source_record(args.name) is not None,
+            "skill": entry.qualified_id,
+            "tracked": context.repo.source_record(entry.qualified_id) is not None,
         }
     with context.repo.write_lock():
-        change = skills.detach_source(context.repo, args.name)
+        change = skills.detach_source(context.repo, entry.qualified_id)
     return context.finish(change)
 
 
@@ -458,7 +604,7 @@ def _source_change(
         snapshot,
         resolved_sha256=record.get("resolved", {}).get("content_sha256"),
     )
-    if comparison["status"] != "safe_update":
+    if comparison.get("merge_state") != "upstream_only":
         return comparison
     validation_root = snapshot.path
     skill_text = None
@@ -476,6 +622,7 @@ def _source_change(
     )
     if problems:
         comparison["status"] = "review_required"
+        comparison["decision"] = "review_required"
         comparison["reasons"].append("candidate_validation_failed")
         comparison["validation_problems"] = problems
     return comparison
@@ -487,6 +634,40 @@ def command_source_check(args: argparse.Namespace, context: Context) -> dict[str
     failures: list[dict[str, str]] = []
     with SourceSession(context.repo.network_timeout) as session:
         for name in names:
+            if name.startswith("plugin:"):
+                plugin_id = AssetRef.parse(name).local_id
+                record = context.repo.read_sources()["plugins"].get(plugin_id)
+                if record is None:
+                    failures.append({"asset": name, "error": "没有来源登记"})
+                    continue
+                if record.get("policy") == "pinned":
+                    results.append({"asset": name, "status": "pinned"})
+                    continue
+                try:
+                    spec = SourceSpec(
+                        provider=str(record["provider"]),
+                        locator=dict(record["locator"]),
+                    )
+                    root, revision, resolved_spec = session.directory(spec)
+                    snapshot = plugins.inspect_plugin_directory(
+                        root,
+                        revision=revision,
+                        source_spec=resolved_spec,
+                    )
+                    comparison = plugins.classify_plugin_update(
+                        context.repo, plugin_id, snapshot
+                    )
+                    results.append(
+                        {
+                            "asset": name,
+                            "plugin": plugin_id,
+                            **comparison,
+                            "revision": revision,
+                        }
+                    )
+                except (OSError, RuntimeError, ValueError) as exc:
+                    failures.append({"asset": name, "error": str(exc)})
+                continue
             record = context.repo.source_record(name)
             if record is None:
                 failures.append({"skill": name, "error": "没有来源登记"})
@@ -511,13 +692,59 @@ def command_source_check(args: argparse.Namespace, context: Context) -> dict[str
 
 def command_source_update(args: argparse.Namespace, context: Context) -> dict[str, Any]:
     names = _source_names(context.repo, args)
-    action = "满足自动更新条件的来源内容" if args.safe else "当前来源内容"
+    auto_docs = args.safe or args.auto_docs
+    action = "无冲突的纯文档变化" if auto_docs else "当前来源内容"
     _confirm(args, f"应用 {len(names)} 个技能中{action}？")
-    snapshots: list[tuple[str, Any]] = []
+    snapshots: list[tuple[str, str, Any]] = []
     results: list[dict[str, Any]] = []
     failures: list[dict[str, str]] = []
     with SourceSession(context.repo.network_timeout) as session:
         for name in names:
+            if name.startswith("plugin:"):
+                plugin_id = AssetRef.parse(name).local_id
+                record = context.repo.read_sources()["plugins"].get(plugin_id)
+                if record is None:
+                    failures.append({"asset": name, "error": "没有来源登记"})
+                    continue
+                if record.get("policy") == "pinned":
+                    results.append(
+                        {"asset": name, "status": "pinned", "applied": False}
+                    )
+                    continue
+                try:
+                    spec = SourceSpec(
+                        provider=str(record["provider"]),
+                        locator=dict(record["locator"]),
+                    )
+                    root, revision, resolved_spec = session.directory(spec)
+                    snapshot = plugins.inspect_plugin_directory(
+                        root,
+                        revision=revision,
+                        source_spec=resolved_spec,
+                    )
+                    comparison = plugins.classify_plugin_update(
+                        context.repo, plugin_id, snapshot
+                    )
+                    should_apply = (
+                        comparison.get("decision") == "auto_apply"
+                        if auto_docs
+                        else comparison.get("merge_state") == "upstream_only"
+                        and comparison.get("decision") != "blocked"
+                    )
+                    results.append(
+                        {
+                            "asset": name,
+                            "plugin": plugin_id,
+                            **comparison,
+                            "revision": revision,
+                            "applied": should_apply and not args.dry_run,
+                        }
+                    )
+                    if should_apply:
+                        snapshots.append(("plugin", plugin_id, snapshot))
+                except (OSError, RuntimeError, ValueError) as exc:
+                    failures.append({"asset": name, "error": str(exc)})
+                continue
             record = context.repo.source_record(name)
             if record is None:
                 failures.append({"skill": name, "error": "没有来源登记"})
@@ -528,7 +755,11 @@ def command_source_update(args: argparse.Namespace, context: Context) -> dict[st
             try:
                 snapshot = session.snapshot_from_record(record)
                 comparison = _source_change(context, name, record, snapshot)
-                should_apply = not args.safe or comparison["status"] == "safe_update"
+                should_apply = (
+                    comparison.get("decision") == "auto_apply"
+                    if auto_docs
+                    else comparison.get("merge_state") == "upstream_only"
+                )
                 results.append(
                     {
                         "skill": name,
@@ -538,7 +769,7 @@ def command_source_update(args: argparse.Namespace, context: Context) -> dict[st
                     }
                 )
                 if should_apply:
-                    snapshots.append((name, snapshot))
+                    snapshots.append(("skill", name, snapshot))
             except (OSError, RuntimeError, ValueError) as exc:
                 failures.append({"skill": name, "error": str(exc)})
         if args.dry_run:
@@ -549,8 +780,19 @@ def command_source_update(args: argparse.Namespace, context: Context) -> dict[st
             }
         combined = ChangeSet()
         with context.repo.write_lock():
-            for name, snapshot in snapshots:
-                combined.merge(skills.update_from_source(context.repo, name, snapshot))
+            for kind, name, snapshot in snapshots:
+                if kind == "plugin":
+                    combined.merge(
+                        plugins.update_plugin_from_snapshot(
+                            context.repo, name, snapshot
+                        )
+                    )
+                else:
+                    combined.merge(
+                        skills.update_from_source(context.repo, name, snapshot)
+                    )
+            if "plugins" in combined.changed:
+                marketplace.build(context.repo)
         result = context.finish(combined)
         result["results"] = results
         result["failures"] = failures
@@ -564,9 +806,17 @@ def command_source_report(
     report = json.loads(args.report.read_text(encoding="utf-8"))
     if not isinstance(report, dict):
         raise CommandError("来源检查报告顶层必须是对象")
+    source_catalog = context.repo.read_sources()
+    source_records = dict(source_catalog["skills"])
+    source_records.update(
+        {
+            AssetRef.plugin(plugin_id).canonical: record
+            for plugin_id, record in source_catalog["plugins"].items()
+        }
+    )
     markdown = source_reports.render_source_review_markdown(
         report,
-        context.repo.read_sources()["skills"],
+        source_records,
         run_url=args.run_url,
     )
     print(markdown, end="")
@@ -599,7 +849,10 @@ def command_skill_import(args: argparse.Namespace, context: Context) -> dict[str
                 "locator": snapshot.spec.locator,
                 "content_sha256": snapshot.content_sha256,
                 "tags": args.tag,
-                "existing": local_name in context.repo.inventory(),
+                "existing": (
+                    AssetRef.standalone_skill(local_name).canonical
+                    in context.repo.skill_registry()
+                ),
             }
         with context.repo.write_lock():
             change = skills.import_snapshot(
@@ -737,6 +990,300 @@ def command_skill_remove(args: argparse.Namespace, context: Context) -> dict[str
     with context.repo.write_lock():
         change = skills.remove_skill(context.repo, args.name)
     return context.finish(change)
+
+
+def command_plugin_inspect(
+    args: argparse.Namespace, context: Context
+) -> dict[str, Any]:
+    with SourceSession(context.repo.network_timeout) as session:
+        spec = _source_spec(session, args)
+        root, revision, resolved_spec = session.directory(
+            spec, candidate_path=args.candidate
+        )
+        snapshot = plugins.inspect_plugin_directory(
+            root,
+            revision=revision,
+            source_spec=resolved_spec,
+        )
+        existing = {
+            entry.name: entry.qualified_id
+            for entry in context.repo.skill_registry().values()
+            if entry.owner_kind == "standalone"
+            and (root / "skills" / entry.name / "SKILL.md").is_file()
+        }
+        inventory = snapshot.component_inventory
+        return {
+            "package": "plugin",
+            "plugin": snapshot.package_id,
+            "provider": resolved_spec.provider,
+            "locator": resolved_spec.locator,
+            "revision": revision,
+            "upstream_targets": sorted(snapshot.upstream_targets),
+            "components": {
+                name: [path.as_posix() for path in paths]
+                for name, paths in inventory.known_components.items()
+            },
+            "unknown_paths": [path.as_posix() for path in inventory.unknown_paths],
+            "executable_paths": [
+                path.as_posix() for path in inventory.executable_paths
+            ],
+            "binary_paths": [path.as_posix() for path in inventory.binary_paths],
+            "standalone_matches": existing,
+        }
+
+
+def command_plugin_import(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    targets = tuple(dict.fromkeys(args.targets or ["claude", "codex"]))
+    if args.replace:
+        _confirm(args, "替换已有完整 Plugin？")
+    with SourceSession(context.repo.network_timeout) as session:
+        spec = _source_spec(session, args)
+        root, revision, resolved_spec = session.directory(
+            spec, candidate_path=args.candidate
+        )
+        snapshot = plugins.inspect_plugin_directory(
+            root,
+            revision=revision,
+            source_spec=resolved_spec,
+        )
+        if args.dry_run:
+            return {
+                "dry_run": True,
+                "plugin": snapshot.package_id,
+                "targets": list(targets),
+                "upstream_targets": sorted(snapshot.upstream_targets),
+                "embedded_skills": sorted(
+                    snapshot.component_inventory.known_components.get("skills", ())
+                ),
+            }
+        with context.repo.write_lock():
+            change = plugins.import_plugin_snapshot(
+                context.repo,
+                snapshot,
+                category=args.category,
+                targets=targets,
+                tags=args.tag,
+                replace=args.replace,
+            )
+            change.details["marketplace"] = marketplace.build(context.repo)
+        return context.finish(change)
+
+
+def command_plugin_list(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    rows = plugins.list_plugins(context.repo)
+    return {"plugins": rows, "count": len(rows)}
+
+
+def command_plugin_show(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    return plugins.show_plugin(context.repo, args.name)
+
+
+def command_plugin_open(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    spec = context.repo.require_plugin(args.name)
+    if not args.dry_run:
+        result = subprocess.run(
+            ["open", str(spec.root)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode:
+            raise CommandError(result.stderr.strip() or "Finder 打开失败")
+    return {"plugin": spec.package_id, "path": str(spec.root), "dry_run": args.dry_run}
+
+
+def command_plugin_enable(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    spec = context.repo.require_plugin(args.name)
+    target_spec = spec.targets.get(args.target)
+    if target_spec is None or target_spec.support not in {"full", "partial"}:
+        raise CommandError(
+            f"{spec.package_id} 在 {args.target} 上尚不可安装："
+            f"{target_spec.support if target_spec else 'missing'}"
+        )
+    distribution = args.distribution or (
+        "skills-dir" if args.target == "claude" else "marketplace"
+    )
+    desired = context.repo.read_desired_installations()
+    item = {
+        "ref": AssetRef.plugin(spec.package_id).canonical,
+        "distribution": distribution,
+    }
+    current = desired["targets"][args.target].setdefault("plugins", [])
+    existing = next(
+        (
+            value
+            for value in current
+            if isinstance(value, dict) and value.get("ref") == item["ref"]
+        ),
+        None,
+    )
+    changed = existing != item
+    if args.dry_run:
+        return {
+            "dry_run": True,
+            "plugin": item["ref"],
+            "target": args.target,
+            "distribution": distribution,
+            "changed": changed,
+        }
+    if existing is not None:
+        current.remove(existing)
+    current.append(item)
+    with context.repo.write_lock():
+        context.repo.write_desired_installations(desired)
+        marketplace.build(context.repo)
+    change = ChangeSet(
+        changed={"desired_installations"} if changed else set(),
+        effects={Effect.DOCS_BUILD, Effect.CHECK, Effect.GLOBAL_APPLY},
+        details={
+            "plugin": item["ref"],
+            "target": args.target,
+            "distribution": distribution,
+        },
+    )
+    return context.finish(change)
+
+
+def command_plugin_disable(
+    args: argparse.Namespace, context: Context
+) -> dict[str, Any]:
+    spec = context.repo.require_plugin(args.name)
+    desired = context.repo.read_desired_installations()
+    ref = AssetRef.plugin(spec.package_id).canonical
+    current = desired["targets"][args.target].setdefault("plugins", [])
+    updated = [
+        item for item in current if not isinstance(item, dict) or item.get("ref") != ref
+    ]
+    changed = updated != current
+    if args.dry_run:
+        return {
+            "dry_run": True,
+            "plugin": ref,
+            "target": args.target,
+            "changed": changed,
+        }
+    desired["targets"][args.target]["plugins"] = updated
+    with context.repo.write_lock():
+        context.repo.write_desired_installations(desired)
+    change = ChangeSet(
+        changed={"desired_installations"} if changed else set(),
+        effects={Effect.DOCS_BUILD, Effect.CHECK, Effect.GLOBAL_APPLY},
+        details={"plugin": ref, "target": args.target},
+    )
+    return context.finish(change)
+
+
+def command_plugin_update(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    names = sorted(context.repo.read_sources()["plugins"]) if args.all else [args.name]
+    if not args.dry_run:
+        _confirm(args, f"处理 {len(names)} 个 Plugin 的上游变化？")
+    results: list[dict[str, Any]] = []
+    failures: list[dict[str, str]] = []
+    combined = ChangeSet()
+    with SourceSession(context.repo.network_timeout) as session:
+        for name in names:
+            record = context.repo.read_sources()["plugins"].get(name)
+            if record is None:
+                failures.append({"plugin": name, "error": "没有来源登记"})
+                continue
+            try:
+                spec = SourceSpec(
+                    provider=str(record["provider"]),
+                    locator=dict(record["locator"]),
+                )
+                root, revision, resolved_spec = session.directory(spec)
+                snapshot = plugins.inspect_plugin_directory(
+                    root,
+                    revision=revision,
+                    source_spec=resolved_spec,
+                )
+                comparison = plugins.classify_plugin_update(
+                    context.repo, name, snapshot
+                )
+                should_apply = (
+                    comparison["decision"] == "auto_apply"
+                    if args.auto_docs
+                    else comparison["merge_state"] == "upstream_only"
+                    and comparison["decision"] != "blocked"
+                )
+                results.append(
+                    {
+                        "plugin": name,
+                        **comparison,
+                        "revision": revision,
+                        "applied": should_apply and not args.dry_run,
+                    }
+                )
+                if should_apply and not args.dry_run:
+                    with context.repo.write_lock():
+                        combined.merge(
+                            plugins.update_plugin_from_snapshot(
+                                context.repo, name, snapshot
+                            )
+                        )
+            except (OSError, RuntimeError, ValueError) as exc:
+                failures.append({"plugin": name, "error": str(exc)})
+    if combined.changed:
+        with context.repo.write_lock():
+            marketplace.build(context.repo)
+        finished = context.finish(combined)
+    else:
+        finished = {"changed": [], "details": {}, "warnings": [], "effects": {}}
+    finished["results"] = results
+    finished["failures"] = failures
+    finished["dry_run"] = args.dry_run
+    return finished
+
+
+def command_plugin_detach(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    spec = context.repo.require_plugin(args.name)
+    if args.dry_run:
+        return {
+            "dry_run": True,
+            "plugin": spec.package_id,
+            "tracked": context.repo.read_sources()["plugins"].get(spec.package_id)
+            is not None,
+        }
+    with context.repo.write_lock():
+        change = plugins.detach_plugin(context.repo, spec.package_id)
+    return context.finish(change)
+
+
+def command_plugin_remove(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    spec = context.repo.require_plugin(args.name)
+    if args.dry_run:
+        return {
+            "dry_run": True,
+            "plugin": spec.package_id,
+            "path": str(spec.root),
+        }
+    _confirm(args, f"删除完整 Plugin {spec.package_id}？")
+    with context.repo.write_lock():
+        change = plugins.remove_plugin(context.repo, spec.package_id)
+        change.details["marketplace"] = marketplace.build(context.repo)
+    return context.finish(change)
+
+
+def command_marketplace_build(
+    args: argparse.Namespace, context: Context
+) -> dict[str, Any]:
+    with context.repo.write_lock():
+        return marketplace.build(context.repo)
+
+
+def command_marketplace_check(
+    args: argparse.Namespace, context: Context
+) -> dict[str, Any]:
+    stale = marketplace.check(context.repo)
+    if stale:
+        raise CommandError("Marketplace 索引已过期：" + ", ".join(stale))
+    return {"ok": True, "stale": []}
+
+
+def command_marketplace_status(
+    args: argparse.Namespace, context: Context
+) -> dict[str, Any]:
+    return marketplace.status(context.repo)
 
 
 def command_mcp_import(args: argparse.Namespace, context: Context) -> dict[str, Any]:
@@ -932,37 +1479,45 @@ def command_mcp_run(args: argparse.Namespace, context: Context) -> dict[str, Any
 
 
 def command_global_enable(args: argparse.Namespace, context: Context) -> dict[str, Any]:
-    context.repo.require_skill(args.name)
+    entry = context.repo.require_skill(args.name)
     if args.dry_run:
         return {
             "dry_run": True,
-            "skill": args.name,
-            "active": args.name in context.repo.read_active(),
+            "skill": entry.qualified_id,
+            "active": entry.name in context.repo.read_active(),
             "target_active": True,
+            "target": args.target,
         }
     with context.repo.write_lock():
-        change = installation.enable_global(context.repo, args.name)
+        change = installation.enable_global(context.repo, args.name, target=args.target)
     return context.finish(change)
 
 
 def command_global_disable(
     args: argparse.Namespace, context: Context
 ) -> dict[str, Any]:
-    context.repo.require_skill(args.name)
+    entry = context.repo.require_skill(args.name)
     if args.dry_run:
         return {
             "dry_run": True,
-            "skill": args.name,
-            "active": args.name in context.repo.read_active(),
+            "skill": entry.qualified_id,
+            "active": entry.name in context.repo.read_active(),
             "target_active": False,
+            "target": args.target,
         }
     with context.repo.write_lock():
-        change = installation.disable_global(context.repo, args.name)
+        change = installation.disable_global(
+            context.repo, args.name, target=args.target
+        )
     return context.finish(change)
 
 
 def command_global_apply(args: argparse.Namespace, context: Context) -> dict[str, Any]:
-    return installation.apply_global(context.repo, dry_run=args.dry_run).details
+    return installation.apply_global(
+        context.repo,
+        dry_run=args.dry_run,
+        target=args.target,
+    ).details
 
 
 def command_project_install(
@@ -1102,8 +1657,20 @@ def _source_spec(session: SourceSession, args: argparse.Namespace):
 
 def _source_names(repo: Repository, args: argparse.Namespace) -> list[str]:
     if args.all:
-        return sorted(repo.read_sources()["skills"])
-    return [args.name]
+        return [
+            *sorted(repo.read_sources()["skills"]),
+            *[
+                AssetRef.plugin(plugin_id).canonical
+                for plugin_id in sorted(repo.read_sources()["plugins"])
+            ],
+        ]
+    if args.name.startswith("plugin:"):
+        repo.require_plugin(args.name)
+        return [args.name]
+    entry = repo.require_skill(args.name)
+    if entry.owner_kind == "plugin":
+        return [AssetRef.plugin(entry.owner_id or "").canonical]
+    return [entry.qualified_id]
 
 
 def _source_flags(parser: argparse.ArgumentParser) -> None:
@@ -1153,6 +1720,15 @@ def _emit(result: dict[str, Any], *, as_json: bool) -> None:
             print(f"{marker} {row['name']:<20} {package}{version}")
         print(f"\n共 {result.get('count', len(result['mcps']))} 个")
         return
+    if "plugins" in result and isinstance(result["plugins"], list):
+        for row in result["plugins"]:
+            targets = ",".join(
+                f"{target}:{value['support']}"
+                for target, value in row.get("targets", {}).items()
+            )
+            print(f"{row['id']:<28} {targets}")
+        print(f"\n共 {result.get('count', len(result['plugins']))} 个")
+        return
     if result.get("ok") is True and "sections" in result:
         summary = result["sections"].get("summary", {})
         print(
@@ -1193,6 +1769,8 @@ def main() -> int:
         InstallationError,
         TaxonomyError,
         UiError,
+        PluginError,
+        MarketplaceError,
         OSError,
         ValueError,
     ) as exc:

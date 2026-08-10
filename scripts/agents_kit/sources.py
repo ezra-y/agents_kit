@@ -20,10 +20,13 @@ from typing import Any, Protocol
 
 from .models import (
     ContentMode,
+    MergeState,
     ResolvedSource,
+    RiskClass,
     SkillCandidate,
     SkillSnapshot,
     SourceSpec,
+    UpdateDecision,
     parse_skill_frontmatter,
 )
 from .repository import Repository
@@ -48,8 +51,12 @@ def classify_source_change(
     upstream_modified = resolved_sha256 is None or remote_sha256 != resolved_sha256
 
     if not upstream_modified:
+        merge_state = MergeState.LOCAL_ONLY if local_modified else MergeState.UNCHANGED
         return {
             "status": "unchanged",
+            "merge_state": merge_state.value,
+            "risk_class": None,
+            "decision": None,
             "local_sha256": local_sha256,
             "remote_sha256": remote_sha256,
             "resolved_sha256": resolved_sha256,
@@ -66,6 +73,22 @@ def classify_source_change(
         autojunk=False,
     )
     conflict = local_modified and local_sha256 != remote_sha256
+    merge_state = MergeState.DIVERGED if conflict else MergeState.UPSTREAM_ONLY
+    changed_paths = _changed_paths(
+        local_path,
+        snapshot.path,
+        snapshot.content_mode,
+    )
+    risk_class = classify_changed_paths(
+        local_path,
+        snapshot.path,
+        changed_paths,
+    )
+    decision = (
+        UpdateDecision.AUTO_APPLY
+        if merge_state == MergeState.UPSTREAM_ONLY and risk_class == RiskClass.DOCS_ONLY
+        else UpdateDecision.REVIEW_REQUIRED
+    )
     skill_diff = list(
         difflib.unified_diff(
             local_lines,
@@ -82,7 +105,15 @@ def classify_source_change(
     )
 
     return {
-        "status": "review_required" if conflict else "safe_update",
+        "status": (
+            "safe_update"
+            if decision == UpdateDecision.AUTO_APPLY
+            else "review_required"
+        ),
+        "merge_state": merge_state.value,
+        "risk_class": risk_class.value,
+        "decision": decision.value,
+        "changed_paths": changed_paths,
         "local_sha256": local_sha256,
         "remote_sha256": remote_sha256,
         "resolved_sha256": resolved_sha256,
@@ -95,6 +126,113 @@ def classify_source_change(
         "reasons": ["local_upstream_conflict"] if conflict else [],
         "skill_diff": skill_diff[:SOURCE_DIFF_LINE_LIMIT],
         "skill_diff_truncated": len(skill_diff) > SOURCE_DIFF_LINE_LIMIT,
+    }
+
+
+def classify_changed_paths(
+    local_root: Path,
+    remote_root: Path,
+    changed_paths: list[str],
+) -> RiskClass:
+    if not changed_paths:
+        return RiskClass.UNKNOWN
+    classes: set[RiskClass] = set()
+    for relative in changed_paths:
+        local = local_root / relative
+        remote = remote_root / relative
+        path = remote if remote.exists() else local
+        name = PurePosixPath(relative).name
+        upper_name = name.upper()
+        parts = PurePosixPath(relative).parts
+        if _path_is_binary(path):
+            classes.add(RiskClass.BINARY)
+        elif _path_is_executable(path):
+            classes.add(RiskClass.EXECUTABLE)
+        elif (
+            name == "SKILL.md"
+            or "commands" in parts
+            or "agents" in parts
+            or "hooks" in parts
+            or name in {".mcp.json", ".app.json", ".lsp.json", "plugin.json"}
+        ):
+            classes.add(RiskClass.INSTRUCTIONAL)
+        elif upper_name.startswith(("README", "LICENSE", "CHANGELOG")):
+            classes.add(RiskClass.DOCS_ONLY)
+        else:
+            classes.add(RiskClass.UNKNOWN)
+    for risk in (
+        RiskClass.BINARY,
+        RiskClass.EXECUTABLE,
+        RiskClass.INSTRUCTIONAL,
+        RiskClass.UNKNOWN,
+        RiskClass.DOCS_ONLY,
+    ):
+        if risk in classes:
+            return risk
+    return RiskClass.UNKNOWN
+
+
+def _changed_paths(
+    local_root: Path,
+    remote_root: Path,
+    content_mode: ContentMode,
+) -> list[str]:
+    if content_mode == ContentMode.SKILL_FILE:
+        return ["SKILL.md"]
+    local = _file_hashes(local_root)
+    remote = _file_hashes(remote_root)
+    return sorted(
+        path for path in set(local) | set(remote) if local.get(path) != remote.get(path)
+    )
+
+
+def _file_hashes(root: Path) -> dict[str, str]:
+    hashes: dict[str, str] = {}
+    for path in sorted(root.rglob("*"), key=lambda item: item.as_posix()):
+        if not path.is_file() or any(
+            part in {".git", "__pycache__"} for part in path.parts
+        ):
+            continue
+        if path.name == ".DS_Store" or path.suffix == ".pyc":
+            continue
+        hashes[path.relative_to(root).as_posix()] = Repository.hash_file(path)
+    return hashes
+
+
+def _path_is_binary(path: Path) -> bool:
+    if not path.is_file():
+        return False
+    try:
+        data = path.read_bytes()[:8192]
+    except OSError:
+        return True
+    if b"\0" in data:
+        return True
+    try:
+        data.decode("utf-8")
+    except UnicodeDecodeError:
+        return True
+    return False
+
+
+def _path_is_executable(path: Path) -> bool:
+    if not path.exists():
+        return False
+    try:
+        if path.stat().st_mode & 0o111:
+            return True
+    except OSError:
+        return True
+    return path.suffix.lower() in {
+        ".bash",
+        ".command",
+        ".exe",
+        ".js",
+        ".mjs",
+        ".py",
+        ".sh",
+        ".ts",
+        ".zsh",
     }
 
 
@@ -613,6 +751,36 @@ class SourceSession(AbstractContextManager["SourceSession"]):
                 f"登记为 {expected_mode}，当前为 {snapshot.content_mode.value}"
             )
         return snapshot
+
+    def directory(
+        self,
+        spec: SourceSpec,
+        *,
+        candidate_path: str | None = None,
+    ) -> tuple[Path, str | None, SourceSpec]:
+        resolved = self._resolve(spec)
+        locator_path = str(resolved.spec.locator.get("path") or "").strip("/")
+        relative = candidate_path.strip("/") if candidate_path else locator_path
+        candidate = (
+            (resolved.root / relative).resolve()
+            if relative
+            else resolved.root.resolve()
+        )
+        root = resolved.root.resolve()
+        if candidate != root and root not in candidate.parents:
+            raise SourceError("来源目录越出了获取根目录")
+        if not candidate.is_dir():
+            raise SourceError(f"来源目录不存在：{relative or '.'}")
+        locator = dict(resolved.spec.locator)
+        if relative:
+            locator["path"] = candidate.relative_to(root).as_posix()
+        else:
+            locator.pop("path", None)
+        return (
+            candidate,
+            resolved.revision,
+            SourceSpec(provider=resolved.spec.provider, locator=locator),
+        )
 
     def _resolve(self, spec: SourceSpec) -> ResolvedSource:
         provider = self.providers.get(spec.provider)

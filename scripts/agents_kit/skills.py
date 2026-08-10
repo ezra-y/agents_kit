@@ -6,13 +6,14 @@ import shutil
 from typing import Any
 
 from .models import (
+    AssetRef,
     ChangeSet,
     ContentMode,
     Effect,
     SkillSnapshot,
     parse_skill_frontmatter,
 )
-from .repository import Repository
+from .repository import ACTIVE_HEADER, Repository, RepositoryError
 from .taxonomy import normalize_tags, validate_known_tags
 
 NAME_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
@@ -30,33 +31,47 @@ def list_skills(
     tags: list[str] | None = None,
     tracked_only: bool = False,
 ) -> list[dict[str, Any]]:
-    active = set(repo.read_active())
-    sources = repo.read_sources()["skills"]
-    metadata = repo.read_metadata()["skills"]
+    active_refs = {
+        raw_ref
+        for target in repo.read_desired_installations()["targets"].values()
+        for raw_ref in target.get("skills", [])
+    }
     validate_known_tags(repo, tags or [])
     required_tags = set(tags or [])
     rows: list[dict[str, Any]] = []
-    for name, entry in repo.inventory().items():
-        if active_only and name not in active:
+    plugin_sources = repo.read_sources()["plugins"]
+    for entry in repo.skill_registry().values():
+        ref = entry.qualified_id
+        metadata = repo.metadata_record(ref) or {}
+        tracked = (
+            entry.owner_kind == "plugin" and entry.owner_id in plugin_sources
+        ) or repo.source_record(ref) is not None
+        active = ref in active_refs
+        if active_only and not active:
             continue
         if category and entry.category != category:
             continue
-        if tracked_only and name not in sources:
+        if tracked_only and not tracked:
             continue
-        skill_tags = metadata.get(name, {}).get("tags", [])
+        skill_tags = metadata.get("tags", [])
         if required_tags and not required_tags.issubset(skill_tags):
             continue
         rows.append(
             {
-                "name": name,
+                "name": entry.name,
+                "ref": ref,
                 "category": entry.category,
-                "active": name in active,
-                "tracked": name in sources,
-                "description": metadata.get(name, {}).get("description", ""),
+                "owner": {
+                    "kind": entry.owner_kind,
+                    "id": entry.owner_id,
+                },
+                "active": active,
+                "tracked": tracked,
+                "description": metadata.get("description", ""),
                 "tags": skill_tags,
             }
         )
-    return sorted(rows, key=lambda row: (row["category"], row["name"]))
+    return sorted(rows, key=lambda row: (row["category"], row["ref"]))
 
 
 def show_skill(repo: Repository, name: str) -> dict[str, Any]:
@@ -66,14 +81,31 @@ def show_skill(repo: Repository, name: str) -> dict[str, Any]:
         frontmatter = parse_skill_frontmatter(text)
     except (ValueError, RuntimeError) as exc:
         raise SkillError(f"{name}: {exc}") from exc
+    source = repo.source_record(entry.qualified_id)
+    if entry.owner_kind == "plugin":
+        inherited = repo.read_sources()["plugins"].get(entry.owner_id or "")
+        source = (
+            {
+                "inherited_from": AssetRef.plugin(entry.owner_id or "").canonical,
+                **inherited,
+            }
+            if inherited
+            else None
+        )
     return {
-        "name": name,
+        "name": entry.name,
+        "ref": entry.qualified_id,
         "declared_name": frontmatter.get("name"),
         "category": entry.category,
         "path": str(entry.path),
-        "active": name in repo.read_active(),
-        "source": repo.source_record(name),
-        "metadata": repo.metadata_record(name),
+        "owner": {"kind": entry.owner_kind, "id": entry.owner_id},
+        "active_targets": [
+            target
+            for target, record in repo.read_desired_installations()["targets"].items()
+            if entry.qualified_id in record.get("skills", [])
+        ],
+        "source": source,
+        "metadata": repo.metadata_record(entry.qualified_id),
         "content_sha256": repo.hash_directory(entry.path),
     }
 
@@ -102,8 +134,8 @@ def import_snapshot(
         tags=tags,
     )
 
-    inventory = repo.inventory()
-    existing = inventory.get(skill_name)
+    standalone_ref = AssetRef.standalone_skill(skill_name).canonical
+    existing = repo.skill_registry().get(standalone_ref)
     destination = repo.skills_dir / category / skill_name
     content_changed = True
     if existing:
@@ -189,8 +221,9 @@ def set_metadata(
     dependencies: list[str] | None = None,
     tags: list[str] | None = None,
 ) -> ChangeSet:
-    repo.require_skill(name)
-    current = dict(repo.metadata_record(name) or {})
+    entry = repo.require_skill(name)
+    ref = entry.qualified_id
+    current = dict(repo.metadata_record(ref) or {})
     if description is not None:
         current["description"] = description
     if trigger is not None:
@@ -209,16 +242,21 @@ def set_metadata(
         dependencies=current.get("dependencies"),
         tags=current.get("tags", []),
     )
-    changed = repo.set_metadata_record(name, validated)
+    if entry.owner_kind == "plugin":
+        validated["category"] = current.get("category", entry.category)
+    changed = repo.set_metadata_record(ref, validated)
     return ChangeSet(
         changed={"metadata"} if changed else set(),
         effects={Effect.DOCS_BUILD, Effect.CHECK} if changed else set(),
-        details={"skill": name},
+        details={"skill": ref},
     )
 
 
 def rename_skill(repo: Repository, old_name: str, new_name: str) -> ChangeSet:
     entry = repo.require_skill(old_name)
+    if entry.owner_kind == "plugin":
+        raise SkillError("Plugin-owned Skill 不能单独重命名；请管理完整 Plugin")
+    old_ref = entry.qualified_id
     frontmatter = parse_skill_frontmatter(
         (entry.path / "SKILL.md").read_text(encoding="utf-8")
     )
@@ -226,33 +264,53 @@ def rename_skill(repo: Repository, old_name: str, new_name: str) -> ChangeSet:
     _validate_name(new_name)
     if old_name == new_name:
         return ChangeSet(details={"skill": old_name})
-    if new_name in repo.inventory():
+    try:
+        repo.require_skill(new_name)
+    except RepositoryError:
+        pass
+    else:
         raise SkillError(f"技能名已存在：{new_name}")
     destination = entry.path.with_name(new_name)
     os.replace(entry.path, destination)
     repo.refresh()
 
-    active = [new_name if name == old_name else name for name in repo.read_active()]
-    repo.write_active(active)
+    new_ref = AssetRef.standalone_skill(new_name).canonical
+    desired = repo.read_desired_installations()
+    for target in desired["targets"].values():
+        target["skills"] = [
+            new_ref if item == old_ref else item for item in target.get("skills", [])
+        ]
+    repo.write_desired_installations(desired)
+    repo.write_text_if_changed(
+        repo.active_path,
+        ACTIVE_HEADER
+        + "\n".join(
+            new_name if name == entry.name else name
+            for name in _legacy_active_names(repo.active_path)
+        )
+        + "\n",
+    )
 
     sources = repo.read_sources()
-    if old_name in sources["skills"]:
-        source = sources["skills"].pop(old_name)
+    source_key = old_ref if old_ref in sources["skills"] else entry.name
+    if source_key in sources["skills"]:
+        source = sources["skills"].pop(source_key)
         if declared_name != new_name:
             source["source_name"] = declared_name
         else:
             source.pop("source_name", None)
-        sources["skills"][new_name] = source
+        sources["skills"][new_ref] = source
         repo.write_sources(sources)
 
     metadata = repo.read_metadata()
-    if old_name in metadata["skills"]:
-        metadata["skills"][new_name] = metadata["skills"].pop(old_name)
+    metadata_key = old_ref if old_ref in metadata["skills"] else entry.name
+    if metadata_key in metadata["skills"]:
+        metadata["skills"][new_ref] = metadata["skills"].pop(metadata_key)
     for record in metadata["skills"].values():
         dependencies = record.get("dependencies")
         if isinstance(dependencies, list):
             record["dependencies"] = [
-                new_name if dependency == old_name else dependency
+                new_ref if dependency in {old_ref, entry.name} else dependency
                 for dependency in dependencies
             ]
     repo.write_metadata(metadata)
@@ -269,6 +327,16 @@ def move_skill(repo: Repository, name: str, category: str) -> ChangeSet:
     _validate_category(repo, category)
     if entry.category == category:
         return ChangeSet(details={"skill": name, "category": category})
+    if entry.owner_kind == "plugin":
+        metadata = dict(repo.metadata_record(entry.qualified_id) or {})
+        metadata["category"] = category
+        changed = repo.set_metadata_record(entry.qualified_id, metadata)
+        repo.refresh()
+        return ChangeSet(
+            changed={"metadata"} if changed else set(),
+            effects={Effect.DOCS_BUILD, Effect.CHECK} if changed else set(),
+            details={"skill": entry.qualified_id, "category": category},
+        )
     destination = repo.skills_dir / category / name
     if destination.exists():
         raise SkillError(f"目标已存在：{destination}")
@@ -287,22 +355,31 @@ def move_skill(repo: Repository, name: str, category: str) -> ChangeSet:
 
 def remove_skill(repo: Repository, name: str) -> ChangeSet:
     entry = repo.require_skill(name)
+    if entry.owner_kind == "plugin":
+        raise SkillError("Plugin-owned Skill 不能单独删除；请使用 plugin remove")
+    ref = entry.qualified_id
     metadata = repo.read_metadata()
     dependents: list[str] = []
     for other_name, record in metadata["skills"].items():
-        if name in record.get("dependencies", []):
+        if ref in record.get("dependencies", []) or entry.name in record.get(
+            "dependencies", []
+        ):
             dependents.append(other_name)
             record["dependencies"] = [
                 dependency
                 for dependency in record["dependencies"]
-                if dependency != name
+                if dependency not in {ref, entry.name}
             ]
 
     shutil.rmtree(entry.path)
     repo.refresh()
-    repo.write_active([item for item in repo.read_active() if item != name])
-    repo.remove_source_record(name)
-    metadata["skills"].pop(name, None)
+    desired = repo.read_desired_installations()
+    for target in desired["targets"].values():
+        target["skills"] = [item for item in target.get("skills", []) if item != ref]
+    repo.write_desired_installations(desired)
+    repo.remove_source_record(ref)
+    metadata["skills"].pop(ref, None)
+    metadata["skills"].pop(entry.name, None)
     repo.write_metadata(metadata)
 
     return ChangeSet(
@@ -404,5 +481,19 @@ def _metadata_record(
             not isinstance(item, str) or not item for item in dependencies
         ):
             raise SkillError("metadata dependencies 必须是技能名数组")
-        record["dependencies"] = list(dict.fromkeys(dependencies))
+        normalized_dependencies = [
+            repo.resolve_skill_ref(dependency).canonical for dependency in dependencies
+        ]
+        record["dependencies"] = list(dict.fromkeys(normalized_dependencies))
     return record
+
+
+def _legacy_active_names(path: Any) -> list[str]:
+    names: list[str] = []
+    if not path.is_file():
+        return names
+    for line in path.read_text(encoding="utf-8").splitlines():
+        name = line.split("#", 1)[0].strip()
+        if name and name not in names:
+            names.append(name)
+    return names

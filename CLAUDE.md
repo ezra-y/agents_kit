@@ -13,17 +13,34 @@
    按需启用或安装；找技能先查 `docs/catalog.md`。
 3. 添加技能、移动分类或修改标签前，读取 `docs/skill-taxonomy.md`，按主要产出
    选择分类，只使用 `agents-kit.json` 的中央词表。
-4. 优先通过 CLI 修改技能目录及 `active.txt`、`sources.json`、`metadata.json`
-   和 `mcps.json`。删除技能使用 `agents-kit skill remove <名称> --yes`，由 CLI
-   同时清理状态、来源、metadata 和受管链接。
+4. 优先通过 CLI 修改技能、Plugin 及 `desired-installations.json`、
+   `sources.json`、`metadata.json` 和 `mcps.json`。删除技能使用
+   `agents-kit skill remove <名称> --yes`，删除 Plugin 使用
+   `agents-kit plugin remove <名称> --yes`。
 5. 全局安装是软链接，项目安装是副本；依赖由 `metadata.json` 和安装流程展开，
-   不把依赖手工写入 `active.txt`。
-6. 已登记的上游在本地未修改时直接同步；本地与上游同时修改且内容不一致，或
-   候选体检失败时才等待人工处理。低频来源细节见 `docs/architecture.md`。
+   不把依赖手工写入期望安装清单。`active.txt` 只保留一个兼容周期。
+6. 来源检查把合并状态和内容风险分开。只有无本地冲突的 README、License、
+   Changelog 纯文档变化可用 `--auto-docs` 自动应用；Skill、Prompt、Manifest、
+   Hook、MCP、脚本、二进制和未知内容默认人工确认。
 7. MCP 集中记录在 `mcps.json`；`npm`、`pypi` 和 `brew` 分发必须锁定版本。
    凭据只记录环境变量或安全命令来源，不把值写进仓库或客户端配置。
 8. 修改 `rules/`、`agents/`、`hooks/` 或 `prompts/` 前，先读取对应目录的
    README。不要覆盖或提交用户的无关改动。
+
+## Plugin 所有权
+
+- 独立 Skill 位于 `skills/<category>/<skill-id>/`。
+- 完整 Plugin 位于 `plugins/<plugin-id>/`，整个目录是来源和更新边界。
+- Plugin-owned Skill 只保存在 owner Plugin 中，不复制到顶层 `skills/`。
+- `agents-kit.plugin.json` 只保存仓库管理策略；Claude/Codex manifest 分别是
+  各平台的权威源文件，不由 Marketplace build 重写。
+- 内嵌 Skill 默认只能随 Plugin 安装；只有 sidecar 明确标记
+  `self_contained` 后才能单独软链接或复制。
+- Plugin 导入和更新保留完整目录树。未知文件必须保留并进入 Review，不能作为
+  复制白名单之外的垃圾删除。
+- 修改 Plugin 前先读 sidecar；修改后运行 `agents-kit marketplace build`、
+  `agents-kit docs build` 和 `agents-kit check`。
+- 不把 Claude/Codex 客户端缓存当事实源，也不直接修改缓存。
 
 ## 按需上下文
 
@@ -37,8 +54,9 @@
 
 ## 生成文件
 
-`docs/skills.md`、`docs/mcps.md`、`docs/cli.md`、`docs/architecture.md` 的生成区块
-和 `docs/index.html` 由 `agents-kit docs build` 管理，不直接编辑。
+`docs/skills.md`、`docs/plugins.md`、`docs/mcps.md`、`docs/cli.md`、
+`docs/architecture.md` 的生成区块和 `docs/index.html` 由
+`agents-kit docs build` 管理，不直接编辑。
 
 修改源码或事实状态后运行：
 

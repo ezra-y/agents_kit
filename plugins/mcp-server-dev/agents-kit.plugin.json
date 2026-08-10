@@ -1,0 +1,76 @@
+{
+  "schema_version": 2,
+  "package_id": "mcp-server-dev",
+  "upstream_targets": [
+    "claude"
+  ],
+  "targets": {
+    "claude": {
+      "support": "full",
+      "manifest": {
+        "path": ".claude-plugin/plugin.json",
+        "authority": "upstream"
+      },
+      "marketplace": {}
+    },
+    "codex": {
+      "support": "review",
+      "manifest": {
+        "path": ".codex-plugin/plugin.json",
+        "authority": "local"
+      },
+      "marketplace": {
+        "category": "Developer Tools",
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "limitations": [
+        "尚未完成目标端安装与触发测试"
+      ]
+    }
+  },
+  "embedded_skills": {
+    "build-mcp-app": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "正文引用兄弟 build-mcp-server Skill 的参考资料"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "正文引用兄弟 build-mcp-server Skill 的参考资料"
+        }
+      },
+      "dependencies": []
+    },
+    "build-mcp-server": {
+      "standalone": {
+        "claude": {
+          "mode": "self_contained",
+          "reason": ""
+        },
+        "codex": {
+          "mode": "self_contained",
+          "reason": ""
+        }
+      },
+      "dependencies": []
+    },
+    "build-mcpb": {
+      "standalone": {
+        "claude": {
+          "mode": "self_contained",
+          "reason": ""
+        },
+        "codex": {
+          "mode": "self_contained",
+          "reason": ""
+        }
+      },
+      "dependencies": []
+    }
+  },
+  "local_paths": [
+    ".codex-plugin/plugin.json"
+  ]
+}

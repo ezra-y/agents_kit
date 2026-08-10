@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agents-kit.local/schemas/desired-installations.schema.json",
+  "title": "agents_kit desired installations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "targets"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "targets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claude",
+        "codex"
+      ],
+      "properties": {
+        "claude": {
+          "$ref": "#/$defs/target"
+        },
+        "codex": {
+          "$ref": "#/$defs/target"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "skills",
+        "plugins"
+      ],
+      "properties": {
+        "scope": {
+          "enum": [
+            "user"
+          ]
+        },
+        "skills": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^skill:(standalone|plugin)/"
+          }
+        },
+        "plugins": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ref",
+              "distribution"
+            ],
+            "properties": {
+              "ref": {
+                "type": "string",
+                "pattern": "^plugin:[a-z0-9][a-z0-9-]*$"
+              },
+              "distribution": {
+                "enum": [
+                  "skills-dir",
+                  "marketplace"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

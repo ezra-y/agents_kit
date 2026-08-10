@@ -150,7 +150,8 @@ class SkillTests(unittest.TestCase):
         self.assertIn("alpha-new", self.repo.inventory())
         self.assertEqual(self.repo.read_active(), ["alpha-new"])
         self.assertEqual(
-            self.repo.metadata_record("beta")["dependencies"], ["alpha-new"]
+            self.repo.metadata_record("beta")["dependencies"],
+            ["skill:standalone/alpha-new"],
         )
         self.assertEqual(self.repo.source_record("alpha-new")["source_name"], "alpha")
 

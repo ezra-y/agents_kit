@@ -24,10 +24,23 @@ def render_source_review_markdown(
     updated = [
         row
         for row in results
-        if row.get("status") == "safe_update" and row.get("applied")
+        if (row.get("decision") == "auto_apply" or row.get("status") == "safe_update")
+        and row.get("applied")
     ]
-    review = [row for row in results if row.get("status") == "review_required"]
-    unchanged = sum(row.get("status") == "unchanged" for row in results)
+    review = [
+        row
+        for row in results
+        if (
+            row.get("decision") == "review_required"
+            or row.get("status") == "review_required"
+        )
+        and row.get("upstream_modified") is not False
+    ]
+    unchanged = sum(
+        row.get("merge_state") in {"unchanged", "local_only"}
+        or row.get("status") == "unchanged"
+        for row in results
+    )
 
     lines = [
         "# 上游技能审核",
@@ -50,7 +63,7 @@ def render_source_review_markdown(
                 "",
                 "## 已自动更新",
                 "",
-                ", ".join(f"`{row['skill']}`" for row in updated),
+                ", ".join(f"`{_row_name(row)}`" for row in updated),
             ]
         )
 
@@ -65,7 +78,7 @@ def render_source_review_markdown(
             ]
         )
         for row in review:
-            name = str(row["skill"])
+            name = _row_name(row)
             reason = "；".join(_reason_labels(row))
             scale = _change_scale(row)
             source_url = _source_url(sources.get(name, {}), row)
@@ -75,15 +88,19 @@ def render_source_review_markdown(
                 f"{_escape_table(scale)} | {source} |"
             )
         for row in review:
-            lines.extend(_review_details(row, sources.get(str(row["skill"]), {})))
+            name = _row_name(row)
+            lines.extend(_review_details(row, sources.get(name, {})))
 
     if failures:
         lines.extend(["", "## 检查失败", ""])
         for failure in failures:
-            lines.append(
-                f"- `{failure.get('skill', 'unknown')}`："
-                f"{failure.get('error', '未知错误')}"
+            name = (
+                failure.get("skill")
+                or failure.get("asset")
+                or failure.get("plugin")
+                or "unknown"
             )
+            lines.append(f"- `{name}`：{failure.get('error', '未知错误')}")
 
     return "\n".join(lines).rstrip() + "\n"
 
@@ -92,7 +109,7 @@ def _review_details(
     row: Mapping[str, Any],
     source_record: Mapping[str, Any],
 ) -> list[str]:
-    name = str(row["skill"])
+    name = _row_name(row)
     reasons = "；".join(_reason_labels(row))
     lines = [
         "",
@@ -146,9 +163,19 @@ def _review_details(
 
 def _reason_labels(row: Mapping[str, Any]) -> list[str]:
     reasons = list(row.get("reasons", []))
-    return [REASON_LABELS.get(reason, str(reason)) for reason in reasons] or [
-        "需要人工确认"
-    ]
+    labels = [REASON_LABELS.get(reason, str(reason)) for reason in reasons]
+    risk_class = row.get("risk_class")
+    if risk_class:
+        labels.append(
+            {
+                "instructional": "Agent 指令或平台配置变化",
+                "executable": "可执行内容变化",
+                "binary": "二进制内容变化",
+                "unknown": "未知类型内容变化",
+                "docs_only": "纯文档变化",
+            }.get(str(risk_class), str(risk_class))
+        )
+    return list(dict.fromkeys(labels)) or ["需要人工确认"]
 
 
 def _change_scale(row: Mapping[str, Any]) -> str:
@@ -192,3 +219,7 @@ def _percent(value: float) -> str:
 
 def _escape_table(value: str) -> str:
     return value.replace("|", "\\|").replace("\n", " ")
+
+
+def _row_name(row: Mapping[str, Any]) -> str:
+    return str(row.get("skill") or row.get("asset") or row.get("plugin") or "unknown")

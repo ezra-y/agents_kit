@@ -5,9 +5,9 @@ import urllib.parse
 from pathlib import Path
 from typing import Any
 
-from . import docs, mcps
+from . import docs, marketplace, mcps, plugins
 from .installation import InstallationError, global_plan
-from .models import CheckReport, ContentMode, parse_skill_frontmatter
+from .models import AssetRef, CheckReport, ContentMode, parse_skill_frontmatter
 from .repository import Repository, RepositoryError
 from .taxonomy import TaxonomyError, validate_tags
 
@@ -21,15 +21,17 @@ MARKDOWN_LINK = re.compile(r"!?\[[^\]]*\]\(([^)\n]+)\)")
 def run(repo: Repository, *, command_help: str, repo_only: bool = False) -> CheckReport:
     report = CheckReport()
     try:
-        inventory = repo.inventory(refresh=True)
+        inventory = repo.skill_registry(refresh=True)
     except RepositoryError as exc:
         report.problems.append(str(exc))
         return report
 
     _check_skill_files(repo, inventory, report)
-    _check_active(repo, inventory, report)
+    _check_desired_installations(repo, inventory, report)
     _check_sources(repo, inventory, report)
     _check_metadata(repo, inventory, report)
+    _check_plugins(repo, inventory, report)
+    _check_marketplace(repo, report)
     _check_scout(repo, report)
     _check_mcps(repo, report, repo_only=repo_only)
     _check_references(inventory, report)
@@ -38,8 +40,13 @@ def run(repo: Repository, *, command_help: str, repo_only: bool = False) -> Chec
         _check_global(repo, report)
     report.sections["summary"] = {
         "skills": len(inventory),
-        "active": len(repo.read_active()),
-        "sources": len(repo.read_sources()["skills"]),
+        "active": sum(
+            len(record.get("skills", []))
+            for record in repo.read_desired_installations()["targets"].values()
+        ),
+        "sources": len(repo.read_sources()["skills"])
+        + len(repo.read_sources()["plugins"]),
+        "plugins": len(repo.plugin_inventory()),
         "metadata": len(repo.read_metadata()["skills"]),
         "mcps": len(repo.read_mcps()["servers"]),
         "enabled_mcps": sum(
@@ -84,23 +91,99 @@ def _check_skill_files(
     }
 
 
-def _check_active(
+def _check_desired_installations(
     repo: Repository, inventory: dict[str, Any], report: CheckReport
 ) -> None:
-    active = repo.read_active()
-    missing = sorted(set(active) - set(inventory))
-    for name in missing:
-        report.problems.append(f"active.txt 中的 {name} 不存在")
-    report.sections["active"] = {"count": len(active), "missing": missing}
+    desired = repo.read_desired_installations()
+    missing: list[str] = []
+    destinations: dict[tuple[str, str], str] = {}
+    count = 0
+    for target, record in desired["targets"].items():
+        for raw_ref in record.get("skills", []):
+            count += 1
+            try:
+                ref = AssetRef.parse(raw_ref)
+            except ValueError:
+                missing.append(raw_ref)
+                continue
+            entry = inventory.get(ref.canonical)
+            if entry is None:
+                missing.append(raw_ref)
+                continue
+            if entry.owner_kind == "plugin":
+                plugin = repo.require_plugin(entry.owner_id or "")
+                embedded = plugin.embedded_skills.get(entry.name)
+                target_spec = embedded.standalone.get(target) if embedded else None
+                if target_spec is None or target_spec.mode != "self_contained":
+                    report.problems.append(
+                        f"{raw_ref}: {target} 不允许脱离 Plugin 单独安装"
+                    )
+            destination = (target, entry.name)
+            previous = destinations.get(destination)
+            if previous and previous != raw_ref:
+                report.problems.append(
+                    f"{target} 投射路径冲突：{previous} 与 {raw_ref}"
+                )
+            destinations[destination] = raw_ref
+        for item in record.get("plugins", []):
+            count += 1
+            raw_ref = item.get("ref") if isinstance(item, dict) else None
+            try:
+                ref = AssetRef.parse(str(raw_ref))
+            except ValueError:
+                missing.append(str(raw_ref))
+                continue
+            if ref.kind != "plugin" or ref.local_id not in repo.plugin_inventory():
+                missing.append(str(raw_ref))
+                continue
+            plugin = repo.require_plugin(ref.local_id)
+            target_spec = plugin.targets.get(target)
+            if target_spec is None or target_spec.support in {
+                "review",
+                "unsupported",
+            }:
+                report.problems.append(
+                    f"{raw_ref}: {target} 支持状态为 "
+                    f"{target_spec.support if target_spec else 'missing'}，不能安装"
+                )
+            destination = (target, ref.local_id)
+            previous = destinations.get(destination)
+            if previous and previous != ref.canonical:
+                report.problems.append(
+                    f"{target} 投射路径冲突：{previous} 与 {ref.canonical}"
+                )
+            destinations[destination] = ref.canonical
+            embedded_refs = {
+                AssetRef.plugin_skill(ref.local_id, skill_id).canonical
+                for skill_id in plugin.embedded_skills
+            }
+            duplicates = embedded_refs.intersection(record.get("skills", []))
+            for duplicate in sorted(duplicates):
+                report.problems.append(
+                    f"{target} 同时安装 {ref.canonical} 和内嵌 {duplicate}"
+                )
+    for raw_ref in sorted(set(missing)):
+        report.problems.append(
+            f"desired-installations.json 引用了不存在的资产：{raw_ref}"
+        )
+    report.sections["desired_installations"] = {
+        "count": count,
+        "missing": sorted(set(missing)),
+    }
 
 
 def _check_sources(
     repo: Repository, inventory: dict[str, Any], report: CheckReport
 ) -> None:
-    records = repo.read_sources()["skills"]
-    stale = sorted(set(records) - set(inventory))
+    catalog = repo.read_sources()
+    records = catalog["skills"]
+    normalized_records = _normalized_skill_keys(repo, records)
+    stale = sorted(set(normalized_records) - set(inventory))
     for name in stale:
         report.problems.append(f"sources.json 中的 {name} 不存在")
+    for name in sorted(set(normalized_records).intersection(inventory)):
+        if inventory[name].owner_kind == "plugin":
+            report.problems.append(f"{name}: Plugin-owned Skill 不能有独立 source")
     for name, record in sorted(records.items()):
         if not isinstance(record, dict):
             report.problems.append(f"{name}: source 记录必须是对象")
@@ -111,7 +194,9 @@ def _check_sources(
         if not isinstance(record.get("locator"), dict):
             report.problems.append(f"{name}: source locator 必须是对象")
         try:
-            ContentMode(record.get("content_mode"))
+            mode = ContentMode(record.get("content_mode"))
+            if mode == ContentMode.PLUGIN_DIRECTORY:
+                raise ValueError
         except (TypeError, ValueError):
             report.problems.append(f"{name}: source content_mode 无效")
         if record.get("policy") not in {"review", "pinned"}:
@@ -121,7 +206,30 @@ def _check_sources(
             resolved.get("content_sha256"), str
         ):
             report.problems.append(f"{name}: source resolved 摘要不完整")
-    report.sections["sources"] = {"count": len(records), "stale": stale}
+    plugin_stale = sorted(set(catalog["plugins"]) - set(repo.plugin_inventory()))
+    for plugin_id in plugin_stale:
+        report.problems.append(f"sources.json 中的 Plugin {plugin_id} 不存在")
+    for plugin_id, record in sorted(catalog["plugins"].items()):
+        if not isinstance(record, dict):
+            report.problems.append(f"{plugin_id}: Plugin source 记录必须是对象")
+            continue
+        if record.get("content_mode") != "plugin_directory":
+            report.problems.append(
+                f"{plugin_id}: Plugin source content_mode 必须是 plugin_directory"
+            )
+        resolved = record.get("resolved")
+        if (
+            not isinstance(resolved, dict)
+            or not isinstance(resolved.get("upstream_sha256"), str)
+            or not isinstance(resolved.get("upstream_paths"), list)
+        ):
+            report.problems.append(f"{plugin_id}: Plugin source resolved 摘要不完整")
+    report.sections["sources"] = {
+        "skills": len(records),
+        "plugins": len(catalog["plugins"]),
+        "stale_skills": stale,
+        "stale_plugins": plugin_stale,
+    }
 
 
 def _check_metadata(
@@ -129,21 +237,26 @@ def _check_metadata(
 ) -> None:
     catalog = repo.read_metadata()
     metadata = catalog["skills"]
+    normalized_metadata = _normalized_skill_keys(repo, metadata)
     if catalog["taxonomy_version"] != repo.taxonomy_version:
         report.problems.append(
             "metadata.json taxonomy_version "
             f"{catalog['taxonomy_version']} 与 agents-kit.json "
             f"{repo.taxonomy_version} 不一致"
         )
-    stale = sorted(set(metadata) - set(inventory))
-    missing = sorted(set(inventory) - set(metadata))
+    stale = sorted(set(normalized_metadata) - set(inventory))
+    missing = sorted(set(inventory) - set(normalized_metadata))
     for name in stale:
         report.problems.append(f"metadata.json 中的 {name} 不存在")
     for name in missing:
         report.problems.append(f"{name}: 缺 metadata")
 
     graph: dict[str, list[str]] = {}
-    for name, record in sorted(metadata.items()):
+    for raw_name, record in sorted(metadata.items()):
+        try:
+            name = repo.resolve_skill_ref(raw_name).canonical
+        except RepositoryError:
+            name = raw_name
         if not isinstance(record, dict):
             report.problems.append(f"{name}: metadata 记录必须是对象")
             graph[name] = []
@@ -166,16 +279,134 @@ def _check_metadata(
         ):
             report.problems.append(f"{name}: dependencies 必须是技能名数组")
             dependencies = []
-        graph[name] = dependencies
+        normalized_dependencies: list[str] = []
         for dependency in dependencies:
-            if dependency not in inventory:
+            try:
+                dependency_ref = repo.resolve_skill_ref(dependency).canonical
+            except RepositoryError:
                 report.problems.append(f"{name}: 依赖不存在 {dependency}")
+                continue
+            normalized_dependencies.append(dependency_ref)
+        graph[name] = normalized_dependencies
     _check_dependency_cycles(graph, report)
     report.sections["metadata"] = {
         "count": len(metadata),
         "missing": missing,
         "stale": stale,
     }
+
+
+def _check_plugins(
+    repo: Repository, inventory: dict[str, Any], report: CheckReport
+) -> None:
+    checked = 0
+    for plugin_id, spec in sorted(repo.plugin_inventory().items()):
+        checked += 1
+        disk_skills = {
+            entry.name
+            for entry in inventory.values()
+            if entry.owner_kind == "plugin" and entry.owner_id == plugin_id
+        }
+        declared_skills = set(spec.embedded_skills)
+        for skill_id in sorted(disk_skills - declared_skills):
+            report.problems.append(f"{plugin_id}: sidecar 缺 embedded Skill {skill_id}")
+        for skill_id in sorted(declared_skills - disk_skills):
+            report.problems.append(
+                f"{plugin_id}: sidecar 声明的 Skill 不存在 {skill_id}"
+            )
+        for skill_id, embedded in spec.embedded_skills.items():
+            if not any(
+                target.mode == "self_contained"
+                for target in embedded.standalone.values()
+            ):
+                continue
+            if embedded.dependencies:
+                report.problems.append(
+                    f"{plugin_id}/{skill_id}: self_contained Skill "
+                    "不能声明 Plugin 根目录依赖"
+                )
+            skill_root = spec.root / "skills" / skill_id
+            for path in skill_root.rglob("*"):
+                if not path.is_file() or path.is_symlink():
+                    continue
+                text = path.read_text(encoding="utf-8", errors="replace")
+                if "${CLAUDE_PLUGIN_ROOT}" in text:
+                    report.problems.append(
+                        f"{plugin_id}/{skill_id}: self_contained Skill "
+                        "引用 CLAUDE_PLUGIN_ROOT"
+                    )
+                if path.name == "SKILL.md" and re.search(
+                    r"(?<!\.)\.\./[A-Za-z0-9_.-]", text
+                ):
+                    report.problems.append(
+                        f"{plugin_id}/{skill_id}: self_contained Skill "
+                        "包含跨出 Skill 根目录的相对路径"
+                    )
+            skill_file = skill_root / "SKILL.md"
+            if skill_file.is_file():
+                text = skill_file.read_text(encoding="utf-8", errors="replace")
+                for match in MARKDOWN_LINK.finditer(text):
+                    raw = match.group(1).strip().split(maxsplit=1)[0]
+                    parsed = urllib.parse.urlsplit(raw)
+                    if parsed.scheme or parsed.netloc or not parsed.path:
+                        continue
+                    relative = urllib.parse.unquote(parsed.path)
+                    if relative.startswith(("#", "/")):
+                        continue
+                    target = (skill_root / relative).resolve()
+                    root = skill_root.resolve()
+                    if target != root and root not in target.parents:
+                        report.problems.append(
+                            f"{plugin_id}/{skill_id}: self_contained Skill "
+                            f"链接越界 {relative}"
+                        )
+        for target, target_spec in spec.targets.items():
+            if target_spec.manifest is None:
+                continue
+            manifest = plugins.manifest_data(spec.root, target)
+            if manifest is None:
+                report.problems.append(f"{plugin_id}: {target} manifest 不存在")
+                continue
+            if manifest.get("name") != plugin_id:
+                report.problems.append(f"{plugin_id}: {target} manifest name 不一致")
+            if (
+                target_spec.manifest.authority == "upstream"
+                and target not in spec.upstream_targets
+            ):
+                report.problems.append(
+                    f"{plugin_id}: {target} 标记 upstream authority "
+                    "但不在 upstream_targets"
+                )
+        component_inventory = plugins.inventory_plugin(spec.root)
+        if component_inventory.unknown_paths:
+            report.warnings.append(
+                f"{plugin_id}: 保留了 {len(component_inventory.unknown_paths)} "
+                "个未知 Plugin 路径，更新时需要 Review"
+            )
+    report.sections["plugins"] = {"count": checked}
+
+
+def _check_marketplace(repo: Repository, report: CheckReport) -> None:
+    if not repo.plugin_inventory() and not any(
+        path.is_file() for path in marketplace.expected_indexes(repo)
+    ):
+        report.sections["marketplace"] = {"stale": []}
+        return
+    stale = marketplace.check(repo)
+    for path in stale:
+        report.problems.append(f"Marketplace 索引已过期：{path}")
+    report.sections["marketplace"] = {"stale": stale}
+
+
+def _normalized_skill_keys(repo: Repository, records: dict[str, Any]) -> dict[str, Any]:
+    normalized: dict[str, Any] = {}
+    for key, value in records.items():
+        try:
+            canonical = repo.resolve_skill_ref(key).canonical
+        except RepositoryError:
+            canonical = key
+        normalized[canonical] = value
+    return normalized
 
 
 def _check_scout(repo: Repository, report: CheckReport) -> None:
@@ -255,13 +486,19 @@ def _check_dependency_cycles(graph: dict[str, list[str]], report: CheckReport) -
 
 
 def _check_references(inventory: dict[str, Any], report: CheckReport) -> None:
-    known = set(inventory)
+    known = {entry.name for entry in inventory.values()}
+    by_name = {
+        entry.name: entry
+        for entry in inventory.values()
+        if sum(1 for candidate in inventory.values() if candidate.name == entry.name)
+        == 1
+    }
     broken: list[str] = []
     missing_files: list[str] = []
     for name, entry in sorted(inventory.items()):
         text = (entry.path / "SKILL.md").read_text(encoding="utf-8", errors="replace")
         broken.extend(_missing_skill_references(name, text, known))
-        missing_files.extend(_missing_markdown_links(name, entry.path, text, inventory))
+        missing_files.extend(_missing_markdown_links(name, entry.path, text, by_name))
     report.problems.extend([*broken, *missing_files])
     report.sections["references"] = {
         "broken_skills": broken,
@@ -297,7 +534,8 @@ def candidate_skill_problems(
     symlink_report = CheckReport()
     _check_symlinks(skill_root, symlink_report)
     problems.extend(symlink_report.problems)
-    problems.extend(_missing_skill_references(name, text, set(inventory)))
+    known = {entry.name for entry in inventory.values()}
+    problems.extend(_missing_skill_references(name, text, known))
     problems.extend(_missing_markdown_links(name, skill_root, text, inventory))
     return problems
 

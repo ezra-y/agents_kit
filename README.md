@@ -15,7 +15,7 @@ agents-kit global apply
 agents-kit check
 ```
 
-`global apply` 按 `active.txt` 把技能软链到：
+`global apply` 按 `desired-installations.json` 把技能和 Plugin 投射到：
 
 - `~/.claude/skills`
 - `~/.agents/skills`
@@ -27,14 +27,17 @@ agents-kit check
 | 路径 | 内容 |
 |---|---|
 | `skills/` | 按主要用途分类的技能目录 |
+| `plugins/` | 完整 Plugin 包；包含平台 manifest、Skill、Hook、MCP 和资源 |
 | `scripts/agents-kit` | 唯一公开命令 |
 | `scripts/agents_kit/` | 命令使用的内部 Python 模块 |
-| `active.txt` | 全局常驻技能名 |
-| `sources.json` | 上游 provider、定位信息、更新策略和内容摘要 |
+| `desired-installations.json` | Claude/Codex 的期望安装状态 |
+| `active.txt` | 旧版兼容清单，不再是安装事实源 |
+| `sources.json` | Skill/Plugin 上游 provider、定位、更新策略和摘要 |
 | `metadata.json` | 中文说明、触发方式、推荐指数、标签和可选依赖 |
 | `scout.json` | 收藏索引：未安装技能的名字、用途和来源定位，不含内容 |
 | `mcps.json` | MCP 上游、锁定版本、启动方式、凭据来源和启用状态 |
 | `docs/skills.md` | 自动生成的技能清册 |
+| `docs/plugins.md` | 自动生成的完整 Plugin 清单 |
 | `docs/catalog.md` | 自动生成的收藏总目录：未收录索引 + 未常驻 + 常驻 |
 | `docs/mcps.md` | 自动生成的 MCP 清单 |
 | `docs/cli.md` | 自动生成的完整命令参考 |
@@ -77,6 +80,26 @@ agents-kit skill import "<来源>" \
 
 来源中有多个技能时，先运行 `agents-kit source inspect <来源>`，再用
 `--candidate <相对路径>` 选择。
+
+## 收录完整 Plugin
+
+带 `.claude-plugin/plugin.json` 或 `.codex-plugin/plugin.json` 的来源按完整
+Plugin 导入，不抽取其中的单个 Skill：
+
+```bash
+agents-kit plugin inspect "<来源>" --candidate plugins/example
+agents-kit plugin import "<来源>" \
+  --candidate plugins/example \
+  --category ai-building \
+  --target claude \
+  --target codex \
+  --tag role/builder \
+  --tag focus/ai-apps
+```
+
+导入会保留完整目录树，把同内容的独立 Skill 迁移到 Plugin 所有权，并为缺失
+目标创建一次原生 manifest。平台 manifest 后续各自维护；Marketplace build
+只校验它们并生成两个根索引。
 
 ## 收藏总目录：大仓库不整个收录，看上先记一笔
 
@@ -132,12 +155,16 @@ agents-kit skill list --active
 agents-kit skill list --category ios --tag role/reviewer
 agents-kit skill show <技能名>
 agents-kit skill open <技能名>
+agents-kit plugin list
+agents-kit plugin show <Plugin>
+agents-kit marketplace status
 agents-kit ui
 agents-kit mcp list
 agents-kit mcp apply --all
 agents-kit mcp update --all --dry-run
 
 agents-kit global enable <技能名>
+agents-kit global enable <技能名> --target codex
 agents-kit global disable <技能名>
 agents-kit skill move <技能名> <分类>
 agents-kit skill rename <旧名> <新名>
@@ -157,16 +184,17 @@ agents-kit project install <技能名或分类> --project "<项目路径>"
 ```bash
 agents-kit source check --all
 agents-kit source update <技能名> --yes
-agents-kit source update --all --safe --yes
+agents-kit source update --all --auto-docs --yes
 agents-kit source detach <技能名>
+agents-kit plugin update --all --dry-run
+agents-kit plugin update <Plugin> --yes
 ```
 
-默认策略是 `review`。每条来源记录保留上次同步摘要；定时任务比较上次同步版本、
-本地版本和当前上游版本。本地未修改时直接跟随上游，不限制改动规模或文件结构；
-只有本地与上游同时修改且内容不一致，或候选内容体检失败时才进入同一个 Issue。
-只有本地修改、上游未变时保留本地版本且不报告。`--safe` 执行这套自动同步规则。
-Git、压缩包等整目录来源会替换技能目录；直接指向 `SKILL.md` 的 HTTP 来源只更新
-该文件，不会删除仓库维护的 `references/` 或 `scripts/`。
+默认策略是 `review`。检查结果分别报告 `merge_state`、`risk_class` 和
+`decision`。只有 `upstream_only + docs_only` 可由 `--auto-docs` 自动应用。
+`SKILL.md`、Prompt、Manifest、Hook、MCP、脚本、二进制和未知文件即使没有
+本地冲突也要人工确认。完整 Plugin 更新复制整个上游子树，再覆盖 sidecar 声明的
+本地 authority 路径；组件 Inventory 只用于识别和审核，不决定保留哪些文件。
 
 ### 本机自动同步
 
@@ -198,8 +226,8 @@ agents-kit docs check
 agents-kit check
 ```
 
-`docs/skills.md`、`docs/mcps.md`、`docs/cli.md` 和 `docs/architecture.md`
-的生成区块进入 Git。
+`docs/skills.md`、`docs/plugins.md`、`docs/mcps.md`、`docs/cli.md` 和
+`docs/architecture.md` 的生成区块进入 Git。
 可搜索网页生成到 `docs/index.html`，由 CI 上传为 artifact，不写入 Git 历史。
 运行 `agents-kit ui` 会先更新网页，再启动本地服务并自动打开浏览器；网页中的
 Finder 按钮可以直接打开对应技能目录。

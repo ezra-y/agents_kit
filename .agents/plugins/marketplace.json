@@ -1,0 +1,22 @@
+{
+  "name": "agents-kit",
+  "description": "Ezra's shared Claude and Codex capability registry.",
+  "interface": {
+    "displayName": "Agents Kit"
+  },
+  "plugins": [
+    {
+      "name": "ai-speaking-coach",
+      "source": {
+        "source": "local",
+        "path": "./plugins/ai-speaking-coach"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Education & Research",
+      "description": "A stateful English speaking-course plugin with flexible GPT-Live lessons, durable module checkpoints, local retrieval, configurable teacher persona, reminders, and periodic assessment."
+    }
+  ]
+}

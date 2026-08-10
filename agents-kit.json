@@ -50,11 +50,13 @@
     "global": [
       {
         "id": "claude",
+        "platform": "claude",
         "path": "~/.claude/skills",
         "mode": "symlink"
       },
       {
         "id": "agents",
+        "platform": "codex",
         "path": "~/.agents/skills",
         "mode": "symlink"
       }

@@ -181,7 +181,8 @@ function render(){
     else if(cat!=='*' && r.cat!==cat) return false;
     if(Object.values(tagFilters).some(tag=>tag && !(r.tags||[]).includes(tag))) return false;
     if(!term) return true;
-    return (r.name+' '+r.desc+' '+r.how+' '+(r.repo||'')+' '+r.cat+' '+(r.path||'')+' '
+    return (r.name+' '+(r.ref||'')+' '+(r.ownerId||'')+' '+r.desc+' '+r.how+' '
+      +(r.repo||'')+' '+r.cat+' '+(r.path||'')+' '
       +(r.catLabel||'')+' '+(r.tags||[]).join(' ')).toLowerCase().includes(term);
   });
   list.sort((a,b)=>{
@@ -196,6 +197,7 @@ function render(){
     const badges=(r.status?'<span class="badge '
         +(r.active?'on':(r.kind==='scout'?'idx':''))+'">'+r.status+'</span>':'')
       +(r.kind==='mcp'?'<span class="badge">MCP</span>':'')
+      +(r.owner==='plugin'?'<span class="badge">'+esc(r.ownerId)+'</span>':'')
       +(r.manual?'<span class="badge">仅手动</span>':'');
     const up=r.url?('<a href="'+esc(r.url)+'" target="_blank" rel="noopener">'+esc(r.repo)+'</a>')
       :'<span class="dim">来源未记录</span>';
@@ -209,7 +211,7 @@ function render(){
       :r.kind==='scout'
       ?('未收录 · '+esc(r.repo||'')+' · '+esc(r.path||''))
       :(esc(r.catLabel||r.cat)+' · '+r.lines+' 行 · '+r.nfiles+' 附件 · '
-        +'<button class="folder-link" type="button" data-open-skill="'+esc(r.name)
+        +'<button class="folder-link" type="button" data-open-skill="'+esc(r.ref||r.name)
         +'">Finder</button>');
     const side=(r.kind==='scout'
       ?'<div class="s-row"><span class="sk">状态</span><span class="sv">仅索引，内容未下载</span></div>'
@@ -250,7 +252,7 @@ tb.addEventListener('click',e=>{
     ?(r.url?'<a class="btn" href="'+esc(r.url)+'" target="_blank" rel="noopener">上游 ↗</a>':'')
     :r.kind==='scout'
     ?(r.url?'<a class="btn" href="'+esc(r.url)+'" target="_blank" rel="noopener">上游 SKILL.md 原文 ↗</a>':'')
-    :'<button class="btn" type="button" data-open-skill="'+esc(r.name)
+    :'<button class="btn" type="button" data-open-skill="'+esc(r.ref||r.name)
       +'">Finder 打开目录</button>'
       +'<a class="btn" href="../'+encodeURI(r.rel)+'/SKILL.md">打开 SKILL.md</a>'
       +(r.url?'<a class="btn" href="'+esc(r.url)+'" target="_blank" rel="noopener">上游 ↗</a>':'');
@@ -292,11 +294,13 @@ GENERATED_END = "<!-- END GENERATED -->"
 
 
 def collect_rows(repo: Repository) -> list[dict[str, Any]]:
-    active = set(repo.read_active())
-    sources = repo.read_sources()["skills"]
-    metadata = repo.read_metadata()["skills"]
+    active = {
+        raw_ref
+        for target in repo.read_desired_installations()["targets"].values()
+        for raw_ref in target.get("skills", [])
+    }
     rows: list[dict[str, Any]] = []
-    for name, entry in sorted(repo.inventory().items()):
+    for ref, entry in sorted(repo.skill_registry().items()):
         raw = (entry.path / "SKILL.md").read_text(encoding="utf-8", errors="replace")
         frontmatter = parse_skill_frontmatter(raw)
         body = _skill_body(raw)
@@ -305,12 +309,18 @@ def collect_rows(repo: Repository) -> list[dict[str, Any]]:
             for path in entry.path.rglob("*")
             if path.is_file() and path.name != "SKILL.md"
         )
-        local_metadata = metadata.get(name, {})
-        source_label, source_url = _source_view(sources.get(name))
+        local_metadata = repo.metadata_record(ref) or {}
+        source_record = repo.source_record(ref)
+        if entry.owner_kind == "plugin":
+            source_record = repo.read_sources()["plugins"].get(entry.owner_id or "")
+        source_label, source_url = _source_view(source_record)
         rows.append(
             {
                 "kind": "skill",
-                "name": name,
+                "name": entry.name,
+                "ref": ref,
+                "owner": entry.owner_kind,
+                "ownerId": entry.owner_id,
                 "cat": entry.category,
                 "catLabel": repo.category_label(entry.category),
                 "desc": (
@@ -327,8 +337,8 @@ def collect_rows(repo: Repository) -> list[dict[str, Any]]:
                 "files": attachments,
                 "body": body.strip(),
                 "manual": bool(frontmatter.get("disable-model-invocation")),
-                "active": name in active,
-                "status": "常驻" if name in active else "已收录",
+                "active": ref in active,
+                "status": "常驻" if ref in active else "已收录",
                 "path": "",
                 "repo": source_label,
                 "url": source_url,
@@ -340,7 +350,7 @@ def collect_rows(repo: Repository) -> list[dict[str, Any]]:
 
 
 def collect_scout_rows(repo: Repository) -> list[dict[str, Any]]:
-    inventory = set(repo.inventory())
+    inventory = {entry.name for entry in repo.skill_registry().values()}
     rows: list[dict[str, Any]] = []
     for source_name, record in sorted(repo.read_scout()["sources"].items()):
         source_arg = scout.source_argument(record)
@@ -474,12 +484,16 @@ def render_markdown(repo: Repository, rows: list[dict[str, Any]]) -> str:
 
 def render_catalog_markdown(repo: Repository) -> str:
     sources = repo.read_scout()["sources"]
-    inventory = repo.inventory()
-    metadata = repo.read_metadata()["skills"]
-    active = set(repo.read_active())
+    inventory = repo.skill_registry()
+    active = {
+        raw_ref
+        for target in repo.read_desired_installations()["targets"].values()
+        for raw_ref in target.get("skills", [])
+    }
+    active_names = {repo.require_skill(ref).name for ref in active if ref in inventory}
     indexed_total = sum(len(record.get("skills", [])) for record in sources.values())
     inactive = sorted(
-        (entry for name, entry in inventory.items() if name not in active),
+        (entry for ref, entry in inventory.items() if ref not in active),
         key=lambda entry: (entry.category, entry.name),
     )
     lines = [
@@ -494,7 +508,7 @@ def render_catalog_markdown(repo: Repository) -> str:
         "匹配优先级：常驻（会话里已可见）→ 已收录未常驻（启用即可，零下载）→",
         "未收录索引（从上游安装）。按描述匹配即可；描述拿不准、候选难取舍或任务",
         "关键时再读全文——已收录的直接读本地",
-        "`~/agents_kit/skills/<分类>/<技能名>/SKILL.md`，未收录的点「技能」列链接",
+        "`~/agents_kit/skills/` 或 owner Plugin 中的 `SKILL.md`，未收录的点「技能」列链接",
         "（指向上游默认分支最新版）。链接 404 说明上游改了目录，运行",
         "`agents-kit source inspect --refresh-index` 重扫后重试。安装未收录技能前",
         "先读 `~/agents_kit/docs/skill-taxonomy.md` 选分类标签；用户未说明范围时",
@@ -535,7 +549,11 @@ def render_catalog_markdown(repo: Repository) -> str:
             url = scout.raw_skill_url(record, item["path"])
             title = f"[{item['name']}]({url})" if url else f"`{item['name']}`"
             description = item["description"].replace("|", "\\|")
-            installed = "●" if item["name"] in inventory else ""
+            installed = (
+                "●"
+                if any(entry.name == item["name"] for entry in inventory.values())
+                else ""
+            )
             lines.append(
                 f"| {title} | {description} | `{item['path']}` | {installed} |"
             )
@@ -553,7 +571,7 @@ def render_catalog_markdown(repo: Repository) -> str:
         lines.extend(["| 技能 | 分类 | 用途 |", "|---|---|---|"])
         for entry in inactive:
             description = str(
-                metadata.get(entry.name, {}).get("description", "")
+                (repo.metadata_record(entry.qualified_id) or {}).get("description", "")
             ).replace("|", "\\|")
             lines.append(
                 f"| `{entry.name}` | {repo.category_label(entry.category)} "
@@ -566,7 +584,7 @@ def render_catalog_markdown(repo: Repository) -> str:
         [
             "## 三、常驻（会话里天然可见，此处仅备查）",
             "",
-            " · ".join(f"`{name}`" for name in sorted(active)) or "（无）",
+            " · ".join(f"`{name}`" for name in sorted(active_names)) or "（无）",
             "",
         ]
     )
@@ -596,6 +614,47 @@ def render_mcp_markdown(repo: Repository, rows: list[dict[str, Any]]) -> str:
             "",
             "客户端配置由 `agents-kit mcp apply --all` 从 `mcps.json` 收敛。",
             "仓库只保存凭据来源，不保存凭据值。",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def render_plugin_markdown(repo: Repository) -> str:
+    lines = [
+        "# Plugin 清单",
+        "",
+        f"共 **{len(repo.plugin_inventory())}** 个完整 Plugin。",
+        "",
+        "| Plugin | 上游目标 | Claude | Codex | 内嵌 Skill | 来源 |",
+        "|---|---|---|---|---|---|",
+    ]
+    source_records = repo.read_sources()["plugins"]
+    for plugin_id, spec in sorted(repo.plugin_inventory().items()):
+        source_label, source_url = _source_view(source_records.get(plugin_id))
+        source = (
+            f"[{source_label}]({source_url})"
+            if source_label and source_url
+            else "本地维护"
+        )
+        skills = ", ".join(f"`{name}`" for name in sorted(spec.embedded_skills))
+        lines.append(
+            f"| `{plugin_id}` | {', '.join(sorted(spec.upstream_targets)) or '—'} "
+            f"| {spec.targets.get('claude').support if spec.targets.get('claude') else '—'} "
+            f"| {spec.targets.get('codex').support if spec.targets.get('codex') else '—'} "
+            f"| {skills or '—'} | {source} |"
+        )
+    lines.extend(
+        [
+            "",
+            (
+                "平台 manifest 是各自的权威源文件；"
+                "`agents-kit marketplace build` 只生成根 Marketplace 索引。"
+            ),
+            (
+                "内嵌 Skill 是否能脱离 Plugin 安装，以 "
+                "`agents-kit.plugin.json` 的 `standalone` 声明为准。"
+            ),
             "",
         ]
     )
@@ -739,8 +798,13 @@ def render_architecture(
             "## 当前事实",
             "",
             f"- 技能：{len(rows)}",
+            f"- Plugin：{len(repo.plugin_inventory())}",
             f"- 常驻：{sum(1 for row in rows if row['active'])}",
-            f"- 来源记录：{len(repo.read_sources()['skills'])}",
+            (
+                "- 来源记录："
+                f"{len(repo.read_sources()['skills'])} 条 Skill，"
+                f"{len(repo.read_sources()['plugins'])} 条 Plugin"
+            ),
             f"- metadata：{len(repo.read_metadata()['skills'])}",
             f"- 收藏索引：{len(scout_sources)} 个来源，{scout_total} 个技能",
             f"- MCP：{len(mcp_rows)}",
@@ -756,11 +820,14 @@ def render_architecture(
             "## 状态所有权",
             "",
             "- `agents-kit.json`：taxonomy、标签词表、安装目标和默认策略",
-            "- `active.txt`：全局常驻技能名",
-            "- `sources.json`：provider 来源记录",
+            "- `plugins/`：完整 Plugin 包及平台权威 manifest",
+            "- `desired-installations.json`：按平台保存期望安装状态",
+            "- `active.txt`：旧版兼容清单，不再拥有安装状态",
+            "- `sources.json`：Skill 和 Plugin provider 来源记录",
             "- `metadata.json`：中文清册、标签和依赖",
             "- `scout.json`：收藏索引，未安装技能的名字、用途和来源定位",
             "- `mcps.json`：MCP 清单、上游、锁定版本、启动方式和启用状态",
+            "- 根 Marketplace 索引：由平台 manifest 确定性生成",
             "",
             GENERATED_END,
         ]
@@ -785,6 +852,7 @@ def expected_tracked_documents(
     mcp_rows = collect_mcp_rows(repo)
     return {
         repo.root / "docs" / "skills.md": render_markdown(repo, rows),
+        repo.root / "docs" / "plugins.md": render_plugin_markdown(repo),
         repo.root / "docs" / "catalog.md": render_catalog_markdown(repo),
         repo.root / "docs" / "mcps.md": render_mcp_markdown(repo, mcp_rows),
         repo.root / "docs" / "cli.md": render_cli_reference(command_help),
@@ -810,6 +878,7 @@ def build(repo: Repository, *, command_help: str) -> dict[str, Any]:
         changed.append(html_path.relative_to(repo.root).as_posix())
     return {
         "skills": len(rows),
+        "plugins": len(repo.plugin_inventory()),
         "mcps": len(mcp_rows),
         "changed": changed,
         "html": str(html_path),

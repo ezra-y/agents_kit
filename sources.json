@@ -1,8 +1,8 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "_comment": "技能来源清单。provider 负责解释 locator；无记录的技能由本地维护。",
   "skills": {
-    "academic-pdf-translation": {
+    "skill:standalone/academic-pdf-translation": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/ezra-y/academic-pdf-translation.git",
@@ -16,7 +16,7 @@
         "content_sha256": "253a3ffc6401b49065e30320da90d85b3ef0a0fe8772c427dbd6465feb79cc90"
       }
     },
-    "academic-research-suite": {
+    "skill:standalone/academic-research-suite": {
       "provider": "http",
       "locator": {
         "url": "https://github.com/Imbad0202/academic-research-skills-codex/archive/refs/heads/main.zip",
@@ -29,7 +29,7 @@
         "content_sha256": "af3f6fddc132b688bbd55c52e7391c16446288d9414cbc340b49f3fda9124be4"
       }
     },
-    "accessibility-wcag": {
+    "skill:standalone/accessibility-wcag": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
@@ -43,7 +43,7 @@
         "content_sha256": "a6cf1bd691d2b867f0ccdb681523dce5811462b3fe603f21a682a7eaeaea1da4"
       }
     },
-    "agent-reach": {
+    "skill:standalone/agent-reach": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Panniantong/Agent-Reach.git",
@@ -57,7 +57,7 @@
         "content_sha256": "f94a1d9ce6d4f818a79afa9828ca04387f7b01a25e3e5cf94d1dba821f44f6a2"
       }
     },
-    "animate": {
+    "skill:standalone/animate": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/emilkowalski/skills.git",
@@ -71,7 +71,7 @@
         "content_sha256": "1734208b31ea571400900d3fb8b796018e163b9390beb280f72de1609a823566"
       }
     },
-    "animation-vocabulary": {
+    "skill:standalone/animation-vocabulary": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/emilkowalski/skills.git",
@@ -85,7 +85,7 @@
         "content_sha256": "6b40af93a79bce703f508cb85a443bcb551cc91472ccc4f7ba58bfab23bf1809"
       }
     },
-    "api-design-patterns": {
+    "skill:standalone/api-design-patterns": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
@@ -99,7 +99,7 @@
         "content_sha256": "f266b10c5e43c960a7cd3c81d171028d1a0099b5fc71bed53bebb93b73a660de"
       }
     },
-    "appintents": {
+    "skill:standalone/appintents": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -113,7 +113,7 @@
         "content_sha256": "9dbafcb815265b3d1449cd36ffbccd0eb96e118e711153193c900506b2aa910c"
       }
     },
-    "apple-aso": {
+    "skill:standalone/apple-aso": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -127,7 +127,7 @@
         "content_sha256": "9eb86c4a380c0b6602e7a3cd771062cd833abaa7b3e1f5e782ea90ed70879184"
       }
     },
-    "apple-design": {
+    "skill:standalone/apple-design": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/emilkowalski/skills.git",
@@ -141,7 +141,7 @@
         "content_sha256": "f4d600886849b4a8f2d914184a494e138a67c0d02f09425d5b37b36908d3c8d5"
       }
     },
-    "apple-docs-index": {
+    "skill:standalone/apple-docs-index": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -155,7 +155,7 @@
         "content_sha256": "c4d67003d4d013970ddaa5d3c5e8c206dd11aa7459af5e2613b875087a5dc31d"
       }
     },
-    "ars-deep-research": {
+    "skill:standalone/ars-deep-research": {
       "provider": "http",
       "locator": {
         "url": "https://raw.githubusercontent.com/Imbad0202/academic-research-skills/main/deep-research/SKILL.md"
@@ -168,7 +168,7 @@
       },
       "source_name": "deep-research"
     },
-    "arxiv": {
+    "skill:standalone/arxiv": {
       "provider": "http",
       "locator": {
         "url": "https://cdn.jsdelivr.net/gh/wanshuiyin/Auto-claude-code-research-in-sleep@6e5856f2ace5970705788aced3b77aba040fe4ab/skills/skills-codex/arxiv/SKILL.md"
@@ -180,7 +180,7 @@
         "content_sha256": "f984dc04545e7cab0781fc518e9bc7ed5121175cac15a53707e8fc5bbd97c95f"
       }
     },
-    "authentication-patterns": {
+    "skill:standalone/authentication-patterns": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
@@ -194,7 +194,7 @@
         "content_sha256": "2e4760c5e281d1435c861c962124ad5a18557ab61a6797da498e4353ba7bbe4f"
       }
     },
-    "backgroundtasks": {
+    "skill:standalone/backgroundtasks": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -208,7 +208,7 @@
         "content_sha256": "8154b3c4ae6bed712d4ad3079d52ff285fbbed7c6a3f4c1aa8b7f5a15a0b8f3b"
       }
     },
-    "banner-design": {
+    "skill:standalone/banner-design": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
@@ -222,7 +222,7 @@
         "content_sha256": "b4b93f422f326094512dcf4d991775cead1fd277435d82a6276b018612285d49"
       }
     },
-    "brand": {
+    "skill:standalone/brand": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
@@ -236,35 +236,7 @@
         "content_sha256": "965ca89c3edf466b841c032f2249d87d8b9d7f8dd759e244ab16d1c672a0cecc"
       }
     },
-    "build-mcp-app": {
-      "provider": "git",
-      "locator": {
-        "url": "https://github.com/anthropics/claude-plugins-official.git",
-        "ref": "main",
-        "path": "plugins/mcp-server-dev/skills/build-mcp-app"
-      },
-      "content_mode": "directory",
-      "policy": "review",
-      "resolved": {
-        "revision": null,
-        "content_sha256": "31783640f669358c71f4df0944a79e62c9fb29e4718030c18956dad03acc1839"
-      }
-    },
-    "build-mcp-server": {
-      "provider": "git",
-      "locator": {
-        "url": "https://github.com/anthropics/claude-plugins-official.git",
-        "ref": "main",
-        "path": "plugins/mcp-server-dev/skills/build-mcp-server"
-      },
-      "content_mode": "directory",
-      "policy": "review",
-      "resolved": {
-        "revision": null,
-        "content_sha256": "f8eb3a6e0e763f29b14887305d10780964d12165e59ea380cb54482bd8cf7799"
-      }
-    },
-    "canvas-design": {
+    "skill:standalone/canvas-design": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/anthropics/skills.git",
@@ -278,21 +250,7 @@
         "content_sha256": "f694039e78a22aa6e5563ce312da699ba9780ab29ae01ec504e18cb67a6bceaf"
       }
     },
-    "claude-md-improver": {
-      "provider": "git",
-      "locator": {
-        "url": "https://github.com/anthropics/claude-plugins-official.git",
-        "ref": "main",
-        "path": "plugins/claude-md-management/skills/claude-md-improver"
-      },
-      "content_mode": "directory",
-      "policy": "review",
-      "resolved": {
-        "revision": null,
-        "content_sha256": "bf9b908fb692f3ca9e19bed3aad6907b77d707fa6326d626a5f417cbb722ab00"
-      }
-    },
-    "cnki-advanced-search": {
+    "skill:standalone/cnki-advanced-search": {
       "provider": "http",
       "locator": {
         "url": "https://github.com/vluckyzhang/cnki-skills-codex/archive/refs/heads/master.zip",
@@ -305,7 +263,7 @@
         "content_sha256": "3225d1f72a100e5ce6176ee1480946a9d2cdd306588ad2d51c08e3dca0430786"
       }
     },
-    "cnki-download": {
+    "skill:standalone/cnki-download": {
       "provider": "http",
       "locator": {
         "url": "https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master",
@@ -318,7 +276,7 @@
         "content_sha256": "a973fd5bf225b47a666354b901bd76986304a0ee75016375159915bb90c5daa4"
       }
     },
-    "cnki-export": {
+    "skill:standalone/cnki-export": {
       "provider": "http",
       "locator": {
         "url": "https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master",
@@ -331,7 +289,7 @@
         "content_sha256": "a86644f1c4b2bb31a2588827b6d907b343108a13edc2ff682011d5204e6faf18"
       }
     },
-    "cnki-journal-index": {
+    "skill:standalone/cnki-journal-index": {
       "provider": "http",
       "locator": {
         "url": "https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master",
@@ -344,7 +302,7 @@
         "content_sha256": "7aa2ba99917739d2b69a52ec1e28c530c0cd7685c33964f67d53a8de7dafaa6b"
       }
     },
-    "cnki-journal-search": {
+    "skill:standalone/cnki-journal-search": {
       "provider": "http",
       "locator": {
         "url": "https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master",
@@ -357,7 +315,7 @@
         "content_sha256": "4b0e9a052337ca1d810f3434ee003f7c23e2a5c3388e3dad8f9239a6c3ff5a47"
       }
     },
-    "cnki-journal-toc": {
+    "skill:standalone/cnki-journal-toc": {
       "provider": "http",
       "locator": {
         "url": "https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master",
@@ -370,7 +328,7 @@
         "content_sha256": "4be2c9dc0ac59c48b6efd598ef4b96c27a78092b975bb20d3d00ad0aeff34e9f"
       }
     },
-    "cnki-navigate-pages": {
+    "skill:standalone/cnki-navigate-pages": {
       "provider": "http",
       "locator": {
         "url": "https://github.com/vluckyzhang/cnki-skills-codex/archive/refs/heads/master.zip",
@@ -383,7 +341,7 @@
         "content_sha256": "1dd2113199d86659c92ae8a52e13143fd3e4d0697682ab1d1da4fff09d5dd435"
       }
     },
-    "cnki-paper-detail": {
+    "skill:standalone/cnki-paper-detail": {
       "provider": "http",
       "locator": {
         "url": "https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master",
@@ -396,7 +354,7 @@
         "content_sha256": "2cb94e169cb4b7abc774eddd32ce714538ce005faf1568f79abcefd1f0c8a97f"
       }
     },
-    "cnki-parse-results": {
+    "skill:standalone/cnki-parse-results": {
       "provider": "http",
       "locator": {
         "url": "https://github.com/vluckyzhang/cnki-skills-codex/archive/refs/heads/master.zip",
@@ -409,7 +367,7 @@
         "content_sha256": "5d01849e8f3f1cc290740d51df1d7bc9ca48d0dea3bcb47b37edc1e310919167"
       }
     },
-    "cnki-researcher": {
+    "skill:standalone/cnki-researcher": {
       "provider": "http",
       "locator": {
         "url": "https://codeload.github.com/vluckyzhang/cnki-skills-codex/zip/refs/heads/master",
@@ -422,7 +380,7 @@
         "content_sha256": "da41777e1fc924c7fb0730c59ed42021f7a22a9cef6a2dd7c88c0eccc2621666"
       }
     },
-    "cnki-search": {
+    "skill:standalone/cnki-search": {
       "provider": "http",
       "locator": {
         "url": "https://github.com/vluckyzhang/cnki-skills-codex/archive/refs/heads/master.zip",
@@ -435,7 +393,7 @@
         "content_sha256": "c66b7a2ad25875d9bc6e276bee54257b266695c5e06c247cad3997ae811d1741"
       }
     },
-    "codebase-design": {
+    "skill:standalone/codebase-design": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mattpocock/skills.git",
@@ -449,7 +407,7 @@
         "content_sha256": "108834142fa207528922bdc6ea42ed3e682f21114d9a0ae00fde0d6d6c9ef586"
       }
     },
-    "combine": {
+    "skill:standalone/combine": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -463,7 +421,7 @@
         "content_sha256": "47e0d2f81534c4b52612f0aec52db74e7274cdab29d08ff5e2a3080e9181ac88"
       }
     },
-    "composition-patterns": {
+    "skill:standalone/composition-patterns": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/vercel-labs/agent-skills.git",
@@ -477,7 +435,7 @@
         "content_sha256": "04a5d529684d15bdb87e3406d7f389878b3a67258f91de2b5b209ca29dbad0de"
       }
     },
-    "core-animation": {
+    "skill:standalone/core-animation": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -491,7 +449,7 @@
         "content_sha256": "91417a32d7d161588746a7e1043e114cac83f8409be87f3805b36ccbc41f043f"
       }
     },
-    "corehaptics": {
+    "skill:standalone/corehaptics": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -505,7 +463,7 @@
         "content_sha256": "46526f1ce1797b5d9ddded670b41bc5b0141f95733ffcd98fefe6c51cca1faea"
       }
     },
-    "deep-dive": {
+    "skill:standalone/deep-dive": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
@@ -519,7 +477,7 @@
         "content_sha256": "c27d9bd8a595cb0ae71831cf6e85e2f3a0b759b71abe096e421328fa092cf21e"
       }
     },
-    "deploy-to-vercel": {
+    "skill:standalone/deploy-to-vercel": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/vercel-labs/agent-skills.git",
@@ -533,7 +491,7 @@
         "content_sha256": "6a0522ec25c9d5d687b476dfa278686e7939138448cd2fc2c20e03dd57c5fc21"
       }
     },
-    "design": {
+    "skill:standalone/design": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
@@ -547,7 +505,7 @@
         "content_sha256": "97ee54a7f2768ce5c1609a8df083b7635231f12a7bbc859457e5e2c3a100bbd7"
       }
     },
-    "design-system": {
+    "skill:standalone/design-system": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
@@ -561,7 +519,7 @@
         "content_sha256": "0fb8d6af9ae71f9173b23ffe74e6034a243df2d416dcd9603b4721fd441603d6"
       }
     },
-    "diagnose": {
+    "skill:standalone/diagnose": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mattpocock/skills.git",
@@ -576,7 +534,7 @@
         "content_sha256": "24a2f3126b7063b113b8f1d597a5e220afc13f755755f6d6cc1980a37fc7ed71"
       }
     },
-    "domain-modeling": {
+    "skill:standalone/domain-modeling": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mattpocock/skills.git",
@@ -590,7 +548,7 @@
         "content_sha256": "5071178d5a430f461590021b3a3582643182c5ba310a928aedcf27f17708e9cf"
       }
     },
-    "emil-design-eng": {
+    "skill:standalone/emil-design-eng": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/emilkowalski/skills.git",
@@ -604,7 +562,7 @@
         "content_sha256": "908667087f836501a1e7ffbefd467b182ddec91fcec68d5c7ea8aae165aeac31"
       }
     },
-    "emil-ui-prototype": {
+    "skill:standalone/emil-ui-prototype": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/emilkowalski/skills.git",
@@ -619,7 +577,7 @@
       },
       "source_name": "prototype"
     },
-    "eventkit": {
+    "skill:standalone/eventkit": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -633,7 +591,7 @@
         "content_sha256": "58ff5048ff40d51e11306361740f020a0509192af39a011e64e5d9d7e1393ae5"
       }
     },
-    "figma-style-binding": {
+    "skill:standalone/figma-style-binding": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/senlindesign/claude2figma.git",
@@ -647,7 +605,7 @@
         "content_sha256": "1ac20c6d7b760e0bae51728a5ee83d44e9c4cf782725ed23d0772b507d4021b8"
       }
     },
-    "find-animation-opportunities": {
+    "skill:standalone/find-animation-opportunities": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/emilkowalski/skills.git",
@@ -661,7 +619,7 @@
         "content_sha256": "52f1d7dbe45da84e472f6190c43f2a3b4dd9703bc4ca45fd55f93c2d2685d204"
       }
     },
-    "frontend-design": {
+    "skill:standalone/frontend-design": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/anthropics/skills.git",
@@ -675,7 +633,7 @@
         "content_sha256": "59f14d7b600063e7902f9b0ac9169d267fcda675f7222eba1e21cd2b1579aadc"
       }
     },
-    "frontend-slides": {
+    "skill:standalone/frontend-slides": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/zarazhangrui/frontend-slides.git",
@@ -689,7 +647,7 @@
         "content_sha256": "e2b2fbc95cfc49558b72f9966904c3b0bb556e4aa9bf0954640d45fd41aca99a"
       }
     },
-    "grill-me": {
+    "skill:standalone/grill-me": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mattpocock/skills.git",
@@ -703,7 +661,7 @@
         "content_sha256": "cf75fc2eb1f8d2b1d6e9b00f4fdaada73201319bf69fe8c34260b2ddf6deb19a"
       }
     },
-    "grill-with-docs": {
+    "skill:standalone/grill-with-docs": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mattpocock/skills.git",
@@ -717,7 +675,7 @@
         "content_sha256": "bc42a878715a04bf4e6ba572c07ec491c0c156c31501d924d55d20e29ee273e5"
       }
     },
-    "grilling": {
+    "skill:standalone/grilling": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mattpocock/skills.git",
@@ -731,7 +689,7 @@
         "content_sha256": "3fe073664d788ec182bbd74f3bcee49c8e908d4f3031aa4a8d89f7ed1b1a2561"
       }
     },
-    "gsap-core": {
+    "skill:standalone/gsap-core": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/greensock/gsap-skills.git",
@@ -745,7 +703,7 @@
         "content_sha256": "3e78ca3bfb928f998d4c56b254f76fb2ecdc173a52deb69ca92d6cbacc74a809"
       }
     },
-    "gsap-frameworks": {
+    "skill:standalone/gsap-frameworks": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/greensock/gsap-skills.git",
@@ -759,7 +717,7 @@
         "content_sha256": "aa0f522d93fb23c61611aef94c722c9420d5d50b69570b15cf268b7d797bf1fc"
       }
     },
-    "gsap-performance": {
+    "skill:standalone/gsap-performance": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/greensock/gsap-skills.git",
@@ -773,7 +731,7 @@
         "content_sha256": "294919088934162b9d727a43f7964cc793f61e686ae1869bda8357d0f84144c6"
       }
     },
-    "gsap-plugins": {
+    "skill:standalone/gsap-plugins": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/greensock/gsap-skills.git",
@@ -787,7 +745,7 @@
         "content_sha256": "689fff196afe1586fc80fbee8c2f2d6eb05c72ef884f11950ac37fe3aec2dc9f"
       }
     },
-    "gsap-react": {
+    "skill:standalone/gsap-react": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/greensock/gsap-skills.git",
@@ -801,7 +759,7 @@
         "content_sha256": "975f54e3e08e9146cfa02dc8b6ecd649842aa27c6a4daed28c40e97f5a6294d9"
       }
     },
-    "gsap-scrolltrigger": {
+    "skill:standalone/gsap-scrolltrigger": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/greensock/gsap-skills.git",
@@ -815,7 +773,7 @@
         "content_sha256": "67f07abe2940fe97531f609e8637acd98b117d7cea16fd3195103f08ec19e2a3"
       }
     },
-    "gsap-timeline": {
+    "skill:standalone/gsap-timeline": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/greensock/gsap-skills.git",
@@ -829,7 +787,7 @@
         "content_sha256": "24aa167070b1aa04a31b147e5bc214edef5008d94d21e85db700c211063fa2d5"
       }
     },
-    "gsap-utils": {
+    "skill:standalone/gsap-utils": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/greensock/gsap-skills.git",
@@ -843,7 +801,7 @@
         "content_sha256": "b5c182cbe04d75d90ef0f84d0ce18681c0c921ca02d380c2566a3c5f2fa69237"
       }
     },
-    "guide-macos-spm-packaging": {
+    "skill:standalone/guide-macos-spm-packaging": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -857,7 +815,7 @@
         "content_sha256": "4d4b773771c836f3caa9ae6a4565141e21b09f8db7bba15a12914a507dd92154"
       }
     },
-    "guide-swift-concurrency": {
+    "skill:standalone/guide-swift-concurrency": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -871,7 +829,7 @@
         "content_sha256": "19fdfd619aaba1a9c04cfed412cb469031bd97361ac8f856ef32cdc9f82477da"
       }
     },
-    "guide-swift-testing": {
+    "skill:standalone/guide-swift-testing": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -885,7 +843,7 @@
         "content_sha256": "1cc1b1ed2e890384d205ebf0003158a412cb96bd93d63916019fe081012f3b7d"
       }
     },
-    "guide-swiftdata": {
+    "skill:standalone/guide-swiftdata": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -899,7 +857,7 @@
         "content_sha256": "3a053983a1a2fb595dd91e843ab2c02c405a8ce8e1e2acc5c872556a80c8e2f9"
       }
     },
-    "guide-swiftui-animations": {
+    "skill:standalone/guide-swiftui-animations": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -913,7 +871,7 @@
         "content_sha256": "d128aeadbae597822cb7c5bb2722614fe8a80f064be8aab738113941773d5eee"
       }
     },
-    "guide-swiftui-charts": {
+    "skill:standalone/guide-swiftui-charts": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -927,7 +885,7 @@
         "content_sha256": "8ca6d1ccf7360c6823d6e1de94698ee806a086a11b7f6622c24ae465fd838975"
       }
     },
-    "guide-swiftui-performance-audit": {
+    "skill:standalone/guide-swiftui-performance-audit": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -941,7 +899,7 @@
         "content_sha256": "ae0afdc40f21ef597ce81a1216158d85e8fd558b866ec55f64d7ceb27af9d0c1"
       }
     },
-    "guide-swiftui-ui-patterns": {
+    "skill:standalone/guide-swiftui-ui-patterns": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -955,7 +913,7 @@
         "content_sha256": "fae114a736fba96bcd7ea7833241440a6a14015bf894e97d07df6edde932cc26"
       }
     },
-    "guide-swiftui-view-refactor": {
+    "skill:standalone/guide-swiftui-view-refactor": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -969,7 +927,7 @@
         "content_sha256": "6e7e68795718488c741e566b423deca5c58bbbf7828654913542edd0f4e6e635"
       }
     },
-    "handoff": {
+    "skill:standalone/handoff": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mattpocock/skills.git",
@@ -983,7 +941,7 @@
         "content_sha256": "0f98f2c47324bf6feecc3c00ce1aa9651ae4e772d391b23443bee78d91e82b0d"
       }
     },
-    "healthkit": {
+    "skill:standalone/healthkit": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -997,7 +955,7 @@
         "content_sha256": "8e3494767eaa8c6be5d23bcfd1e6ba9e11ace8a73bfc4adad124bf2291433e43"
       }
     },
-    "hig": {
+    "skill:standalone/hig": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -1011,7 +969,7 @@
         "content_sha256": "e2fd60ce7d5225c81d9f4a96c44c501b5bee23aa286f7512c53f3819d05e5997"
       }
     },
-    "hook-development": {
+    "skill:standalone/hook-development": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/anthropics/claude-plugins-official.git",
@@ -1025,7 +983,7 @@
         "content_sha256": "4a29bc45a1965e49f12a2ab668f75a5a31f70dacc6564dd49f330b1f3528319f"
       }
     },
-    "human-writing": {
+    "skill:standalone/human-writing": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/KKKKhazix/human-writing.git",
@@ -1039,7 +997,7 @@
         "content_sha256": "9ae704e7de9f0133a1d3eecb6cdc0ea4b8e3cc6f4da5c784c7d9025bd54c20fd"
       }
     },
-    "improve-animations": {
+    "skill:standalone/improve-animations": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/emilkowalski/skills.git",
@@ -1053,7 +1011,7 @@
         "content_sha256": "fb5a2ca589df7179b8f849106ad4ba555dbe78f090dfa0dab06e04b10c42fd27"
       }
     },
-    "improve-codebase-architecture": {
+    "skill:standalone/improve-codebase-architecture": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mattpocock/skills.git",
@@ -1067,7 +1025,7 @@
         "content_sha256": "0e9928b4ca5d45c93e044803454177776f247a92920d8d78e3330e332d4af122"
       }
     },
-    "ios-design-consultant": {
+    "skill:standalone/ios-design-consultant": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -1081,7 +1039,7 @@
         "content_sha256": "ef37df60c80395a2b7c3427ded062bc0c0fc6df72e10910c3beb2222fa27e76a"
       }
     },
-    "ios-dev": {
+    "skill:standalone/ios-dev": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -1095,7 +1053,7 @@
         "content_sha256": "82af08d688e498c9bd2df7db358ac681b32753eac54057b24cc69a782d111ca7"
       }
     },
-    "ios-liquid-glass": {
+    "skill:standalone/ios-liquid-glass": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -1109,7 +1067,7 @@
         "content_sha256": "8e2c487244785a87ba7a00b2885804fd7ae125ea2fe4492951fecfac34695f79"
       }
     },
-    "ios-simulator-skill": {
+    "skill:standalone/ios-simulator-skill": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/conorluddy/ios-simulator-skill.git",
@@ -1123,7 +1081,7 @@
         "content_sha256": "eff85c92a8b6c03e2cbd79d49c736a133b75495f08c046422ea3e490356fda75"
       }
     },
-    "ios-ui-craft": {
+    "skill:standalone/ios-ui-craft": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -1137,7 +1095,7 @@
         "content_sha256": "8f132695e8e8aed717f035bfd8261083f2fa56083c5f3c4369a627b7e050ce4b"
       }
     },
-    "khazix-writer": {
+    "skill:standalone/khazix-writer": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/KKKKhazix/khazix-skills.git",
@@ -1151,7 +1109,7 @@
         "content_sha256": "be2e02644be585519f560ba2f63c02fb6cd1e8aeba4ea6b3d50bd28d4f0946d7"
       }
     },
-    "lark-approval": {
+    "skill:standalone/lark-approval": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-approval/SKILL.md"
@@ -1163,7 +1121,7 @@
         "content_sha256": "fee377eca410dcda36b0bbbd632aab085b2e26e8232bb2ff88d394a1571d5ae2"
       }
     },
-    "lark-apps": {
+    "skill:standalone/lark-apps": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-apps/SKILL.md"
@@ -1175,7 +1133,7 @@
         "content_sha256": "4bd8d41467b40f1aa1d0e115a36d9c7115d5bb79d31e0809f0f1b48ec85e4bd9"
       }
     },
-    "lark-attendance": {
+    "skill:standalone/lark-attendance": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-attendance/SKILL.md"
@@ -1187,7 +1145,7 @@
         "content_sha256": "a0ea5f3fa176496dda31d912f7e55ad7cfed5243b30567d16e7f9dc96eebbe8b"
       }
     },
-    "lark-base": {
+    "skill:standalone/lark-base": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-base/SKILL.md"
@@ -1199,7 +1157,7 @@
         "content_sha256": "aef3c07dbeb11cc87352b217fd3d9868b41f31f0cf3ae3de906e4e8443c4a01e"
       }
     },
-    "lark-calendar": {
+    "skill:standalone/lark-calendar": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-calendar/SKILL.md"
@@ -1211,7 +1169,7 @@
         "content_sha256": "9110f1adc306d04ccf4ea7c439039e95448b12757a5a8e7d76bc62d48553bcb8"
       }
     },
-    "lark-contact": {
+    "skill:standalone/lark-contact": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-contact/SKILL.md"
@@ -1223,7 +1181,7 @@
         "content_sha256": "3f8cd36b6dfddfc4974ec3f796b4163d6511aafabd46f7eeacb2798c647f8f06"
       }
     },
-    "lark-doc": {
+    "skill:standalone/lark-doc": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-doc/SKILL.md"
@@ -1235,7 +1193,7 @@
         "content_sha256": "164de4ed954112c948952b28d4cde5ffe92cdbf8b1db4e69d73dc93fccd52f3b"
       }
     },
-    "lark-drive": {
+    "skill:standalone/lark-drive": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-drive/SKILL.md"
@@ -1247,7 +1205,7 @@
         "content_sha256": "5423817c78709d70b0b84bb7bee15b8abc21c5982fc48c7e37ca2ddc42972c19"
       }
     },
-    "lark-event": {
+    "skill:standalone/lark-event": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-event/SKILL.md"
@@ -1259,7 +1217,7 @@
         "content_sha256": "e82b31451938a5c6bc5e65c1bc1ea241c75d0097d7deb1406f2ca3876c9802e3"
       }
     },
-    "lark-im": {
+    "skill:standalone/lark-im": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-im/SKILL.md"
@@ -1271,7 +1229,7 @@
         "content_sha256": "74bbb7dde225e6ffd7e44f2a7bd03f78d235723742f5d19befa9ecfd762210e8"
       }
     },
-    "lark-mail": {
+    "skill:standalone/lark-mail": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-mail/SKILL.md"
@@ -1283,7 +1241,7 @@
         "content_sha256": "bee1da98483c1dfc1d6dc3b5a4ac6403279dad6f6a8bde77f7fdb5b1f4725d38"
       }
     },
-    "lark-markdown": {
+    "skill:standalone/lark-markdown": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-markdown/SKILL.md"
@@ -1295,7 +1253,7 @@
         "content_sha256": "50024d5e506a95f122fb818011b7624c1948342ea8617089a102fcd72bab0a1b"
       }
     },
-    "lark-minutes": {
+    "skill:standalone/lark-minutes": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-minutes/SKILL.md"
@@ -1307,7 +1265,7 @@
         "content_sha256": "7716be8f07b15abd6a6cdfc4ff4aafd55caabd40fab6b9c0562d5b70e134c675"
       }
     },
-    "lark-note": {
+    "skill:standalone/lark-note": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-note/SKILL.md"
@@ -1319,7 +1277,7 @@
         "content_sha256": "51ce47948e5ea9361dd0ecc6633519b01dfa8ae86729874217d08a0b0831df48"
       }
     },
-    "lark-okr": {
+    "skill:standalone/lark-okr": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-okr/SKILL.md"
@@ -1331,7 +1289,7 @@
         "content_sha256": "658ec51f59e3af529064821fb5fbee2ed3ff5cac9e22b66887541cfab4353772"
       }
     },
-    "lark-openapi-explorer": {
+    "skill:standalone/lark-openapi-explorer": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-openapi-explorer/SKILL.md"
@@ -1343,7 +1301,7 @@
         "content_sha256": "ae89debc3f807f9947831b4525e1c118bc14544877c14c14aaa47298b1e863b4"
       }
     },
-    "lark-shared": {
+    "skill:standalone/lark-shared": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-shared/SKILL.md"
@@ -1355,7 +1313,7 @@
         "content_sha256": "22e60b0684ee78cb3420af198203ee4f564433a486f4936c96632782fa2dfb54"
       }
     },
-    "lark-sheets": {
+    "skill:standalone/lark-sheets": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-sheets/SKILL.md"
@@ -1367,7 +1325,7 @@
         "content_sha256": "8c470db8e85b38ff81de56255f878f63ba4822bc892ba3355386435eca41e2fa"
       }
     },
-    "lark-skill-maker": {
+    "skill:standalone/lark-skill-maker": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-skill-maker/SKILL.md"
@@ -1379,7 +1337,7 @@
         "content_sha256": "8591158289a3cb003c7ac18001ce6b42837c780d2567492cea87bf98982b3678"
       }
     },
-    "lark-slides": {
+    "skill:standalone/lark-slides": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-slides/SKILL.md"
@@ -1391,7 +1349,7 @@
         "content_sha256": "226552ad2dc8e3ae16d0562995363dec3e57ad99a3aa58ac5dc11a5e653eb417"
       }
     },
-    "lark-task": {
+    "skill:standalone/lark-task": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-task/SKILL.md"
@@ -1403,7 +1361,7 @@
         "content_sha256": "c9bae3576de69599b8b0587c120042fe8e6b27e9837b2d23ee6f43ca4974a41a"
       }
     },
-    "lark-vc": {
+    "skill:standalone/lark-vc": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-vc/SKILL.md"
@@ -1415,7 +1373,7 @@
         "content_sha256": "07663b7ba87a5ab97e6b23f453ceb619b4de365720998d143fabe9b57c0ecb76"
       }
     },
-    "lark-vc-agent": {
+    "skill:standalone/lark-vc-agent": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-vc-agent/SKILL.md"
@@ -1427,7 +1385,7 @@
         "content_sha256": "1d6d57b68e23e965d7f7b6510414dce04d5dcaa6efcf51e9a80db3f6bf27f973"
       }
     },
-    "lark-whiteboard": {
+    "skill:standalone/lark-whiteboard": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-whiteboard/SKILL.md"
@@ -1439,7 +1397,7 @@
         "content_sha256": "78a3fbffa0da5c561b3e7035543fe1e80dbd7854c38d84e35e1392598b288f07"
       }
     },
-    "lark-wiki": {
+    "skill:standalone/lark-wiki": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-wiki/SKILL.md"
@@ -1451,7 +1409,7 @@
         "content_sha256": "a4ccfe6b3708f03fcdbcde69207d4082c2bfed7ac83e8b8c55a0cfea7c1e743f"
       }
     },
-    "lark-workflow-meeting-summary": {
+    "skill:standalone/lark-workflow-meeting-summary": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-workflow-meeting-summary/SKILL.md"
@@ -1463,7 +1421,7 @@
         "content_sha256": "ad3db979a2e6d8932ab33058967e1dab82090f8d8d82b16c59ee2955eb967d61"
       }
     },
-    "lark-workflow-standup-report": {
+    "skill:standalone/lark-workflow-standup-report": {
       "provider": "http",
       "locator": {
         "url": "https://open.feishu.cn/.well-known/skills/lark-workflow-standup-report/SKILL.md"
@@ -1475,7 +1433,7 @@
         "content_sha256": "a283de746e65f97d7d25c3b9e351c2e5c16702be81c0f004d5be718c50994690"
       }
     },
-    "last30days": {
+    "skill:standalone/last30days": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mvanhorn/last30days-skill.git",
@@ -1489,7 +1447,7 @@
         "content_sha256": "a1483a355b1a1cc14ff6c70b7376e3f7746e9804f934e8048db689a9c91e93c1"
       }
     },
-    "mapkit": {
+    "skill:standalone/mapkit": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -1503,7 +1461,7 @@
         "content_sha256": "82a74ed4d383f10a6b2c87072d9fc1dadd205813ad24ff80b5c9e70b2ff1e460"
       }
     },
-    "nature-academic-search": {
+    "skill:standalone/nature-academic-search": {
       "provider": "http",
       "locator": {
         "url": "https://github.com/Yuan1z0825/nature-skills/archive/refs/heads/main.zip",
@@ -1516,7 +1474,7 @@
         "content_sha256": "b0a643cd83d36939f86603b300c1e2052f2f9927045637d0602a91bf2b9a3b84"
       }
     },
-    "nature-figure": {
+    "skill:standalone/nature-figure": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Yuan1z0825/nature-skills.git",
@@ -1530,7 +1488,7 @@
         "content_sha256": "2b0ca9964b889a037abe71c5f501234e475f60045a9f29fc51f5bc276dec8660"
       }
     },
-    "nextjs-mastery": {
+    "skill:standalone/nextjs-mastery": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
@@ -1544,7 +1502,7 @@
         "content_sha256": "5fef77fa5855c34a4c34d4d7d3cd46a824a8f5b9d0b758ad6f2dedf2d04a429b"
       }
     },
-    "photosui": {
+    "skill:standalone/photosui": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -1558,7 +1516,7 @@
         "content_sha256": "5f56bd818a6a795dd64dd06e1b285afa78e1ee383353cf21d49ec735bf7e3d7c"
       }
     },
-    "pick-ui-library": {
+    "skill:standalone/pick-ui-library": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/emilkowalski/skills.git",
@@ -1572,7 +1530,7 @@
         "content_sha256": "6c2f99328ce251404d3cb072030ab4c9c458e2371447ec3c99fefd2c52ce19d5"
       }
     },
-    "playground": {
+    "skill:standalone/playground": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/anthropics/claude-plugins-official.git",
@@ -1586,7 +1544,7 @@
         "content_sha256": "86708b2acff49e19321c97ee1b27192e052bdce1435df623e953d320b84dd95b"
       }
     },
-    "pm-advanced-search": {
+    "skill:standalone/pm-advanced-search": {
       "provider": "http",
       "locator": {
         "url": "https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-advanced-search/SKILL.md"
@@ -1598,7 +1556,7 @@
         "content_sha256": "b348f3ee9a7ced47d9c1cad1c26cd429e7f76f278d1cd11605191a1ca025905a"
       }
     },
-    "pm-fulltext": {
+    "skill:standalone/pm-fulltext": {
       "provider": "http",
       "locator": {
         "url": "https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-fulltext/SKILL.md"
@@ -1610,7 +1568,7 @@
         "content_sha256": "919eb4ae3e105862cd94f44c49dc5eeb41a0a9744ab84e9398d5ae1757288b45"
       }
     },
-    "pm-navigate-pages": {
+    "skill:standalone/pm-navigate-pages": {
       "provider": "http",
       "locator": {
         "url": "https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-navigate-pages/SKILL.md"
@@ -1622,7 +1580,7 @@
         "content_sha256": "253e7374c5cebcbb9e881d5bb1665e6b5ba0c1c274492cdc63982fba3d243021"
       }
     },
-    "pm-paper-detail": {
+    "skill:standalone/pm-paper-detail": {
       "provider": "http",
       "locator": {
         "url": "https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-paper-detail/SKILL.md"
@@ -1634,7 +1592,7 @@
         "content_sha256": "036d578043feccd478bbcb002a851e063f88d9e99af0655fc96177486093d721"
       }
     },
-    "pm-search": {
+    "skill:standalone/pm-search": {
       "provider": "http",
       "locator": {
         "url": "https://cdn.jsdelivr.net/gh/cookjohn/pm-skills@c73fb5f20e1d2b2476e15be32cf04b556828f82d/skills/pm-search/SKILL.md"
@@ -1646,7 +1604,7 @@
         "content_sha256": "a7ea8d8317d5592a858eb61caaa7bcb2f94d99ae926fc478d049486412aa6cc5"
       }
     },
-    "ponytail": {
+    "skill:standalone/ponytail": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/DietrichGebert/ponytail.git",
@@ -1660,7 +1618,7 @@
         "content_sha256": "b9d7d1326ca6ae0397ebaad5dc6237b38b7a6b7a7986b7a6d54e5e1b06e05c84"
       }
     },
-    "ponytail-audit": {
+    "skill:standalone/ponytail-audit": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/DietrichGebert/ponytail.git",
@@ -1674,7 +1632,7 @@
         "content_sha256": "936208d4b42aaaac0ec2201218404f312a229fff6a10b1e4e50acc2749f4ff23"
       }
     },
-    "ponytail-debt": {
+    "skill:standalone/ponytail-debt": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/DietrichGebert/ponytail.git",
@@ -1688,7 +1646,7 @@
         "content_sha256": "6154b54c26172c231374d280f517706a74d8e83d998ba54cb484f5ed8253df31"
       }
     },
-    "ponytail-gain": {
+    "skill:standalone/ponytail-gain": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/DietrichGebert/ponytail.git",
@@ -1702,7 +1660,7 @@
         "content_sha256": "d88dd670eff9c7e42922ec79d872f7ffd81ae2d64eca970f8600333590ab4e8e"
       }
     },
-    "ponytail-help": {
+    "skill:standalone/ponytail-help": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/DietrichGebert/ponytail.git",
@@ -1716,7 +1674,7 @@
         "content_sha256": "99de4a6eb7909ddab8c12997fa07160d7f8ded15730284c30bdc41c2f65e797a"
       }
     },
-    "ponytail-review": {
+    "skill:standalone/ponytail-review": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/DietrichGebert/ponytail.git",
@@ -1730,7 +1688,7 @@
         "content_sha256": "0368981e747ed117b369b8beacd3981fbd9253c4bad43893b83345c5546a32c3"
       }
     },
-    "prototype": {
+    "skill:standalone/prototype": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mattpocock/skills.git",
@@ -1744,7 +1702,7 @@
         "content_sha256": "a85e1fadcd9d3a3c62a1f0c7fcf759e705440403671c6fb6a9f987ca7aaab8dd"
       }
     },
-    "pubmed": {
+    "skill:standalone/pubmed": {
       "provider": "http",
       "locator": {
         "url": "https://cdn.jsdelivr.net/gh/masa061580/pubmed-skill@cf1a877aee83c427d7a2b6cff6d1d78c69d0a823/SKILL.md"
@@ -1756,7 +1714,7 @@
         "content_sha256": "14684059cff5fd63841a77bebc2871e9f1831788d1feae7e8519f5919059211a"
       }
     },
-    "react-best-practices": {
+    "skill:standalone/react-best-practices": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/vercel-labs/agent-skills.git",
@@ -1770,7 +1728,7 @@
         "content_sha256": "440c80c96814a5dd3f799b8b17b9094ac97744a29c4334fd7174be4e90fd36ce"
       }
     },
-    "react-native-skills": {
+    "skill:standalone/react-native-skills": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/vercel-labs/agent-skills.git",
@@ -1784,7 +1742,7 @@
         "content_sha256": "f7b4653a958709c0ea1ed3f5be5240e3087c62c5d8620f31cc33a010543567b8"
       }
     },
-    "react-patterns": {
+    "skill:standalone/react-patterns": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
@@ -1798,7 +1756,7 @@
         "content_sha256": "41daf076eb1cd8007a18d93433f138b244666d641a9cb9fe96c63d65dec3431b"
       }
     },
-    "react-view-transitions": {
+    "skill:standalone/react-view-transitions": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/vercel-labs/agent-skills.git",
@@ -1812,7 +1770,7 @@
         "content_sha256": "bf700dc9d65a362b9a396c9dcf69912692413c0888e3acb040fe4b4778574a34"
       }
     },
-    "reference-interpreter": {
+    "skill:standalone/reference-interpreter": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/senlindesign/claude2figma.git",
@@ -1826,7 +1784,7 @@
         "content_sha256": "b0c1a417605c3cfc3b49c68c26abc1277b500e6145c23d95462f520654f11b59"
       }
     },
-    "research-lit": {
+    "skill:standalone/research-lit": {
       "provider": "http",
       "locator": {
         "url": "https://cdn.jsdelivr.net/gh/wanshuiyin/Auto-claude-code-research-in-sleep@0fafc8ed11d66ad537efd54977b9d9a91c206ec0/skills/skills-codex/research-lit/SKILL.md"
@@ -1838,7 +1796,7 @@
         "content_sha256": "a1d692e03cb13c9fe4cc143f919915feda19f0d663df2cbade9793130e3d47a6"
       }
     },
-    "research-writing-skill": {
+    "skill:standalone/research-writing-skill": {
       "provider": "http",
       "locator": {
         "url": "https://github.com/zLanqing/codex-claude-academic-skills/archive/refs/heads/main.zip",
@@ -1851,7 +1809,7 @@
         "content_sha256": "7e833ff632c6dafb6b1db927de7360c9e53f8b7f5662af48aa3ccbbbf01c4ecd"
       }
     },
-    "reverse-skill-router": {
+    "skill:standalone/reverse-skill-router": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/zhaoxuya520/reverse-skill.git",
@@ -1865,7 +1823,7 @@
         "content_sha256": "6cd9bc47340492834093da3b718de707bc043f38acbff48f15953cce76231deb"
       }
     },
-    "review-animations": {
+    "skill:standalone/review-animations": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/emilkowalski/skills.git",
@@ -1879,7 +1837,7 @@
         "content_sha256": "d9a4132d8829cb1b0c6ab24833ff9fe38eadb0ae2ca58bb28e9a41406aba45f3"
       }
     },
-    "rust-systems": {
+    "skill:standalone/rust-systems": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
@@ -1893,7 +1851,7 @@
         "content_sha256": "a66bf8d88505f72db421cb0e1a45dccc1f553e3ace30f6b252b76586641c91dc"
       }
     },
-    "security-hardening": {
+    "skill:standalone/security-hardening": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/rohitg00/awesome-claude-code-toolkit.git",
@@ -1907,7 +1865,7 @@
         "content_sha256": "4cf904f3afe57ed0022ad4f6774089ca080722f11977aca569782ec91b158871"
       }
     },
-    "semantic-scholar": {
+    "skill:standalone/semantic-scholar": {
       "provider": "http",
       "locator": {
         "url": "https://cdn.jsdelivr.net/gh/wanshuiyin/Auto-claude-code-research-in-sleep@6e5856f2ace5970705788aced3b77aba040fe4ab/skills/skills-codex/semantic-scholar/SKILL.md"
@@ -1919,7 +1877,7 @@
         "content_sha256": "d04cbbe6632dd4c0543c5f4c984b369b2ce4b01120cd7e1de5526144bd735c57"
       }
     },
-    "session-report": {
+    "skill:standalone/session-report": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/anthropics/claude-plugins-official.git",
@@ -1933,7 +1891,7 @@
         "content_sha256": "a292039974331be64bc2efa86c519d0a84ca6d85f035dd526d333306cfc42532"
       }
     },
-    "setup-matt-pocock-skills": {
+    "skill:standalone/setup-matt-pocock-skills": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mattpocock/skills.git",
@@ -1947,7 +1905,7 @@
         "content_sha256": "409ebd44963217bd97da34dde50345c83cdf173a2b1149da5fd3a4a8fc4276d2"
       }
     },
-    "simulator-utils": {
+    "skill:standalone/simulator-utils": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -1961,7 +1919,7 @@
         "content_sha256": "58ebd3ba97c1ef5522b2d0196b710d6c599d15dced8f68d579954922498ff525"
       }
     },
-    "skill-creator": {
+    "skill:standalone/skill-creator": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/anthropics/skills.git",
@@ -1975,7 +1933,7 @@
         "content_sha256": "953fca725f43bdcbb59ebf4dcf16d400c0ac771c1657ce7804639e5a36ea3fa9"
       }
     },
-    "skill-development": {
+    "skill:standalone/skill-development": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/anthropics/claude-plugins-official.git",
@@ -1989,7 +1947,7 @@
         "content_sha256": "f965f9597b046272c9984f33379146b49c9329c7c72b911db4637f4ec8c83482"
       }
     },
-    "slides": {
+    "skill:standalone/slides": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
@@ -2003,7 +1961,7 @@
         "content_sha256": "6ff0b7f56a668e18755f01fcb19e58d2842cb1a2a49bdb0f557892badfdc15fd"
       }
     },
-    "social-science-paper-writing": {
+    "skill:standalone/social-science-paper-writing": {
       "provider": "http",
       "locator": {
         "url": "https://raw.githubusercontent.com/fakerqwq/social-science-paper-writing-skill/main/social-science-paper-writing-skill/SKILL.md"
@@ -2015,7 +1973,7 @@
         "content_sha256": "cd094def21ecbb0d64fc5d0c4d757213010de1ec5674da35be2366341b03c13d"
       }
     },
-    "storekit": {
+    "skill:standalone/storekit": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -2029,7 +1987,7 @@
         "content_sha256": "b6d2ca123a5c281804c49cf4bbc6fdd411b31adcd46475bb1ae079e39d6aee19"
       }
     },
-    "swift-concurrency": {
+    "skill:standalone/swift-concurrency": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -2043,7 +2001,7 @@
         "content_sha256": "a0f4d8a86ce784972eddb9e93c6e3a447922471f16ccc60960162506a9761957"
       }
     },
-    "swift-concurrency-pro": {
+    "skill:standalone/swift-concurrency-pro": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/twostraws/Swift-Concurrency-Agent-Skill.git",
@@ -2057,7 +2015,7 @@
         "content_sha256": "ca81148cb3cd240bbef9884aa42a971cb87a241495b136231b92d95f8c7bab1f"
       }
     },
-    "swift-testing": {
+    "skill:standalone/swift-testing": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -2071,7 +2029,7 @@
         "content_sha256": "59dd01a994c85bf921e5182d066077dde833adf3b2f187682c35409bddc20366"
       }
     },
-    "swift-testing-pro": {
+    "skill:standalone/swift-testing-pro": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/twostraws/Swift-Testing-Agent-Skill.git",
@@ -2085,7 +2043,7 @@
         "content_sha256": "b1d6765ab9dd6feba30c60bcc45042ae55dcd20d633e77b76fe0565f3740effe"
       }
     },
-    "swiftdata": {
+    "skill:standalone/swiftdata": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -2099,7 +2057,7 @@
         "content_sha256": "c380185a81baf504d1b9d68b29184fb8b4d7fa442a79e6fa46bb818b64bc4bf8"
       }
     },
-    "swiftui": {
+    "skill:standalone/swiftui": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -2113,7 +2071,7 @@
         "content_sha256": "44b47825c74ae2eeaf1f70a3d3d8e71c8a88a033fb41742c6f51e1e7cbf8c4cb"
       }
     },
-    "swiftui-pro": {
+    "skill:standalone/swiftui-pro": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/twostraws/SwiftUI-Agent-Skill.git",
@@ -2127,7 +2085,7 @@
         "content_sha256": "17559d5af82c9efc97f7027b8c1eb3b54812400696ee6243b8c3fe23f588dff9"
       }
     },
-    "tdd": {
+    "skill:standalone/tdd": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mattpocock/skills.git",
@@ -2141,7 +2099,7 @@
         "content_sha256": "14854822d8bb2e2ca72780c36326f084eee26bdbfd1d559cee78dc01931f39ec"
       }
     },
-    "theme-factory": {
+    "skill:standalone/theme-factory": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/anthropics/skills.git",
@@ -2155,7 +2113,7 @@
         "content_sha256": "0c109146c090fa50d3829266d56bee03caeb08d5d463e06a5d3ea8d9cf191ef9"
       }
     },
-    "thinking-bounded-rationality": {
+    "skill:standalone/thinking-bounded-rationality": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2169,7 +2127,7 @@
         "content_sha256": "c1a699b0636d5c7bc1be05912a1e072c714a0f90546c80faf07f070f583bd049"
       }
     },
-    "thinking-circle-of-competence": {
+    "skill:standalone/thinking-circle-of-competence": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2183,7 +2141,7 @@
         "content_sha256": "e3910b74c7f08b84fab2fc6ef5b38dceacbafccecefa407b4161aeec0e05380b"
       }
     },
-    "thinking-cynefin": {
+    "skill:standalone/thinking-cynefin": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2197,7 +2155,7 @@
         "content_sha256": "a105edbd5e0b7e0835b203d06ed5d4d798e21a408aa8aaae429de85c682ea560"
       }
     },
-    "thinking-effectuation": {
+    "skill:standalone/thinking-effectuation": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2211,7 +2169,7 @@
         "content_sha256": "bec1e64af129c237f80ec272c6239b98edaa6e0d4975ce6e805118885f7647db"
       }
     },
-    "thinking-first-principles": {
+    "skill:standalone/thinking-first-principles": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2225,7 +2183,7 @@
         "content_sha256": "5fd460917948afc124f41f482b9774bd1311ffe7d06d1d0437a722fa089f7c27"
       }
     },
-    "thinking-five-whys-plus": {
+    "skill:standalone/thinking-five-whys-plus": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2239,7 +2197,7 @@
         "content_sha256": "aff4630ad2a5b3d8f0e0c25ddb52ee258ef483f1bee5a333e779a51f94901205"
       }
     },
-    "thinking-jobs-to-be-done": {
+    "skill:standalone/thinking-jobs-to-be-done": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2253,7 +2211,7 @@
         "content_sha256": "e4cb70e304e6603660ef4a2e3b65cbfe847785bab521af683cb0b97aa23e3da0"
       }
     },
-    "thinking-kepner-tregoe": {
+    "skill:standalone/thinking-kepner-tregoe": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2267,7 +2225,7 @@
         "content_sha256": "0602158c4065c763b6c39037d5c05d57c4420b6e80e9ae109c89b0b77952dfcb"
       }
     },
-    "thinking-lindy-effect": {
+    "skill:standalone/thinking-lindy-effect": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2281,7 +2239,7 @@
         "content_sha256": "5ec7c98ed403f6f9487044b3042c34a7318e39ab2eaf88c585c458a36bd64741"
       }
     },
-    "thinking-map-territory": {
+    "skill:standalone/thinking-map-territory": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2295,7 +2253,7 @@
         "content_sha256": "45184cc2c9fac63c381a41757e85e9cb38613c0004713142b048780a597f7676"
       }
     },
-    "thinking-margin-of-safety": {
+    "skill:standalone/thinking-margin-of-safety": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2309,7 +2267,7 @@
         "content_sha256": "95e6118df55373e5f788d653718ff82526c0c704ba71eb9f6c0b20c5ef9d8f4d"
       }
     },
-    "thinking-model-combination": {
+    "skill:standalone/thinking-model-combination": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2323,7 +2281,7 @@
         "content_sha256": "1c3f41341a07b5488d131e1981db4f7016379ac3c963fb1e68ceae0b2d5a4ab4"
       }
     },
-    "thinking-model-router": {
+    "skill:standalone/thinking-model-router": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2337,7 +2295,7 @@
         "content_sha256": "4658dccde455d5129bdefe23687c0d482a2da9e503abc8523a8653122a96820e"
       }
     },
-    "thinking-ooda": {
+    "skill:standalone/thinking-ooda": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2351,7 +2309,7 @@
         "content_sha256": "8afd0183b65c9682dd68a703050d9a4bcbe048156428634f412a9ee79b2b5b04"
       }
     },
-    "thinking-opportunity-cost": {
+    "skill:standalone/thinking-opportunity-cost": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2365,7 +2323,7 @@
         "content_sha256": "03697c99bb8882d4dd7ac5852b40d7486607802e942b6e2a418a65d66f38cae2"
       }
     },
-    "thinking-pre-mortem": {
+    "skill:standalone/thinking-pre-mortem": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2379,7 +2337,7 @@
         "content_sha256": "45c4b35cd6564827e498ecc46c90b1259b354a41e1a601e95be94b5723cff03a"
       }
     },
-    "thinking-probabilistic": {
+    "skill:standalone/thinking-probabilistic": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2393,7 +2351,7 @@
         "content_sha256": "24da8a02697514809d78cc4193f8bcc0e9fc9d8f620cc10a166c116a1d93b16c"
       }
     },
-    "thinking-red-team": {
+    "skill:standalone/thinking-red-team": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2407,7 +2365,7 @@
         "content_sha256": "639afcf3f4a12bcfb3851389e06311e08fbe71aea857b693fda8bc848642b389"
       }
     },
-    "thinking-reversibility": {
+    "skill:standalone/thinking-reversibility": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2421,7 +2379,7 @@
         "content_sha256": "90d3ecbe472d2d43994a7f436e3bd82a6265d9fd545ed32f5724f3c3edbe4929"
       }
     },
-    "thinking-scientific-method": {
+    "skill:standalone/thinking-scientific-method": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2435,7 +2393,7 @@
         "content_sha256": "f83d391215fc09c00a0fdf1ba4e15f16cc90b4fb3b30d912604e6a426928c1b9"
       }
     },
-    "thinking-second-order": {
+    "skill:standalone/thinking-second-order": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2449,7 +2407,7 @@
         "content_sha256": "bc246603dfad6b9ca538ae692be8b8cfd888ec78059f9a3c6c889472d59643c9"
       }
     },
-    "thinking-socratic": {
+    "skill:standalone/thinking-socratic": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2463,7 +2421,7 @@
         "content_sha256": "cc640df77ed08aa0ca83a586fbe247ee0080221d914001ad82753788ea30b590"
       }
     },
-    "thinking-steel-manning": {
+    "skill:standalone/thinking-steel-manning": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2477,7 +2435,7 @@
         "content_sha256": "bf4c4f1c1ed1d095d1ee711f111fbea32033076990f36c993d5d603a62ee7d00"
       }
     },
-    "thinking-systems": {
+    "skill:standalone/thinking-systems": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2491,7 +2449,7 @@
         "content_sha256": "14ca7e97581796f1cdbae5ba9dfe9d0cfef7d7d624098da60f6d0403af7f3478"
       }
     },
-    "thinking-theory-of-constraints": {
+    "skill:standalone/thinking-theory-of-constraints": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2505,7 +2463,7 @@
         "content_sha256": "ab6fe1db6fc6ed4ed750b054c63a95886b552841a3364ac68a71c772dfb27fed"
       }
     },
-    "thinking-thought-experiment": {
+    "skill:standalone/thinking-thought-experiment": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2519,7 +2477,7 @@
         "content_sha256": "f462bd609a31fede0735229e4c1cd0750240c1ccc51d597cab1e44e4f655625c"
       }
     },
-    "thinking-triz": {
+    "skill:standalone/thinking-triz": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2533,7 +2491,7 @@
         "content_sha256": "6cbec035c23a94d947b7e250ccbfae85bc61b3975433418bc6e5e43d4c721fba"
       }
     },
-    "thinking-via-negativa": {
+    "skill:standalone/thinking-via-negativa": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/tjboudreaux/cc-thinking-skills.git",
@@ -2547,7 +2505,7 @@
         "content_sha256": "751d19ff3e173ab5bc1f4fd09df83d4e6f3387e35b46cdfb88f5c8680971d173"
       }
     },
-    "tipkit": {
+    "skill:standalone/tipkit": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -2561,7 +2519,7 @@
         "content_sha256": "9da0906eda6a8203ff7879d3e8c4f510aadaf29ac04b2272c557096116e43fc7"
       }
     },
-    "to-issues": {
+    "skill:standalone/to-issues": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mattpocock/skills.git",
@@ -2576,7 +2534,7 @@
         "content_sha256": "dfe655af05ec94a90cbfdd2b2f91dd3f6ad5798e204b6053b360fec4b11a0b7a"
       }
     },
-    "to-prd": {
+    "skill:standalone/to-prd": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mattpocock/skills.git",
@@ -2591,7 +2549,7 @@
         "content_sha256": "b093b171f391cbec360662e09704f4e0a1f44d3bc68e07228a37999953cb4419"
       }
     },
-    "triage": {
+    "skill:standalone/triage": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mattpocock/skills.git",
@@ -2605,7 +2563,7 @@
         "content_sha256": "481f58d9705d0b5b6106d0a01a42e9efc1c2e579e16c57063d92d5dd1b2786a8"
       }
     },
-    "ui-styling": {
+    "skill:standalone/ui-styling": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
@@ -2619,7 +2577,7 @@
         "content_sha256": "f0981e65090118b3fdffecbed460572c58d4a2df7bf92ee2be067aa85faaf990"
       }
     },
-    "ui-ux-pro-max": {
+    "skill:standalone/ui-ux-pro-max": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
@@ -2633,7 +2591,7 @@
         "content_sha256": "0711f74badb231c105e28d702d40a00cb8ba78603fd87d900e17dc75fdd4f2b0"
       }
     },
-    "uikit": {
+    "skill:standalone/uikit": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -2647,7 +2605,7 @@
         "content_sha256": "959739b3b5e750ecfd15352417c5f6b9b939662f019bba937218da6f34596985"
       }
     },
-    "usernotifications": {
+    "skill:standalone/usernotifications": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -2661,7 +2619,7 @@
         "content_sha256": "95e8feb6ba9b92fecd6c6b84614f6632392b4e603a4932e3a908486f00ebeb12"
       }
     },
-    "vercel-cli-with-tokens": {
+    "skill:standalone/vercel-cli-with-tokens": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/vercel-labs/agent-skills.git",
@@ -2675,7 +2633,7 @@
         "content_sha256": "1ca285afa564f2e44c12039c0f172f82a2bbc33bd9c252f212843e7d4c95cb2e"
       }
     },
-    "vercel-optimize": {
+    "skill:standalone/vercel-optimize": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/vercel-labs/agent-skills.git",
@@ -2689,7 +2647,7 @@
         "content_sha256": "a8f320b5441e3149812f738a34f2da832198287e2e9d0243862cc6f514340155"
       }
     },
-    "video-shotcraft": {
+    "skill:standalone/video-shotcraft": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Vincentwei1021/video-shotcraft.git",
@@ -2703,7 +2661,7 @@
         "content_sha256": "9e8f0457c1d5006b1add856a241a4aa05cbe0964bed24b47ca66f3a41862facf"
       }
     },
-    "watch": {
+    "skill:standalone/watch": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/bradautomates/claude-video.git",
@@ -2717,7 +2675,7 @@
         "content_sha256": "399b1d4eb81c51d29f6db7c2f4888335eddd9cd073566ec00b3763b2e1ec6c76"
       }
     },
-    "web-design-guidelines": {
+    "skill:standalone/web-design-guidelines": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/vercel-labs/agent-skills.git",
@@ -2731,7 +2689,7 @@
         "content_sha256": "9c8730429b9994836654bda5a84caf8183bed4c0c8a00d822de27c0f5e7a2d23"
       }
     },
-    "widgetkit": {
+    "skill:standalone/widgetkit": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -2745,7 +2703,7 @@
         "content_sha256": "117836400a10b3548f73c10013df314ce32632e3b87a8a5b3414aa0c280af1d0"
       }
     },
-    "write-a-skill": {
+    "skill:standalone/write-a-skill": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/mattpocock/skills.git",
@@ -2760,7 +2718,7 @@
         "content_sha256": "ed14061c4c4b7f696967ecbd3334b1fbe9ac2883f15c1a59ef56c5514393b6aa"
       }
     },
-    "writing-guidelines": {
+    "skill:standalone/writing-guidelines": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/vercel-labs/agent-skills.git",
@@ -2774,7 +2732,7 @@
         "content_sha256": "8045fafdfd103e4d93f5766fd4610c831db8cb90c7057cb86713578a2c1f5ede"
       }
     },
-    "writing-rules": {
+    "skill:standalone/writing-rules": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/anthropics/claude-plugins-official.git",
@@ -2788,7 +2746,7 @@
         "content_sha256": "2109f722a99a21cd9d55581e625e343d2f3eaa8804e72b6351dcc5d131fc1e26"
       }
     },
-    "xcuitest": {
+    "skill:standalone/xcuitest": {
       "provider": "git",
       "locator": {
         "url": "https://github.com/Prisma-Labs-Dev/apple-skills.git",
@@ -2800,6 +2758,72 @@
       "resolved": {
         "revision": null,
         "content_sha256": "95c85e68621dfa8696249c0f82d0002c0473a492716d972e0abe9f8b32f74d94"
+      }
+    }
+  },
+  "plugins": {
+    "claude-md-management": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "ref": "",
+        "path": "plugins/claude-md-management"
+      },
+      "content_mode": "plugin_directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "27e0ccb5b66e3d8f26ba2eac79c04aacf0d052a2",
+        "upstream_sha256": "97efd108367f1b349c02af9942671474512c0492ad47258944e330751a37b9ed",
+        "upstream_paths": [
+          ".claude-plugin/plugin.json",
+          "LICENSE",
+          "README.md",
+          "claude-md-improver-example.png",
+          "commands/revise-claude-md.md",
+          "revise-claude-md-example.png",
+          "skills/claude-md-improver/SKILL.md",
+          "skills/claude-md-improver/references/quality-criteria.md",
+          "skills/claude-md-improver/references/templates.md",
+          "skills/claude-md-improver/references/update-guidelines.md"
+        ]
+      }
+    },
+    "mcp-server-dev": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/anthropics/claude-plugins-official.git",
+        "ref": "",
+        "path": "plugins/mcp-server-dev"
+      },
+      "content_mode": "plugin_directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "27e0ccb5b66e3d8f26ba2eac79c04aacf0d052a2",
+        "upstream_sha256": "be89cadf419bd53cea382f74248c609d0f0b34ff61dabd94e12cbe958c3ebc07",
+        "upstream_paths": [
+          ".claude-plugin/plugin.json",
+          "LICENSE",
+          "README.md",
+          "skills/build-mcp-app/SKILL.md",
+          "skills/build-mcp-app/references/abuse-protection.md",
+          "skills/build-mcp-app/references/apps-sdk-messages.md",
+          "skills/build-mcp-app/references/directory-checklist.md",
+          "skills/build-mcp-app/references/iframe-sandbox.md",
+          "skills/build-mcp-app/references/payload-budgeting.md",
+          "skills/build-mcp-app/references/widget-templates.md",
+          "skills/build-mcp-server/SKILL.md",
+          "skills/build-mcp-server/references/auth.md",
+          "skills/build-mcp-server/references/deploy-cloudflare-workers.md",
+          "skills/build-mcp-server/references/elicitation.md",
+          "skills/build-mcp-server/references/remote-http-scaffold.md",
+          "skills/build-mcp-server/references/resources-and-prompts.md",
+          "skills/build-mcp-server/references/server-capabilities.md",
+          "skills/build-mcp-server/references/tool-design.md",
+          "skills/build-mcp-server/references/versions.md",
+          "skills/build-mcpb/SKILL.md",
+          "skills/build-mcpb/references/local-security.md",
+          "skills/build-mcpb/references/manifest-schema.md"
+        ]
       }
     }
   }

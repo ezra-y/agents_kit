@@ -6,41 +6,47 @@
 
 ## 当前事实
 
-- 技能：231
-- 常驻：105
-- 来源记录：206
-- metadata：231
+- 技能：232
+- Plugin：3
+- 常驻：104
+- 来源记录：203 条 Skill，2 条 Plugin
+- metadata：232
 - 收藏索引：1 个来源，9 个技能
 - MCP：5
 - MCP 已启用：5
-- 分类：视频制作(2), iOS(42), 运营与内容(9), 前端与 UI/UX(46), 后端(4), 安全与逆向(1), 通用工程(14), 产品(36), 学术研究(31), 研究与办公(30), AI Building(16)
+- 分类：视频制作(2), iOS(42), 运营与内容(9), 前端与 UI/UX(46), 后端(4), 安全与逆向(1), 通用工程(14), 产品(36), 学术研究(31), 研究与办公(30), AI Building(17)
 
 ## 状态所有权
 
 - `agents-kit.json`：taxonomy、标签词表、安装目标和默认策略
-- `active.txt`：全局常驻技能名
-- `sources.json`：provider 来源记录
+- `plugins/`：完整 Plugin 包及平台权威 manifest
+- `desired-installations.json`：按平台保存期望安装状态
+- `active.txt`：旧版兼容清单，不再拥有安装状态
+- `sources.json`：Skill 和 Plugin provider 来源记录
 - `metadata.json`：中文清册、标签和依赖
 - `scout.json`：收藏索引，未安装技能的名字、用途和来源定位
 - `mcps.json`：MCP 清单、上游、锁定版本、启动方式和启用状态
+- 根 Marketplace 索引：由平台 manifest 确定性生成
 
 <!-- END GENERATED -->
 
 ## 设计目标
 
 仓库只提供一个公开入口 `scripts/agents-kit`。用户按业务对象记命令：
-`source`、`skill`、`mcp`、`global`、`project`、`docs`、`ui`、`check`。
+`source`、`skill`、`plugin`、`marketplace`、`mcp`、`global`、`project`、
+`docs`、`ui`、`check`。
 内部代码按稳定职责拆分，不把每个动作做成单独脚本。
 
 ## 数据流
 
 ```text
 外部来源
-  -> sources.py 获取并生成 SkillSnapshot
+  -> sources.py 获取候选目录
+  -> SkillSnapshot 或完整 PluginSnapshot
   -> 当前 AI 读取 skill-taxonomy.md，给出分类和标签
-  -> skills.py 调用 taxonomy.py 校验后修改中央技能库和登记
+  -> skills.py / plugins.py 修改中央资产和来源登记
   -> ChangeSet 描述后续影响
-  -> installation.py / docs.py / checks.py 收尾
+  -> marketplace.py / installation.py / docs.py / checks.py 收尾
 
 MCP 上游与分发
   -> mcps.json 保存期望状态和锁定版本
@@ -48,8 +54,8 @@ MCP 上游与分发
   -> Codex / Claude 只保存 agents-kit mcp run <名称>
 ```
 
-`SkillSnapshot` 是来源层与技能层之间的固定接口。`ChangeSet` 是业务修改与安装、
-生成、体检之间的固定接口。两者都定义在 `models.py`。
+`AssetRef`、`SkillSnapshot` 和 `PluginSnapshot` 是稳定边界。`ChangeSet` 描述
+业务修改对 Marketplace、安装、文档和体检的后续影响。
 
 ## 模块边界
 
@@ -62,9 +68,12 @@ MCP 上游与分发
 | `sources.py` | Git、HTTP、本地来源识别、获取、候选发现 | 修改仓库状态 |
 | `source_reports.py` | 把来源检查 JSON 渲染为 Issue 审核 Markdown | 获取或应用来源更新 |
 | `skills.py` | 导入、更新、移动、重命名、删除、metadata 和标签 | 全局或项目安装 |
+| `plugins.py` | Plugin 识别、完整导入、sidecar、更新和组件盘点 | 生成 Marketplace 索引 |
+| `marketplace.py` | 从原生 manifest 确定性生成两个根索引 | 生成或重写平台 manifest |
 | `scout.py` | 收藏索引的登记、来源定位和全文链接 | 获取来源内容、安装技能 |
 | `mcps.py` | MCP 导入、启停、版本更新、运行和客户端同步 | 保存凭据值、管理 Skill |
-| `installation.py` | 全局软链接和项目副本 | 修改技能正文 |
+| `installation.py` | 期望安装计划、软链接、项目副本和 Codex Marketplace 操作 | 修改资产正文 |
+| `migration.py` | 旧 Schema、裸 Skill ID 和 active 清单迁移 | 长期业务状态 |
 | `docs.py` | 纯渲染、write-if-changed、文档过期检查 | 修改事实状态 |
 | `ui.py` | 本地网页服务和 Finder 桥接 | 修改技能或清册状态 |
 | `checks.py` | 只读验证状态、依赖、引用、文档和安装 | 自动修复 |
@@ -75,13 +84,15 @@ MCP 上游与分发
 入口 -> 业务模块 -> repository/models
 skills/checks -> taxonomy 的确定性校验
 checks -> docs 的纯渲染 API / installation 的只读计划
-skills -> models 中的 SkillSnapshot
+skills/plugins -> models 中的 Snapshot 与 AssetRef
+marketplace -> Plugin sidecar 与平台原生 manifest
 mcps -> repository 中的单一 MCP 清单
 ```
 
 ## 来源模型
 
-`sources.json` 的每条记录包含：
+`sources.json` 分为 `skills` 和 `plugins`。Plugin 只有一条来源记录，完整目录是
+更新单元；内嵌 Skill 不再各自登记来源。每条记录包含：
 
 - `provider`：来源适配器 ID。
 - `locator`：provider 自己解释的定位数据。
@@ -90,13 +101,15 @@ mcps -> repository 中的单一 MCP 清单
 - `resolved`：最近确认的 revision 和内容哈希。
 - 可选 `source_name`：上游名称与本地名称不同时使用。
 
-`review` 策略把检查结果分成三类：
+来源检查分三个正交维度：
 
-- `unchanged`：上游相对上次同步版本没有变化；只有本地修改时也归入此类。
-- `safe_update`：上游已变化，本地仍是上次同步版本，或本地已与上游一致；候选
-  Skill 通过格式、引用和附件检查后直接同步。
-- `review_required`：本地与上游相对上次同步版本都发生变化且内容不一致，或候选
-  Skill 体检失败；保留本地版本并开 Issue 等待处理。
+- `merge_state`：`unchanged`、`upstream_only`、`local_only`、`diverged`。
+- `risk_class`：`docs_only`、`instructional`、`executable`、`binary`、`unknown`。
+- `decision`：`auto_apply`、`review_required`、`blocked`。
+
+只有 `upstream_only + docs_only` 自动应用。Skill、Prompt、Manifest、Hook、MCP、
+脚本、二进制和未知内容默认人工确认。旧 `safe_update` 只作为兼容输出，不再表示
+内容安全。
 
 定时任务把同一份审核 Markdown 写入 Actions Summary 和固定 Issue 正文。报告包含
 总表、冲突原因、候选体检问题、截断后的 `SKILL.md` diff、精确上游链接和单项
@@ -123,7 +136,12 @@ mcps -> repository 中的单一 MCP 清单
 
 ## 分类与标签模型
 
-目录 `skills/<分类>/<技能名>` 表达唯一一级分类。`metadata.json` 保存标签，
+独立 Skill 使用 `skill:standalone/<id>`；Plugin 内 Skill 使用
+`skill:plugin/<plugin-id>/<local-id>`。裸名称只在全仓库唯一时作为 CLI 快捷
+别名。两个 Plugin 可以拥有同名 Skill，平台 Adapter 在边界渲染各自命名空间。
+
+目录 `skills/<分类>/<技能名>` 表达独立 Skill 的一级分类。Plugin Skill 的分类
+保存在 `metadata.json`，物理目录保持上游布局。`metadata.json` 保存标签，
 `agents-kit.json` 保存 taxonomy 版本、分类边界、标签命名空间和中央词表。
 
 添加技能的当前 AI 读取 `docs/skill-taxonomy.md` 后，根据主要用户目标和正常产出给出
@@ -132,6 +150,31 @@ mcps -> repository 中的单一 MCP 清单
 
 跨 Skill 引用以唯一技能名识别。检查器允许 `../<技能名>/SKILL.md` 这类逻辑引用跨越
 分类目录，但目标技能必须存在；项目安装仍将依赖复制到同一个扁平 skills 目录。
+
+## Plugin 模型
+
+`plugins/<plugin-id>/` 是完整文件所有权和上游更新边界。导入和更新复制整个子树，
+只排除 `.git`、缓存和系统垃圾；Inventory 识别已知组件、可执行文件、二进制和
+未知路径，但不充当复制白名单。
+
+每个平台 manifest 对该平台保持权威。`agents-kit.plugin.json` 只记录：
+
+- `upstream_targets`；
+- 每个 manifest 的路径和 `upstream` / `local` authority；
+- 目标支持状态和限制；
+- 内嵌 Skill 的独立安装资格；
+- 本地 overlay 路径。
+
+缺失平台的 manifest 由 Adapter 创建一次，之后作为普通源文件维护。
+`marketplace build` 不重写 manifest，只生成根索引。内嵌 Skill 默认
+`plugin_only`；明确验证为 `self_contained` 后才能独立软链接或项目复制。
+
+## 安装状态
+
+`desired-installations.json` 只表达 agents_kit 希望向每个平台安装或投射的资产，
+不声称是客户端实际状态。安装器从软链接和 Claude/Codex CLI 读取实际状态并计算
+Plan。`~/.local/state/agents-kit/receipts.json` 只记录上次执行动作，不是事实源。
+`active.txt` 在兼容期只读，不再拥有安装状态。
 
 ## MCP 模型
 
@@ -152,9 +195,9 @@ launcher 管理的记录；同名外部配置默认停止并报告。
 
 ## 写入模型
 
-写操作先完成来源解析和参数校验，再取得仓库锁。JSON、文本和单文件技能更新使用
-临时文件加 `os.replace`；整目录安装使用同目录临时目录再替换。Git 负责历史恢复，
-仓库不实现第二套事务或回滚系统。
+写操作先完成来源解析和参数校验，再取得仓库锁。JSON、文本和单路径更新尽量使用
+临时路径替换。Plugin 替换先把旧目录 rename 为备份，失败时恢复；跨多个状态文件
+不承诺事务原子性。Git 负责历史恢复，仓库不实现第二套事务系统。
 
 安装层只删除自己能证明由本仓库管理的链接。遇到同名实体目录或外部链接时停止并报告，
 不自动覆盖。
@@ -164,6 +207,7 @@ launcher 管理的记录；同名外部配置默认停止并报告。
 `docs.py` 从事实状态生成：
 
 - `docs/skills.md`
+- `docs/plugins.md`
 - `docs/catalog.md`
 - `docs/mcps.md`
 - `docs/cli.md`
@@ -179,12 +223,14 @@ launcher 管理的记录；同名外部配置默认停止并报告。
 
 ## 不变量
 
-1. 技能固定放在 `skills/<分类>/<技能名>/SKILL.md`。
-2. 技能名在全部分类中唯一。
-3. metadata 必须覆盖全部技能，并与当前 taxonomy 版本一致。
+1. 独立 Skill 放在 `skills/<分类>/<技能名>/SKILL.md`；Plugin Skill 只保存在 owner Plugin。
+2. 资产使用结构化身份；裸 Skill 名称可以重复，但目标投射路径不能碰撞。
+3. metadata 必须覆盖独立和 Plugin-owned Skill，并与当前 taxonomy 版本一致。
 4. 每个技能有一个 `role`、1–3 个 `focus`，全部标签来自中央词表且总数不超过 8。
-5. active 和 sources 只能引用存在的技能。
-6. 全局安装由 `active.txt` 决定，项目安装不写回中央状态。
+5. desired installations 和 sources 只能引用存在的结构化资产。
+6. 全局安装由 `desired-installations.json` 决定，项目安装不写回中央状态。
 7. 体检只报告问题，不修改仓库。
 8. MCP 凭据值不得进入仓库或客户端配置；运行时再从声明的来源读取。
 9. MCP 客户端同步不能删除同名但不受本仓库 launcher 管理的配置。
+10. 平台 manifest 是权威源文件；Marketplace build 不得重写它们。
+11. Plugin 更新保留完整上游目录和全部未知文件。

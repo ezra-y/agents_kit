@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **231** 个 · 常驻 **105** 个 · 有上游可检查更新 **206** 个
+共 **232** 个 · 常驻 **104** 个 · 有上游可检查更新 **203** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -271,15 +271,16 @@
 | `smart-search` | 基于本机 opencli 的智能搜索路由:指定站点、社交媒体、技术资料、新闻、购物、旅游、求职、金融、中文内容各走不同的源。含强制预检、单题 | `role/router` `focus/web-research` `platform/opencli` `output/research` | ● | — |
 | `watch` | 读取视频 URL 或本地视频:用 yt-dlp 下载、ffmpeg 抽帧,优先提取原生字幕,无字幕时可调用 Groq 或 OpenAI Wh | `role/researcher` `focus/video-analysis` `output/summary` `output/transcript` | ● | [github.com/bradautomates/claude-video](https://github.com/bradautomates/claude-video/tree/main/skills/watch) |
 
-## AI Building (`ai-building`，16 个)
+## AI Building (`ai-building`，17 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
-| `ai-speaking-coach` | 根据学习者目标和听说表现维护个性化计划，结合 GPT Live、间隔复习、知识库和定时提醒的一对一英语口语教练 | `role/workflow` `focus/database` `focus/knowledge-base` `focus/workflow-automation` `platform/macos` `output/skill` | ● | — |
-| `build-mcp-app` | 给 MCP 服务加交互式 UI / widget。什么时候 widget 胜过纯文本、widget 与 elicitation 怎么区分、两 | `role/builder` `focus/mcp-ui` `focus/tool-integration` `platform/mcp` `output/app` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/mcp-server-dev/skills/build-mcp-app) |
-| `build-mcp-server` | 建 MCP 服务。先盘问用途(连什么、谁用、暴露几个动作、要不要中途要用户输入、上游怎么认证),再推荐部署形态,默认推荐远程 streama | `role/builder` `focus/api-integration` `focus/mcp-server` `platform/mcp` `output/code` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/mcp-server-dev/skills/build-mcp-server) |
+| `ai-speaking-coach` | 根据学习者目标和听说表现维护个性化计划，结合 GPT Live、间隔复习、知识库和定时提醒的一对一英语口语教练 | `role/workflow` `focus/database` `focus/knowledge-base` `focus/workflow-automation` `platform/macos` `output/skill` |  | — |
+| `build-mcp-app` | 给 MCP 服务加交互式 UI / widget。什么时候 widget 胜过纯文本、widget 与 elicitation 怎么区分、两 | `role/builder` `focus/mcp-ui` `focus/tool-integration` `platform/mcp` `output/app` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) |
+| `build-mcp-server` | 建 MCP 服务。先盘问用途(连什么、谁用、暴露几个动作、要不要中途要用户输入、上游怎么认证),再推荐部署形态,默认推荐远程 streama | `role/builder` `focus/api-integration` `focus/mcp-server` `platform/mcp` `output/code` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) |
+| `build-mcpb` | 把本地 MCP 服务打包成可安装的 .mcpb，覆盖 Node/Python 运行时打包、manifest、跨平台路径、本地权限和发布检查。 | `role/builder` `focus/mcp-server` `platform/mcp` `output/code` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) |
 | `caveman` | 超压缩沟通模式,砍掉虚词和客套,据称省约 75% token。 | `role/guide` `focus/agent-communication` `focus/token-efficiency` `output/text` |  | — |
-| `claude-md-improver` | 扫描仓库里所有 CLAUDE.md,做质量评估出报告,再做定向修改。 | `role/reviewer` `focus/agent-instructions` `focus/prompt-quality` `platform/claude` `output/report` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-md-management/skills/claude-md-improver) |
+| `claude-md-improver` | 扫描仓库里所有 CLAUDE.md,做质量评估出报告,再做定向修改。 | `role/reviewer` `focus/agent-instructions` `focus/prompt-quality` `platform/claude` `output/report` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) |
 | `handoff` | 把当前对话压缩成交接文档给下一个 agent,要求不重复 PRD/计划/ADR/commit 里已有的内容,只给路径或 URL。已更新到上游 | `role/workflow` `focus/agent-handoff` `focus/context-management` `output/handoff` |  | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/productivity/handoff) |
 | `hook-development` | 写 hook,707 行。PreToolUse / PostToolUse / Stop 各类钩子、prompt 型(推荐)与命令型的取舍、 | `role/builder` `focus/hooks` `focus/tool-guardrails` `platform/claude` `output/code` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/plugin-dev/skills/hook-development) |
 | `lark-apps` | 妙搭(Spark/Miaoda)应用开发托管:建应用、发 HTML 静态站、本地全栈开发、云端生成迭代、日志与监控查询、环境变量管理。 | `role/builder` `focus/ai-apps` `focus/app-hosting` `platform/lark` `output/app` | ● | [open.feishu.cn](https://open.feishu.cn/.well-known/skills/lark-apps/SKILL.md) |

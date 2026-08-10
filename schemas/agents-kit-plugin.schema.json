@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agents-kit.local/schemas/agents-kit-plugin.schema.json",
+  "title": "agents_kit Plugin sidecar",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "package_id",
+    "upstream_targets",
+    "targets",
+    "embedded_skills",
+    "local_paths"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "package_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "upstream_targets": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "claude",
+          "codex"
+        ]
+      }
+    },
+    "targets": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "claude": {
+          "$ref": "#/$defs/target"
+        },
+        "codex": {
+          "$ref": "#/$defs/target"
+        }
+      }
+    },
+    "embedded_skills": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/embeddedSkill"
+      }
+    },
+    "local_paths": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/relativePath"
+      }
+    }
+  },
+  "$defs": {
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "pattern": "(^/|(^|/)\\.\\.(/|$))"
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "support"
+      ],
+      "properties": {
+        "support": {
+          "enum": [
+            "full",
+            "partial",
+            "review",
+            "unsupported"
+          ]
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "manifest": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "authority"
+          ],
+          "properties": {
+            "path": {
+              "$ref": "#/$defs/relativePath"
+            },
+            "authority": {
+              "enum": [
+                "upstream",
+                "local"
+              ]
+            }
+          }
+        },
+        "marketplace": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "standaloneTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "self_contained",
+            "plugin_only",
+            "unsupported"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "embeddedSkill": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "standalone",
+        "dependencies"
+      ],
+      "properties": {
+        "standalone": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "claude": {
+              "$ref": "#/$defs/standaloneTarget"
+            },
+            "codex": {
+              "$ref": "#/$defs/standaloneTarget"
+            }
+          }
+        },
+        "dependencies": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/relativePath"
+          }
+        }
+      }
+    }
+  }
+}

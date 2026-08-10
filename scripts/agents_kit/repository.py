@@ -11,7 +11,8 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
-from .models import ContentMode, SkillEntry
+from .models import AssetRef, ContentMode, PluginSpec, SkillEntry
+from .plugins import PluginError, load_plugin_spec
 from .taxonomy import TaxonomyError, validate_definition
 
 CONFIG_NAME = "agents-kit.json"
@@ -29,7 +30,9 @@ class Repository:
     def __init__(self, root: Path):
         self.root = root.resolve()
         self.skills_dir = self.root / "skills"
+        self.plugins_dir = self.root / "plugins"
         self.active_path = self.root / "active.txt"
+        self.desired_installations_path = self.root / "desired-installations.json"
         self.sources_path = self.root / "sources.json"
         self.metadata_path = self.root / "metadata.json"
         self.mcps_path = self.root / "mcps.json"
@@ -37,6 +40,8 @@ class Repository:
         self.config_path = self.root / CONFIG_NAME
         self._config: dict[str, Any] | None = None
         self._inventory: dict[str, SkillEntry] | None = None
+        self._skill_registry: dict[str, SkillEntry] | None = None
+        self._plugin_inventory: dict[str, PluginSpec] | None = None
 
     @classmethod
     def discover(cls, start: Path) -> Repository:
@@ -82,11 +87,34 @@ class Repository:
 
     def refresh(self) -> None:
         self._inventory = None
+        self._skill_registry = None
+        self._plugin_inventory = None
         self._config = None
 
     def inventory(self, *, refresh: bool = False) -> dict[str, SkillEntry]:
+        """Compatibility view keyed by an unambiguous CLI selector.
+
+        New code should prefer skill_registry(), whose keys are canonical AssetRefs.
+        """
         if self._inventory is not None and not refresh:
             return dict(self._inventory)
+        registry = self.skill_registry(refresh=refresh)
+        by_name: dict[str, list[SkillEntry]] = {}
+        for entry in registry.values():
+            by_name.setdefault(entry.name, []).append(entry)
+        found: dict[str, SkillEntry] = {}
+        for name, entries in sorted(by_name.items()):
+            if len(entries) == 1:
+                found[name] = entries[0]
+                continue
+            for entry in entries:
+                found[entry.qualified_id] = entry
+        self._inventory = found
+        return dict(found)
+
+    def skill_registry(self, *, refresh: bool = False) -> dict[str, SkillEntry]:
+        if self._skill_registry is not None and not refresh:
+            return dict(self._skill_registry)
         found: dict[str, SkillEntry] = {}
         if not self.skills_dir.is_dir():
             raise RepositoryError(f"技能目录不存在：{self.skills_dir}")
@@ -99,21 +127,109 @@ class Repository:
             if len(relative.parts) != 2:
                 raise RepositoryError(f"技能必须位于 skills/<分类>/<名称>：{relative}")
             category, name = relative.parts
-            if name in found:
+            entry = SkillEntry(name=name, category=category, path=path)
+            key = entry.qualified_id
+            if key in found:
                 raise RepositoryError(
-                    f"技能重名：{name}\n  {found[name].path}\n  {path}"
+                    f"技能身份重复：{key}\n  {found[key].path}\n  {path}"
                 )
-            found[name] = SkillEntry(name=name, category=category, path=path)
-        self._inventory = found
+            found[key] = entry
+
+        metadata = self.read_metadata()["skills"]
+        for plugin_id, plugin in self.plugin_inventory(refresh=refresh).items():
+            skills_root = plugin.root / "skills"
+            if not skills_root.is_dir():
+                continue
+            for path in sorted(skills_root.iterdir()):
+                if not path.is_dir() or not (path / "SKILL.md").is_file():
+                    continue
+                name = path.name
+                ref = AssetRef.plugin_skill(plugin_id, name)
+                record = metadata.get(ref.canonical, {})
+                category = record.get("category")
+                if not isinstance(category, str) or not category:
+                    category = "uncategorized"
+                entry = SkillEntry(
+                    name=name,
+                    category=category,
+                    path=path,
+                    owner_kind="plugin",
+                    owner_id=plugin_id,
+                )
+                if ref.canonical in found:
+                    raise RepositoryError(f"技能身份重复：{ref.canonical}")
+                found[ref.canonical] = entry
+        self._skill_registry = found
         return dict(found)
 
-    def require_skill(self, name: str) -> SkillEntry:
-        entry = self.inventory().get(name)
-        if entry is None:
-            raise RepositoryError(f"找不到技能：{name}")
-        return entry
+    def plugin_inventory(self, *, refresh: bool = False) -> dict[str, PluginSpec]:
+        if self._plugin_inventory is not None and not refresh:
+            return dict(self._plugin_inventory)
+        found: dict[str, PluginSpec] = {}
+        if self.plugins_dir.is_dir():
+            for root in sorted(self.plugins_dir.iterdir()):
+                if not root.is_dir() or root.name.startswith("."):
+                    continue
+                try:
+                    plugin = load_plugin_spec(root)
+                except PluginError as exc:
+                    raise RepositoryError(str(exc)) from exc
+                if plugin.package_id in found:
+                    raise RepositoryError(f"Plugin ID 重复：{plugin.package_id}")
+                found[plugin.package_id] = plugin
+        self._plugin_inventory = found
+        return dict(found)
+
+    def require_plugin(self, selector: str) -> PluginSpec:
+        try:
+            ref = AssetRef.parse(selector)
+        except ValueError:
+            ref = AssetRef.plugin(selector)
+        if ref.kind != "plugin":
+            raise RepositoryError(f"不是 Plugin 引用：{selector}")
+        plugin = self.plugin_inventory().get(ref.local_id)
+        if plugin is None:
+            raise RepositoryError(f"找不到 Plugin：{selector}")
+        return plugin
+
+    def resolve_skill_ref(self, selector: str | AssetRef) -> AssetRef:
+        registry = self.skill_registry()
+        if isinstance(selector, AssetRef):
+            if selector.kind != "skill" or selector.canonical not in registry:
+                raise RepositoryError(f"找不到技能：{selector}")
+            return selector
+        if selector.startswith("skill:"):
+            try:
+                ref = AssetRef.parse(selector)
+            except ValueError as exc:
+                raise RepositoryError(str(exc)) from exc
+            if ref.kind != "skill" or ref.canonical not in registry:
+                raise RepositoryError(f"找不到技能：{selector}")
+            return ref
+        matches = [entry.ref for entry in registry.values() if entry.name == selector]
+        if not matches:
+            raise RepositoryError(f"找不到技能：{selector}")
+        if len(matches) > 1:
+            choices = "、".join(sorted(ref.canonical for ref in matches))
+            raise RepositoryError(f"技能名不唯一：{selector}；请使用 {choices}")
+        return matches[0]
+
+    def require_skill(self, selector: str | AssetRef) -> SkillEntry:
+        ref = self.resolve_skill_ref(selector)
+        return self.skill_registry()[ref.canonical]
 
     def read_active(self) -> list[str]:
+        if self.desired_installations_path.is_file():
+            names: list[str] = []
+            for target in self.read_desired_installations()["targets"].values():
+                for raw_ref in target.get("skills", []):
+                    try:
+                        ref = AssetRef.parse(raw_ref)
+                    except ValueError:
+                        continue
+                    if ref.local_id not in names:
+                        names.append(ref.local_id)
+            return names
         names: list[str] = []
         for line in self.active_path.read_text(encoding="utf-8").splitlines():
             name = line.split("#", 1)[0].strip()
@@ -123,28 +239,98 @@ class Repository:
 
     def write_active(self, names: list[str]) -> bool:
         unique = list(dict.fromkeys(names))
-        return self.write_text_if_changed(
+        changed = self.write_text_if_changed(
             self.active_path, ACTIVE_HEADER + "\n".join(unique) + "\n"
         )
+        if self.desired_installations_path.is_file():
+            desired = self.read_desired_installations()
+            refs = [self.resolve_skill_ref(name).canonical for name in unique]
+            for target in desired["targets"].values():
+                target["skills"] = list(refs)
+            changed = self.write_desired_installations(desired) or changed
+        return changed
+
+    def read_desired_installations(self) -> dict[str, Any]:
+        if not self.desired_installations_path.is_file():
+            refs = []
+            for line in self.active_path.read_text(encoding="utf-8").splitlines():
+                name = line.split("#", 1)[0].strip()
+                if name and name not in refs:
+                    refs.append(AssetRef.standalone_skill(name).canonical)
+            return {
+                "schema_version": 1,
+                "targets": {
+                    "claude": {
+                        "scope": "user",
+                        "skills": list(refs),
+                        "plugins": [],
+                    },
+                    "codex": {
+                        "scope": "user",
+                        "skills": list(refs),
+                        "plugins": [],
+                    },
+                },
+            }
+        data = self._load_json(self.desired_installations_path)
+        if data.get("schema_version") != 1 or not isinstance(data.get("targets"), dict):
+            raise RepositoryError(
+                "desired-installations.json schema_version 必须是 1 且包含 targets"
+            )
+        for target, record in data["targets"].items():
+            if target not in {"claude", "codex"} or not isinstance(record, dict):
+                raise RepositoryError(
+                    f"desired-installations.json target 无效：{target}"
+                )
+            if not isinstance(record.get("skills", []), list) or not isinstance(
+                record.get("plugins", []), list
+            ):
+                raise RepositoryError(f"desired-installations.json {target} 清单无效")
+        return data
+
+    def write_desired_installations(self, data: dict[str, Any]) -> bool:
+        normalized = dict(data)
+        normalized["schema_version"] = 1
+        targets: dict[str, Any] = {}
+        for target, record in sorted(normalized.get("targets", {}).items()):
+            updated = dict(record)
+            updated["scope"] = updated.get("scope", "user")
+            updated["skills"] = sorted(dict.fromkeys(updated.get("skills", [])))
+            plugins = updated.get("plugins", [])
+            updated["plugins"] = sorted(
+                plugins,
+                key=lambda item: (
+                    item.get("ref", "") if isinstance(item, dict) else str(item)
+                ),
+            )
+            targets[target] = updated
+        normalized["targets"] = targets
+        return self.write_json_if_changed(self.desired_installations_path, normalized)
 
     def read_sources(self) -> dict[str, Any]:
         data = self._load_json(self.sources_path)
-        if data.get("schema_version") != 2:
-            raise RepositoryError("sources.json schema_version 必须是 2")
+        if data.get("schema_version") not in {2, 3}:
+            raise RepositoryError("sources.json schema_version 必须是 2 或 3")
         if not isinstance(data.get("skills"), dict):
             raise RepositoryError("sources.json 缺 skills 对象")
+        if data.get("schema_version") == 2:
+            data = dict(data)
+            data["plugins"] = {}
+        elif not isinstance(data.get("plugins"), dict):
+            raise RepositoryError("sources.json 缺 plugins 对象")
         return data
 
     def write_sources(self, data: dict[str, Any]) -> bool:
         normalized = dict(data)
-        normalized["schema_version"] = 2
+        normalized["schema_version"] = 3
         normalized["skills"] = dict(sorted(normalized.get("skills", {}).items()))
+        normalized["plugins"] = dict(sorted(normalized.get("plugins", {}).items()))
         return self.write_json_if_changed(self.sources_path, normalized)
 
     def read_metadata(self) -> dict[str, Any]:
         data = self._load_json(self.metadata_path)
-        if data.get("schema_version") != 2:
-            raise RepositoryError("metadata.json schema_version 必须是 2")
+        if data.get("schema_version") not in {2, 3}:
+            raise RepositoryError("metadata.json schema_version 必须是 2 或 3")
         if not isinstance(data.get("taxonomy_version"), int):
             raise RepositoryError("metadata.json 缺 taxonomy_version")
         if not isinstance(data.get("skills"), dict):
@@ -183,38 +369,87 @@ class Repository:
 
     def write_metadata(self, data: dict[str, Any]) -> bool:
         normalized = dict(data)
-        normalized["schema_version"] = 2
+        normalized["schema_version"] = 3
         normalized["taxonomy_version"] = self.taxonomy_version
         normalized["skills"] = dict(sorted(normalized.get("skills", {}).items()))
         return self.write_json_if_changed(self.metadata_path, normalized)
 
     def source_record(self, name: str) -> dict[str, Any] | None:
-        return self.read_sources()["skills"].get(name)
+        ref = self._lookup_ref(name)
+        records = self.read_sources()["skills"]
+        return records.get(ref.canonical) or records.get(ref.local_id)
 
     def set_source_record(self, name: str, record: dict[str, Any]) -> bool:
+        ref = self.resolve_skill_ref(name)
         data = self.read_sources()
-        data["skills"][name] = record
+        data["skills"].pop(ref.local_id, None)
+        data["skills"][ref.canonical] = record
         return self.write_sources(data)
 
     def remove_source_record(self, name: str) -> bool:
+        ref = self._record_ref(name)
         data = self.read_sources()
-        if data["skills"].pop(name, None) is None:
+        removed = data["skills"].pop(ref.canonical, None)
+        legacy_removed = data["skills"].pop(ref.local_id, None)
+        if removed is None and legacy_removed is None:
+            return False
+        return self.write_sources(data)
+
+    def plugin_source_record(self, plugin_id: str) -> dict[str, Any] | None:
+        self.require_plugin(plugin_id)
+        return self.read_sources()["plugins"].get(plugin_id)
+
+    def set_plugin_source_record(self, plugin_id: str, record: dict[str, Any]) -> bool:
+        self.require_plugin(plugin_id)
+        data = self.read_sources()
+        data["plugins"][plugin_id] = record
+        return self.write_sources(data)
+
+    def remove_plugin_source_record(self, plugin_id: str) -> bool:
+        data = self.read_sources()
+        if data["plugins"].pop(plugin_id, None) is None:
             return False
         return self.write_sources(data)
 
     def metadata_record(self, name: str) -> dict[str, Any] | None:
-        return self.read_metadata()["skills"].get(name)
+        ref = self._lookup_ref(name)
+        records = self.read_metadata()["skills"]
+        return records.get(ref.canonical) or records.get(ref.local_id)
 
     def set_metadata_record(self, name: str, record: dict[str, Any]) -> bool:
+        ref = self.resolve_skill_ref(name)
         data = self.read_metadata()
-        data["skills"][name] = record
+        data["skills"].pop(ref.local_id, None)
+        data["skills"][ref.canonical] = record
         return self.write_metadata(data)
 
     def remove_metadata_record(self, name: str) -> bool:
+        ref = self._record_ref(name)
         data = self.read_metadata()
-        if data["skills"].pop(name, None) is None:
+        removed = data["skills"].pop(ref.canonical, None)
+        legacy_removed = data["skills"].pop(ref.local_id, None)
+        if removed is None and legacy_removed is None:
             return False
         return self.write_metadata(data)
+
+    def _record_ref(self, selector: str) -> AssetRef:
+        if selector.startswith("skill:"):
+            try:
+                ref = AssetRef.parse(selector)
+            except ValueError as exc:
+                raise RepositoryError(str(exc)) from exc
+            if ref.kind != "skill":
+                raise RepositoryError(f"不是技能引用：{selector}")
+            return ref
+        return self.resolve_skill_ref(selector)
+
+    def _lookup_ref(self, selector: str) -> AssetRef:
+        try:
+            return self.resolve_skill_ref(selector)
+        except RepositoryError:
+            if not selector.startswith(("skill:", "plugin:")):
+                return AssetRef.standalone_skill(selector)
+            raise
 
     @contextmanager
     def write_lock(self) -> Iterator[None]:
@@ -274,12 +509,55 @@ class Repository:
         finally:
             shutil.rmtree(temp, ignore_errors=True)
         self._inventory = None
+        self._skill_registry = None
 
     def install_skill_file(self, staged: Path, destination: Path) -> bool:
         return self.write_text_if_changed(
             destination / "SKILL.md",
             (staged / "SKILL.md").read_text(encoding="utf-8"),
         )
+
+    def install_plugin_directory(
+        self, staged: Path, destination: Path, *, replace: bool = False
+    ) -> None:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if destination.exists() and not replace:
+            raise RepositoryError(f"目标 Plugin 已存在：{destination}")
+        temp = Path(
+            tempfile.mkdtemp(prefix=f".{destination.name}.", dir=destination.parent)
+        )
+        shutil.rmtree(temp)
+        try:
+            shutil.copytree(
+                staged,
+                temp,
+                symlinks=True,
+                ignore=shutil.ignore_patterns(
+                    ".git", "__pycache__", "*.pyc", ".DS_Store"
+                ),
+            )
+            if destination.exists():
+                backup = Path(
+                    tempfile.mkdtemp(
+                        prefix=f".{destination.name}.backup.",
+                        dir=destination.parent,
+                    )
+                )
+                shutil.rmtree(backup)
+                os.replace(destination, backup)
+                try:
+                    os.replace(temp, destination)
+                except OSError:
+                    os.replace(backup, destination)
+                    raise
+                shutil.rmtree(backup, ignore_errors=True)
+            else:
+                os.replace(temp, destination)
+        finally:
+            shutil.rmtree(temp, ignore_errors=True)
+        self._inventory = None
+        self._skill_registry = None
+        self._plugin_inventory = None
 
     @staticmethod
     def hash_file(path: Path) -> str:

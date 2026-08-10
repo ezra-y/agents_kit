@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agents-kit.local/schemas/sources.schema.json",
+  "title": "agents_kit sources",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "skills",
+    "plugins"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 3
+    },
+    "skills": {
+      "type": "object"
+    },
+    "plugins": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "provider",
+          "locator",
+          "content_mode",
+          "policy",
+          "resolved"
+        ],
+        "properties": {
+          "provider": {
+            "type": "string",
+            "minLength": 1
+          },
+          "locator": {
+            "type": "object"
+          },
+          "content_mode": {
+            "const": "plugin_directory"
+          },
+          "policy": {
+            "enum": [
+              "review",
+              "pinned"
+            ]
+          },
+          "resolved": {
+            "type": "object",
+            "required": [
+              "upstream_sha256",
+              "upstream_paths"
+            ],
+            "properties": {
+              "revision": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "upstream_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "upstream_paths": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "package_id": "claude-md-management",
+  "upstream_targets": [
+    "claude"
+  ],
+  "targets": {
+    "claude": {
+      "support": "full",
+      "manifest": {
+        "path": ".claude-plugin/plugin.json",
+        "authority": "upstream"
+      },
+      "marketplace": {}
+    },
+    "codex": {
+      "support": "review",
+      "manifest": {
+        "path": ".codex-plugin/plugin.json",
+        "authority": "local"
+      },
+      "marketplace": {
+        "category": "Developer Tools",
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "limitations": [
+        "尚未完成目标端安装与触发测试"
+      ]
+    }
+  },
+  "embedded_skills": {
+    "claude-md-improver": {
+      "standalone": {
+        "claude": {
+          "mode": "self_contained",
+          "reason": ""
+        },
+        "codex": {
+          "mode": "self_contained",
+          "reason": ""
+        }
+      },
+      "dependencies": []
+    }
+  },
+  "local_paths": [
+    ".codex-plugin/plugin.json"
+  ]
+}
