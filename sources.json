@@ -163,8 +163,8 @@
       "content_mode": "skill_file",
       "policy": "review",
       "resolved": {
-        "revision": "\"7055b256c9066f1191ec47aad9ac7af2039f666ea9dea681f3a3fc8b59c5d318\"",
-        "content_sha256": "6ceaccb4cf67df11a2b127be914e24f1e13e73dec9065334576e9f8848e9c710"
+        "revision": "\"53fa0e9afefb87dde6fd30a54d22388e2797ea52f00ca2aea30189e76cd75fe7\"",
+        "content_sha256": "ae7e3ff470201b7a1a5f3cd6d5c470d620d2513e9c57ed0dd65fb05ce18a7dbc"
       },
       "source_name": "deep-research"
     },
@@ -1861,8 +1861,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": "539899ddc7608d63dc66e08e794d572e080f1a55",
-        "content_sha256": "e8cd238d6749c288aa19a3cac101378af77527a355b4da88b33e6b695de4ee94"
+        "revision": "cf745b83e32c759dc16ae01f8dde32a6d2187751",
+        "content_sha256": "6cd9bc47340492834093da3b718de707bc043f38acbff48f15953cce76231deb"
       }
     },
     "review-animations": {
