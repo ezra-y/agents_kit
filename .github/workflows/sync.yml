@@ -27,6 +27,18 @@ jobs:
       - name: 测试
         run: uv run --with "PyYAML>=6,<7" python -m unittest discover -s tests
 
+      - name: AI 口语教练测试
+        working-directory: plugins/ai-speaking-coach/skills/ai-speaking-coach
+        env:
+          UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/ai-speaking-coach-venv
+        run: uv run --extra dev pytest -q
+
+      - name: AI 口语教练 Plugin 包测试
+        working-directory: plugins/ai-speaking-coach
+        env:
+          UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/ai-speaking-coach-venv
+        run: uv run --project skills/ai-speaking-coach --extra dev pytest -q tests
+
       - name: 静态检查
         run: |
           uvx ruff==0.16.0 check scripts/agents-kit scripts/agents_kit tests
@@ -36,7 +48,7 @@ jobs:
         run: scripts/agents-kit docs build
 
       - name: 检查受管生成文件
-        run: git diff --exit-code -- docs/skills.md docs/cli.md docs/architecture.md
+        run: git diff --exit-code -- 'docs/*.md'
 
       - name: 仓库体检
         run: scripts/agents-kit check --repo-only
@@ -99,7 +111,19 @@ jobs:
 
           git config user.name "skill-sync"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A skills/ sources.json docs/
+          git add -A \
+            skills/ \
+            plugins/ \
+            sources.json \
+            metadata.json \
+            desired-installations.json \
+            .claude-plugin/ \
+            .agents/ \
+            docs/
+          git diff --cached --check
+          scripts/agents-kit check --repo-only
+          git diff --exit-code
+          git status --short
           git commit -m "sync: 自动更新 ${updated} 个上游技能"
           git pull --rebase origin main
           git push origin HEAD:main

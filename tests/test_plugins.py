@@ -1,7 +1,9 @@
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from scripts.agents_kit import marketplace, plugins
 from scripts.agents_kit.installation import (
@@ -9,6 +11,7 @@ from scripts.agents_kit.installation import (
     apply_global,
     enable_global,
     global_plan,
+    validate_desired_installations,
 )
 from scripts.agents_kit.models import AssetRef, SourceSpec
 from scripts.agents_kit.repository import Repository, RepositoryError
@@ -141,6 +144,61 @@ class PluginTests(unittest.TestCase):
         )
         self.assertIn("example-plugin", self.repo.read_sources()["plugins"])
 
+    def test_import_invalid_skill_metadata_leaves_repository_unchanged(self):
+        (self.upstream / "skills/review/SKILL.md").write_text(
+            "---\nname: review\n---\n",
+            encoding="utf-8",
+        )
+        metadata_before = self.repo.metadata_path.read_bytes()
+        sources_before = self.repo.sources_path.read_bytes()
+
+        with self.assertRaisesRegex(plugins.PluginError, "description 为空"):
+            plugins.import_plugin_snapshot(
+                self.repo,
+                self._snapshot(),
+                category="tools",
+                targets=("claude",),
+                tags=["role/builder", "focus/example"],
+            )
+
+        self.assertFalse((self.root / "plugins/example-plugin").exists())
+        self.assertEqual(self.repo.metadata_path.read_bytes(), metadata_before)
+        self.assertEqual(self.repo.sources_path.read_bytes(), sources_before)
+
+    def test_local_plugin_import_keeps_native_manifest_local(self):
+        snapshot = plugins.inspect_plugin_directory(
+            self.upstream,
+            revision=None,
+            source_spec=SourceSpec(
+                provider="local",
+                locator={"path": str(self.upstream)},
+            ),
+        )
+
+        plugins.import_plugin_snapshot(
+            self.repo,
+            snapshot,
+            category="tools",
+            targets=("claude",),
+            tags=["role/builder", "focus/example"],
+        )
+
+        sidecar = json.loads(
+            (self.root / "plugins/example-plugin/agents-kit.plugin.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(sidecar["upstream_targets"], [])
+        self.assertEqual(
+            sidecar["targets"]["claude"]["manifest"]["authority"],
+            "local",
+        )
+        self.assertIn(
+            ".claude-plugin/plugin.json",
+            sidecar["local_paths"],
+        )
+        self.assertNotIn("example-plugin", self.repo.read_sources()["plugins"])
+
     def test_same_local_skill_name_is_ambiguous_but_qualified_refs_work(self):
         plugins.import_plugin_snapshot(
             self.repo,
@@ -253,6 +311,50 @@ class PluginTests(unittest.TestCase):
             },
         )
 
+    def test_codex_probe_failure_stops_before_installation(self):
+        plugins.import_plugin_snapshot(
+            self.repo,
+            self._snapshot(),
+            category="tools",
+            targets=("claude", "codex"),
+            tags=["role/builder", "focus/example"],
+        )
+        sidecar_path = self.root / "plugins/example-plugin/agents-kit.plugin.json"
+        sidecar = json.loads(sidecar_path.read_text(encoding="utf-8"))
+        sidecar["targets"]["codex"]["support"] = "full"
+        sidecar["targets"]["codex"].pop("limitations", None)
+        sidecar_path.write_text(json.dumps(sidecar), encoding="utf-8")
+        desired = self.repo.read_desired_installations()
+        desired["targets"]["codex"]["plugins"] = [
+            {
+                "ref": "plugin:example-plugin",
+                "distribution": "marketplace",
+            }
+        ]
+        self.repo.write_desired_installations(desired)
+        self.repo.refresh()
+        failed_probe = subprocess.CompletedProcess(
+            args=["codex"],
+            returncode=1,
+            stdout="",
+            stderr="probe failed",
+        )
+
+        with (
+            patch(
+                "scripts.agents_kit.installation.shutil.which",
+                return_value="/usr/bin/codex",
+            ),
+            patch(
+                "scripts.agents_kit.installation.subprocess.run",
+                return_value=failed_probe,
+            ),
+            self.assertRaisesRegex(InstallationError, "probe failed"),
+        ):
+            apply_global(self.repo, target="codex")
+
+        self.assertFalse((self.global_skills / "example-plugin").exists())
+
     def test_projection_detects_cross_kind_destination_collision(self):
         plugins.import_plugin_snapshot(
             self.repo,
@@ -293,6 +395,32 @@ class PluginTests(unittest.TestCase):
         self.assertTrue(
             any("投射路径冲突" in conflict for conflict in plan["conflicts"])
         )
+
+    def test_desired_plugin_distribution_matrix_is_enforced(self):
+        plugins.import_plugin_snapshot(
+            self.repo,
+            self._snapshot(),
+            category="tools",
+            targets=("claude",),
+            tags=["role/builder", "focus/example"],
+        )
+        desired = self.repo.read_desired_installations()
+        desired["targets"]["claude"]["plugins"] = [
+            {
+                "ref": "plugin:example-plugin",
+                "distribution": "marketplace",
+            }
+        ]
+
+        validation = validate_desired_installations(self.repo, desired)
+
+        self.assertTrue(
+            any("不支持 distribution" in problem for problem in validation["problems"])
+        )
+        self.repo.write_desired_installations(desired)
+        with self.assertRaisesRegex(InstallationError, "不支持 distribution"):
+            apply_global(self.repo, target="claude")
+        self.assertFalse((self.global_skills / "example-plugin").exists())
 
     def test_claude_full_plugin_is_projected_as_managed_skills_dir_link(self):
         plugins.import_plugin_snapshot(
@@ -342,7 +470,7 @@ class PluginTests(unittest.TestCase):
             encoding="utf-8",
         )
         expected_local_manifest = local_manifest.read_bytes()
-        (self.upstream / "README.md").write_text(
+        (self.upstream / "CHANGELOG.md").write_text(
             "Upstream documentation\n", encoding="utf-8"
         )
         updated_snapshot = self._snapshot()
@@ -360,7 +488,109 @@ class PluginTests(unittest.TestCase):
         )
 
         self.assertEqual(local_manifest.read_bytes(), expected_local_manifest)
-        self.assertTrue((self.root / "plugins/example-plugin/README.md").is_file())
+        self.assertTrue((self.root / "plugins/example-plugin/CHANGELOG.md").is_file())
+
+    def test_readme_update_requires_review(self):
+        plugins.import_plugin_snapshot(
+            self.repo,
+            self._snapshot(),
+            category="tools",
+            targets=("claude",),
+            tags=["role/builder", "focus/example"],
+        )
+        (self.upstream / "README.md").write_text(
+            "Behavior may depend on this file\n", encoding="utf-8"
+        )
+
+        comparison = plugins.classify_plugin_update(
+            self.repo, "example-plugin", self._snapshot()
+        )
+
+        self.assertEqual(comparison["risk_class"], "unknown")
+        self.assertEqual(comparison["decision"], "review_required")
+
+    def test_plugin_identity_drift_is_rejected_before_update(self):
+        plugins.import_plugin_snapshot(
+            self.repo,
+            self._snapshot(),
+            category="tools",
+            targets=("claude",),
+            tags=["role/builder", "focus/example"],
+        )
+        plugin_root = self.root / "plugins/example-plugin"
+        before = self.repo.hash_directory(plugin_root)
+        (self.upstream / ".claude-plugin/plugin.json").write_text(
+            json.dumps(
+                {
+                    "name": "different-plugin",
+                    "description": "Different plugin",
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(plugins.PluginError, "Plugin 身份漂移"):
+            plugins.update_plugin_from_snapshot(
+                self.repo,
+                "example-plugin",
+                self._snapshot(),
+            )
+
+        self.assertEqual(self.repo.hash_directory(plugin_root), before)
+
+    def test_update_metadata_preflight_fails_before_plugin_replacement(self):
+        for child in (self.upstream / "skills").iterdir():
+            if child.is_dir():
+                for path in sorted(child.rglob("*"), reverse=True):
+                    if path.is_file():
+                        path.unlink()
+                    elif path.is_dir():
+                        path.rmdir()
+                child.rmdir()
+        (self.upstream / "skills").rmdir()
+        plugins.import_plugin_snapshot(
+            self.repo,
+            self._snapshot(),
+            category="tools",
+            targets=("claude",),
+            tags=["role/builder", "focus/example"],
+        )
+        plugin_root = self.root / "plugins/example-plugin"
+        before = self.repo.hash_directory(plugin_root)
+        source_before = self.repo.sources_path.read_bytes()
+        skill = self.upstream / "skills/new-skill"
+        skill.mkdir(parents=True)
+        (skill / "SKILL.md").write_text(
+            "---\nname: new-skill\ndescription: New skill\n---\n",
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(plugins.PluginError, "没有可继承的 metadata"):
+            plugins.update_plugin_from_snapshot(
+                self.repo,
+                "example-plugin",
+                self._snapshot(),
+            )
+
+        self.assertEqual(self.repo.hash_directory(plugin_root), before)
+        self.assertEqual(self.repo.sources_path.read_bytes(), source_before)
+        self.assertFalse((plugin_root / "skills/new-skill").exists())
+
+    def test_sidecar_rejects_local_and_upstream_authority_overlap(self):
+        plugins.import_plugin_snapshot(
+            self.repo,
+            self._snapshot(),
+            category="tools",
+            targets=("claude",),
+            tags=["role/builder", "focus/example"],
+        )
+        sidecar_path = self.root / "plugins/example-plugin/agents-kit.plugin.json"
+        sidecar = json.loads(sidecar_path.read_text(encoding="utf-8"))
+        sidecar["local_paths"].append(".claude-plugin/plugin.json")
+        sidecar_path.write_text(json.dumps(sidecar), encoding="utf-8")
+
+        with self.assertRaisesRegex(plugins.PluginError, "authority 冲突"):
+            plugins.load_plugin_spec(sidecar_path.parent)
 
     def test_upstream_collision_with_local_manifest_authority_is_blocked(self):
         plugins.import_plugin_snapshot(

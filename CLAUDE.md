@@ -19,9 +19,9 @@
    `agents-kit plugin remove <名称> --yes`。
 5. 全局安装是软链接，项目安装是副本；依赖由 `metadata.json` 和安装流程展开，
    不把依赖手工写入期望安装清单。`active.txt` 只保留一个兼容周期。
-6. 来源检查把合并状态和内容风险分开。只有无本地冲突的 README、License、
-   Changelog 纯文档变化可用 `--auto-docs` 自动应用；Skill、Prompt、Manifest、
-   Hook、MCP、脚本、二进制和未知内容默认人工确认。
+6. 来源检查把合并状态和内容风险分开。只有无本地冲突的 License、Changelog
+   变化可用 `--auto-docs` 自动应用；README、Skill、Prompt、Manifest、Hook、
+   MCP、脚本、二进制和未知内容默认人工确认。
 7. MCP 集中记录在 `mcps.json`；`npm`、`pypi` 和 `brew` 分发必须锁定版本。
    凭据只记录环境变量或安全命令来源，不把值写进仓库或客户端配置。
 8. 修改 `rules/`、`agents/`、`hooks/` 或 `prompts/` 前，先读取对应目录的

@@ -121,7 +121,7 @@ options:
   --all
   --dry-run
   --safe       兼容别名；等同 --auto-docs
-  --auto-docs  只自动应用无本地冲突的纯 README/License/Changelog 变化
+  --auto-docs  只自动应用无本地冲突的 License/Changelog 变化
   --yes
   --json
 

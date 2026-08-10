@@ -107,9 +107,9 @@ mcps -> repository 中的单一 MCP 清单
 - `risk_class`：`docs_only`、`instructional`、`executable`、`binary`、`unknown`。
 - `decision`：`auto_apply`、`review_required`、`blocked`。
 
-只有 `upstream_only + docs_only` 自动应用。Skill、Prompt、Manifest、Hook、MCP、
-脚本、二进制和未知内容默认人工确认。旧 `safe_update` 只作为兼容输出，不再表示
-内容安全。
+只有 `upstream_only + docs_only` 自动应用，当前 `docs_only` 仅包含 License
+和 Changelog。README、Skill、Prompt、Manifest、Hook、MCP、脚本、二进制和未知
+内容默认人工确认。旧 `safe_update` 只作为兼容输出，不再表示内容安全。
 
 定时任务把同一份审核 Markdown 写入 Actions Summary 和固定 Issue 正文。报告包含
 总表、冲突原因、候选体检问题、截断后的 `SKILL.md` diff、精确上游链接和单项
@@ -173,8 +173,10 @@ mcps -> repository 中的单一 MCP 清单
 
 `desired-installations.json` 只表达 agents_kit 希望向每个平台安装或投射的资产，
 不声称是客户端实际状态。安装器从软链接和 Claude/Codex CLI 读取实际状态并计算
-Plan。`~/.local/state/agents-kit/receipts.json` 只记录上次执行动作，不是事实源。
-`active.txt` 在兼容期只读，不再拥有安装状态。
+Plan。Claude Plugin 只允许 `skills-dir`，Codex Plugin 只允许 `marketplace`；
+CLI、仓库体检和安装器共享同一套静态验证。Codex 状态探测失败时停止对应目标，
+不把失败当作空状态。`~/.local/state/agents-kit/receipts.json` 记录每个目标
+已完成和失败的动作，但不是事实源。`active.txt` 在兼容期只读，不再拥有安装状态。
 
 ## MCP 模型
 
@@ -195,9 +197,10 @@ launcher 管理的记录；同名外部配置默认停止并报告。
 
 ## 写入模型
 
-写操作先完成来源解析和参数校验，再取得仓库锁。JSON、文本和单路径更新尽量使用
-临时路径替换。Plugin 替换先把旧目录 rename 为备份，失败时恢复；跨多个状态文件
-不承诺事务原子性。Git 负责历史恢复，仓库不实现第二套事务系统。
+写操作先在临时目录和内存中完成来源身份、manifest、sidecar、全部 Skill
+frontmatter、metadata 和安装期望校验，再取得仓库锁。JSON、文本和单路径更新
+使用临时路径替换。Plugin 替换先把旧目录 rename 为备份，失败时恢复；跨多个状态
+文件不承诺事务原子性。Git 负责历史恢复，仓库不实现第二套事务系统。
 
 安装层只删除自己能证明由本仓库管理的链接。遇到同名实体目录或外部链接时停止并报告，
 不自动覆盖。

@@ -5,6 +5,7 @@ import os
 import re
 import shutil
 import tempfile
+from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import TYPE_CHECKING, Any
 
@@ -34,7 +35,14 @@ TARGETS = ("claude", "codex")
 SUPPORT_STATES = {"full", "partial", "review", "unsupported"}
 AUTHORITIES = {"upstream", "local"}
 STANDALONE_MODES = {"self_contained", "plugin_only", "unsupported"}
-TRANSPORT_IGNORES = {".git", ".DS_Store", "__pycache__"}
+TRANSPORT_IGNORES = {
+    ".git",
+    ".DS_Store",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+}
 TRANSPORT_SUFFIX_IGNORES = {".pyc"}
 KNOWN_TOP_LEVEL = {
     ".agents",
@@ -100,6 +108,14 @@ EXECUTABLE_SUFFIXES = {
 
 class PluginError(RuntimeError):
     pass
+
+
+@dataclass(frozen=True)
+class PluginStatePlan:
+    metadata: dict[str, Any]
+    sources: dict[str, Any]
+    desired_installations: dict[str, Any]
+    duplicate_skill_removals: tuple[Path, ...] = ()
 
 
 def load_plugin_spec(root: Path) -> PluginSpec:
@@ -221,6 +237,34 @@ def load_plugin_spec(root: Path) -> PluginSpec:
     normalized_local_paths = tuple(
         _validate_relative_path(root, item, field="local_paths") for item in local_paths
     )
+    upstream_manifest_paths: set[str] = set()
+    for target, target_spec in targets.items():
+        manifest = target_spec.manifest
+        if target in upstream_targets:
+            if manifest is None or manifest.authority != "upstream":
+                raise PluginError(
+                    f"{sidecar_path}: {target} 在 upstream_targets 中，"
+                    "manifest authority 必须是 upstream"
+                )
+            upstream_manifest_paths.add(manifest.path)
+        elif manifest is not None and manifest.authority == "upstream":
+            raise PluginError(
+                f"{sidecar_path}: {target} manifest 是 upstream authority，"
+                "但 target 未列入 upstream_targets"
+            )
+    authority_conflicts = sorted(
+        local_path
+        for local_path in normalized_local_paths
+        if any(
+            _relative_paths_overlap(local_path, manifest_path)
+            for manifest_path in upstream_manifest_paths
+        )
+    )
+    if authority_conflicts:
+        raise PluginError(
+            f"{sidecar_path}: local_paths 与 upstream manifest authority 冲突："
+            + ", ".join(authority_conflicts)
+        )
     return PluginSpec(
         package_id=package_id,
         root=root,
@@ -382,6 +426,9 @@ def import_plugin_snapshot(
 
     stage_parent = Path(tempfile.mkdtemp(prefix="agents-kit-plugin-import-"))
     stage = stage_parent / snapshot.package_id
+    managed_upstream_targets = (
+        frozenset() if snapshot.spec.provider == "local" else snapshot.upstream_targets
+    )
     try:
         shutil.copytree(
             snapshot.root,
@@ -392,74 +439,31 @@ def import_plugin_snapshot(
         sidecar = _build_sidecar(
             stage,
             package_id=snapshot.package_id,
-            upstream_targets=snapshot.upstream_targets,
+            upstream_targets=managed_upstream_targets,
             requested_targets=frozenset(targets),
         )
         _write_json(stage / "agents-kit.plugin.json", sidecar)
-        load_plugin_spec(stage)
+        candidate_spec = load_plugin_spec(stage)
+        embedded_ids = _embedded_skill_ids(stage)
+        plan = _plan_plugin_import(
+            repo,
+            stage,
+            snapshot=snapshot,
+            category=category,
+            tags=normalized_tags,
+            duplicates=duplicates,
+            upstream_paths=upstream_paths,
+            candidate_spec=candidate_spec,
+        )
         repo.install_plugin_directory(stage, destination, replace=replace)
+        repo.write_metadata(plan.metadata)
+        repo.write_sources(plan.sources)
+        desired_changed = repo.write_desired_installations(plan.desired_installations)
+        for path in plan.duplicate_skill_removals:
+            shutil.rmtree(path)
     finally:
         shutil.rmtree(stage_parent, ignore_errors=True)
 
-    for entry in duplicates.values():
-        shutil.rmtree(entry.path)
-    repo.refresh()
-
-    metadata = repo.read_metadata()
-    sources = repo.read_sources()
-    embedded_ids = _embedded_skill_ids(destination)
-    embedded_refs = {
-        AssetRef.plugin_skill(snapshot.package_id, skill_id).canonical
-        for skill_id in embedded_ids
-    }
-    for key in list(metadata["skills"]):
-        if (
-            key.startswith(f"skill:plugin/{snapshot.package_id}/")
-            and key not in embedded_refs
-        ):
-            metadata["skills"].pop(key)
-    for skill_id in embedded_ids:
-        standalone_ref = AssetRef.standalone_skill(skill_id).canonical
-        plugin_ref = AssetRef.plugin_skill(snapshot.package_id, skill_id).canonical
-        record = metadata["skills"].pop(standalone_ref, None) or metadata["skills"].pop(
-            skill_id, None
-        )
-        if record is None:
-            record = _default_skill_metadata(
-                destination / "skills" / skill_id,
-                tags=normalized_tags,
-            )
-        record["category"] = category
-        metadata["skills"][plugin_ref] = record
-        sources["skills"].pop(standalone_ref, None)
-        sources["skills"].pop(skill_id, None)
-
-    desired = repo.read_desired_installations()
-    plugin_prefix = f"skill:plugin/{snapshot.package_id}/"
-    for target in desired["targets"].values():
-        target["skills"] = [
-            ref
-            for ref in target.get("skills", [])
-            if not ref.startswith(plugin_prefix) or ref in embedded_refs
-        ]
-
-    if snapshot.spec.provider == "local":
-        sources["plugins"].pop(snapshot.package_id, None)
-    else:
-        sources["plugins"][snapshot.package_id] = {
-            "provider": snapshot.spec.provider,
-            "locator": snapshot.spec.locator,
-            "content_mode": "plugin_directory",
-            "policy": repo.config["defaults"]["source_policy"],
-            "resolved": {
-                "revision": snapshot.revision,
-                "upstream_sha256": snapshot.upstream_digest,
-                "upstream_paths": list(upstream_paths),
-            },
-        }
-    repo.write_metadata(metadata)
-    repo.write_sources(sources)
-    desired_changed = repo.write_desired_installations(desired)
     repo.refresh()
     changed = {"plugins", "metadata", "sources"}
     if desired_changed:
@@ -469,7 +473,7 @@ def import_plugin_snapshot(
         effects={Effect.DOCS_BUILD, Effect.CHECK},
         details={
             "plugin": snapshot.package_id,
-            "upstream_targets": sorted(snapshot.upstream_targets),
+            "upstream_targets": sorted(managed_upstream_targets),
             "embedded_skills": embedded_ids,
             "migrated_standalone_skills": sorted(duplicates),
         },
@@ -563,7 +567,11 @@ def classify_plugin_update(
     from .sources import classify_changed_paths
 
     spec = repo.require_plugin(plugin_id)
-    record = repo.read_sources()["plugins"].get(plugin_id)
+    if snapshot.package_id != spec.package_id:
+        raise PluginError(
+            f"Plugin 身份漂移：期望 {spec.package_id}，上游得到 {snapshot.package_id}"
+        )
+    record = repo.read_sources()["plugins"].get(spec.package_id)
     if record is None:
         raise PluginError(f"{plugin_id} 没有来源登记")
     resolved = record.get("resolved", {})
@@ -670,22 +678,28 @@ def update_plugin_from_snapshot(
             else:
                 shutil.copy2(source, destination)
         _sync_embedded_sidecar(stage)
-        load_plugin_spec(stage)
+        candidate_spec = load_plugin_spec(stage)
+        plan = _plan_plugin_update(
+            repo,
+            stage,
+            plugin_id=plugin_id,
+            snapshot=snapshot,
+            source_record=record,
+            candidate_spec=candidate_spec,
+        )
         repo.install_plugin_directory(stage, current.root, replace=True)
+        repo.write_metadata(plan.metadata)
+        repo.write_sources(plan.sources)
+        desired_changed = repo.write_desired_installations(plan.desired_installations)
     finally:
         shutil.rmtree(stage_parent, ignore_errors=True)
 
     repo.refresh()
-    _sync_plugin_skill_metadata(repo, plugin_id)
-    updated = dict(record)
-    updated["resolved"] = {
-        "revision": snapshot.revision,
-        "upstream_sha256": snapshot.upstream_digest,
-        "upstream_paths": list(plugin_file_paths(snapshot.root)),
-    }
-    repo.set_plugin_source_record(plugin_id, updated)
+    changed = {"plugins", "metadata", "sources"}
+    if desired_changed:
+        changed.add("desired_installations")
     return ChangeSet(
-        changed={"plugins", "metadata", "sources"},
+        changed=changed,
         effects={Effect.DOCS_BUILD, Effect.CHECK},
         details={"plugin": plugin_id, **comparison},
     )
@@ -843,6 +857,10 @@ def _local_owned_paths(spec: PluginSpec) -> tuple[str, ...]:
     return tuple(sorted(paths))
 
 
+def _relative_paths_overlap(left: str, right: str) -> bool:
+    return left == right or left.startswith(f"{right}/") or right.startswith(f"{left}/")
+
+
 def _changed_file_paths(
     local_root: Path,
     remote_root: Path,
@@ -892,29 +910,157 @@ def _sync_embedded_sidecar(root: Path) -> None:
     _write_json(path, data)
 
 
-def _sync_plugin_skill_metadata(repo: Repository, plugin_id: str) -> None:
-    spec = repo.require_plugin(plugin_id)
+def _plan_plugin_import(
+    repo: Repository,
+    staged_plugin: Path,
+    *,
+    snapshot: PluginSnapshot,
+    category: str,
+    tags: list[str],
+    duplicates: dict[str, Any],
+    upstream_paths: tuple[str, ...],
+    candidate_spec: PluginSpec,
+) -> PluginStatePlan:
     metadata = repo.read_metadata()
+    sources = repo.read_sources()
+    desired = repo.read_desired_installations()
+    plugin_id = snapshot.package_id
+    prefix = f"skill:plugin/{plugin_id}/"
+    embedded_ids = set(_embedded_skill_ids(staged_plugin))
+    embedded_refs = {
+        AssetRef.plugin_skill(plugin_id, skill_id).canonical
+        for skill_id in embedded_ids
+    }
+    for key in list(metadata["skills"]):
+        if key.startswith(prefix) and key not in embedded_refs:
+            metadata["skills"].pop(key)
+    for skill_id in sorted(embedded_ids):
+        standalone_ref = AssetRef.standalone_skill(skill_id).canonical
+        plugin_ref = AssetRef.plugin_skill(plugin_id, skill_id).canonical
+        record = metadata["skills"].pop(standalone_ref, None) or metadata["skills"].pop(
+            skill_id, None
+        )
+        generated = _default_skill_metadata(
+            staged_plugin / "skills" / skill_id,
+            tags=tags,
+        )
+        if record is None:
+            record = generated
+        record["category"] = category
+        metadata["skills"][plugin_ref] = record
+        sources["skills"].pop(standalone_ref, None)
+        sources["skills"].pop(skill_id, None)
+    _filter_removed_plugin_skills(desired, plugin_id, embedded_refs)
+
+    if snapshot.spec.provider == "local":
+        sources["plugins"].pop(plugin_id, None)
+    else:
+        sources["plugins"][plugin_id] = {
+            "provider": snapshot.spec.provider,
+            "locator": snapshot.spec.locator,
+            "content_mode": "plugin_directory",
+            "policy": repo.config["defaults"]["source_policy"],
+            "resolved": {
+                "revision": snapshot.revision,
+                "upstream_sha256": snapshot.upstream_digest,
+                "upstream_paths": list(upstream_paths),
+            },
+        }
+    _validate_planned_desired(repo, desired, candidate_spec)
+    return PluginStatePlan(
+        metadata=metadata,
+        sources=sources,
+        desired_installations=desired,
+        duplicate_skill_removals=tuple(entry.path for entry in duplicates.values()),
+    )
+
+
+def _plan_plugin_update(
+    repo: Repository,
+    staged_plugin: Path,
+    *,
+    plugin_id: str,
+    snapshot: PluginSnapshot,
+    source_record: dict[str, Any],
+    candidate_spec: PluginSpec,
+) -> PluginStatePlan:
+    metadata = repo.read_metadata()
+    sources = repo.read_sources()
+    desired = repo.read_desired_installations()
     prefix = f"skill:plugin/{plugin_id}/"
     existing = {
         key.removeprefix(prefix): value
         for key, value in metadata["skills"].items()
         if key.startswith(prefix)
     }
-    actual = set(_embedded_skill_ids(spec.root))
+    actual = set(_embedded_skill_ids(staged_plugin))
     for skill_id in set(existing) - actual:
         metadata["skills"].pop(f"{prefix}{skill_id}", None)
     template = next(iter(existing.values()), None)
-    for skill_id in actual - set(existing):
+    for skill_id in sorted(actual):
+        current = existing.get(skill_id)
+        if current is not None:
+            _default_skill_metadata(
+                staged_plugin / "skills" / skill_id,
+                tags=list(current.get("tags", [])),
+            )
+            continue
         if template is None:
             raise PluginError(f"{plugin_id} 新增 {skill_id}，但没有可继承的 metadata")
         record = _default_skill_metadata(
-            spec.root / "skills" / skill_id,
+            staged_plugin / "skills" / skill_id,
             tags=list(template.get("tags", [])),
         )
         record["category"] = template.get("category", "ai-building")
         metadata["skills"][f"{prefix}{skill_id}"] = record
-    repo.write_metadata(metadata)
+    embedded_refs = {
+        AssetRef.plugin_skill(plugin_id, skill_id).canonical for skill_id in actual
+    }
+    _filter_removed_plugin_skills(desired, plugin_id, embedded_refs)
+    updated = dict(source_record)
+    updated["resolved"] = {
+        "revision": snapshot.revision,
+        "upstream_sha256": snapshot.upstream_digest,
+        "upstream_paths": list(plugin_file_paths(snapshot.root)),
+    }
+    sources["plugins"][plugin_id] = updated
+    _validate_planned_desired(repo, desired, candidate_spec)
+    return PluginStatePlan(
+        metadata=metadata,
+        sources=sources,
+        desired_installations=desired,
+    )
+
+
+def _filter_removed_plugin_skills(
+    desired: dict[str, Any],
+    plugin_id: str,
+    embedded_refs: set[str],
+) -> None:
+    plugin_prefix = f"skill:plugin/{plugin_id}/"
+    for target in desired["targets"].values():
+        target["skills"] = [
+            ref
+            for ref in target.get("skills", [])
+            if not ref.startswith(plugin_prefix) or ref in embedded_refs
+        ]
+
+
+def _validate_planned_desired(
+    repo: Repository,
+    desired: dict[str, Any],
+    candidate_spec: PluginSpec,
+) -> None:
+    from .installation import InstallationError, require_valid_desired_installations
+
+    try:
+        require_valid_desired_installations(
+            repo,
+            desired,
+            plugin_overrides={candidate_spec.package_id: candidate_spec},
+        )
+    except InstallationError as exc:
+        raise PluginError(f"Plugin 候选安装状态无效：{exc}") from exc
 
 
 def _standalone_duplicates(repo: Repository, plugin_root: Path) -> dict[str, Any]:

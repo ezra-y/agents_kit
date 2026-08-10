@@ -8,12 +8,155 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from .models import AssetRef, ChangeSet, Effect
+from .models import AssetRef, ChangeSet, Effect, PluginSpec
 from .repository import Repository
 
 
 class InstallationError(RuntimeError):
     pass
+
+
+SUPPORTED_PLUGIN_DISTRIBUTIONS = {
+    "claude": frozenset({"skills-dir"}),
+    "codex": frozenset({"marketplace"}),
+}
+
+
+def validate_desired_installations(
+    repo: Repository,
+    desired: dict[str, Any],
+    *,
+    inventory: dict[str, Any] | None = None,
+    plugin_overrides: dict[str, PluginSpec] | None = None,
+) -> dict[str, Any]:
+    inventory = inventory or repo.skill_registry()
+    plugin_inventory = repo.plugin_inventory()
+    plugin_inventory.update(plugin_overrides or {})
+    problems: list[str] = []
+    missing: list[str] = []
+    destinations: dict[tuple[str, str], str] = {}
+    count = 0
+    targets = desired.get("targets")
+    if not isinstance(targets, dict):
+        return {
+            "count": 0,
+            "missing": [],
+            "problems": ["desired-installations.json 缺 targets 对象"],
+        }
+    missing_targets = sorted(set(SUPPORTED_PLUGIN_DISTRIBUTIONS) - set(targets))
+    if missing_targets:
+        problems.append(
+            "desired-installations.json 缺目标：" + ", ".join(missing_targets)
+        )
+    for target, record in targets.items():
+        if target not in SUPPORTED_PLUGIN_DISTRIBUTIONS or not isinstance(record, dict):
+            problems.append(f"desired-installations.json target 无效：{target}")
+            continue
+        if record.get("scope") != "user":
+            problems.append(f"desired-installations.json {target}.scope 只支持 user")
+        skills = record.get("skills", [])
+        plugin_items = record.get("plugins", [])
+        if not isinstance(skills, list) or not isinstance(plugin_items, list):
+            problems.append(f"desired-installations.json {target} 清单无效")
+            continue
+        seen_skills: set[str] = set()
+        for raw_ref in skills:
+            count += 1
+            if not isinstance(raw_ref, str):
+                missing.append(str(raw_ref))
+                continue
+            try:
+                ref = AssetRef.parse(raw_ref)
+            except ValueError:
+                missing.append(raw_ref)
+                continue
+            entry = inventory.get(ref.canonical)
+            if ref.kind != "skill" or entry is None:
+                missing.append(raw_ref)
+                continue
+            if ref.canonical in seen_skills:
+                problems.append(f"{target} 重复声明 {ref.canonical}")
+            seen_skills.add(ref.canonical)
+            if entry.owner_kind == "plugin":
+                plugin = plugin_inventory.get(entry.owner_id or "")
+                if plugin is None:
+                    missing.append(raw_ref)
+                    continue
+                embedded = plugin.embedded_skills.get(entry.name)
+                target_spec = embedded.standalone.get(target) if embedded else None
+                if target_spec is None or target_spec.mode != "self_contained":
+                    problems.append(f"{raw_ref}: {target} 不允许脱离 Plugin 单独安装")
+            destination = (target, entry.name)
+            previous = destinations.get(destination)
+            if previous and previous != ref.canonical:
+                problems.append(f"{target} 投射路径冲突：{previous} 与 {ref.canonical}")
+            destinations[destination] = ref.canonical
+
+        seen_plugins: set[str] = set()
+        for item in plugin_items:
+            count += 1
+            if not isinstance(item, dict):
+                missing.append(str(item))
+                continue
+            raw_ref = item.get("ref")
+            try:
+                ref = AssetRef.parse(str(raw_ref))
+            except ValueError:
+                missing.append(str(raw_ref))
+                continue
+            if ref.kind != "plugin" or ref.local_id not in plugin_inventory:
+                missing.append(str(raw_ref))
+                continue
+            if ref.canonical in seen_plugins:
+                problems.append(f"{target} 重复声明 {ref.canonical}")
+            seen_plugins.add(ref.canonical)
+            distribution = item.get("distribution")
+            supported = SUPPORTED_PLUGIN_DISTRIBUTIONS[target]
+            if distribution not in supported:
+                problems.append(
+                    f"{ref.canonical}: {target} 不支持 distribution "
+                    f"{distribution!r}，允许值为 {', '.join(sorted(supported))}"
+                )
+            plugin = plugin_inventory[ref.local_id]
+            target_spec = plugin.targets.get(target)
+            if target_spec is None or target_spec.support not in {"full", "partial"}:
+                problems.append(
+                    f"{ref.canonical}: {target} 支持状态为 "
+                    f"{target_spec.support if target_spec else 'missing'}，不能安装"
+                )
+            destination = (target, ref.local_id)
+            previous = destinations.get(destination)
+            if previous and previous != ref.canonical:
+                problems.append(f"{target} 投射路径冲突：{previous} 与 {ref.canonical}")
+            destinations[destination] = ref.canonical
+            embedded_refs = {
+                AssetRef.plugin_skill(ref.local_id, skill_id).canonical
+                for skill_id in plugin.embedded_skills
+            }
+            for duplicate in sorted(embedded_refs.intersection(seen_skills)):
+                problems.append(f"{target} 同时安装 {ref.canonical} 和内嵌 {duplicate}")
+    for raw_ref in sorted(set(missing)):
+        problems.append(f"desired-installations.json 引用了不存在的资产：{raw_ref}")
+    return {
+        "count": count,
+        "missing": sorted(set(missing)),
+        "problems": list(dict.fromkeys(problems)),
+    }
+
+
+def require_valid_desired_installations(
+    repo: Repository,
+    desired: dict[str, Any],
+    *,
+    plugin_overrides: dict[str, PluginSpec] | None = None,
+) -> None:
+    validation = validate_desired_installations(
+        repo,
+        desired,
+        plugin_overrides=plugin_overrides,
+    )
+    if validation["problems"]:
+        raise InstallationError("\n".join(validation["problems"]))
 
 
 def enable_global(
@@ -34,6 +177,7 @@ def enable_global(
         if entry.qualified_id not in skills:
             skills.append(entry.qualified_id)
             changed = True
+    require_valid_desired_installations(repo, desired)
     if changed:
         repo.write_desired_installations(desired)
     dependency_refs = [
@@ -84,6 +228,7 @@ def disable_global(
         if updated != record.get("skills", []):
             record["skills"] = updated
             changed = True
+    require_valid_desired_installations(repo, desired)
     if changed:
         repo.write_desired_installations(desired)
     return ChangeSet(
@@ -109,8 +254,9 @@ def global_plan(
 ) -> dict[str, Any]:
     desired = repo.read_desired_installations()
     actions: list[dict[str, str]] = []
-    conflicts: list[str] = []
-    missing: list[str] = []
+    validation = validate_desired_installations(repo, desired)
+    conflicts: list[str] = list(validation["problems"])
+    missing: list[str] = list(validation["missing"])
     wanted_by_target: dict[str, list[str]] = {}
     explicit_by_target: dict[str, list[str]] = {}
     dependencies_by_target: dict[str, list[str]] = {}
@@ -269,8 +415,13 @@ def global_plan(
     marketplace_actions = _codex_marketplace_plan(
         repo,
         desired["targets"].get("codex", {}),
-        enabled=target_filter in {None, "codex"},
+        enabled=not conflicts and target_filter in {None, "codex"},
     )
+    desired_plugins_by_target = {
+        target: _desired_plugin_ids(record, target=target)
+        for target, record in desired["targets"].items()
+        if isinstance(record, dict)
+    }
     return {
         "wanted": sorted(
             {
@@ -305,10 +456,11 @@ def global_plan(
             {ref for refs in dependencies_by_target.values() for ref in refs}
         ),
         "dependencies_by_target": dependencies_by_target,
-        "missing": missing,
+        "missing": sorted(set(missing)),
         "actions": actions,
         "marketplace_actions": marketplace_actions,
-        "conflicts": conflicts,
+        "desired_plugins_by_target": desired_plugins_by_target,
+        "conflicts": list(dict.fromkeys(conflicts)),
     }
 
 
@@ -323,19 +475,49 @@ def apply_global(
         raise InstallationError("active 中存在缺失技能：" + ", ".join(plan["missing"]))
     if plan["conflicts"]:
         raise InstallationError("\n".join(plan["conflicts"]))
+    execution = {
+        "status": "planned" if dry_run else "complete",
+        "targets": {},
+    }
     if not dry_run:
-        for action in plan["actions"]:
-            target = Path(action["target"])
-            if action["action"] == "unlink":
-                target.unlink(missing_ok=True)
-                continue
-            target.parent.mkdir(parents=True, exist_ok=True)
-            if target.is_symlink():
-                target.unlink()
-            target.symlink_to(action["source"])
-        for action in plan["marketplace_actions"]:
-            _execute_marketplace_action(action)
-        _write_receipt(repo, plan)
+        failures: list[str] = []
+        platforms = sorted(
+            {
+                action["platform"]
+                for action in [*plan["actions"], *plan["marketplace_actions"]]
+                if action.get("platform")
+            }
+        )
+        for platform in platforms:
+            target_result = {
+                "status": "complete",
+                "completed": [],
+            }
+            execution["targets"][platform] = target_result
+            try:
+                for action in plan["actions"]:
+                    if action.get("platform") != platform:
+                        continue
+                    _execute_link_action(action)
+                    target_result["completed"].append(_public_action(action))
+                for action in plan["marketplace_actions"]:
+                    if action.get("platform") != platform:
+                        continue
+                    _execute_marketplace_action(action)
+                    target_result["completed"].append(_public_action(action))
+            except (OSError, RuntimeError) as exc:
+                target_result["status"] = "failed"
+                target_result["error"] = str(exc)
+                failures.append(f"{platform}: {exc}")
+        if failures:
+            execution["status"] = (
+                "partial"
+                if any(result["completed"] for result in execution["targets"].values())
+                else "failed"
+            )
+        _write_receipt(repo, plan, execution=execution)
+        if failures:
+            raise InstallationError("安装未全部完成：\n" + "\n".join(failures))
     return ChangeSet(
         details={
             "dry_run": dry_run,
@@ -349,6 +531,7 @@ def apply_global(
             ),
             "actions": plan["actions"],
             "marketplace_actions": plan["marketplace_actions"],
+            "execution": execution,
         }
     )
 
@@ -567,6 +750,8 @@ def _codex_marketplace_plan(
     for item in target_state.get("plugins", []):
         if not isinstance(item, dict):
             continue
+        if item.get("distribution") != "marketplace":
+            continue
         try:
             ref = AssetRef.parse(str(item.get("ref")))
         except ValueError:
@@ -574,19 +759,12 @@ def _codex_marketplace_plan(
         if ref.kind == "plugin":
             desired_ids.add(ref.local_id)
 
+    previous_desired_ids = _previous_codex_desired_plugins(repo)
+    if not desired_ids and not previous_desired_ids:
+        return []
     executable = shutil.which("codex")
     if executable is None:
-        return (
-            [
-                {
-                    "action": "manual",
-                    "platform": "codex",
-                    "reason": "找不到 codex CLI",
-                }
-            ]
-            if desired_ids
-            else []
-        )
+        raise InstallationError("无法探测 Codex Plugin 状态：找不到 codex CLI")
     marketplace_name = "agents-kit"
     marketplace_path = repo.root / ".agents/plugins/marketplace.json"
     if marketplace_path.is_file():
@@ -598,14 +776,14 @@ def _codex_marketplace_plan(
             )
         except (OSError, json.JSONDecodeError):
             pass
-    marketplaces = _run_json(
-        [executable, "plugin", "marketplace", "list", "--json"],
-        fallback={"marketplaces": []},
-    )
+    marketplaces = _run_json([executable, "plugin", "marketplace", "list", "--json"])
+    marketplace_items = marketplaces.get("marketplaces")
+    if not isinstance(marketplace_items, list):
+        raise InstallationError(
+            "Codex Marketplace 状态格式不兼容：缺 marketplaces 数组"
+        )
     configured = {
-        item.get("name")
-        for item in marketplaces.get("marketplaces", [])
-        if isinstance(item, dict)
+        item.get("name") for item in marketplace_items if isinstance(item, dict)
     }
     actions: list[dict[str, Any]] = []
     if desired_ids and marketplace_name not in configured:
@@ -626,13 +804,13 @@ def _codex_marketplace_plan(
             }
         )
 
-    plugin_state = _run_json(
-        [executable, "plugin", "list", "--json"],
-        fallback={"installed": []},
-    )
+    plugin_state = _run_json([executable, "plugin", "list", "--json"])
+    installed_items = plugin_state.get("installed")
+    if not isinstance(installed_items, list):
+        raise InstallationError("Codex Plugin 状态格式不兼容：缺 installed 数组")
     installed = {
         str(item.get("name")): item
-        for item in plugin_state.get("installed", [])
+        for item in installed_items
         if isinstance(item, dict)
         and item.get("marketplaceName") == marketplace_name
         and item.get("installed")
@@ -672,21 +850,62 @@ def _codex_marketplace_plan(
     return actions
 
 
-def _run_json(command: list[str], *, fallback: dict[str, Any]) -> dict[str, Any]:
-    result = subprocess.run(
-        command,
-        capture_output=True,
-        text=True,
-        check=False,
-        timeout=30,
-    )
+def _desired_plugin_ids(record: dict[str, Any], *, target: str) -> list[str]:
+    found: set[str] = set()
+    for item in record.get("plugins", []):
+        if not isinstance(item, dict) or item.get(
+            "distribution"
+        ) not in SUPPORTED_PLUGIN_DISTRIBUTIONS.get(target, ()):
+            continue
+        try:
+            ref = AssetRef.parse(str(item.get("ref")))
+        except ValueError:
+            continue
+        if ref.kind == "plugin":
+            found.add(ref.local_id)
+    return sorted(found)
+
+
+def _run_json(command: list[str]) -> dict[str, Any]:
+    try:
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=30,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise InstallationError(
+            f"Codex 状态探测失败（{' '.join(command)}）：{exc}"
+        ) from exc
     if result.returncode:
-        return fallback
+        message = result.stderr.strip() or result.stdout.strip()
+        raise InstallationError(f"Codex 状态探测失败（{' '.join(command)}）：{message}")
     try:
         data = json.loads(result.stdout)
-    except json.JSONDecodeError:
-        return fallback
-    return data if isinstance(data, dict) else fallback
+    except json.JSONDecodeError as exc:
+        raise InstallationError(
+            f"Codex 状态探测返回了无效 JSON（{' '.join(command)}）"
+        ) from exc
+    if not isinstance(data, dict):
+        raise InstallationError(f"Codex 状态探测格式不兼容（{' '.join(command)}）")
+    return data
+
+
+def _execute_link_action(action: dict[str, Any]) -> None:
+    target = Path(action["target"])
+    if action["action"] == "unlink":
+        target.unlink(missing_ok=True)
+        return
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if target.is_symlink():
+        target.unlink()
+    target.symlink_to(action["source"])
+
+
+def _public_action(action: dict[str, Any]) -> dict[str, Any]:
+    return {key: value for key, value in action.items() if key != "command"}
 
 
 def _execute_marketplace_action(action: dict[str, Any]) -> None:
@@ -709,10 +928,10 @@ def _execute_marketplace_action(action: dict[str, Any]) -> None:
         )
 
 
-def _write_receipt(repo: Repository, plan: dict[str, Any]) -> None:
+def _receipt_path(repo: Repository) -> Path | None:
     explicit_state_home = os.environ.get("AGENTS_KIT_STATE_HOME")
     if explicit_state_home is None and not (repo.root / ".git").is_dir():
-        return
+        return None
     state_home = Path(
         explicit_state_home
         or os.environ.get(
@@ -720,16 +939,54 @@ def _write_receipt(repo: Repository, plan: dict[str, Any]) -> None:
             str(Path.home() / ".local/state"),
         )
     )
-    path = state_home / "agents-kit/receipts.json"
+    return state_home / "agents-kit/receipts.json"
+
+
+def _previous_codex_desired_plugins(repo: Repository) -> set[str]:
+    path = _receipt_path(repo)
+    if path is None or not path.is_file():
+        return set()
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return set()
+    desired = data.get("desired_plugins_by_target", {})
+    if isinstance(desired, dict) and isinstance(desired.get("codex"), list):
+        return {
+            str(plugin_id)
+            for plugin_id in desired["codex"]
+            if isinstance(plugin_id, str)
+        }
+    legacy: set[str] = set()
+    for action in data.get("marketplace_actions", []):
+        if not isinstance(action, dict) or not isinstance(action.get("plugin"), str):
+            continue
+        if action.get("action") == "plugin_add":
+            legacy.add(action["plugin"])
+        elif action.get("action") == "plugin_remove":
+            legacy.discard(action["plugin"])
+    return legacy
+
+
+def _write_receipt(
+    repo: Repository,
+    plan: dict[str, Any],
+    *,
+    execution: dict[str, Any],
+) -> None:
+    path = _receipt_path(repo)
+    if path is None:
+        return
     path.parent.mkdir(parents=True, exist_ok=True)
     data = {
-        "schema_version": 1,
+        "schema_version": 2,
         "repository": str(repo.root),
-        "actions": plan["actions"],
+        "desired_plugins_by_target": plan.get("desired_plugins_by_target", {}),
+        "actions": [_public_action(action) for action in plan["actions"]],
         "marketplace_actions": [
-            {key: value for key, value in action.items() if key != "command"}
-            for action in plan["marketplace_actions"]
+            _public_action(action) for action in plan["marketplace_actions"]
         ],
+        "execution": execution,
     }
     temporary = path.with_name(f".{path.name}.tmp")
     temporary.write_text(

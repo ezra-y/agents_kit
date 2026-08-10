@@ -14,6 +14,13 @@ from .models import parse_skill_frontmatter
 from .repository import Repository
 
 RECLABEL = {5: "必留", 4: "值得留", 3: "看情况", 2: "可砍", 1: "建议删"}
+ATTACHMENT_IGNORES = {
+    ".git",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+}
 
 
 def esc(value: Any) -> str:
@@ -307,7 +314,10 @@ def collect_rows(repo: Repository) -> list[dict[str, Any]]:
         attachments = sorted(
             path.relative_to(entry.path).as_posix()
             for path in entry.path.rglob("*")
-            if path.is_file() and path.name != "SKILL.md"
+            if path.is_file()
+            and path.name != "SKILL.md"
+            and path.suffix != ".pyc"
+            and not ATTACHMENT_IGNORES.intersection(path.relative_to(entry.path).parts)
         )
         local_metadata = repo.metadata_record(ref) or {}
         source_record = repo.source_record(ref)

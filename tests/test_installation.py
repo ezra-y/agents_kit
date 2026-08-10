@@ -1,4 +1,5 @@
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -122,6 +123,68 @@ class InstallationTests(unittest.TestCase):
             apply_global(self.repo)
 
         self.assertTrue(conflict.is_dir())
+
+    def test_global_apply_records_partial_target_execution(self):
+        link = self.global_one / "alpha"
+        plan = {
+            "missing": [],
+            "conflicts": [],
+            "actions": [
+                {
+                    "action": "link",
+                    "kind": "skill",
+                    "platform": "claude",
+                    "ref": "skill:standalone/alpha",
+                    "target": str(link),
+                    "source": str(self.repo.require_skill("alpha").path),
+                }
+            ],
+            "marketplace_actions": [
+                {
+                    "action": "plugin_add",
+                    "platform": "codex",
+                    "plugin": "example-plugin",
+                    "marketplace": "agents-kit",
+                    "command": ["codex", "plugin", "add", "example-plugin"],
+                }
+            ],
+            "desired_plugins_by_target": {
+                "claude": [],
+                "codex": ["example-plugin"],
+            },
+        }
+        state_home = self.root / "state"
+        with (
+            patch(
+                "scripts.agents_kit.installation.global_plan",
+                return_value=plan,
+            ),
+            patch(
+                "scripts.agents_kit.installation._execute_marketplace_action",
+                side_effect=InstallationError("codex failed"),
+            ),
+            patch.dict(
+                os.environ,
+                {"AGENTS_KIT_STATE_HOME": str(state_home)},
+            ),
+            self.assertRaisesRegex(InstallationError, "codex failed"),
+        ):
+            apply_global(self.repo)
+
+        self.assertTrue(link.is_symlink())
+        receipt = json.loads(
+            (state_home / "agents-kit/receipts.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(receipt["schema_version"], 2)
+        self.assertEqual(receipt["execution"]["status"], "partial")
+        self.assertEqual(
+            receipt["execution"]["targets"]["claude"]["status"],
+            "complete",
+        )
+        self.assertEqual(
+            receipt["execution"]["targets"]["codex"]["status"],
+            "failed",
+        )
 
     def test_global_plan_expands_dependencies_from_hand_edited_active(self):
         # 直接手改 active.txt（不经过 enable）也必须得到依赖

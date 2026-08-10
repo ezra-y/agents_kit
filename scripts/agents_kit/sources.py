@@ -156,7 +156,7 @@ def classify_changed_paths(
             or name in {".mcp.json", ".app.json", ".lsp.json", "plugin.json"}
         ):
             classes.add(RiskClass.INSTRUCTIONAL)
-        elif upper_name.startswith(("README", "LICENSE", "CHANGELOG")):
+        elif upper_name.startswith(("LICENSE", "CHANGELOG")):
             classes.add(RiskClass.DOCS_ONLY)
         else:
             classes.add(RiskClass.UNKNOWN)

@@ -192,9 +192,10 @@ agents-kit plugin update <Plugin> --yes
 
 默认策略是 `review`。检查结果分别报告 `merge_state`、`risk_class` 和
 `decision`。只有 `upstream_only + docs_only` 可由 `--auto-docs` 自动应用。
-`SKILL.md`、Prompt、Manifest、Hook、MCP、脚本、二进制和未知文件即使没有
-本地冲突也要人工确认。完整 Plugin 更新复制整个上游子树，再覆盖 sidecar 声明的
-本地 authority 路径；组件 Inventory 只用于识别和审核，不决定保留哪些文件。
+当前只有 License 和 Changelog 归入 `docs_only`；README、`SKILL.md`、Prompt、
+Manifest、Hook、MCP、脚本、二进制和未知文件即使没有本地冲突也要人工确认。
+完整 Plugin 更新复制整个上游子树，再覆盖 sidecar 声明的本地 authority 路径；
+组件 Inventory 只用于识别和审核，不决定保留哪些文件。
 
 ### 本机自动同步
 

@@ -21,10 +21,44 @@
       ],
       "properties": {
         "claude": {
-          "$ref": "#/$defs/target"
+          "allOf": [
+            {
+              "$ref": "#/$defs/target"
+            },
+            {
+              "properties": {
+                "plugins": {
+                  "items": {
+                    "properties": {
+                      "distribution": {
+                        "const": "skills-dir"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
         },
         "codex": {
-          "$ref": "#/$defs/target"
+          "allOf": [
+            {
+              "$ref": "#/$defs/target"
+            },
+            {
+              "properties": {
+                "plugins": {
+                  "items": {
+                    "properties": {
+                      "distribution": {
+                        "const": "marketplace"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
         }
       }
     }

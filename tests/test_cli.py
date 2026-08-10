@@ -225,7 +225,7 @@ class CliTests(unittest.TestCase):
         self.assertTrue((self.root / "skills/tools/alpha/references/guide.md").exists())
         self.assertFalse((self.root / "skills/tools/alpha/payload.bin").is_file())
 
-    def test_source_update_auto_docs_applies_readme_only_change(self):
+    def test_source_update_auto_docs_requires_review_for_readme_change(self):
         self.import_git_source()
         (self.source / "README.md").write_text("Upstream docs\n", encoding="utf-8")
         self.commit_source("docs update")
@@ -243,10 +243,36 @@ class CliTests(unittest.TestCase):
 
         result = payload["results"][0]
         self.assertEqual(result["merge_state"], "upstream_only")
+        self.assertEqual(result["risk_class"], "unknown")
+        self.assertEqual(result["decision"], "review_required")
+        self.assertFalse(result["applied"])
+        self.assertFalse((self.root / "skills/tools/alpha/README.md").is_file())
+
+    def test_source_update_auto_docs_applies_changelog_only_change(self):
+        self.import_git_source()
+        (self.source / "CHANGELOG.md").write_text(
+            "Upstream changelog\n",
+            encoding="utf-8",
+        )
+        self.commit_source("changelog update")
+
+        payload = json.loads(
+            self.run_cli(
+                "source",
+                "update",
+                "alpha",
+                "--auto-docs",
+                "--yes",
+                "--json",
+            ).stdout
+        )
+
+        result = payload["results"][0]
+        self.assertEqual(result["merge_state"], "upstream_only")
         self.assertEqual(result["risk_class"], "docs_only")
         self.assertEqual(result["decision"], "auto_apply")
         self.assertTrue(result["applied"])
-        self.assertTrue((self.root / "skills/tools/alpha/README.md").is_file())
+        self.assertTrue((self.root / "skills/tools/alpha/CHANGELOG.md").is_file())
 
     def test_source_check_ignores_local_only_change(self):
         self.import_git_source()

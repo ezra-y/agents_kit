@@ -120,7 +120,7 @@ def build_parser() -> argparse.ArgumentParser:
     source_update.add_argument(
         "--auto-docs",
         action="store_true",
-        help="只自动应用无本地冲突的纯 README/License/Changelog 变化",
+        help="只自动应用无本地冲突的 License/Changelog 变化",
     )
     source_update.add_argument("--yes", action="store_true")
     _json_flag(source_update)
@@ -1118,6 +1118,13 @@ def command_plugin_enable(args: argparse.Namespace, context: Context) -> dict[st
         None,
     )
     changed = existing != item
+    if existing is not None:
+        current.remove(existing)
+    current.append(item)
+    try:
+        installation.require_valid_desired_installations(context.repo, desired)
+    except InstallationError as exc:
+        raise CommandError(str(exc)) from exc
     if args.dry_run:
         return {
             "dry_run": True,
@@ -1126,9 +1133,6 @@ def command_plugin_enable(args: argparse.Namespace, context: Context) -> dict[st
             "distribution": distribution,
             "changed": changed,
         }
-    if existing is not None:
-        current.remove(existing)
-    current.append(item)
     with context.repo.write_lock():
         context.repo.write_desired_installations(desired)
         marketplace.build(context.repo)
@@ -1155,6 +1159,11 @@ def command_plugin_disable(
         item for item in current if not isinstance(item, dict) or item.get("ref") != ref
     ]
     changed = updated != current
+    desired["targets"][args.target]["plugins"] = updated
+    try:
+        installation.require_valid_desired_installations(context.repo, desired)
+    except InstallationError as exc:
+        raise CommandError(str(exc)) from exc
     if args.dry_run:
         return {
             "dry_run": True,
@@ -1162,7 +1171,6 @@ def command_plugin_disable(
             "target": args.target,
             "changed": changed,
         }
-    desired["targets"][args.target]["plugins"] = updated
     with context.repo.write_lock():
         context.repo.write_desired_installations(desired)
     change = ChangeSet(

@@ -6,8 +6,12 @@ from pathlib import Path
 from typing import Any
 
 from . import docs, marketplace, mcps, plugins
-from .installation import InstallationError, global_plan
-from .models import AssetRef, CheckReport, ContentMode, parse_skill_frontmatter
+from .installation import (
+    InstallationError,
+    global_plan,
+    validate_desired_installations,
+)
+from .models import CheckReport, ContentMode, parse_skill_frontmatter
 from .repository import Repository, RepositoryError
 from .taxonomy import TaxonomyError, validate_tags
 
@@ -95,80 +99,15 @@ def _check_desired_installations(
     repo: Repository, inventory: dict[str, Any], report: CheckReport
 ) -> None:
     desired = repo.read_desired_installations()
-    missing: list[str] = []
-    destinations: dict[tuple[str, str], str] = {}
-    count = 0
-    for target, record in desired["targets"].items():
-        for raw_ref in record.get("skills", []):
-            count += 1
-            try:
-                ref = AssetRef.parse(raw_ref)
-            except ValueError:
-                missing.append(raw_ref)
-                continue
-            entry = inventory.get(ref.canonical)
-            if entry is None:
-                missing.append(raw_ref)
-                continue
-            if entry.owner_kind == "plugin":
-                plugin = repo.require_plugin(entry.owner_id or "")
-                embedded = plugin.embedded_skills.get(entry.name)
-                target_spec = embedded.standalone.get(target) if embedded else None
-                if target_spec is None or target_spec.mode != "self_contained":
-                    report.problems.append(
-                        f"{raw_ref}: {target} 不允许脱离 Plugin 单独安装"
-                    )
-            destination = (target, entry.name)
-            previous = destinations.get(destination)
-            if previous and previous != raw_ref:
-                report.problems.append(
-                    f"{target} 投射路径冲突：{previous} 与 {raw_ref}"
-                )
-            destinations[destination] = raw_ref
-        for item in record.get("plugins", []):
-            count += 1
-            raw_ref = item.get("ref") if isinstance(item, dict) else None
-            try:
-                ref = AssetRef.parse(str(raw_ref))
-            except ValueError:
-                missing.append(str(raw_ref))
-                continue
-            if ref.kind != "plugin" or ref.local_id not in repo.plugin_inventory():
-                missing.append(str(raw_ref))
-                continue
-            plugin = repo.require_plugin(ref.local_id)
-            target_spec = plugin.targets.get(target)
-            if target_spec is None or target_spec.support in {
-                "review",
-                "unsupported",
-            }:
-                report.problems.append(
-                    f"{raw_ref}: {target} 支持状态为 "
-                    f"{target_spec.support if target_spec else 'missing'}，不能安装"
-                )
-            destination = (target, ref.local_id)
-            previous = destinations.get(destination)
-            if previous and previous != ref.canonical:
-                report.problems.append(
-                    f"{target} 投射路径冲突：{previous} 与 {ref.canonical}"
-                )
-            destinations[destination] = ref.canonical
-            embedded_refs = {
-                AssetRef.plugin_skill(ref.local_id, skill_id).canonical
-                for skill_id in plugin.embedded_skills
-            }
-            duplicates = embedded_refs.intersection(record.get("skills", []))
-            for duplicate in sorted(duplicates):
-                report.problems.append(
-                    f"{target} 同时安装 {ref.canonical} 和内嵌 {duplicate}"
-                )
-    for raw_ref in sorted(set(missing)):
-        report.problems.append(
-            f"desired-installations.json 引用了不存在的资产：{raw_ref}"
-        )
+    validation = validate_desired_installations(
+        repo,
+        desired,
+        inventory=inventory,
+    )
+    report.problems.extend(validation["problems"])
     report.sections["desired_installations"] = {
-        "count": count,
-        "missing": sorted(set(missing)),
+        "count": validation["count"],
+        "missing": validation["missing"],
     }
 
 
