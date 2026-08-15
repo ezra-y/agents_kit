@@ -6,6 +6,10 @@
 
 <p align="center"><strong>看清你的 AI agent 每一轮到底做了什么——每次调用、每个工具、每个 token。</strong></p>
 
+<p align="center">界面与交互基于 <a href="https://github.com/deepseek-ai/deepseek-harness">DeepSeek Harness</a> 的轨迹视图。</p>
+
+<hr>
+
 `agent-trajectory` 把 Claude Code 或 Codex 会话日志（其他宿主可先转换成
 `agent-trajectory/v1` JSON）变成一个轨迹查看器：逐轮的工具调用流水账（参数、结果、耗时、
 状态）、可缩放的时间轴、上下文窗口用量曲线，以及可选的**教学档**——由 AI
@@ -68,12 +72,46 @@ parse_trajectory.py ──► 轨迹 JSON (agent-trajectory/v1)
 | Codex | `~/.codex/sessions/**/rollout-*.jsonl`（按 cwd 匹配） | `$CODEX_HOME` |
 | 任意文件 | — | `--session <path>` / `$AGENT_TRAJECTORY_SESSION` |
 
-## 归一化 schema 与新增适配器
+## 归一化 schema（`agent-trajectory/v1`）
 
-事件结构见 [README.md](README.md#the-normalized-schema-agent-trajectoryv1)。
-新增宿主三步：在 `parse_trajectory.py` 里写 `parse_<host>()`（参考现有两个
-适配器，各约 100 行）、按需注册进 `discover()`、在 `tests/test_parse.py`
-加一个 fixture 测试。查看器、实时服务、注解、导出全部无需改动。
+```jsonc
+{
+  "schema": "agent-trajectory/v1",
+  "host": "claude-code",
+  "session": { "id": "...", "path": "...", "cwd": "...", "title": "..." },
+  "context_window": 200000,          // 宿主报告该值时使用，单位为 token
+  "turns": [{
+    "index": 1,
+    "user_text": "...",              // 用户提出的问题
+    "started": 1755200000000, "ended": 1755200600000,
+    "subagent_events": 0,            // 旁路流量只计数，不展开
+    "events": [{
+      "id": "t1e3",                  // 注解使用的稳定锚点
+      "kind": "tool",                // tool | assistant | thinking | user_note
+                                     // | context | system | compaction
+      "ts": 1755200001000,
+      "tool": "Bash", "args": "{...}", "result": "...",
+      "status": "ok",                // ok | error | null（没有记录结果）
+      "duration_ms": 2000,
+      "context_tokens": 129097       // 本次请求后的上下文用量
+    }],
+    "stats": { "events": 20, "tool_calls": 17, "errors": 1,
+               "duration_ms": 681000, "context_end": 129097 }
+  }]
+}
+```
+
+注解是独立的 JSON，以轮次索引和事件 ID 为键。准确格式和真实性规则见
+`SKILL.md`：注解必须基于解析出的事件，不能掩盖失败。
+
+## 新增宿主适配器
+
+1. 在 `parse_trajectory.py` 中编写返回上述 schema 的 `parse_<host>(path)`。
+   可以参考各约 100 行的 `parse_claude` 和 `parse_codex`。
+2. 如果可以自动发现会话，在 `discover()` 中注册适配器。
+3. 在 `tests/test_parse.py` 中添加一个 fixture 测试。
+
+查看器、实时服务、注解和导出无需修改。
 
 ## 设计规范
 
@@ -81,16 +119,13 @@ parse_trajectory.py ──► 轨迹 JSON (agent-trajectory/v1)
 （MCP / Shell / Skill / File / Web / Agent）在明暗两套模式下都通过了
 色盲安全与对比度校验，且类别颜色永远伴随文字标签出现。
 
-## 开发
+## 致谢
 
-```sh
-python3 -m unittest discover -s tests   # 运行全部测试
-```
-
-几条用血泪换来的工程决策，记在 [README.md](README.md#development) 的
-Development 一节：不用无限循环 CSS 动画（会卡死内嵌预览的截图管线）、
-时间轴用虚拟化 canvas（超宽单层会拖垮合成器）、空闲时间压缩、以及两家
-token 口径的差异（Anthropic 是相加，OpenAI 的 cached 是子集）。
+本项目的界面结构和交互方式，包括双层总览与步骤详情面板，基于
+[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)
+的轨迹视图。DeepSeek Harness 是 DeepSeek AI 开发并以 MIT 许可证发布的
+开源 agent harness。`agent-trajectory` 在此基础上适配了可移植的
+Claude Code 与 Codex 会话日志，与 DeepSeek AI 没有隶属关系。
 
 ## 许可证
 

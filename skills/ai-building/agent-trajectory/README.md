@@ -6,6 +6,10 @@
 
 <p align="center"><strong>See what your AI agent actually did — turn by turn, tool by tool, token by token.</strong></p>
 
+<p align="center">Interface and interaction model based on the trajectory view in <a href="https://github.com/deepseek-ai/deepseek-harness">DeepSeek Harness</a>.</p>
+
+<hr>
+
 `agent-trajectory` turns a Claude Code or Codex session log (or normalized
 `agent-trajectory/v1` JSON from another host) into a trajectory viewer: a
 per-turn ledger of every tool call with
@@ -121,25 +125,15 @@ Typography, color tokens, and the tool-category palette live in
 Web / Agent) passes a colorblind-safety and contrast validator in both light
 and dark mode, and category color never appears without a text label.
 
-## Development
+## Acknowledgements
 
-```sh
-python3 -m unittest discover -s tests   # run the full test suite
-```
-
-Notable engineering decisions, learned the hard way:
-
-- **No infinite CSS animations.** A forever-running keyframe stalls screenshot
-  pipelines in embedded browser panes. The LIVE dot blinks from JS only when
-  data actually arrives.
-- **The timeline is a virtualized canvas.** A single wide SVG/canvas layer
-  (26k px) wedges compositors; instead a cheap spacer provides the scroll range
-  and a viewport-sized sticky canvas redraws only the visible window.
-- **Gap compression.** Idle gaps > 60 s collapse to a fixed sliver marked `≈`,
-  so an 18-hour session doesn't become an ocean of blank pixels.
-- **Token accounting differs per host.** Anthropic-style usage:
-  context = `input + cache_read + cache_creation`. OpenAI-style usage:
-  `cached_input_tokens` is a *subset* of `input_tokens` — don't add them.
+The interface structure and interaction model, including the two-level
+overview and step-detail panel, are based on the trajectory view in
+[DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness).
+DeepSeek Harness is an open-source agent harness developed by DeepSeek AI and
+released under the MIT License. `agent-trajectory` adapts that experience for
+portable Claude Code and Codex session logs and is not affiliated with
+DeepSeek AI.
 
 ## License
 
