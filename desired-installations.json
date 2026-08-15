@@ -6,6 +6,7 @@
       "skills": [
         "skill:standalone/accessibility-wcag",
         "skill:standalone/agent-reach",
+        "skill:standalone/agent-trajectory",
         "skill:standalone/api-design-patterns",
         "skill:standalone/apple-docs-index",
         "skill:standalone/authentication-patterns",
@@ -116,6 +117,7 @@
       "skills": [
         "skill:standalone/accessibility-wcag",
         "skill:standalone/agent-reach",
+        "skill:standalone/agent-trajectory",
         "skill:standalone/api-design-patterns",
         "skill:standalone/apple-docs-index",
         "skill:standalone/authentication-patterns",

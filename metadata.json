@@ -118,6 +118,17 @@
         "output/research"
       ]
     },
+    "skill:standalone/agent-trajectory": {
+      "recommendation": 3,
+      "description": "把 Agent 会话日志变成轨迹回放：双层总表+上下文曲线+统一右侧面板（步骤详情/问AI），实时模式、一键问AI或复制、HTML/PDF导出；教学档由 AI 写注解；支持 Claude Code 与 Codex",
+      "trigger": "",
+      "tags": [
+        "role/builder",
+        "focus/agent-observability",
+        "focus/data-visualization",
+        "output/report"
+      ]
+    },
     "skill:standalone/animate": {
       "recommendation": 5,
       "description": "从零实现高质量 Web 动效：依次判断是否该动、动效目的、工具、属性、缓动、时长、中断和退出，并直接写实现。",

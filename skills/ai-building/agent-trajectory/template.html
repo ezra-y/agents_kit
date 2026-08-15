@@ -1,0 +1,1503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Trajectory</title>
+<style>
+  /* ==== design tokens (see DESIGN.md) ==== */
+  :root {
+    --bg:#f4f4f6; --surface:#fff; --surface-2:#f8f8fa;
+    --ink:#17171c; --ink-2:#55555e; --ink-3:#82828c; --line:#e4e4ea;
+    --accent:#5150c4; --accent-soft:#eeeefb;
+    --ok:#237a4b; --err:#b93a2e; --warn:#96650a;
+    --c-mcp:#8A55C9; --c-shell:#B26312; --c-skill:#C24B8E; --c-file:#2E7DD1;
+    --c-web:#1F8A70; --c-agent:#96650A; --c-other:#82828c;
+    --fs-meta:13px; --fs-mono:13.5px;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --panel-w:min(420px, 92vw);
+  --shadow:0 6px 24px rgba(20,20,40,.14);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#121216; --surface:#1b1b21; --surface-2:#22222a;
+      --ink:#ecedf2; --ink-2:#a3a4b0; --ink-3:#75757f; --line:#2d2d36;
+      --accent:#9c9bf0; --accent-soft:#282840;
+      --ok:#6fc793; --err:#e2837a; --warn:#d3a94a;
+      --c-mcp:#A272E0; --c-shell:#CC8130; --c-skill:#D65F9F; --c-file:#5A96D6;
+      --c-web:#2FA97F; --c-agent:#BA8A14; --c-other:#75757f;
+      --shadow:0 6px 24px rgba(0,0,0,.45);
+    }
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.65 system-ui,-apple-system,"Segoe UI","PingFang SC","Hiragino Sans GB",sans-serif;
+  }
+  button { font:inherit; color:inherit; background:none; border:none; cursor:pointer; padding:0; }
+  input { font:inherit; color:inherit; }
+
+  /* ==== app grid ==== */
+  .app { display:grid; grid-template-columns:256px minmax(0,1fr); gap:0; max-width:1500px; margin:0 auto; }
+  .side {
+    position:sticky; top:0; height:100vh; overflow-y:auto; padding:20px 8px 20px 16px;
+    display:flex; flex-direction:column; gap:14px; scrollbar-width:thin;
+  }
+  .main { min-width:0; padding:20px 20px 80px 16px; max-width:1120px; }
+  @media (max-width:960px) {
+    .app { display:block; }
+    .side { display:none; }
+    .main { padding:12px 12px 80px; }
+    body { font-size:15.5px; }
+  }
+
+  .card { background:var(--surface); border:1px solid var(--line); border-radius:12px; }
+  .panel-title { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-3); margin:0 0 8px; }
+
+  /* ==== sidebar ==== */
+  .sess-card { padding:14px; }
+  .sess-card h1 { font-size:17px; line-height:1.4; margin:6px 0 8px; overflow-wrap:anywhere; }
+  .badge { display:inline-block; padding:1px 9px; border-radius:999px; background:var(--accent-soft); color:var(--accent); font-weight:600; font-size:12px; }
+  .sess-stats { color:var(--ink-2); font-size:var(--fs-meta); display:flex; flex-wrap:wrap; gap:2px 10px; }
+  /* No CSS keyframe animation here on purpose: an always-running animation
+     stalls screenshot pipelines in embedded previews. The dot blinks from JS
+     (a finite opacity transition) whenever live data actually arrives. */
+  .live-dot { display:inline-block; width:8px; height:8px; border-radius:999px; background:var(--ok); margin:0 5px 0 8px; vertical-align:1px; transition:opacity .5s; }
+
+  .nav-panel { padding:12px 8px 12px 14px; flex:1; min-height:120px; display:flex; flex-direction:column; }
+  .nav-list { overflow-y:auto; flex:1; scrollbar-width:thin; margin:0; padding:0 6px 0 0; list-style:none; }
+  .nav-item { display:flex; gap:8px; align-items:baseline; width:100%; text-align:left; padding:6px 8px; border-radius:8px; font-size:14px; color:var(--ink-2); }
+  .nav-item:hover { background:var(--surface-2); }
+  .nav-item.active { background:var(--accent-soft); color:var(--accent); }
+  .nav-item .no { font-family:var(--mono); font-weight:700; font-size:12.5px; flex:none; }
+  .nav-item .snip { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; min-width:0; }
+  .nav-item .cnt { font-size:11.5px; color:var(--ink-3); flex:none; }
+
+  .filters { padding:12px 14px; }
+  .filter-row { display:flex; align-items:center; gap:8px; padding:3px 0; font-size:14px; color:var(--ink-2); cursor:pointer; user-select:none; }
+  .filter-row input { accent-color:var(--accent); }
+  .filter-row .sw { width:10px; height:10px; border-radius:3px; flex:none; }
+  .filter-row .n { margin-left:auto; font-size:12px; color:var(--ink-3); font-family:var(--mono); }
+
+  /* ==== toolbar (main, sticky) ==== */
+  .toolbar {
+    position:sticky; top:8px; z-index:20; display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+    padding:10px 12px; margin-bottom:14px; background:var(--surface); border:1px solid var(--line);
+    border-radius:12px; box-shadow:0 2px 10px rgba(20,20,40,.06);
+  }
+  .search-wrap { position:relative; flex:1; min-width:150px; }
+  .search-wrap input {
+    width:100%; padding:6px 52px 6px 32px; border-radius:8px; border:1px solid var(--line);
+    background:var(--surface-2); font-size:14px; outline:none;
+  }
+  .search-wrap input:focus { border-color:var(--accent); }
+  .search-wrap .icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--ink-3); pointer-events:none; }
+  .search-count { position:absolute; right:8px; top:50%; transform:translateY(-50%); font-size:12px; color:var(--ink-3); font-family:var(--mono); }
+  .tbtn {
+    padding:6px 11px; border-radius:8px; border:1px solid var(--line); background:var(--surface);
+    font-size:13.5px; color:var(--ink-2); white-space:nowrap;
+  }
+  .tbtn:hover { border-color:var(--accent); color:var(--accent); }
+  .tbtn.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .tbtn.primary:hover { color:#fff; opacity:.9; }
+  select.tbtn { appearance:auto; max-width:180px; }
+  .toolbar label.tbtn { display:flex; gap:6px; align-items:center; cursor:pointer; }
+  .toolbar label.tbtn input { accent-color:var(--accent); }
+
+  /* ==== overview strip ==== */
+  .overview { margin-bottom:14px; padding:12px 0 4px; }
+  .overview .panel-title { padding:0 14px; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .overview .panel-title .hint { text-transform:none; letter-spacing:0; font-weight:400; color:var(--ink-3); font-size:12px; }
+  .seg { display:inline-flex; border:1px solid var(--line); border-radius:7px; overflow:hidden; vertical-align:1px; }
+  .segbtn { font-size:11.5px; padding:2px 9px; color:var(--ink-3); letter-spacing:0; text-transform:none; }
+  .segbtn.active { background:var(--accent-soft); color:var(--accent); font-weight:600; }
+  .ov-legend { display:flex; flex-wrap:wrap; gap:4px 12px; padding:2px 14px 6px; font-size:12px; color:var(--ink-2); }
+  .ov-legend .li { display:inline-flex; align-items:center; gap:5px; }
+  .ov-legend .sw { width:9px; height:9px; border-radius:2.5px; }
+  #ov-scroll { overflow-x:auto; overflow-y:hidden; scrollbar-width:thin; position:relative; padding:0 14px 8px; cursor:grab; }
+  #ov-scroll.panning { cursor:grabbing; }
+  #ov-tip {
+    position:fixed; z-index:50; display:none; pointer-events:none; max-width:340px;
+    background:var(--surface); border:1px solid var(--line); border-radius:8px; box-shadow:var(--shadow);
+    padding:6px 10px; font-size:13px; line-height:1.5;
+  }
+  #ov-tip b { font-family:var(--mono); font-size:12.5px; }
+  #ov-tip .d { color:var(--ink-2); }
+
+  /* ==== turn cards ==== */
+  .turn { margin-bottom:14px; overflow:hidden; content-visibility:auto; contain-intrinsic-size:auto 420px; }
+  .turn-head { padding:12px 16px; cursor:pointer; user-select:none; }
+  .turn-head:hover { background:var(--surface-2); }
+  .turn-top { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .turn-no { font-family:var(--mono); font-weight:700; color:var(--accent); font-size:14px; }
+  .caret { color:var(--ink-3); font-size:11px; transition:transform .15s; }
+  .turn.collapsed .caret { transform:rotate(-90deg); }
+  .turn-time { font-size:12px; color:var(--ink-3); font-family:var(--mono); }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; margin-left:auto; }
+  .chip { font-size:12px; color:var(--ink-2); border:1px solid var(--line); border-radius:999px; padding:1px 9px; white-space:nowrap; }
+  .chip.err { color:var(--err); border-color:currentColor; }
+  .user-text { margin-top:8px; white-space:pre-wrap; overflow-wrap:anywhere; font-size:16px; }
+  .user-text.clamp { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+  .expand-user { margin-top:4px; color:var(--accent); font-size:13px; }
+  .more-bar {
+    display:block; width:calc(100% - 32px); margin:8px 16px 12px; padding:9px 0;
+    text-align:center; color:var(--accent); font-size:13.5px; font-weight:600;
+    background:var(--surface-2); border:1px dashed var(--line); border-radius:9px;
+    transition:background .15s, border-color .15s, color .15s;
+  }
+  .more-bar:hover { background:var(--accent-soft); border-color:var(--accent); border-style:solid; }
+  .more-bar:active { transform:translateY(1px); }
+  .goal { margin-top:10px; font-size:14.5px; color:var(--accent); }
+  .story { margin-top:8px; font-size:14.5px; color:var(--ink-2); border-left:3px solid var(--accent); padding:2px 0 2px 12px; }
+  .turn-body { border-top:1px solid var(--line); padding:4px 0; }
+  .turn.collapsed .turn-body { display:none; }
+
+  /* ==== ledger rows ==== */
+  .row { padding:7px 16px; display:flex; gap:10px; align-items:baseline; scroll-margin-top:76px; }
+  .row.clickable:hover { background:var(--accent-soft); cursor:pointer; }
+  .row.flash { animation:flash 1.6s; }
+  .row.selected { background:var(--accent-soft); box-shadow:inset 3px 0 0 var(--accent); }
+  @keyframes flash { 0%,60% { background:var(--accent-soft); box-shadow:inset 3px 0 0 var(--accent);} }
+  .tag {
+    flex:none; font-size:11.5px; font-weight:700; letter-spacing:.02em; border-radius:6px;
+    padding:1px 7px; color:#fff; min-width:46px; text-align:center; align-self:center;
+  }
+  .tag.ghost { background:none !important; color:var(--ink-3); border:1px solid var(--line); font-weight:500; }
+  .row-main { min-width:0; flex:1; }
+  .row-line { display:flex; gap:9px; align-items:baseline; min-width:0; }
+  .tool-name { font-family:var(--mono); font-weight:600; font-size:var(--fs-mono); white-space:nowrap; }
+  .preview { color:var(--ink-3); font-size:var(--fs-mono); font-family:var(--mono); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; min-width:0; }
+  .preview.prose { font-family:inherit; font-size:15px; color:var(--ink-2); }
+  .row.k-assistant .preview, .row.k-user_note .preview { color:var(--ink); }
+  .row.k-thinking .preview { font-style:italic; }
+  .row.k-user_note { background:var(--accent-soft); border-radius:10px; margin:2px 10px; padding:8px 12px; }
+  .row.k-system .preview { color:var(--err); }
+  .row.k-compaction { color:var(--warn); font-size:14px; }
+  .rmeta { flex:none; font-size:12px; color:var(--ink-3); font-family:var(--mono); display:flex; gap:8px; align-items:center; }
+  .dot { width:7px; height:7px; border-radius:999px; }
+  .dot.ok { background:var(--ok); } .dot.error { background:var(--err); } .dot.none { background:var(--line); }
+  .askbtn { opacity:0; font-size:12px; color:var(--accent); border:1px solid var(--line); border-radius:6px; padding:0 6px; transition:opacity .12s; }
+  .row:hover .askbtn { opacity:1; }
+  @media (hover:none) { .askbtn { opacity:1; } }
+  .why { margin:2px 16px 6px 82px; font-size:14px; color:var(--accent); }
+  @media (max-width:960px) { .why { margin-left:16px; } }
+  .learn-only { display:none; }
+  body.learn .learn-only { display:block; }
+
+  /* ==== floating nav ==== */
+  .float-nav { position:fixed; right:18px; bottom:18px; display:flex; flex-direction:column; gap:8px; z-index:70; transition:right .2s ease; }
+  body.panel-open .float-nav { right:calc(var(--panel-w) + 16px); }
+  .fbtn {
+    width:42px; height:42px; border-radius:999px; background:var(--surface); border:1px solid var(--line);
+    box-shadow:0 3px 10px rgba(0,0,0,.14); color:var(--ink-2); font-size:16px; display:flex; align-items:center; justify-content:center;
+  }
+  .fbtn:hover { color:var(--accent); border-color:var(--accent); }
+
+  /* ==== side panels ====
+     Both panels (Ask AI, step details) are the same object: same width, same
+     edge, same chrome, same slide-in. Only their contents differ. */
+  .drawer {
+    position:fixed; top:0; right:0; bottom:0; width:var(--panel-w); z-index:60; background:var(--surface);
+    border-left:1px solid var(--line); box-shadow:var(--shadow); transform:translateX(105%); transition:transform .2s ease;
+    display:flex; flex-direction:column;
+  }
+  .drawer.open { transform:none; }
+  .drawer-head { padding:14px 16px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:8px; }
+  .drawer-head h3 { margin:0; font-size:15px; flex:1; }
+  .drawer-body { flex:1; overflow-y:auto; overflow-x:hidden; padding:12px 16px; display:flex; flex-direction:column; gap:12px; }
+  .q-item { border:1px solid var(--line); border-radius:10px; padding:10px 12px; }
+  .q-item .q { font-size:14.5px; margin-bottom:6px; overflow-wrap:anywhere; word-break:break-word; min-width:0; }
+  .q-item .a { font-size:14px; color:var(--ink-2); white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; min-width:0; border-top:1px dashed var(--line); padding-top:6px; margin-top:2px; }
+  .q-item .a:empty { display:none; }
+  .q-actions { display:flex; gap:8px; margin-top:6px; flex-wrap:wrap; }
+  .q-actions .tbtn { font-size:12.5px; padding:3px 9px; }
+  .drawer-foot { border-top:1px solid var(--line); padding:10px 16px; }
+  .drawer-foot textarea {
+    width:100%; resize:vertical; min-height:56px; border:1px solid var(--line); border-radius:8px;
+    background:var(--surface-2); padding:8px 10px; font:14.5px/1.5 inherit; outline:none;
+  }
+  .drawer-foot .hint, .hint { font-size:12px; color:var(--ink-3); margin-top:6px; }
+  .big-btn {
+    width:100%; padding:12px 0; border-radius:10px; background:var(--accent); color:#fff;
+    font-size:15px; font-weight:600; letter-spacing:.01em; transition:filter .15s, transform .1s;
+  }
+  .big-btn:hover { filter:brightness(1.08); }
+  .big-btn:active { transform:translateY(1px); }
+  .big-btn[disabled] { opacity:.5; }
+  .menu-wrap { position:relative; display:inline-flex; }
+  .menu {
+    position:absolute; top:calc(100% + 6px); right:0; min-width:190px; z-index:40;
+    background:var(--surface); border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow);
+    padding:5px; display:none; flex-direction:column; gap:2px;
+  }
+  .menu.open { display:flex; }
+  .menu-item { text-align:left; padding:8px 10px; border-radius:7px; font-size:13.5px; color:var(--ink); }
+  .menu-item:hover { background:var(--accent-soft); color:var(--accent); }
+  .foot-row { display:flex; gap:8px; margin-top:8px; }
+  .foot-row .tbtn { flex:1; justify-content:center; text-align:center; }
+
+    .dmeta { display:flex; flex-wrap:wrap; gap:6px; padding:12px 16px 10px; }
+  .dbody { flex:1; overflow-y:auto; padding:0 16px 16px; }
+  .dbody h4 { margin:12px 0 4px; font-size:11.5px; color:var(--ink-3); text-transform:uppercase; letter-spacing:.05em; }
+  .dbody pre {
+    margin:0; padding:10px 12px; background:var(--surface-2); border:1px solid var(--line); border-radius:8px;
+    font:var(--fs-mono)/1.5 var(--mono); white-space:pre-wrap; overflow-wrap:anywhere; max-height:44vh; overflow-y:auto;
+  }
+  .toast {
+    position:fixed; left:50%; bottom:26px; transform:translateX(-50%); z-index:70; background:var(--ink); color:var(--bg);
+    border-radius:999px; padding:8px 18px; font-size:14px; opacity:0; pointer-events:none; transition:opacity .2s;
+  }
+  .toast.show { opacity:.94; }
+
+  footer { color:var(--ink-3); font-size:13px; text-align:center; margin-top:28px; }
+  footer a { color:var(--accent); }
+  .kbd { font-family:var(--mono); font-size:12px; border:1px solid var(--line); border-radius:5px; padding:0 5px; background:var(--surface-2); }
+
+  /* ==== print / PDF ==== */
+  @media print {
+    :root {
+      color-scheme:light;
+      --bg:#fff; --surface:#fff; --surface-2:#f8f8fa;
+      --ink:#17171c; --ink-2:#55555e; --ink-3:#82828c; --line:#e4e4ea;
+      --accent:#5150c4; --accent-soft:#eeeefb;
+      --ok:#237a4b; --err:#b93a2e; --warn:#96650a;
+    }
+    body { background:#fff; font-size:13px; }
+    .side,.toolbar,.overview,.float-nav,.drawer,.toast,.askbtn,.expand-user,.more-bar { display:none !important; }
+    .app { display:block; }
+    .main { max-width:none; padding:0; }
+    .turn { break-inside:avoid-page; content-visibility:visible; }
+    .turn.collapsed .turn-body { display:block; }
+  }
+</style>
+</head>
+<body>
+<script id="trajectory-data" type="application/json">{"turns":[]}</script>
+<script id="annotations-data" type="application/json">null</script>
+<script id="live-config" type="application/json">{"live":false}</script>
+
+<div class="app">
+  <aside class="side">
+    <div class="card sess-card">
+      <span class="badge" id="host-badge">host</span><span id="live-ind" style="display:none"><span class="live-dot"></span><span style="font-size:12.5px;color:var(--ok);font-weight:600">LIVE</span></span>
+      <h1 id="s-title">Agent Trajectory</h1>
+      <div class="sess-stats" id="s-stats"></div>
+    </div>
+    <div class="card nav-panel">
+      <div class="panel-title">Turns</div>
+      <ul class="nav-list" id="nav-list"></ul>
+    </div>
+    <div class="card filters">
+      <div class="panel-title">Tool categories</div>
+      <div id="filter-list"></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="icon">⌕</span>
+        <input id="search" type="search" placeholder="Search tools, args, text…">
+        <span class="search-count" id="search-count"></span>
+      </div>
+      <select class="tbtn" id="turn-jump" title="Jump to turn"></select>
+      <button class="tbtn" id="collapse-all" title="展开/收起所有问题全文与全部步骤">全部展开</button>
+      <label class="tbtn" id="ann-toggle-wrap" style="display:none"><input type="checkbox" id="ann-toggle" checked>Annotations</label>
+      <label class="tbtn" id="follow-wrap" style="display:none"><input type="checkbox" id="follow" checked>Follow</label>
+      <span class="menu-wrap">
+        <button class="tbtn" id="export-open" title="导出这份轨迹">导出 ▾</button>
+        <span class="menu" id="export-menu">
+          <button class="menu-item" id="export-html">HTML（自包含单文件）</button>
+          <button class="menu-item" id="export-pdf">PDF（打印）</button>
+        </span>
+      </span>
+      <button class="tbtn primary" id="ask-open" title="Ask-AI notebook">Ask AI</button>
+    </div>
+
+    <section class="card overview" id="overview">
+      <div class="panel-title">Overview
+        <span class="seg"><button class="segbtn active" id="ov-even" title="One block per step — even rhythm">Steps</button><button class="segbtn" id="ov-time" title="Real timing (idle gaps compressed to ≈)">Time</button></span>
+        <span class="hint" id="ov-hint">click a block to jump · drag to pan · wheel to zoom</span>
+      </div>
+      <div class="ov-legend" id="ov-legend"></div>
+      <div id="ov-scroll"></div>
+    </section>
+
+    <div id="turns"></div>
+
+    <footer>
+      <span class="kbd">/</span> search · <span class="kbd">j</span>/<span class="kbd">k</span> next/prev turn ·
+      generated by <a href="https://github.com/Ezra-Y/agent-trajectory" rel="noopener">agent-trajectory</a> · logs stay on your machine
+    </footer>
+  </main>
+<aside class="drawer" id="detail-drawer">
+  <div class="drawer-head">
+    <span class="tag" id="d-tag" style="display:none"></span>
+    <h3 id="d-title">Step</h3>
+    <button class="tbtn" id="d-ask">问AI</button>
+    <button class="tbtn" id="d-close">✕</button>
+  </div>
+  <div class="dmeta" id="d-meta"></div>
+  <div class="dbody" id="d-body"></div>
+</aside>
+</div>
+
+<div id="ov-tip"></div>
+<div class="float-nav">
+  <button class="fbtn" id="go-top" title="回到顶部">↑</button>
+  <button class="fbtn" id="go-bottom" title="到达底部">↓</button>
+</div>
+
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3>Ask AI</h3>
+    <button class="tbtn" id="ask-selall">全选</button>
+    <button class="tbtn" id="ask-selnone">全不选</button>
+    <button class="tbtn" id="ask-clear">清空</button>
+    <button class="tbtn" id="drawer-close">✕</button>
+  </div>
+  <div class="drawer-body" id="ask-list"></div>
+  <div class="drawer-foot">
+    <textarea id="ask-fallback" readonly style="display:none"></textarea>
+    <button class="big-btn" id="ask-go">一键 Ask AI</button>
+    <div class="foot-row">
+      <button class="tbtn" id="ask-copy-sel">一键复制所选</button>
+      <button class="tbtn" id="ask-copy-all">复制全部</button>
+    </div>
+    <div class="hint" id="ask-hint" aria-live="polite"></div>
+  </div>
+</aside>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+/* ================= data & config ================= */
+const readJson = id => JSON.parse(document.getElementById(id).textContent);
+let DATA = readJson('trajectory-data');
+let ANN = readJson('annotations-data');
+const CFG = readJson('live-config');
+const $ = s => document.querySelector(s);
+const h = (tag, cls, text) => { const el = document.createElement(tag); if (cls) el.className = cls; if (text != null) el.textContent = text; return el; };
+const fmtMs = ms => ms == null ? '' : ms < 1000 ? ms + 'ms' : ms < 60000 ? (ms/1000).toFixed(1) + 's' : Math.floor(ms/60000) + 'm' + Math.round(ms % 60000 / 1000) + 's';
+const fmtTok = n => n == null ? '' : n >= 1000 ? (n/1000).toFixed(n >= 100000 ? 0 : 1) + 'k' : String(n);
+const fmtClock = ts => ts == null ? '' : new Date(ts).toLocaleTimeString();
+
+/* ================= tool categorization ================= */
+const CAT_LABEL = { mcp:'MCP', shell:'Shell', skill:'Skill', file:'File', web:'Web', agent:'Agent', other:'Tool' };
+function categorize(e) {
+  if (e.kind !== 'tool') return null;
+  const t = (e.tool || '').toLowerCase();
+  if (t.startsWith('mcp__')) {
+    const server = e.tool.split('__')[1] || 'mcp';
+    if (/browser|chrome|computer/i.test(server)) return { cat:'web', label:'Web' };
+    return { cat:'mcp', label:'MCP·' + server.slice(0,12) };
+  }
+  if (t === 'skill') {
+    let name = ''; try { name = JSON.parse((e.args||'').replace(/…\[.*$/,'')).skill || ''; } catch {}
+    return { cat:'skill', label: name ? 'Skill·' + name.slice(0,14) : 'Skill' };
+  }
+  if (/^(bash|exec_command|shell|terminal|local_shell)/.test(t)) return { cat:'shell', label:'Shell' };
+  if (/^(read|write|edit|multiedit|apply_patch|notebookedit|str_replace)/.test(t)) return { cat:'file', label:'File' };
+  if (/websearch|webfetch|web_search|web_fetch|browser|computer|navigate|screenshot|read_page|firecrawl|preview_/.test(t)) return { cat:'web', label:'Web' };
+  if (/^(task$|agent$|workflow|subagent|sendmessage|listagents)/.test(t)) return { cat:'agent', label:'Agent' };
+  if (/grep|glob|toolsearch|tool_search|search/.test(t)) return { cat:'web', label:'Search' };
+  return { cat:'other', label:'Tool' };
+}
+const catColor = cat => `var(--c-${cat})`;
+
+/* ================= state (survives live re-renders) ================= */
+const state = {
+  expandedTurns: new Map(),
+  hiddenCats: new Set(),
+  search: '',
+  activeTurn: 1,
+  follow: true,
+  ovZoom: 1,
+  ovMode: 'even',
+  fullTurns: new Map(),
+  fullUserText: new Map(),
+  allExpanded: false,
+  detailEventId: null,
+};
+const annByTurn = () => new Map(((ANN && ANN.turns) || []).map(t => [t.index, t]));
+
+/* ================= header / sidebar ================= */
+function renderHeader() {
+  const sess = DATA.session || {};
+  $('#host-badge').textContent = DATA.host || 'unknown';
+  $('#s-title').textContent = sess.title || (sess.cwd ? String(sess.cwd).split('/').pop() : 'Agent Trajectory');
+  document.title = $('#s-title').textContent + ' · Agent Trajectory';
+  const calls = DATA.turns.reduce((n,t) => n + t.stats.tool_calls, 0);
+  const errs = DATA.turns.reduce((n,t) => n + t.stats.errors, 0);
+  const st = $('#s-stats'); st.textContent = '';
+  st.append(h('span', null, DATA.turns.length + ' turns'), h('span', null, calls + ' tool calls'));
+  if (errs) { const e = h('span', null, errs + ' errors'); e.style.color = 'var(--err)'; st.append(e); }
+  if (DATA.context_window) st.append(h('span', null, 'window ' + fmtTok(DATA.context_window)));
+  const first = DATA.turns[0], last = DATA.turns[DATA.turns.length-1];
+  if (first && first.started && last && last.ended) st.append(h('span', null, fmtMs(last.ended - first.started) + ' total'));
+}
+function renderNav() {
+  const ul = $('#nav-list'); ul.textContent = '';
+  const sel = $('#turn-jump'); sel.textContent = '';
+  DATA.turns.forEach(t => {
+    const li = h('li');
+    const b = h('button', 'nav-item' + (t.index === state.activeTurn ? ' active' : ''));
+    b.append(h('span','no','#'+t.index), h('span','snip',(t.user_text||'').replace(/\s+/g,' ').slice(0,60)), h('span','cnt', t.stats.tool_calls + '⚒'));
+    b.addEventListener('click', () => jumpToTurn(t.index));
+    li.append(b); ul.append(li);
+    sel.append(new Option('#'+t.index+' · '+(t.user_text||'').replace(/\s+/g,' ').slice(0,26), t.index));
+  });
+  sel.value = String(state.activeTurn);
+  sel.onchange = () => { if (sel.value) jumpToTurn(+sel.value); };
+}
+function renderFilters() {
+  const counts = {};
+  DATA.turns.forEach(t => t.events.forEach(e => { const c = categorize(e); if (c) counts[c.cat] = (counts[c.cat]||0)+1; }));
+  const box = $('#filter-list'); box.textContent = '';
+  Object.keys(CAT_LABEL).forEach(cat => {
+    if (!counts[cat]) return;
+    const row = h('label','filter-row');
+    const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !state.hiddenCats.has(cat);
+    cb.addEventListener('change', () => { cb.checked ? state.hiddenCats.delete(cat) : state.hiddenCats.add(cat); applyFilters(); });
+    const sw = h('span','sw'); sw.style.background = catColor(cat);
+    row.append(cb, sw, h('span', null, CAT_LABEL[cat]), h('span','n', String(counts[cat])));
+    box.append(row);
+  });
+}
+
+/* ================= turn ledger ================= */
+const TURN_EVENT_LIMIT = 24;
+const rowSearchText = e => [(e.tool||''),(e.args||''),(e.text||''),(e.result||'')].join(' ').toLowerCase();
+const shortToolName = t => !t ? 'tool' : t.startsWith('mcp__') ? t.split('__').slice(2).join('__') || t : t;
+
+function buildTurn(turn) {
+  const a = annByTurn().get(turn.index) || {};
+  const card = h('section','card turn'); card.id = 'turn-' + turn.index; card.dataset.turn = turn.index;
+  const expanded = state.expandedTurns.has(turn.index) ? state.expandedTurns.get(turn.index) : turn.events.length <= 150;
+  if (!expanded) card.classList.add('collapsed');
+
+  const head = h('div','turn-head');
+  const top = h('div','turn-top');
+  top.append(h('span','caret','▼'), h('span','turn-no','#'+turn.index));
+  if (turn.started != null) top.append(h('span','turn-time', fmtClock(turn.started)));
+  const chips = h('div','chips');
+  chips.append(h('span','chip', turn.stats.tool_calls + ' tools'));
+  if (turn.stats.errors) chips.append(h('span','chip err', turn.stats.errors + ' errors'));
+  if (turn.stats.duration_ms) chips.append(h('span','chip', fmtMs(turn.stats.duration_ms)));
+  if (turn.stats.context_end) chips.append(h('span','chip', 'ctx ' + fmtTok(turn.stats.context_end)));
+  if (turn.subagent_events) chips.append(h('span','chip', turn.subagent_events + ' subagent'));
+  top.append(chips); head.append(top);
+
+  const showAllText = !!state.fullUserText.get(turn.index);
+  const ut = h('div','user-text' + (showAllText ? '' : ' clamp'), turn.user_text || '');
+  head.append(ut);
+  if ((turn.user_text||'').length > 180) {
+    const more = h('button','expand-user', showAllText ? '收起问题 ▴' : '展开完整问题 ▾');
+    more.addEventListener('click', ev => {
+      ev.stopPropagation();
+      const clamped = ut.classList.toggle('clamp');
+      state.fullUserText.set(turn.index, !clamped);
+      more.textContent = clamped ? '展开完整问题 ▾' : '收起问题 ▴';
+    });
+    head.append(more);
+  }
+  if (a.goal) head.append(h('div','goal learn-only','🎯 ' + a.goal));
+  if (a.story) head.append(h('div','story learn-only', a.story));
+  head.addEventListener('click', () => {
+    const collapsed = card.classList.toggle('collapsed');
+    state.expandedTurns.set(turn.index, !collapsed);
+  });
+  card.append(head);
+
+  const body = h('div','turn-body');
+  const full = state.fullTurns.get(turn.index) || !!state.search.trim();
+  const shown = full ? turn.events : turn.events.slice(0, TURN_EVENT_LIMIT);
+  shown.forEach(e => body.append(...buildRow(turn, e, a)));
+  if (turn.events.length > TURN_EVENT_LIMIT && !state.search.trim()) {
+    const rest = turn.events.length - TURN_EVENT_LIMIT;
+    const btn = h('button','more-bar', full ? '收起，只看前 ' + TURN_EVENT_LIMIT + ' 步  ▴' : '展开剩余 ' + rest + ' 步  ▾');
+    btn.addEventListener('click', ev => {
+      ev.stopPropagation();
+      state.fullTurns.set(turn.index, !full);
+      const fresh = buildTurn(turn);
+      card.replaceWith(fresh);
+      if (turnObserver) turnObserver.observe(fresh);
+      applyFilters();
+    });
+    body.append(btn);
+  }
+  card.append(body);
+  return card;
+}
+function buildRow(turn, e, a) {
+  const out = [];
+  const row = h('div','row k-' + e.kind); row.id = 'ev-' + e.id; row.dataset.search = rowSearchText(e);
+  const c = categorize(e);
+  if (c) {
+    row.dataset.cat = c.cat;
+    const tag = h('span', c.cat === 'other' ? 'tag ghost' : 'tag', c.label);
+    if (c.cat !== 'other') tag.style.background = catColor(c.cat);
+    row.append(tag);
+  } else {
+    const g = { thinking:'think', assistant:'reply', user_note:'user', context:'ctx', system:'sys', compaction:'⟲' }[e.kind] || '·';
+    row.append(h('span','tag ghost', g));
+  }
+  const main = h('div','row-main');
+  const line = h('div','row-line');
+  if (e.kind === 'tool') {
+    line.append(h('span','tool-name', shortToolName(e.tool)), h('span','preview', e.args || ''));
+  } else {
+    line.append(h('span','preview prose', (e.text || '').replace(/\s+/g,' ')));
+  }
+  main.append(line); row.append(main);
+  const rmeta = h('span','rmeta');
+  const ask = h('button','askbtn','问AI'); ask.title = 'Collect this step into the Ask-AI notebook';
+  ask.addEventListener('click', ev => { ev.stopPropagation(); askAbout(turn, e, c, ask); });
+  rmeta.append(ask);
+  if (e.duration_ms != null) rmeta.append(h('span', null, fmtMs(e.duration_ms)));
+  if (e.kind === 'tool') { const d = h('span','dot ' + (e.status || 'none')); d.title = e.status || 'no result recorded'; rmeta.append(d); }
+  row.append(rmeta);
+  out.push(row);
+
+  const why = (a.whys || {})[e.id];
+  if (why) out.push(h('div','why learn-only','↳ ' + why));
+
+  if (e.kind !== 'compaction') {
+    row.classList.add('clickable');
+    // Details open in the side panel (DSH-style), and the overview strip
+    // scrolls to this event — clicking either surface drives the other.
+    row.addEventListener('click', () => { openDetail(turn, e, c); revealMark(e.id); });
+  }
+  return out;
+}
+
+/* ================= detail side panel ================= */
+let evById = new Map();   // event id -> { turn, e, c }
+function indexEvents() {
+  evById = new Map();
+  DATA.turns.forEach(t => t.events.forEach(e => evById.set(e.id, { turn: t, e, c: categorize(e) })));
+}
+function openDetail(turn, e, c) {
+  state.detailEventId = e.id;
+  const tag = $('#d-tag');
+  if (c) {
+    tag.style.display = ''; tag.textContent = c.label;
+    tag.className = c.cat === 'other' ? 'tag ghost' : 'tag';
+    tag.style.background = c.cat === 'other' ? '' : catColor(c.cat);
+  } else { tag.style.display = ''; tag.className = 'tag ghost'; tag.textContent = e.kind; tag.style.background = ''; }
+  $('#d-title').textContent = e.kind === 'tool' ? shortToolName(e.tool) : ({thinking:'Thinking', assistant:'Assistant reply', user_note:'Your message', context:'Injected context', system:'System'}[e.kind] || e.kind);
+  const meta = $('#d-meta'); meta.textContent = '';
+  meta.append(h('span','chip','turn #' + turn.index));
+  if (e.duration_ms != null) meta.append(h('span','chip', fmtMs(e.duration_ms)));
+  if (e.status) { const s = h('span','chip' + (e.status === 'error' ? ' err' : ''), e.status); meta.append(s); }
+  if (e.context_tokens) meta.append(h('span','chip','ctx ' + fmtTok(e.context_tokens)));
+  if (e.ts) meta.append(h('span','chip', fmtClock(e.ts)));
+  const body = $('#d-body'); body.textContent = '';
+  const why = (annByTurn().get(turn.index) || {}).whys?.[e.id];
+  if (why && document.body.classList.contains('learn')) {
+    const w = h('div','why','↳ ' + why); w.style.margin = '10px 0 0'; body.append(w);
+  }
+  if (e.kind === 'tool') {
+    if (e.args) { body.append(h('h4',null,'Arguments')); const pa = h('pre'); pa.textContent = e.args; body.append(pa); }
+    body.append(h('h4',null,'Result'));
+    const pr = h('pre'); pr.textContent = e.result != null ? e.result : '(no result recorded)'; body.append(pr);
+  } else if (e.text) {
+    body.append(h('h4',null,'Content'));
+    const pt2 = h('pre'); pt2.textContent = e.text; body.append(pt2);
+  }
+  $('#d-ask').onclick = ev => askAbout(turn, e, c, ev.currentTarget);
+  showPanel('#detail-drawer');
+  document.querySelectorAll('.row.selected').forEach(r => r.classList.remove('selected'));
+  const row = document.getElementById('ev-' + e.id);
+  if (row) row.classList.add('selected');
+}
+$('#d-close').addEventListener('click', closePanels);
+document.addEventListener('keydown', ev => {
+  if (ev.key === 'Escape') { closePanels(); closeExport(); }
+});
+function renderTurns() {
+  indexEvents();
+  const root = $('#turns'); root.textContent = '';
+  DATA.turns.forEach(t => root.append(buildTurn(t)));
+  applyFilters();
+  observeTurns();
+}
+
+/* ================= filters & search ================= */
+function applyFilters() {
+  const q = state.search.trim().toLowerCase();
+  let hits = 0;
+  document.querySelectorAll('#turns .row').forEach(row => {
+    const catHidden = row.dataset.cat && state.hiddenCats.has(row.dataset.cat);
+    const searchMiss = q !== '' && !(row.dataset.search || '').includes(q);
+    const hide = catHidden || searchMiss;
+    row.style.display = hide ? 'none' : '';
+    const sib = row.nextElementSibling;
+    if (sib && sib.classList.contains('why')) sib.style.display = hide ? 'none' : '';
+    if (q !== '' && !hide) hits++;
+  });
+  $('#search-count').textContent = q ? hits + ' hits' : '';
+  if (q) document.querySelectorAll('.turn.collapsed').forEach(t => t.classList.remove('collapsed'));
+}
+$('#search').addEventListener('input', ev => {
+  const hadQuery = !!state.search.trim();
+  state.search = ev.target.value;
+  const hasQuery = !!state.search.trim();
+  if (hadQuery !== hasQuery) renderTurns(); else applyFilters();
+});
+
+/* ================= navigation ================= */
+/* Some embedded panes ignore scrollIntoView entirely (smooth AND auto),
+   while plain window.scrollTo works. Try the nice path, then verify the
+   landing and force it with computed coordinates. */
+function ensureInView(el, block = 'center') {
+  el.scrollIntoView({ behavior: 'smooth', block });
+  const force = () => {
+    const r = el.getBoundingClientRect();
+    if (r.top >= 60 && r.bottom <= window.innerHeight) return;
+    const offset = block === 'start' ? 80 : Math.max(80, window.innerHeight / 2 - r.height / 2);
+    window.scrollTo({ top: Math.max(0, r.top + window.scrollY - offset) });
+  };
+  setTimeout(force, 220);
+}
+function jumpToTurn(i) {
+  const el = document.getElementById('turn-' + i);
+  if (!el) return;
+  el.classList.remove('collapsed'); state.expandedTurns.set(i, true);
+  ensureInView(el, 'start');
+}
+function jumpToEvent(id, openPanel = true) {
+  const row = document.getElementById('ev-' + id);
+  if (!row) return;
+  const turn = row.closest('.turn');
+  if (turn) { turn.classList.remove('collapsed'); state.expandedTurns.set(+turn.dataset.turn, true); }
+  ensureInView(row);
+  row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash');
+  if (openPanel) { const ref = evById.get(id); if (ref) openDetail(ref.turn, ref.e, ref.c); }
+}
+let turnObserver = null;
+function observeTurns() {
+  if (turnObserver) turnObserver.disconnect();
+  turnObserver = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        state.activeTurn = +en.target.dataset.turn;
+        document.querySelectorAll('.nav-item').forEach((b,i) => b.classList.toggle('active', i === state.activeTurn - 1));
+        const tj = $('#turn-jump'); if (tj && tj.value !== String(state.activeTurn)) tj.value = String(state.activeTurn);
+        syncOverviewCursor();
+      }
+    });
+  }, { rootMargin:'-15% 0px -75% 0px' });
+  document.querySelectorAll('.turn').forEach(t => turnObserver.observe(t));
+}
+function pageScrollTo(top) {
+  window.scrollTo({ top, behavior:'smooth' });
+  setTimeout(() => { if (Math.abs(window.scrollY - top) > 40) window.scrollTo({ top }); }, 220);
+}
+$('#go-top').addEventListener('click', () => pageScrollTo(0));
+$('#go-bottom').addEventListener('click', () => pageScrollTo(document.body.scrollHeight - window.innerHeight));
+/* The toolbar button is the global twin of the two per-turn controls:
+   「Show full message」on the question and「展开剩余 N 步」on the ledger.
+   Expanding means every question is unclamped and every step is listed. */
+function setExpandAll(expand) {
+  DATA.turns.forEach(t => {
+    state.expandedTurns.set(t.index, true);
+    state.fullTurns.set(t.index, expand);
+    state.fullUserText.set(t.index, expand);
+  });
+  state.allExpanded = expand;
+  renderTurns();
+  $('#collapse-all').textContent = expand ? '全部收起' : '全部展开';
+}
+$('#collapse-all').addEventListener('click', () => setExpandAll(!state.allExpanded));
+document.addEventListener('keydown', ev => {
+  if (ev.target.matches('input,textarea,select')) { if (ev.key === 'Escape') ev.target.blur(); return; }
+  if (ev.key === '/') { ev.preventDefault(); $('#search').focus(); }
+  if (ev.key === 'j') jumpToTurn(Math.min(DATA.turns.length, state.activeTurn + 1));
+  if (ev.key === 'k') jumpToTurn(Math.max(1, state.activeTurn - 1));
+});
+
+/* ============ overview strip: virtualized canvas timeline ============
+   Two x-axis modes:
+     - "Steps" (default): one equal-width block per event — the even rhythm a
+       reader scans, like DSH's record overview.
+     - "Time": real timing, tool bars sized by duration, idle gaps > 60 s
+       compressed to a sliver marked ≈.
+   The scroll container holds a cheap full-width spacer plus one
+   viewport-sized sticky <canvas>; each frame draws only the visible window.
+   (A single giant SVG/canvas layer wedges compositors and screenshot
+   pipelines — virtualization avoids that class of bug entirely.) */
+/* Some embedded panes ignore scrollTo({behavior:'smooth'}) AND never fire
+   requestAnimationFrame. Animate when frames exist; otherwise a timeout
+   forces the destination — landing correctly beats landing smoothly. */
+function glideScroll(el, left, ms = 260) {
+  const from = el.scrollLeft, delta = left - from, t0 = performance.now();
+  if (Math.abs(delta) < 2) { el.scrollLeft = left; return; }
+  let done = false, frameSeen = false;
+  const tick = now => {
+    if (done) return;
+    frameSeen = true;
+    const k = Math.min(1, (now - t0) / ms);
+    el.scrollLeft = from + delta * (1 - Math.pow(1 - k, 3));
+    if (k < 1) requestAnimationFrame(tick); else done = true;
+  };
+  requestAnimationFrame(tick);
+  setTimeout(() => {
+    if (!frameSeen && !done) { done = true; el.scrollLeft = left; }
+  }, 140);
+  setTimeout(() => {
+    if (!done) { done = true; el.scrollLeft = left; }
+  }, ms + 120);
+}
+let ovIndex = [], ovXOfTurn = new Map(), ovDraw = null, ovCursorX = null;
+let ovMarkById = new Map(), ovHoverId = null, ovFlashIds = [], ovNavHover = -1;
+const cssVar = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#888';
+const KIND_GLYPH_LEGEND = [
+  ['think / reply', '--ink-3'], ['your message', '--accent'], ['compaction ⟲', '--warn'],
+];
+function renderOvLegend(counts) {
+  const box = $('#ov-legend'); box.textContent = '';
+  Object.keys(CAT_LABEL).forEach(cat => {
+    if (!counts[cat] || cat === 'other') return;
+    const li = h('span','li');
+    const sw = h('span','sw'); sw.style.background = cssVar('--c-' + cat);
+    li.append(sw, h('span', null, CAT_LABEL[cat]));
+    box.append(li);
+  });
+  KIND_GLYPH_LEGEND.forEach(([label, token]) => {
+    const li = h('span','li');
+    const sw = h('span','sw'); sw.style.background = cssVar(token); sw.style.opacity = '.6';
+    li.append(sw, h('span', null, label));
+    box.append(li);
+  });
+  const li = h('span','li');
+  const sw = h('span','sw'); sw.style.cssText = 'height:2px;border-radius:0;background:var(--accent)';
+  li.append(sw, h('span', null, '上下文用量曲线（底部）'));
+  box.append(li);
+  const nav = h('span','li');
+  const nsw = h('span','sw'); nsw.style.cssText = 'height:5px;border-radius:1px;background:var(--ink-3);opacity:.5';
+  nav.append(nsw, h('span', null, 'top strip = jump ruler (hover lights a block) · bars = click for details'));
+  box.append(nav);
+}
+function renderOverview() {
+  const wrap = $('#ov-scroll'); const keepScroll = wrap.scrollLeft;
+  wrap.textContent = ''; ovIndex = []; ovXOfTurn = new Map(); ovDraw = null; ovMarkById = new Map();
+  const events = [];
+  DATA.turns.forEach(t => t.events.forEach(e => events.push({ t, e })));
+  if (events.length < 2) { $('#overview').style.display = 'none'; return; }
+  $('#overview').style.display = '';
+  const mode = state.ovMode || 'even';
+  $('#ov-even').classList.toggle('active', mode === 'even');
+  $('#ov-time').classList.toggle('active', mode === 'time');
+  $('#ov-hint').textContent = mode === 'even'
+    ? 'one block per step · click to jump · drag to pan · wheel to zoom'
+    : 'real timing, bar length = duration · ≈ skips idle time · wheel to zoom';
+
+  const NAV = 13;                          // averaged jump blocks (DSH-style)
+  const LANE_E = 30, LANE_C = 42, AXIS = 22, TOP = 18 + NAV + 5;
+  const H = TOP + LANE_E + 6 + LANE_C + AXIS;
+  const NAV_Y = TOP - NAV - 5;
+  const zoom = state.ovZoom || 1;
+
+  // ---- x mapping per mode ----
+  let W, xOfEvent, gaps = [];   // xOfEvent(i, e) -> virtual x
+  if (mode === 'even') {
+    const n = events.length;
+    const step = Math.min(10, Math.max(4, 5600 / n)) * zoom;
+    W = Math.max(900, Math.round(n * step) + 12);
+    xOfEvent = i => i * step + 6;
+    var stepW = step;                        // bar width base for even mode
+  } else {
+    const timed = events.filter(v => v.e.ts != null);
+    if (timed.length < 2) { $('#overview').style.display = 'none'; return; }
+    const GAP_MS = 60000;
+    const stamps = [...new Set(timed.map(v => v.e.ts))].sort((a,b) => a-b);
+    const vt = [0];
+    for (let i = 1; i < stamps.length; i++) {
+      const dt = stamps[i] - stamps[i-1];
+      vt[i] = vt[i-1] + Math.min(dt, GAP_MS);
+      if (dt > GAP_MS) gaps.push(vt[i]);
+    }
+    const totalV = vt[vt.length-1] + 1000;
+    const basePx = Math.min(7, 5600 * 1000 / totalV);
+    W = Math.max(900, Math.round(totalV / 1000 * basePx * zoom) + 8);
+    const scaleX = (W - 8) / totalV;
+    const virtOf = ts => {
+      let lo = 0, hi = stamps.length - 1;
+      if (ts <= stamps[0]) return 0;
+      if (ts >= stamps[hi]) return vt[hi] + Math.min(ts - stamps[hi], GAP_MS);
+      while (hi - lo > 1) { const mid = (lo + hi) >> 1; (stamps[mid] <= ts ? lo = mid : hi = mid); }
+      return vt[lo] + Math.min(ts - stamps[lo], GAP_MS);
+    };
+    gaps = gaps.map(gv => gv * scaleX + 4);
+    var timeX = ts => virtOf(ts) * scaleX + 4;
+    let lastX = 4;
+    xOfEvent = (i, e) => { if (e.ts != null) lastX = timeX(e.ts); return lastX; };
+    var durW = (e, ex) => e.duration_ms ? Math.max(3, timeX(e.ts + e.duration_ms) - ex) : 3;
+  }
+
+  // ---- precompute draw records ----
+  const counts = {};
+  const marks = [], compactions = [], ctxPts = [];
+  const bands = [];                     // zebra bands per turn + labels
+  const SUB = 3, subH = (LANE_E - 4) / SUB, subEnd = [0, 0, 0];
+  let curBand = null;
+  events.forEach(({t, e}, i) => {
+    const ex = xOfEvent(i, e);
+    if (!curBand || curBand.turn !== t.index) {
+      if (curBand) curBand.x1 = ex;
+      curBand = { turn: t.index, x0: ex, x1: null };
+      bands.push(curBand);
+      ovXOfTurn.set(t.index, ex);
+    }
+    if (e.context_tokens != null) ctxPts.push({ x: ex, v: e.context_tokens });
+    if (e.kind === 'compaction') { compactions.push(ex); return; }
+    const c = categorize(e);
+    if (c) counts[c.cat] = (counts[c.cat] || 0) + 1;
+    let w, y, hh, cat = null, op;
+    if (mode === 'even') {
+      // Continuous ribbon: blocks touch (0.6px seam); heights differ, x never gaps.
+      w = Math.max(2, stepW - 0.6);
+      if (c) {
+        // The bar grows upward with runtime, so a slow, expensive call
+        // reads taller at a glance.
+        cat = c.cat; op = .95;
+        const dur = e.duration_ms || 0;
+        hh = Math.min(LANE_E - 2, 9 + (dur > 0 ? Math.log10(1 + dur / 100) * 6.5 : 0));
+        y = TOP + LANE_E - 2 - hh;
+      }
+      else if (e.kind === 'user_note') { cat = 'note'; y = TOP - 6; hh = LANE_E + 4; op = .95; }
+      else { y = TOP + LANE_E - 10; hh = 8; op = .45; }
+    } else {
+      if (c) {
+        cat = c.cat; op = .92;
+        w = durW(e, ex);
+        let row = subEnd.findIndex(end => end <= ex + 0.5);
+        if (row === -1) row = subEnd.indexOf(Math.min(...subEnd));
+        subEnd[row] = ex + w + 1.2;
+        y = TOP + row * subH; hh = subH - 2;
+      } else if (e.kind === 'user_note') { cat = 'note'; y = TOP - 5; hh = LANE_E + 2; w = 3.2; op = .95; }
+      else { w = 2.4; y = TOP + 7; hh = LANE_E - 16; op = .5; }
+    }
+    const mark = { x: ex, w: Math.min(w, W - ex), y, h: hh, cat, op, id: e.id };
+    marks.push(mark);
+    ovMarkById.set(e.id, mark);
+    ovIndex.push({ x: ex, w, e, turn: t.index });
+  });
+  if (curBand) curBand.x1 = W;
+  renderOvLegend(counts);
+
+  // Averaged nav blocks: every CHUNK consecutive events form one equal block;
+  // clicking it jumps the ledger there and briefly lights up its marks.
+  const CHUNK = ovIndex.length > 400 ? 4 : ovIndex.length > 120 ? 3 : 2;
+  const navBlocks = [];
+  for (let i = 0; i < ovIndex.length; i += CHUNK) {
+    const grp = ovIndex.slice(i, i + CHUNK);
+    const x0 = grp[0].x, last = grp[grp.length - 1];
+    navBlocks.push({ x0, x1: Math.max(last.x + last.w, x0 + 2), ids: grp.map(g => g.e.id), turn: grp[0].turn });
+  }
+
+  const maxCtx = Math.max(DATA.context_window || 0, ...ctxPts.map(p => p.v), 1);
+  const cy = v => TOP + LANE_E + 6 + LANE_C * (1 - v / maxCtx);
+
+  // ---- DOM: full-width spacer + viewport-sized sticky canvas ----
+  const spacer = h('div');
+  spacer.style.cssText = `width:${W}px;height:${H}px;`;
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = `position:sticky;left:0;display:block;margin-top:${-H}px;`;
+  wrap.append(spacer, canvas);
+  const ctx2 = canvas.getContext('2d');
+
+  ovDraw = () => {
+    const cw = Math.max(50, wrap.clientWidth - 28), dpr = window.devicePixelRatio || 1;
+    if (canvas.width !== Math.round(cw*dpr) || canvas.height !== Math.round(H*dpr)) {
+      canvas.width = Math.round(cw*dpr); canvas.height = Math.round(H*dpr);
+      canvas.style.width = cw + 'px'; canvas.style.height = H + 'px';
+    }
+    const sx = wrap.scrollLeft;
+    ctx2.setTransform(dpr, 0, 0, dpr, -sx*dpr, 0);
+    ctx2.clearRect(sx, 0, cw, H);
+    const vis0 = sx - 60, vis1 = sx + cw + 60;
+    // zebra bands + turn labels: the "which turn am I in" layer
+    bands.forEach((b, bi) => {
+      if (b.x1 < vis0 || b.x0 > vis1) return;
+      if (bi % 2 === 1) {
+        ctx2.fillStyle = cssVar('--ink-3'); ctx2.globalAlpha = .07;
+        ctx2.fillRect(b.x0 - 1, 2, b.x1 - b.x0, H - AXIS + 6);
+        ctx2.globalAlpha = 1;
+      }
+      ctx2.strokeStyle = cssVar('--line');
+      ctx2.beginPath(); ctx2.moveTo(b.x0 - 1, 2); ctx2.lineTo(b.x0 - 1, H - AXIS + 8); ctx2.stroke();
+      ctx2.fillStyle = cssVar('--accent'); ctx2.font = 'bold 11.5px system-ui';
+      ctx2.fillText('#' + b.turn, b.x0 + 4, H - 7);
+    });
+    if (DATA.context_window) {
+      const yw = cy(DATA.context_window);
+      ctx2.strokeStyle = cssVar('--warn'); ctx2.setLineDash([4,3]);
+      ctx2.beginPath(); ctx2.moveTo(vis0, yw); ctx2.lineTo(vis1, yw); ctx2.stroke();
+      ctx2.setLineDash([]);
+      // Name the limit line where it lives, pinned to the visible left edge.
+      ctx2.fillStyle = cssVar('--warn'); ctx2.font = '10px system-ui';
+      ctx2.fillText('上限 ' + fmtTok(DATA.context_window), sx + 6, yw - 3);
+    }
+    ctx2.strokeStyle = cssVar('--warn'); ctx2.setLineDash([2,3]); ctx2.lineWidth = 1.4;
+    compactions.forEach(vx => { if (vx < vis0 || vx > vis1) return; ctx2.beginPath(); ctx2.moveTo(vx, TOP-6); ctx2.lineTo(vx, H-AXIS); ctx2.stroke(); });
+    ctx2.setLineDash([]);
+    ctx2.fillStyle = cssVar('--ink-3'); ctx2.font = '10px system-ui';
+    gaps.forEach(gx => { if (gx < vis0 || gx > vis1) return; ctx2.fillText('≈', gx - 3, H - AXIS + 12); });
+    ctx2.lineWidth = 1.6;
+    if (ctxPts.length > 1) {
+      ctx2.strokeStyle = cssVar('--accent'); ctx2.globalAlpha = .9;
+      ctx2.beginPath();
+      let started = false, prevY = null;
+      for (const p of ctxPts) {
+        const py = cy(p.v);
+        if (p.x < vis0) { prevY = py; continue; }
+        if (p.x > vis1) { break; }
+        if (!started) { ctx2.moveTo(vis0, prevY ?? py); started = true; }
+        ctx2.lineTo(p.x, prevY ?? py);
+        ctx2.lineTo(p.x, py);
+        prevY = py;
+      }
+      if (!started && prevY != null) { ctx2.moveTo(vis0, prevY); ctx2.lineTo(vis1, prevY); }
+      else if (started && prevY != null) ctx2.lineTo(vis1, prevY);
+      ctx2.stroke(); ctx2.globalAlpha = 1;
+    }
+    ctx2.lineWidth = 1;
+    marks.forEach(m => {
+      if (m.x + m.w < vis0 || m.x > vis1) return;
+      ctx2.globalAlpha = m.op;
+      ctx2.fillStyle = m.cat === 'note' ? cssVar('--accent') : m.cat ? cssVar('--c-' + m.cat) : cssVar('--ink-3');
+      ctx2.fillRect(m.x, m.y, m.w, m.h);
+    });
+    ctx2.globalAlpha = 1;
+    // Lane label pinned to the left of the visible window — the bottom band
+    // is meaningless unless it says what it measures.
+    ctx2.save();
+    ctx2.fillStyle = cssVar('--ink-3'); ctx2.font = '600 9.5px system-ui';
+    ctx2.fillText('CONTEXT 上下文', sx + 6, TOP + LANE_E + 16);
+    ctx2.restore();
+    // nav strip: a quiet jump ruler — one faint band, and only the hovered
+    // block lights up so it reads as "a clickable little region" on demand
+    ctx2.globalAlpha = .09;
+    ctx2.fillStyle = cssVar('--ink-3');
+    ctx2.fillRect(vis0, NAV_Y, vis1 - vis0, NAV);
+    ctx2.globalAlpha = 1;
+    if (ovNavHover >= 0) {
+      const b = navBlocks[ovNavHover];
+      if (b && b.x1 >= vis0 && b.x0 <= vis1) {
+        ctx2.globalAlpha = .30; ctx2.fillStyle = cssVar('--accent');
+        ctx2.fillRect(b.x0, NAV_Y, b.x1 - b.x0 - 0.8, NAV);
+        ctx2.globalAlpha = 1; ctx2.strokeStyle = cssVar('--accent'); ctx2.lineWidth = 1.4;
+        ctx2.strokeRect(b.x0 - 0.5, NAV_Y - 0.5, (b.x1 - b.x0 - 0.8) + 1, NAV + 1);
+        ctx2.lineWidth = 1;
+      }
+    }
+    // hover / jump feedback rings on the record marks
+    [ovHoverId, ...ovFlashIds].forEach(idv => {
+      const m = idv && ovMarkById.get(idv);
+      if (!m) return;
+      ctx2.strokeStyle = cssVar('--accent'); ctx2.lineWidth = 1.8;
+      ctx2.strokeRect(m.x - 2, m.y - 2, m.w + 4, m.h + 4);
+      ctx2.lineWidth = 1;
+    });
+    if (ovCursorX != null) {
+      ctx2.fillStyle = cssVar('--accent'); ctx2.globalAlpha = .65;
+      ctx2.fillRect(ovCursorX, TOP-12, 2, H-AXIS-4);
+      ctx2.globalAlpha = 1;
+    }
+  };
+  wrap.scrollLeft = keepScroll;
+  ovDraw();
+
+  // ---- interactions: hover tooltip, click jump, drag pan, wheel zoom ----
+  const tip = $('#ov-tip');
+  const pointerPos = ev => {
+    const r = canvas.getBoundingClientRect();
+    return { px: ev.clientX - r.left + wrap.scrollLeft, py: ev.clientY - r.top };
+  };
+  const hit = ev => {
+    const { px, py } = pointerPos(ev);
+    // Only the ribbon lane itself is interactive, and only right at a bar —
+    // elsewhere the cursor stays quiet instead of grabbing far-away marks.
+    if (py < TOP - 8 || py > TOP + LANE_E + 4) return null;
+    let best = null, dist = 3.5;
+    ovIndex.forEach(m => { const d = px < m.x ? m.x - px : px > m.x + m.w ? px - m.x - m.w : 0; if (d < dist) { dist = d; best = m; } });
+    return best;
+  };
+  const hitNav = ev => {
+    const { px, py } = pointerPos(ev);
+    if (py < NAV_Y - 2 || py > NAV_Y + NAV + 3) return -1;
+    return navBlocks.findIndex(b => px >= b.x0 && px < b.x1);
+  };
+  let panned = false;
+  canvas.addEventListener('pointerdown', ev => {
+    const startX = ev.clientX, startScroll = wrap.scrollLeft;
+    panned = false;
+    const move = mv => {
+      const dx = mv.clientX - startX;
+      if (Math.abs(dx) > 4) { panned = true; wrap.classList.add('panning'); }
+      if (panned) { wrap.scrollLeft = startScroll - dx; tip.style.display = 'none'; }
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      wrap.classList.remove('panning');
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  });
+  canvas.addEventListener('mousemove', ev => {
+    if (panned) return;
+    const nb = hitNav(ev);
+    if (nb !== ovNavHover) { ovNavHover = nb; ovDraw(); }
+    if (nb >= 0) {
+      const b = navBlocks[nb];
+      tip.textContent = '';
+      tip.append(h('div', null, '跳转到 turn #' + b.turn + ' · ' + b.ids.length + ' steps'));
+      tip.style.display = 'block';
+      tip.style.left = Math.min(window.innerWidth - tip.offsetWidth - 10, ev.clientX + 12) + 'px';
+      tip.style.top = Math.max(8, ev.clientY - tip.offsetHeight - 12) + 'px';
+      canvas.style.cursor = 'pointer';
+      if (ovHoverId) { ovHoverId = null; ovDraw(); }
+      return;
+    }
+    const { px: hx, py: hy } = pointerPos(ev);
+    // Context readout only near the curve itself — claiming the whole lower
+    // band made the cursor feel grabby across dead space.
+    let near = null;
+    for (const pt of ctxPts) { if (pt.x <= hx) near = pt; else break; }
+    const onCurve = near && hy > TOP + LANE_E + 6 && Math.abs(hy - cy(near.v)) <= 9;
+    if (onCurve) {
+      tip.textContent = '';
+      tip.append(h('div', null, '上下文用量 (context window)'));
+      if (near) tip.append(h('div','d', fmtTok(near.v) + ' tokens'
+        + (DATA.context_window ? ' / ' + fmtTok(DATA.context_window) + ' 上限' : '')));
+      tip.append(h('div','d','折线越高 = 这一步模型带着越多上下文'));
+      tip.style.display = 'block';
+      tip.style.left = Math.min(window.innerWidth - tip.offsetWidth - 10, ev.clientX + 12) + 'px';
+      tip.style.top = Math.max(8, ev.clientY - tip.offsetHeight - 12) + 'px';
+      canvas.style.cursor = 'help';
+      if (ovHoverId) { ovHoverId = null; ovDraw(); }
+      return;
+    }
+    const best = hit(ev);
+    const nextHover = best ? best.e.id : null;
+    if (nextHover !== ovHoverId) { ovHoverId = nextHover; ovDraw(); }
+    if (!best) { tip.style.display = 'none'; canvas.style.cursor = ''; return; }
+    const e = best.e;
+    tip.textContent = '';
+    const l1 = h('div'); l1.append(h('b', null, e.tool ? shortToolName(e.tool) : e.kind));
+    if (e.duration_ms) l1.append(h('span','d',' · ' + fmtMs(e.duration_ms)));
+    tip.append(l1,
+      h('div','d', (e.args || e.text || '').replace(/\s+/g,' ').slice(0, 90)),
+      h('div','d', 'turn #' + best.turn + (e.context_tokens ? ' · ctx ' + fmtTok(e.context_tokens) : '') + (e.ts ? ' · ' + fmtClock(e.ts) : '')));
+    tip.style.display = 'block';
+    tip.style.left = Math.min(window.innerWidth - tip.offsetWidth - 10, ev.clientX + 12) + 'px';
+    tip.style.top = Math.max(8, ev.clientY - tip.offsetHeight - 10) + 'px';
+    canvas.style.cursor = 'pointer';
+  });
+  canvas.addEventListener('mouseleave', () => { tip.style.display = 'none'; if (ovHoverId || ovNavHover >= 0) { ovHoverId = null; ovNavHover = -1; ovDraw(); } });
+  canvas.addEventListener('click', ev => {
+    if (panned) { panned = false; return; }
+    const nb = hitNav(ev);
+    if (nb >= 0) {
+      // Nav block: jump the ledger there; its marks light up, then fade.
+      const b = navBlocks[nb];
+      jumpToEvent(b.ids[0], false);
+      flashMarks(b.ids);
+      return;
+    }
+    // Record mark: details only — no jump (DSH's long-bar behaviour).
+    const best = hit(ev);
+    if (best) { const ref = evById.get(best.e.id); if (ref) openDetail(ref.turn, ref.e, ref.c); }
+  });
+  canvas.addEventListener('wheel', ev => {
+    if (!ev.deltaY) return;
+    ev.preventDefault();
+    const r = canvas.getBoundingClientRect();
+    const anchorPx = ev.clientX - r.left;
+    const anchorFrac = (wrap.scrollLeft + anchorPx) / W;
+    const cur = state.ovZoom || 1;
+    const next = Math.min(16, Math.max(1, cur * (ev.deltaY < 0 ? 1.3 : 1/1.3)));
+    if (Math.abs(next - cur) < 0.01) return;
+    state.ovZoom = next;
+    renderOverview();
+    const wrap2 = $('#ov-scroll');
+    wrap2.scrollLeft = Math.max(0, anchorFrac * wrap2.scrollWidth - anchorPx);
+  }, { passive: false });
+}
+/* Reverse sync: a ledger click scrolls the overview to the event's mark
+   and pulses a ring around it. */
+let ovFlashTimer = 0;
+function flashMarks(ids) {
+  ovFlashIds = ids; if (ovDraw) ovDraw();
+  clearTimeout(ovFlashTimer);
+  ovFlashTimer = setTimeout(() => { ovFlashIds = []; if (ovDraw) ovDraw(); }, 1300);
+}
+function revealMark(id) {
+  const m = ovMarkById.get(id);
+  if (!m || !ovDraw) return;
+  const wrap = $('#ov-scroll');
+  glideScroll(wrap, Math.max(0, m.x - wrap.clientWidth / 2));
+  flashMarks([id]);
+  setTimeout(ovDraw, 180);   // redraw after the scroll settles
+}
+$('#ov-even').addEventListener('click', () => { state.ovMode = 'even'; state.ovZoom = 1; renderOverview(); });
+$('#ov-time').addEventListener('click', () => { state.ovMode = 'time'; state.ovZoom = 1; renderOverview(); });
+// One persistent scroll/resize hookup; renderOverview only swaps ovDraw.
+(() => {
+  const wrap = $('#ov-scroll');
+  let raf = 0, fallback = 0;
+  wrap.addEventListener('scroll', () => {
+    if (!ovDraw) return;
+    cancelAnimationFrame(raf); clearTimeout(fallback);
+    raf = requestAnimationFrame(ovDraw);
+    fallback = setTimeout(ovDraw, 40);   // panes without rAF still redraw
+  }, { passive:true });
+  new ResizeObserver(() => { if (ovDraw) ovDraw(); }).observe(wrap);
+  if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (ovDraw) ovDraw(); });
+})();
+function syncOverviewCursor() {
+  const tx = ovXOfTurn.get(state.activeTurn);
+  if (tx == null) return;
+  ovCursorX = tx;
+  const wrap = $('#ov-scroll');
+  if (tx < wrap.scrollLeft + 40 || tx > wrap.scrollLeft + wrap.clientWidth - 40)
+    glideScroll(wrap, Math.max(0, tx - wrap.clientWidth / 2));
+  if (ovDraw) ovDraw();
+}
+
+/* ================= annotations toggle ================= */
+function refreshAnnUI() {
+  const has = annByTurn().size > 0;
+  document.body.classList.toggle('learn', has && $('#ann-toggle').checked);
+  $('#ann-toggle-wrap').style.display = has ? '' : 'none';
+}
+$('#ann-toggle').addEventListener('change', refreshAnnUI);
+
+/* ================= ask AI ================= */
+const basketSession = (DATA.session && (DATA.session.id || DATA.session.path)) || 'unknown';
+const basketKey = 'agent-trajectory-ask:' + basketSession;
+let basket = [];
+try { basket = JSON.parse(localStorage.getItem(basketKey) || '[]'); } catch {}
+const saveBasket = () => { try { localStorage.setItem(basketKey, JSON.stringify(basket.slice(-50))); } catch {} };
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2400); }
+
+/* Feedback shows inside the Ask panel (and as a toast for good measure). */
+function askFeedback(msg, ok = true) {
+  const hint = $('#ask-hint');
+  hint.textContent = msg; hint.classList.toggle('ok', ok);
+  clearTimeout(hint._h); hint._h = setTimeout(() => hint.classList.remove('ok'), 2600);
+  toast(msg);
+}
+/* Clipboard with fallbacks — every path gives visible feedback. */
+async function copyText(text, okMsg) {
+  const msg = okMsg || '复制成功，可以发送给 AI 了';
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      askFeedback(msg); return true;
+    }
+  } catch { /* fall through */ }
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.append(ta); ta.select();
+    const ok = document.execCommand('copy'); ta.remove();
+    if (ok) { askFeedback(msg); return true; }
+  } catch { /* fall through */ }
+  // Last resort: put the text in the panel, selected, ready for Cmd+C.
+  openDrawer();
+  const fb = $('#ask-fallback');
+  fb.style.display = 'block'; fb.value = text; fb.focus(); fb.select();
+  askFeedback('剪贴板被环境禁用 — 文本已全选，按 Cmd/Ctrl+C 复制', false);
+  return false;
+}
+
+function updateAskBadge() {
+  const btn = $('#ask-open');
+  btn.textContent = basket.length ? `Ask AI (${basket.length})` : 'Ask AI';
+}
+/* A dot flies from the clicked row button to the Ask AI button. */
+function flyToAsk(fromEl) {
+  const target = $('#ask-open');
+  if (!fromEl || !target) return;
+  const a = fromEl.getBoundingClientRect(), b = target.getBoundingClientRect();
+  const dot = h('div');
+  dot.style.cssText = `position:fixed;z-index:80;width:12px;height:12px;border-radius:999px;`
+    + `background:var(--accent);left:${a.left + a.width/2 - 6}px;top:${a.top + a.height/2 - 6}px;`
+    + `transition:transform .55s cubic-bezier(.4,0,.6,1),opacity .55s;pointer-events:none;`;
+  document.body.append(dot);
+  const kick = () => {
+    dot.style.transform = `translate(${b.left + b.width/2 - (a.left + a.width/2)}px,${b.top + b.height/2 - (a.top + a.height/2)}px) scale(.5)`;
+    dot.style.opacity = '0.2';
+  };
+  requestAnimationFrame(kick); setTimeout(kick, 30);
+  setTimeout(() => {
+    dot.remove();
+    target.style.transform = 'scale(1.12)';
+    setTimeout(() => { target.style.transform = ''; }, 140);
+  }, 560);
+}
+/* Exactly one panel is open at a time; body.panel-open lets floating
+   controls step aside for whichever it is. */
+function showPanel(id) {
+  ['#drawer', '#detail-drawer'].forEach(sel => $(sel).classList.toggle('open', sel === id));
+  document.body.classList.add('panel-open');
+}
+function closePanels() {
+  ['#drawer', '#detail-drawer'].forEach(sel => $(sel).classList.remove('open'));
+  document.body.classList.remove('panel-open');
+  state.detailEventId = null;
+}
+function openDrawer() { showPanel('#drawer'); renderBasket(); }
+$('#ask-open').addEventListener('click', openDrawer);
+$('#ask-open').style.transition = 'transform .14s';
+$('#drawer-close').addEventListener('click', closePanels);
+$('#ask-clear').addEventListener('click', () => { basket = []; saveBasket(); renderBasket(); });
+
+function askAbout(turn, e, c, fromEl) {
+  const what = e.kind === 'tool'
+    ? `调用了工具 ${e.tool}${c ? '（类别 ' + c.label + '）' : ''}，参数摘要：${(e.args||'').slice(0,120)}`
+    : `有一条 ${e.kind} 记录：${(e.text||'').slice(0,140)}`;
+  const q = `我在看一个 AI agent 的会话轨迹。第 ${turn.index} 轮里${what}。请用通俗的语言简短解释：这个工具/这一步是什么、agent 为什么可能这么做？`;
+  basket.push({ q, a:'' });
+  saveBasket();
+  // Collect quietly: fly-in animation + counter. The drawer opens only from
+  // the Ask AI button, so collecting several questions doesn't interrupt.
+  flyToAsk(fromEl);
+  updateAskBadge();
+  if ($('#drawer').classList.contains('open')) renderBasket();
+}
+function renderBasket() {
+  const list = $('#ask-list'); list.textContent = '';
+  if (!basket.length) {
+    const p = h('div', null, 'Hover any step and press 问AI to collect a question — or type one below.');
+    p.style.cssText = 'color:var(--ink-3);font-size:14px'; list.append(p);
+  }
+  const canAnswer = CFG.live && CFG.ask;
+  const go = $('#ask-go');
+  if (!go.disabled) go.textContent = canAnswer ? '一键 Ask AI' : '一键复制所选问题';
+  basket.forEach((item, i) => {
+    const box = h('div','q-item');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.checked = item.sel !== false;
+    cb.addEventListener('change', () => { item.sel = cb.checked; saveBasket(); });
+    box.append(cb);
+    box.append(h('div','q', item.q));
+    const a = h('div','a', item.a || ''); box.append(a);
+    const acts = h('div','q-actions');
+    if (canAnswer) {
+      const askB = h('button','tbtn primary', item.a ? 'Ask again' : 'Ask');
+      askB.addEventListener('click', () => runAsk(item, a, askB));
+      acts.append(askB);
+    }
+    const copyB = h('button','tbtn','复制');
+    copyB.addEventListener('click', () => copyText(item.q));
+    const delB = h('button','tbtn','✕');
+    delB.addEventListener('click', () => { basket.splice(i,1); saveBasket(); renderBasket(); updateAskBadge(); });
+    acts.append(copyB, delB); box.append(acts);
+    list.append(box);
+  });
+  list.scrollTop = list.scrollHeight;
+  updateAskBadge();
+  const hint = $('#ask-hint');
+  if (!hint.classList.contains('ok')) hint.textContent = basket.length
+    ? (canAnswer
+        ? '勾选后可直接由本机 ' + (CFG.ask_cli || 'CLI') + ' 作答，或复制走给别的 AI。'
+        : '勾选后复制，粘贴给你的 AI 即可（本机无可用 CLI）。')
+    : '在任意一行点「问AI」即可把那一步收集到这里。';
+}
+const selectedItems = () => basket.filter(x => x.sel !== false);
+$('#ask-selall').addEventListener('click', () => { basket.forEach(x => x.sel = true); saveBasket(); renderBasket(); });
+$('#ask-selnone').addEventListener('click', () => { basket.forEach(x => x.sel = false); saveBasket(); renderBasket(); });
+const joinQs = items => items.map(x => x.q).join('\n\n---\n\n');
+$('#ask-copy-sel').addEventListener('click', () => {
+  const sel = selectedItems();
+  if (!sel.length) { askFeedback('还没有勾选任何问题', false); return; }
+  copyText(joinQs(sel), '已复制 ' + sel.length + ' 个问题，可以发送给 AI 了');
+});
+$('#ask-copy-all').addEventListener('click', () => {
+  if (!basket.length) { askFeedback('还没有收集任何问题', false); return; }
+  copyText(joinQs(basket), '已复制全部 ' + basket.length + ' 个问题');
+});
+/* The primary action asks; when no local CLI can answer it still delivers
+   the text rather than failing. */
+$('#ask-go').addEventListener('click', async () => {
+  const sel = selectedItems();
+  if (!sel.length) { askFeedback('还没有勾选任何问题', false); return; }
+  if (!(CFG.live && CFG.ask)) {
+    copyText(sel.map(x => x.q).join('\n\n---\n\n'),
+      '已复制 ' + sel.length + ' 个问题，可以发送给 AI 了');
+    return;
+  }
+  const go = $('#ask-go');
+  go.disabled = true; go.textContent = '正在问…';
+  const boxes = [...$('#ask-list').children];
+  for (let i = 0; i < basket.length; i++) {
+    if (basket[i].sel === false) continue;
+    const a = boxes[i] && boxes[i].querySelector('.a');
+    const btn = boxes[i] && boxes[i].querySelector('.q-actions .tbtn');
+    if (a && btn) await runAsk(basket[i], a, btn);
+  }
+  go.disabled = false; go.textContent = '一键 Ask AI';
+});
+/* A short answer that is really a login/usage error means the CLI cannot
+   answer on this machine — treat it as unavailable and fall back to copy. */
+const looksLikeCliFailure = text =>
+  /\(ask (?:error|timed out|exited with code [1-9])/i.test(text)
+  || (text.trim().length < 220
+      && /not logged in|please run \/login|log in|api key|usage limit|error:|command not found/i.test(text));
+async function runAsk(item, aEl, btn) {
+  if (!(CFG.live && CFG.ask)) {
+    copyText(item.q, '复制成功，可以发送给 AI 了');
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Asking…'; aEl.textContent = '';
+  let failed = false;
+  try {
+    const res = await fetch('api/ask', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ question:item.q }) });
+    if (!res.ok || !res.body) throw new Error('HTTP ' + res.status);
+    const reader = res.body.getReader(); const dec = new TextDecoder();
+    for (;;) { const { done, value } = await reader.read(); if (done) break; aEl.textContent += dec.decode(value, { stream:true }); }
+    if (looksLikeCliFailure(aEl.textContent)) failed = true;
+    else { item.a = aEl.textContent; saveBasket(); }
+  } catch (err) { failed = true; aEl.textContent = '(ask failed: ' + err.message + ')'; }
+  if (failed) {
+    aEl.textContent = (aEl.textContent || '').trim();
+    copyText(item.q, '本机 AI 命令行不可用 — 问题已复制，粘贴给你的 AI 即可');
+  }
+  btn.disabled = false; btn.textContent = failed ? 'Copy for AI' : 'Ask again';
+}
+
+
+/* ================= export ================= */
+const exportMenu = $('#export-menu');
+const closeExport = () => exportMenu.classList.remove('open');
+$('#export-open').addEventListener('click', ev => { ev.stopPropagation(); exportMenu.classList.toggle('open'); });
+document.addEventListener('click', closeExport);
+exportMenu.addEventListener('click', ev => ev.stopPropagation());
+$('#export-pdf').addEventListener('click', () => { closeExport(); window.print(); });
+$('#export-html').addEventListener('click', () => {
+  closeExport();
+  if (CFG.live) { location.href = 'export'; return; }
+  const blob = new Blob(['<!doctype html>\n' + document.documentElement.outerHTML], { type:'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'agent-trajectory.html'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+});
+
+/* ================= live updates ================= */
+function renderAll() { renderHeader(); renderNav(); renderFilters(); renderOverview(); renderTurns(); refreshAnnUI(); updateAskBadge(); }
+let followingUpdate = false;
+function blinkLive() {
+  const dot = document.querySelector('.live-dot');
+  if (!dot) return;
+  dot.style.opacity = '0.25';
+  setTimeout(() => { dot.style.opacity = '1'; }, 60);
+}
+function patchUpdate(newData, newAnn) {
+  blinkLive();
+  const old = DATA;
+  const annChanged = newAnn !== undefined && JSON.stringify(ANN) !== JSON.stringify(newAnn);
+  DATA = newData;
+  if (newAnn !== undefined) ANN = newAnn;
+  if (state.allExpanded) {
+    DATA.turns.forEach((t, i) => {
+      if (old.turns[i]) return;
+      state.expandedTurns.set(t.index, true);
+      state.fullTurns.set(t.index, true);
+      state.fullUserText.set(t.index, true);
+    });
+  }
+  renderHeader(); renderNav(); renderFilters(); renderOverview();
+  if (annChanged) {
+    renderTurns();
+  } else {
+    const root = $('#turns');
+    DATA.turns.forEach((t, i) => {
+      const prev = old.turns[i];
+      const node = root.children[i];
+      if (!node) { root.append(buildTurn(t)); return; }
+      if (!prev || JSON.stringify(prev) !== JSON.stringify(t))
+        root.replaceChild(buildTurn(t), node);
+    });
+    while (root.children.length > DATA.turns.length) root.lastElementChild.remove();
+    indexEvents();
+    applyFilters();
+    observeTurns();
+  }
+  refreshAnnUI();
+  if ($('#detail-drawer').classList.contains('open') && state.detailEventId) {
+    const ref = evById.get(state.detailEventId);
+    if (ref) openDetail(ref.turn, ref.e, ref.c); else closePanels();
+  }
+  if (state.follow) {
+    followingUpdate = true;
+    pageScrollTo(document.body.scrollHeight - window.innerHeight);
+    setTimeout(() => { followingUpdate = false; }, 400);
+  }
+}
+async function pollLoop() {
+  let mtime = CFG.mtime || 0;
+  for (;;) {
+    await new Promise(r => setTimeout(r, CFG.poll || 1500));
+    try {
+      const res = await fetch('api/trajectory?mtime=' + mtime, { cache:'no-store' });
+      if (!res.ok) continue;
+      const body = await res.json();
+      if (body.unchanged) continue;
+      mtime = body.mtime;
+      patchUpdate(body.data, body.annotations);
+    } catch { /* server briefly away; keep polling */ }
+  }
+}
+if (CFG.live) {
+  $('#live-ind').style.display = '';
+  $('#follow-wrap').style.display = '';
+  $('#follow').addEventListener('change', ev => { state.follow = ev.target.checked; });
+  window.addEventListener('scroll', () => {
+    const nearBottom = window.scrollY + window.innerHeight > document.body.scrollHeight - 300;
+    if (!nearBottom && state.follow && !followingUpdate) {
+      state.follow = false; $('#follow').checked = false;
+    }
+  }, { passive:true });
+  pollLoop();
+}
+
+let prePrintState = null;
+window.addEventListener('beforeprint', () => {
+  if (prePrintState) return;
+  prePrintState = {
+    expandedTurns:new Map(state.expandedTurns),
+    fullTurns:new Map(state.fullTurns),
+    fullUserText:new Map(state.fullUserText),
+    hiddenCats:new Set(state.hiddenCats),
+    search:state.search,
+    allExpanded:state.allExpanded,
+  };
+  state.search = '';
+  state.hiddenCats = new Set();
+  DATA.turns.forEach(t => {
+    state.expandedTurns.set(t.index, true);
+    state.fullTurns.set(t.index, true);
+    state.fullUserText.set(t.index, true);
+  });
+  renderTurns();
+});
+window.addEventListener('afterprint', () => {
+  if (!prePrintState) return;
+  Object.assign(state, prePrintState);
+  prePrintState = null;
+  renderTurns();
+  $('#collapse-all').textContent = state.allExpanded ? '全部收起' : '全部展开';
+});
+renderAll();
+/* Follow governs events that arrive while you watch, not page load — a
+   refresh at the top must stay at the top. */
+})();
+</script>
+</body>
+</html>

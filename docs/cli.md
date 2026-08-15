@@ -4,8 +4,7 @@
 
 ```text
 usage: agents-kit [-h]
-                  {status,migrate,source,skill,plugin,marketplace,mcp,global,project,docs,ui,check}
-                  ...
+                  {status,migrate,source,skill,plugin,marketplace,mcp,global,project,docs,ui,check} ...
 
 统一管理 agents_kit 中的技能、来源、安装和生成文档
 
@@ -137,8 +136,7 @@ options:
 
 $ agents-kit skill --help
 usage: agents-kit skill [-h]
-                        {import,list,show,open,metadata,rename,move,remove}
-                        ...
+                        {import,list,show,open,metadata,rename,move,remove} ...
 
 positional arguments:
   {import,list,show,open,metadata,rename,move,remove}
@@ -155,8 +153,8 @@ options:
   -h, --help            show this help message and exit
 
 $ agents-kit skill import --help
-usage: agents-kit skill import [-h] --category CATEGORY --scope
-                               {library,global,project} [--name NAME]
+usage: agents-kit skill import [-h] --category CATEGORY
+                               --scope {library,global,project} [--name NAME]
                                --description DESCRIPTION [--trigger TRIGGER]
                                --tag TAG [--recommendation {1,2,3,4,5}]
                                [--project PROJECT] [--replace] [--dry-run]
@@ -292,8 +290,7 @@ options:
 
 $ agents-kit plugin --help
 usage: agents-kit plugin [-h]
-                         {inspect,import,list,show,open,enable,disable,update,detach,remove}
-                         ...
+                         {inspect,import,list,show,open,enable,disable,update,detach,remove} ...
 
 positional arguments:
   {inspect,import,list,show,open,enable,disable,update,detach,remove}
@@ -329,9 +326,9 @@ options:
   --json
 
 $ agents-kit plugin import --help
-usage: agents-kit plugin import [-h] [--candidate CANDIDATE] --category
-                                CATEGORY [--target {claude,codex}] --tag TAG
-                                [--replace] [--dry-run] [--yes]
+usage: agents-kit plugin import [-h] [--candidate CANDIDATE]
+                                --category CATEGORY [--target {claude,codex}]
+                                --tag TAG [--replace] [--dry-run] [--yes]
                                 [--provider PROVIDER] [--ref REF]
                                 [--source-path SOURCE_PATH] [--json]
                                 source
@@ -487,8 +484,7 @@ options:
 
 $ agents-kit mcp --help
 usage: agents-kit mcp [-h]
-                      {import,list,show,enable,disable,apply,update,remove,run}
-                      ...
+                      {import,list,show,enable,disable,apply,update,remove,run} ...
 
 positional arguments:
   {import,list,show,enable,disable,apply,update,remove,run}
@@ -509,12 +505,13 @@ $ agents-kit mcp import --help
 usage: agents-kit mcp import [-h] --name NAME --description DESCRIPTION
                              [--tag TAG] [--recommendation {1,2,3,4,5}]
                              --distribution {brew,npm,pypi,remote}
-                             [--package PACKAGE] [--version VERSION] --command
-                             COMMAND [--arg ARG] [--secret-env SECRET_ENV]
+                             [--package PACKAGE] [--version VERSION]
+                             --command COMMAND [--arg ARG]
+                             [--secret-env SECRET_ENV]
                              [--secret-command NAME=COMMAND]
-                             [--target {claude,codex}] --scope
-                             {library,global} [--replace] [--dry-run] [--yes]
-                             [--json]
+                             [--target {claude,codex}]
+                             --scope {library,global} [--replace] [--dry-run]
+                             [--yes] [--json]
                              source
 
 positional arguments:
