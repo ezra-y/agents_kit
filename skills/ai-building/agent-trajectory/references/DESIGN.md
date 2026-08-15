@@ -1,7 +1,8 @@
 # Design Tokens
 
 The viewer is a single HTML file; every token below lives in `:root` of
-`template.html`. Change them there — nothing else hardcodes a color or size.
+`assets/template.html`. Change them there — nothing else hardcodes a color or
+size.
 
 ## Typography
 

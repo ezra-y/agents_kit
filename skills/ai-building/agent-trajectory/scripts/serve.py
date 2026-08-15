@@ -2,8 +2,9 @@
 """Live trajectory server: watch a session log, serve the viewer, answer Ask-AI.
 
 Usage:
-  python3 serve.py [--session <path>] [--host claude|codex|auto] [--cwd <dir>]
-                   [--annotations <path>] [--port 7469] [--open]
+  python3 scripts/serve.py [--session <path>] [--host claude|codex|auto]
+                           [--cwd <dir>] [--annotations <path>]
+                           [--port 7469] [--open]
 
 Endpoints (all bound to 127.0.0.1 only):
   GET  /                → viewer with current data embedded (live mode on)

@@ -24,8 +24,8 @@
 - **两个档位。** *原始档*纯解析日志，零模型调用，秒出。*教学档*在其上生成
   AI 注解（轮目标、每步为什么、轮故事线），严格基于解析出的事件来写，
   不允许编造。
-- **实时模式。** `serve.py` 盯着会话日志，agent 一边干活页面一边更新。
-  本地、实时、零依赖。
+- **实时模式。** `scripts/serve.py` 盯着会话日志，agent 一边干活页面一边
+  更新。本地、实时、零依赖。
 - **一键问 AI。** 鼠标停在任何一步上按"问AI"，问题进入抽屉笔记本。实时
   模式下由本地 CLI（`claude -p` / `codex exec` / 通过
   `$AGENT_TRAJECTORY_ASK_CMD` 自定义）在页面里直接回答；静态页面则一键
@@ -37,11 +37,11 @@
 
 ```sh
 # 实时查看当前会话（在你的项目目录里运行）
-python3 serve.py --open
+python3 scripts/serve.py --open
 
 # 或者：生成一个静态 HTML
-python3 parse_trajectory.py -o /tmp/traj.json
-python3 render.py --data /tmp/traj.json -o trajectory.html
+python3 scripts/parse_trajectory.py -o /tmp/traj.json
+python3 scripts/render.py --data /tmp/traj.json -o trajectory.html
 ```
 
 只需 Python 3.9+ 标准库。所有数据都留在你的机器上。
@@ -53,15 +53,25 @@ python3 render.py --data /tmp/traj.json -o trajectory.html
 装到你的 agent 读取 skill 的位置，然后说"看看这个会话的轨迹"或要"教学档"
 即可。
 
+## 目录结构
+
+```text
+SKILL.md              Agent 工作流与注解约定
+scripts/              解析器、渲染器和实时服务
+assets/               HTML 模板与 README 截图
+references/           设计说明
+tests/                解析、渲染和实时服务的回归测试
+```
+
 ## 工作原理
 
 ```
 会话日志 (JSONL)             注解 (教学档，AI 生成)
       │                              │
-parse_trajectory.py ──► 轨迹 JSON (agent-trajectory/v1)
+scripts/parse_trajectory.py ──► 轨迹 JSON (agent-trajectory/v1)
       │                              │
-      └── render.py ── 静态 HTML ◄───┘
-      └── serve.py ─── 实时 HTML + /api/trajectory + /api/ask + /export
+      └── scripts/render.py ── 静态 HTML ◄───┘
+      └── scripts/serve.py ─── 实时 HTML + /api/trajectory + /api/ask + /export
 ```
 
 按宿主自动发现会话（当前工作目录的最新会话）：
@@ -106,8 +116,9 @@ parse_trajectory.py ──► 轨迹 JSON (agent-trajectory/v1)
 
 ## 新增宿主适配器
 
-1. 在 `parse_trajectory.py` 中编写返回上述 schema 的 `parse_<host>(path)`。
-   可以参考各约 100 行的 `parse_claude` 和 `parse_codex`。
+1. 在 `scripts/parse_trajectory.py` 中编写返回上述 schema 的
+   `parse_<host>(path)`。可以参考各约 100 行的 `parse_claude` 和
+   `parse_codex`。
 2. 如果可以自动发现会话，在 `discover()` 中注册适配器。
 3. 在 `tests/test_parse.py` 中添加一个 fixture 测试。
 
@@ -115,9 +126,10 @@ parse_trajectory.py ──► 轨迹 JSON (agent-trajectory/v1)
 
 ## 设计规范
 
-字体、颜色 token 和工具类别色板见 [DESIGN.md](DESIGN.md)。类别色板
-（MCP / Shell / Skill / File / Web / Agent）在明暗两套模式下都通过了
-色盲安全与对比度校验，且类别颜色永远伴随文字标签出现。
+字体、颜色 token 和工具类别色板见
+[references/DESIGN.md](references/DESIGN.md)。类别色板（MCP / Shell /
+Skill / File / Web / Agent）在明暗两套模式下都通过了色盲安全与对比度
+校验，且类别颜色永远伴随文字标签出现。
 
 ## 致谢
 

@@ -14,15 +14,16 @@ timeline with the context-window usage curve. Two tiers:
   "why" under pivotal tool calls, and a 2–4 sentence storyline per turn. For
   people learning how agents work under the hood.
 
-Everything runs locally; the log never leaves the machine. All bundled files
-live next to this SKILL.md — use absolute paths (`<skill-dir>` below). Work
-files go in a temp dir (`<tmp>`).
+Everything runs locally; the log never leaves the machine. Resolve
+`<skill-dir>` to the directory containing this file, run bundled programs from
+`<skill-dir>/scripts`, and keep work files in a temp directory (`<tmp>`).
 
 ## Choose the delivery mode first
 
 - **Live** (preferred when the user wants to watch the current/ongoing
-  session, says "real-time", or will keep working): run `serve.py` in the
-  background and give the user the URL. The page follows the log as it grows.
+  session, says "real-time", or will keep working): run `scripts/serve.py` in
+  the background and give the user the URL. The page follows the log as it
+  grows.
 - **Static** (preferred for a finished session, sharing, or archiving): run
   the parse → render pipeline and hand over one self-contained HTML file.
 
@@ -32,7 +33,7 @@ a live session can always be turned into a static artifact later.
 ## Live mode
 
 ```sh
-python3 <skill-dir>/serve.py [--session <path>] [--annotations <tmp>/annotations.json] [--port 7469]
+python3 <skill-dir>/scripts/serve.py [--session <path>] [--annotations <tmp>/annotations.json] [--port 7469]
 ```
 
 - Run it in the background; tell the user the URL (`http://127.0.0.1:<port>/`).
@@ -52,7 +53,7 @@ python3 <skill-dir>/serve.py [--session <path>] [--annotations <tmp>/annotations
 ### 1. Parse
 
 ```sh
-python3 <skill-dir>/parse_trajectory.py -o <tmp>/trajectory.json
+python3 <skill-dir>/scripts/parse_trajectory.py -o <tmp>/trajectory.json
 ```
 
 Useful flags: `--list` (show candidate session logs), `--session <path>`
@@ -101,7 +102,7 @@ Honesty rules — these keep annotations trustworthy:
 ### 4. Render
 
 ```sh
-python3 <skill-dir>/render.py --data <tmp>/trajectory.json [--annotations <tmp>/annotations.json] -o ./agent-trajectory-<yyyymmdd-HHMM>.html
+python3 <skill-dir>/scripts/render.py --data <tmp>/trajectory.json [--annotations <tmp>/annotations.json] -o ./agent-trajectory-<yyyymmdd-HHMM>.html
 ```
 
 Write the output into the current working directory (or where the user asked).
@@ -118,9 +119,9 @@ Write the output into the current working directory (or where the user asked).
 
 ## Normalized JSON (adapter contract)
 
-`parse_trajectory.py` emits `agent-trajectory/v1`; to support another host,
-produce this shape and feed it to `render.py`/`serve.py` (or add an adapter
-function — see README):
+`scripts/parse_trajectory.py` emits `agent-trajectory/v1`; to support another
+host, produce this shape and feed it to `scripts/render.py` or
+`scripts/serve.py` (or add an adapter function — see README):
 
 ```
 { schema, host, session: {id, path, cwd, title},

@@ -26,8 +26,8 @@ wants to review what an agent did on their machine.
 - **Two tiers.** *Raw* is pure log parsing — no model calls, instant.
   *Learn* adds AI-written annotations (per-turn goal, per-step why, per-turn
   storyline), grounded strictly in the parsed events so it can't invent steps.
-- **Live mode.** `serve.py` watches the session log and updates the page while
-  the agent works. Real-time, local, zero dependencies.
+- **Live mode.** `scripts/serve.py` watches the session log and updates the
+  page while the agent works. Real-time, local, zero dependencies.
 - **Ask AI.** Hover any step, press 问AI — the question lands in a notebook
   drawer. In live mode it's answered in-page by a local CLI (`claude -p` /
   `codex exec` / anything via `$AGENT_TRAJECTORY_ASK_CMD`); in a static page
@@ -39,11 +39,11 @@ wants to review what an agent did on their machine.
 
 ```sh
 # live view of your current session (run inside your project directory)
-python3 serve.py --open
+python3 scripts/serve.py --open
 
 # or: one static HTML file
-python3 parse_trajectory.py -o /tmp/traj.json
-python3 render.py --data /tmp/traj.json -o trajectory.html
+python3 scripts/parse_trajectory.py -o /tmp/traj.json
+python3 scripts/render.py --data /tmp/traj.json -o trajectory.html
 ```
 
 Everything is Python 3.9+ stdlib. Nothing leaves your machine.
@@ -56,15 +56,25 @@ tier — how to write the annotations JSON. Install it wherever your agent looks
 for skills, then say "show me this session's trajectory" or ask for the
 "learn / annotated" version.
 
+## Repository layout
+
+```text
+SKILL.md              Agent workflow and annotation contract
+scripts/              Parser, renderer, and live server
+assets/               HTML template and README screenshot
+references/           Design reference
+tests/                Parser, renderer, and live-server regression tests
+```
+
 ## How it works
 
 ```
 session log (JSONL)          annotations (learn tier, AI-written)
       │                                  │
-parse_trajectory.py  ──►  trajectory JSON (agent-trajectory/v1)
+scripts/parse_trajectory.py  ──►  trajectory JSON (agent-trajectory/v1)
       │                                  │
-      └── render.py ── static HTML ◄─────┘
-      └── serve.py ─── live HTML + /api/trajectory + /api/ask + /export
+      └── scripts/render.py ── static HTML ◄─────┘
+      └── scripts/serve.py ─── live HTML + /api/trajectory + /api/ask + /export
 ```
 
 Session discovery is automatic per host (newest session for the current
@@ -111,8 +121,8 @@ must follow (grounded in parsed events; failures never smoothed over).
 
 ## Adding a host adapter
 
-1. Write `parse_<host>(path)` in `parse_trajectory.py` returning the schema
-   above (look at `parse_claude` / `parse_codex` — ~100 lines each).
+1. Write `parse_<host>(path)` in `scripts/parse_trajectory.py` returning the
+   schema above (look at `parse_claude` / `parse_codex` — ~100 lines each).
 2. Register it in `discover()` if sessions can be found automatically.
 3. Add a fixture test in `tests/test_parse.py`.
 
@@ -121,9 +131,10 @@ The viewer, live server, annotations, and exports work unchanged.
 ## Design
 
 Typography, color tokens, and the tool-category palette live in
-[DESIGN.md](DESIGN.md). The categorical palette (MCP / Shell / Skill / File /
-Web / Agent) passes a colorblind-safety and contrast validator in both light
-and dark mode, and category color never appears without a text label.
+[references/DESIGN.md](references/DESIGN.md). The categorical palette (MCP /
+Shell / Skill / File / Web / Agent) passes a colorblind-safety and contrast
+validator in both light and dark mode, and category color never appears
+without a text label.
 
 ## Acknowledgements
 

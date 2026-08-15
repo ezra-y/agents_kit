@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Fill template.html with trajectory data (and optional annotations).
+"""Fill the bundled HTML template with trajectory data and annotations.
 
 Usage:
-  python3 render.py --data traj.json [--annotations ann.json] -o out.html
+  python3 scripts/render.py --data traj.json [--annotations ann.json] -o out.html
 
 Kept separate from parsing so the learn tier can regenerate the page after
 annotations are written, without re-parsing the session log.
@@ -12,7 +12,7 @@ import argparse
 import json
 from pathlib import Path
 
-TEMPLATE = Path(__file__).parent / "template.html"
+TEMPLATE = Path(__file__).parent.parent / "assets" / "template.html"
 
 
 def embed(html, element_id, payload):
