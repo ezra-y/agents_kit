@@ -1,8 +1,10 @@
-# agent-trajectory
+<h1 align="center">agent-trajectory</h1>
 
-English | [中文](README.zh.md)
+<p align="center">English | <a href="README.zh.md">中文</a></p>
 
-**See what your AI agent actually did — turn by turn, tool by tool, token by token.**
+<p align="center"><img src="assets/trajectory-overview.png" alt="Session trajectory overview"></p>
+
+<p align="center"><strong>See what your AI agent actually did — turn by turn, tool by tool, token by token.</strong></p>
 
 `agent-trajectory` turns a Claude Code or Codex session log (or normalized
 `agent-trajectory/v1` JSON from another host) into a trajectory viewer: a
@@ -14,12 +16,6 @@ short storyline of what actually happened, failures included.
 
 Built for people learning how agents work under the hood, and for anyone who
 wants to review what an agent did on their machine.
-
-## Screenshots
-
-![Session trajectory overview](assets/trajectory-overview.png)
-
-![Step details sidebar](assets/trajectory-step-detail.png)
 
 ## Highlights
 

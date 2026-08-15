@@ -1,8 +1,10 @@
-# agent-trajectory
+<h1 align="center">agent-trajectory</h1>
 
-[English](README.md) | 中文
+<p align="center"><a href="README.md">English</a> | 中文</p>
 
-**看清你的 AI agent 每一轮到底做了什么——每次调用、每个工具、每个 token。**
+<p align="center"><img src="assets/trajectory-overview.png" alt="会话轨迹总览"></p>
+
+<p align="center"><strong>看清你的 AI agent 每一轮到底做了什么——每次调用、每个工具、每个 token。</strong></p>
 
 `agent-trajectory` 把 Claude Code 或 Codex 会话日志（其他宿主可先转换成
 `agent-trajectory/v1` JSON）变成一个轨迹查看器：逐轮的工具调用流水账（参数、结果、耗时、
@@ -12,12 +14,6 @@
 
 为想学习 agent 底层原理的人而做，也适合任何想审查 agent 在自己机器上干了
 什么的人。
-
-## 界面预览
-
-![会话轨迹总览](assets/trajectory-overview.png)
-
-![步骤详情侧栏](assets/trajectory-step-detail.png)
 
 ## 亮点
 
