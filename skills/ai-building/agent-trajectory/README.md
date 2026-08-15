@@ -15,15 +15,17 @@ short storyline of what actually happened, failures included.
 Built for people learning how agents work under the hood, and for anyone who
 wants to review what an agent did on their machine.
 
+## Screenshots
+
+![Session trajectory overview](assets/trajectory-overview.png)
+
+![Step details sidebar](assets/trajectory-step-detail.png)
+
 ## Highlights
 
 - **Two tiers.** *Raw* is pure log parsing — no model calls, instant.
   *Learn* adds AI-written annotations (per-turn goal, per-step why, per-turn
   storyline), grounded strictly in the parsed events so it can't invent steps.
-- **Timeline overview.** Every event as a colored mark on a gap-compressed time
-  axis (idle stretches collapse to a `≈`), with a context-usage curve
-  underneath — you can watch the context window fill up and see exactly where
-  compaction dropped it. Click any mark to jump; mouse wheel zooms.
 - **Live mode.** `serve.py` watches the session log and updates the page while
   the agent works. Real-time, local, zero dependencies.
 - **Ask AI.** Hover any step, press 问AI — the question lands in a notebook
@@ -32,8 +34,6 @@ wants to review what an agent did on their machine.
   it's copied for pasting into any chat.
 - **Self-contained output.** One HTML file, no network, no build step, light
   and dark, print-to-PDF ready. Send it to anyone.
-- **Host-agnostic.** Adapters normalize each host's log into one JSON schema;
-  the viewer only ever sees the schema. Adding a host = one parser function.
 
 ## Quick start
 
@@ -128,7 +128,7 @@ and dark mode, and category color never appears without a text label.
 ## Development
 
 ```sh
-python3 -m unittest discover -s tests   # 8 tests, <1s
+python3 -m unittest discover -s tests   # run the full test suite
 ```
 
 Notable engineering decisions, learned the hard way:

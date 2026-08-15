@@ -13,14 +13,17 @@
 为想学习 agent 底层原理的人而做，也适合任何想审查 agent 在自己机器上干了
 什么的人。
 
+## 界面预览
+
+![会话轨迹总览](assets/trajectory-overview.png)
+
+![步骤详情侧栏](assets/trajectory-step-detail.png)
+
 ## 亮点
 
 - **两个档位。** *原始档*纯解析日志，零模型调用，秒出。*教学档*在其上生成
   AI 注解（轮目标、每步为什么、轮故事线），严格基于解析出的事件来写，
   不允许编造。
-- **时间轴总览。** 每个事件是压缩时间轴上的一个色块（空闲段折叠成 `≈`），
-  下方是上下文用量曲线——你能看着上下文一点点涨满，以及压缩(compaction)
-  在哪里把它砍掉。点色块跳转，滚轮缩放。
 - **实时模式。** `serve.py` 盯着会话日志，agent 一边干活页面一边更新。
   本地、实时、零依赖。
 - **一键问 AI。** 鼠标停在任何一步上按"问AI"，问题进入抽屉笔记本。实时
@@ -29,8 +32,6 @@
   复制、随处粘贴。
 - **单文件输出。** 一个 HTML 文件，不联网、免构建、明暗双主题、可打印成
   PDF，发给谁都能打开。
-- **宿主无关。** 适配器把各家日志翻译成同一个 JSON schema，查看器只认
-  schema。新增宿主 = 写一个解析函数。
 
 ## 快速开始
 
@@ -87,7 +88,7 @@ parse_trajectory.py ──► 轨迹 JSON (agent-trajectory/v1)
 ## 开发
 
 ```sh
-python3 -m unittest discover -s tests   # 8 个测试，<1 秒
+python3 -m unittest discover -s tests   # 运行全部测试
 ```
 
 几条用血泪换来的工程决策，记在 [README.md](README.md#development) 的
