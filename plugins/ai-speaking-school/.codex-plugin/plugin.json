@@ -1,0 +1,6 @@
+{
+  "name": "ai-speaking-school",
+  "version": "0.6.0-alpha.3",
+  "description": "A four-role AI English speaking school for curriculum planning, GPT Live teaching, post-class review, spaced review, scheduled preparation, and cycle assessment.",
+  "skills": "./skills/"
+}

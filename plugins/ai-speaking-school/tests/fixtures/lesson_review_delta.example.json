@@ -1,0 +1,59 @@
+{
+  "schema_version": "0.1",
+  "review_id": "RV-012",
+  "class_run_id": "CR-20260812-1700-A71C",
+  "lesson_id": "L012",
+  "reviewed_at": "2026-08-13T16:30:00+08:00",
+  "completion": "completed",
+  "item_updates": [
+    {
+      "item_id": "supplement-repair-0001",
+      "observations": [
+        {
+          "evidence_type": "independent",
+          "support_level": "none",
+          "outcome": "success",
+          "learner_utterance": "Sorry, I missed the last part.",
+          "note": "在第一轮任务中主动使用。",
+          "turn_refs": ["turn:18"]
+        },
+        {
+          "evidence_type": "transfer",
+          "support_level": "light_cue",
+          "outcome": "success",
+          "learner_utterance": "Sorry, I missed the date.",
+          "note": "换成客户场景后仍能使用。",
+          "turn_refs": ["turn:42"]
+        }
+      ],
+      "status_before": "learning",
+      "status_after": "usable",
+      "grade": "good",
+      "next_review_at": "2026-08-16T16:30:00+08:00",
+      "reason": "完成独立提取，并在轻提示下完成变式迁移。"
+    }
+  ],
+  "error_updates": [
+    {
+      "error_id": "ERR-012-01",
+      "item_id": null,
+      "learner_version": "discuss about the deadline",
+      "corrected_version": "discuss the deadline",
+      "note": "纠正后完整重说成功。"
+    }
+  ],
+  "persona_change_events": [],
+  "planning_signals": {
+    "due_item_ids": ["supplement-repair-0001"],
+    "reinforce_item_ids": [],
+    "transfer_item_ids": ["supplement-repair-0001"],
+    "candidate_material_ids": [],
+    "lesson_direction": "advance",
+    "note": "下一课继续保留修复功能，但放入更长的项目说明。"
+  },
+  "user_summary": [
+    "你这次能主动要求对方补充遗漏信息。",
+    "下一课继续练更长信息中的关键细节确认。"
+  ],
+  "limitations": []
+}

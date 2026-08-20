@@ -1,0 +1,101 @@
+{
+  "speaking-head-teacher": {
+    "runtime": [
+      "contracts.py",
+      "database.py",
+      "paths.py",
+      "state_store.py",
+      "handoff_store.py",
+      "id_generator.py",
+      "retrieval.py",
+      "material_service.py",
+      "persona_service.py",
+      "schedule_service.py",
+      "cli_utils.py"
+    ],
+    "references": [
+      "shared-objects.md",
+      "handoff-contract.md",
+      "persona-writing.md",
+      "legacy-data-boundaries.md"
+    ],
+    "schemas": [
+      "lesson_plan.schema.json",
+      "cycle_review.schema.json",
+      "persona_change_event.schema.json",
+      "handoff.schema.json"
+    ]
+  },
+  "speaking-live-teacher": {
+    "runtime": [
+      "contracts.py",
+      "database.py",
+      "paths.py",
+      "state_store.py",
+      "handoff_store.py",
+      "id_generator.py",
+      "retrieval.py",
+      "material_service.py",
+      "persona_service.py",
+      "cli_utils.py"
+    ],
+    "references": [
+      "shared-objects.md",
+      "persona-writing.md",
+      "legacy-data-boundaries.md"
+    ],
+    "schemas": [
+      "lesson_plan.schema.json",
+      "class_run.schema.json",
+      "handoff.schema.json"
+    ]
+  },
+  "speaking-teaching-assistant": {
+    "runtime": [
+      "contracts.py",
+      "database.py",
+      "paths.py",
+      "state_store.py",
+      "handoff_store.py",
+      "id_generator.py",
+      "memory_scheduler.py",
+      "persona_service.py",
+      "session_reader.py",
+      "cli_utils.py"
+    ],
+    "references": [
+      "shared-objects.md",
+      "handoff-contract.md",
+      "persona-writing.md",
+      "legacy-data-boundaries.md"
+    ],
+    "schemas": [
+      "class_run.schema.json",
+      "lesson_review_delta.schema.json",
+      "persona_change_event.schema.json",
+      "handoff.schema.json"
+    ]
+  },
+  "speaking-learning-analyst": {
+    "runtime": [
+      "contracts.py",
+      "database.py",
+      "paths.py",
+      "state_store.py",
+      "handoff_store.py",
+      "id_generator.py",
+      "schedule_service.py",
+      "cli_utils.py"
+    ],
+    "references": [
+      "shared-objects.md",
+      "handoff-contract.md",
+      "persona-writing.md",
+      "legacy-data-boundaries.md"
+    ],
+    "schemas": [
+      "cycle_review.schema.json",
+      "handoff.schema.json"
+    ]
+  }
+}

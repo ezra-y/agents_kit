@@ -1,0 +1,102 @@
+{
+  "properties": {
+    "schema_version": {
+      "default": "0.2",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "cycle_review_id": {
+      "pattern": "^CY-[0-9A-Za-z._-]+$",
+      "title": "Cycle Review Id",
+      "type": "string"
+    },
+    "period_start": {
+      "format": "date",
+      "title": "Period Start",
+      "type": "string"
+    },
+    "period_end": {
+      "format": "date",
+      "title": "Period End",
+      "type": "string"
+    },
+    "reviewed_class_run_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reviewed Class Run Ids",
+      "type": "array"
+    },
+    "decision": {
+      "enum": [
+        "keep",
+        "adjust",
+        "replan",
+        "defer"
+      ],
+      "title": "Decision",
+      "type": "string"
+    },
+    "evidence_summary": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Summary",
+      "type": "array"
+    },
+    "progress_signals": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Progress Signals",
+      "type": "array"
+    },
+    "bottlenecks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Bottlenecks",
+      "type": "array"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "recommendations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Recommendations",
+      "type": "array"
+    },
+    "requires_head_teacher": {
+      "title": "Requires Head Teacher",
+      "type": "boolean"
+    },
+    "head_teacher_response": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Head Teacher Response",
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "cycle_review_id",
+    "period_start",
+    "period_end",
+    "decision",
+    "requires_head_teacher",
+    "created_at"
+  ],
+  "title": "CycleReview",
+  "type": "object"
+}

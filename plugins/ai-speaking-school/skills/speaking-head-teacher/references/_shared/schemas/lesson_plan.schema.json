@@ -1,0 +1,487 @@
+{
+  "$defs": {
+    "FinalReview": {
+      "properties": {
+        "learner_prompt": {
+          "minLength": 1,
+          "title": "Learner Prompt",
+          "type": "string"
+        },
+        "target_item_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Target Item Ids",
+          "type": "array"
+        },
+        "completion_signal": {
+          "minLength": 1,
+          "title": "Completion Signal",
+          "type": "string"
+        }
+      },
+      "required": [
+        "learner_prompt",
+        "target_item_ids",
+        "completion_signal"
+      ],
+      "title": "FinalReview",
+      "type": "object"
+    },
+    "LessonStep": {
+      "properties": {
+        "step_id": {
+          "minLength": 1,
+          "title": "Step Id",
+          "type": "string"
+        },
+        "purpose": {
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "teacher_opening": {
+          "default": "",
+          "title": "Teacher Opening",
+          "type": "string"
+        },
+        "learner_task": {
+          "minLength": 1,
+          "title": "Learner Task",
+          "type": "string"
+        },
+        "teacher_actions": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Teacher Actions",
+          "type": "array"
+        },
+        "target_item_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Target Item Ids",
+          "type": "array"
+        },
+        "stall_support": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Stall Support",
+          "type": "array"
+        },
+        "completion_signal": {
+          "minLength": 1,
+          "title": "Completion Signal",
+          "type": "string"
+        },
+        "transition": {
+          "default": "",
+          "title": "Transition",
+          "type": "string"
+        },
+        "materials": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Materials",
+          "type": "array"
+        },
+        "optional": {
+          "default": false,
+          "title": "Optional",
+          "type": "boolean"
+        },
+        "time_hint_minutes": {
+          "anyOf": [
+            {
+              "maximum": 90,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Time Hint Minutes"
+        },
+        "fallback": {
+          "default": "",
+          "title": "Fallback",
+          "type": "string"
+        }
+      },
+      "required": [
+        "step_id",
+        "purpose",
+        "learner_task",
+        "teacher_actions",
+        "completion_signal"
+      ],
+      "title": "LessonStep",
+      "type": "object"
+    },
+    "MicroScenario": {
+      "properties": {
+        "scenario_id": {
+          "minLength": 1,
+          "title": "Scenario Id",
+          "type": "string"
+        },
+        "learner_role": {
+          "minLength": 1,
+          "title": "Learner Role",
+          "type": "string"
+        },
+        "teacher_role": {
+          "minLength": 1,
+          "title": "Teacher Role",
+          "type": "string"
+        },
+        "task": {
+          "minLength": 1,
+          "title": "Task",
+          "type": "string"
+        },
+        "key_information": {
+          "minLength": 1,
+          "title": "Key Information",
+          "type": "string"
+        },
+        "introduction_seconds": {
+          "maximum": 20,
+          "minimum": 10,
+          "title": "Introduction Seconds",
+          "type": "integer"
+        },
+        "target_item_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 4,
+          "minItems": 1,
+          "title": "Target Item Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "scenario_id",
+        "learner_role",
+        "teacher_role",
+        "task",
+        "key_information",
+        "introduction_seconds",
+        "target_item_ids"
+      ],
+      "title": "MicroScenario",
+      "type": "object"
+    },
+    "RecallPrompts": {
+      "properties": {
+        "immediate": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Immediate",
+          "type": "array"
+        },
+        "interleaved": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Interleaved",
+          "type": "array"
+        },
+        "final": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Final",
+          "type": "array"
+        }
+      },
+      "required": [
+        "immediate",
+        "interleaved",
+        "final"
+      ],
+      "title": "RecallPrompts",
+      "type": "object"
+    },
+    "TargetItem": {
+      "properties": {
+        "item_id": {
+          "minLength": 1,
+          "title": "Item Id",
+          "type": "string"
+        },
+        "sentence": {
+          "minLength": 1,
+          "title": "Sentence",
+          "type": "string"
+        },
+        "meaning": {
+          "minLength": 1,
+          "title": "Meaning",
+          "type": "string"
+        },
+        "communicative_function": {
+          "minLength": 1,
+          "title": "Communicative Function",
+          "type": "string"
+        },
+        "pattern_explanation": {
+          "minLength": 1,
+          "title": "Pattern Explanation",
+          "type": "string"
+        },
+        "replaceable_slots": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Replaceable Slots",
+          "type": "array"
+        },
+        "example_sentences": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 2,
+          "title": "Example Sentences",
+          "type": "array"
+        },
+        "new_words": {
+          "items": {
+            "type": "string"
+          },
+          "title": "New Words",
+          "type": "array"
+        },
+        "common_errors": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Common Errors",
+          "type": "array"
+        },
+        "transfer_prompts": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Transfer Prompts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "item_id",
+        "sentence",
+        "meaning",
+        "communicative_function",
+        "pattern_explanation",
+        "replaceable_slots",
+        "example_sentences",
+        "new_words",
+        "common_errors",
+        "transfer_prompts"
+      ],
+      "title": "TargetItem",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "default": "0.2",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "lesson_id": {
+      "pattern": "^L[0-9A-Za-z._-]+$",
+      "title": "Lesson Id",
+      "type": "string"
+    },
+    "learner_id": {
+      "minLength": 1,
+      "title": "Learner Id",
+      "type": "string"
+    },
+    "course_plan_id": {
+      "minLength": 1,
+      "title": "Course Plan Id",
+      "type": "string"
+    },
+    "plan_version": {
+      "minimum": 1,
+      "title": "Plan Version",
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "ready",
+        "superseded"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "target_minutes": {
+      "maximum": 180,
+      "minimum": 5,
+      "title": "Target Minutes",
+      "type": "integer"
+    },
+    "lesson_goal": {
+      "minLength": 1,
+      "title": "Lesson Goal",
+      "type": "string"
+    },
+    "curriculum_refs": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Curriculum Refs",
+      "type": "array"
+    },
+    "delivery_pace": {
+      "default": "moderate",
+      "enum": [
+        "very_slow",
+        "slow",
+        "moderate",
+        "natural",
+        "fast"
+      ],
+      "title": "Delivery Pace",
+      "type": "string"
+    },
+    "required_modules": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Modules",
+      "type": "array"
+    },
+    "review_item_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Review Item Ids",
+      "type": "array"
+    },
+    "new_item_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "New Item Ids",
+      "type": "array"
+    },
+    "target_items": {
+      "items": {
+        "$ref": "#/$defs/TargetItem"
+      },
+      "title": "Target Items",
+      "type": "array"
+    },
+    "scenario_brief": {
+      "items": {
+        "$ref": "#/$defs/MicroScenario"
+      },
+      "title": "Scenario Brief",
+      "type": "array"
+    },
+    "recall_prompts": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RecallPrompts"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "hint_ladder": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Hint Ladder",
+      "type": "array"
+    },
+    "answer_reveal_condition": {
+      "default": "",
+      "title": "Answer Reveal Condition",
+      "type": "string"
+    },
+    "final_review": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/FinalReview"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "steps": {
+      "items": {
+        "$ref": "#/$defs/LessonStep"
+      },
+      "minItems": 1,
+      "title": "Steps",
+      "type": "array"
+    },
+    "source_review_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Review Ids",
+      "type": "array"
+    },
+    "teacher_persona_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Teacher Persona Version"
+    },
+    "note": {
+      "default": "",
+      "title": "Note",
+      "type": "string"
+    }
+  },
+  "required": [
+    "lesson_id",
+    "learner_id",
+    "course_plan_id",
+    "plan_version",
+    "status",
+    "created_at",
+    "target_minutes",
+    "lesson_goal",
+    "curriculum_refs",
+    "steps"
+  ],
+  "title": "LessonPlan",
+  "type": "object"
+}

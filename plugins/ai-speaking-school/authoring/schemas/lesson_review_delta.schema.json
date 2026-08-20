@@ -1,0 +1,396 @@
+{
+  "$defs": {
+    "ErrorUpdate": {
+      "properties": {
+        "error_id": {
+          "minLength": 1,
+          "title": "Error Id",
+          "type": "string"
+        },
+        "item_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Item Id"
+        },
+        "learner_version": {
+          "minLength": 1,
+          "title": "Learner Version",
+          "type": "string"
+        },
+        "corrected_version": {
+          "minLength": 1,
+          "title": "Corrected Version",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "error_id",
+        "learner_version",
+        "corrected_version"
+      ],
+      "title": "ErrorUpdate",
+      "type": "object"
+    },
+    "EvidenceObservation": {
+      "properties": {
+        "evidence_type": {
+          "enum": [
+            "teacher_model",
+            "repetition",
+            "prompted",
+            "independent",
+            "self_repair",
+            "corrected_retry",
+            "transfer",
+            "delayed_retrieval",
+            "not_observed"
+          ],
+          "title": "Evidence Type",
+          "type": "string"
+        },
+        "support_level": {
+          "default": "unknown",
+          "enum": [
+            "none",
+            "light_cue",
+            "strong_cue",
+            "full_model",
+            "unknown"
+          ],
+          "title": "Support Level",
+          "type": "string"
+        },
+        "outcome": {
+          "default": "not_judged",
+          "enum": [
+            "success",
+            "partial",
+            "failed",
+            "not_judged"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "learner_utterance": {
+          "default": "",
+          "title": "Learner Utterance",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        },
+        "turn_refs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Turn Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "evidence_type"
+      ],
+      "title": "EvidenceObservation",
+      "type": "object"
+    },
+    "ItemStateChange": {
+      "properties": {
+        "item_id": {
+          "minLength": 1,
+          "title": "Item Id",
+          "type": "string"
+        },
+        "observations": {
+          "items": {
+            "$ref": "#/$defs/EvidenceObservation"
+          },
+          "minItems": 1,
+          "title": "Observations",
+          "type": "array"
+        },
+        "status_before": {
+          "anyOf": [
+            {
+              "enum": [
+                "learning",
+                "usable",
+                "fluent"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Status Before"
+        },
+        "status_after": {
+          "enum": [
+            "learning",
+            "usable",
+            "fluent"
+          ],
+          "title": "Status After",
+          "type": "string"
+        },
+        "grade": {
+          "enum": [
+            "forgot",
+            "hard",
+            "good",
+            "easy"
+          ],
+          "title": "Grade",
+          "type": "string"
+        },
+        "next_review_at": {
+          "format": "date-time",
+          "title": "Next Review At",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "item_id",
+        "observations",
+        "status_after",
+        "grade",
+        "next_review_at",
+        "reason"
+      ],
+      "title": "ItemStateChange",
+      "type": "object"
+    },
+    "PersonaChangeEvent": {
+      "properties": {
+        "schema_version": {
+          "default": "0.2",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "event_id": {
+          "minLength": 1,
+          "title": "Event Id",
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "onboarding",
+            "live_class",
+            "manual",
+            "cycle_review"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "requested_at": {
+          "format": "date-time",
+          "title": "Requested At",
+          "type": "string"
+        },
+        "scope": {
+          "enum": [
+            "temporary",
+            "persistent"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "instruction": {
+          "minLength": 1,
+          "title": "Instruction",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "proposed",
+            "confirmed",
+            "applied",
+            "rejected"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "effective_from": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Effective From"
+        }
+      },
+      "required": [
+        "event_id",
+        "source",
+        "requested_at",
+        "scope",
+        "instruction",
+        "status"
+      ],
+      "title": "PersonaChangeEvent",
+      "type": "object"
+    },
+    "PlanningSignals": {
+      "properties": {
+        "due_item_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Due Item Ids",
+          "type": "array"
+        },
+        "reinforce_item_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Reinforce Item Ids",
+          "type": "array"
+        },
+        "transfer_item_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Transfer Item Ids",
+          "type": "array"
+        },
+        "candidate_material_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Candidate Material Ids",
+          "type": "array"
+        },
+        "lesson_direction": {
+          "enum": [
+            "continue",
+            "reinforce",
+            "advance",
+            "safe_review"
+          ],
+          "title": "Lesson Direction",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "lesson_direction"
+      ],
+      "title": "PlanningSignals",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "default": "0.2",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "review_id": {
+      "pattern": "^RV-[0-9A-Za-z._-]+$",
+      "title": "Review Id",
+      "type": "string"
+    },
+    "class_run_id": {
+      "minLength": 1,
+      "title": "Class Run Id",
+      "type": "string"
+    },
+    "lesson_id": {
+      "minLength": 1,
+      "title": "Lesson Id",
+      "type": "string"
+    },
+    "reviewed_at": {
+      "format": "date-time",
+      "title": "Reviewed At",
+      "type": "string"
+    },
+    "completion": {
+      "enum": [
+        "completed",
+        "partial",
+        "unreadable"
+      ],
+      "title": "Completion",
+      "type": "string"
+    },
+    "item_updates": {
+      "items": {
+        "$ref": "#/$defs/ItemStateChange"
+      },
+      "title": "Item Updates",
+      "type": "array"
+    },
+    "error_updates": {
+      "items": {
+        "$ref": "#/$defs/ErrorUpdate"
+      },
+      "title": "Error Updates",
+      "type": "array"
+    },
+    "persona_change_events": {
+      "items": {
+        "$ref": "#/$defs/PersonaChangeEvent"
+      },
+      "title": "Persona Change Events",
+      "type": "array"
+    },
+    "planning_signals": {
+      "$ref": "#/$defs/PlanningSignals"
+    },
+    "user_summary": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 4,
+      "title": "User Summary",
+      "type": "array"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "review_id",
+    "class_run_id",
+    "lesson_id",
+    "reviewed_at",
+    "completion",
+    "planning_signals"
+  ],
+  "title": "LessonReviewDelta",
+  "type": "object"
+}

@@ -1,0 +1,34 @@
+{
+  "target_retention": 0.85,
+  "scheduler": {
+    "version": "exponential-stability-v1",
+    "initial_intervals_hours": {
+      "forgot": 8,
+      "hard": 24,
+      "good": 72,
+      "easy": 168
+    },
+    "growth_factors": {
+      "forgot": 0.35,
+      "hard": 1.25,
+      "good": 2.0,
+      "easy": 3.0
+    }
+  },
+  "embedding": {
+    "provider": "local_e5",
+    "model": "intfloat/multilingual-e5-small",
+    "revision": "fd1525a9fd15316a2d503bf26ab031a61d056e98",
+    "device": "cpu",
+    "batch_size": 64,
+    "normalize": true,
+    "query_prefix": "query: ",
+    "passage_prefix": "passage: "
+  },
+  "retrieval": {
+    "backend": "lancedb",
+    "candidate_limit": 40,
+    "result_limit": 20,
+    "approved_only": true
+  }
+}

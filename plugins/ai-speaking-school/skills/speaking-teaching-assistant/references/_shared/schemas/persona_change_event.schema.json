@@ -1,0 +1,75 @@
+{
+  "properties": {
+    "schema_version": {
+      "default": "0.2",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "event_id": {
+      "minLength": 1,
+      "title": "Event Id",
+      "type": "string"
+    },
+    "source": {
+      "enum": [
+        "onboarding",
+        "live_class",
+        "manual",
+        "cycle_review"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "requested_at": {
+      "format": "date-time",
+      "title": "Requested At",
+      "type": "string"
+    },
+    "scope": {
+      "enum": [
+        "temporary",
+        "persistent"
+      ],
+      "title": "Scope",
+      "type": "string"
+    },
+    "instruction": {
+      "minLength": 1,
+      "title": "Instruction",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "proposed",
+        "confirmed",
+        "applied",
+        "rejected"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "effective_from": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Effective From"
+    }
+  },
+  "required": [
+    "event_id",
+    "source",
+    "requested_at",
+    "scope",
+    "instruction",
+    "status"
+  ],
+  "title": "PersonaChangeEvent",
+  "type": "object"
+}

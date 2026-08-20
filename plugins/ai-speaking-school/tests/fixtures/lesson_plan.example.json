@@ -1,0 +1,149 @@
+{
+  "schema_version": "0.2",
+  "lesson_id": "L001",
+  "learner_id": "default",
+  "course_plan_id": "CP01",
+  "plan_version": 1,
+  "status": "ready",
+  "created_at": "2026-08-18T10:00:00+08:00",
+  "target_minutes": 30,
+  "lesson_goal": "在没有看文字的情况下，主动要求对方重复或放慢语速，并听清取餐时间。",
+  "curriculum_refs": ["chapter:conversation-repair"],
+  "delivery_pace": "slow",
+  "required_modules": ["M01", "M02", "M03", "M04", "M05"],
+  "review_item_ids": ["supplement-repair-0001"],
+  "new_item_ids": ["supplement-repair-0002"],
+  "target_items": [
+    {
+      "item_id": "supplement-repair-0001",
+      "sentence": "Could you say that again?",
+      "meaning": "你能再说一遍吗？",
+      "communicative_function": "没有听清整段信息时，请对方重复。",
+      "pattern_explanation": "Could you + 动作，构成礼貌请求；say that again 表示把刚才的话再说一次。",
+      "replaceable_slots": ["that 可以替换成具体内容，例如 the pickup time 或 the last part。"],
+      "example_sentences": ["Could you say the pickup time again?", "Could you say the last part again?"],
+      "new_words": ["again：再一次。先单独跟读，再放入 say that again。"],
+      "common_errors": ["不要说 Could you say again that；again 通常放在 that 或具体信息后面。"],
+      "transfer_prompts": ["在电话、咖啡店和会议三个场景中分别请求对方重复。"]
+    },
+    {
+      "item_id": "supplement-repair-0002",
+      "sentence": "Could you speak a little more slowly?",
+      "meaning": "你能说慢一点吗？",
+      "communicative_function": "能听懂部分内容，但语速妨碍理解时，请对方稍微放慢。",
+      "pattern_explanation": "Could you speak + 程度 + slowly；a little more 表示稍微再多一点。",
+      "replaceable_slots": ["a little more slowly 可以替换成 more clearly 或 a little louder，说明希望怎样调整表达。"],
+      "example_sentences": ["Could you speak more clearly?", "Could you speak a little louder?"],
+      "new_words": ["slowly：缓慢地。先跟读 slowly，再练 more slowly，最后说完整句。"],
+      "common_errors": ["不要说 speak more slow；修饰 speak 要用副词 slowly。"],
+      "transfer_prompts": ["换到视频会议和电话场景，主动要求对方调整说话方式。"]
+    }
+  ],
+  "scenario_brief": [
+    {
+      "scenario_id": "SC01",
+      "learner_role": "等待取餐的顾客",
+      "teacher_role": "咖啡店店员",
+      "task": "听清还要等待多久，并确认取餐时间。",
+      "key_information": "订单还要等十五分钟，下午两点十分可以取。",
+      "introduction_seconds": 15,
+      "target_item_ids": ["supplement-repair-0001", "supplement-repair-0002"]
+    }
+  ],
+  "recall_prompts": {
+    "immediate": ["练完一句后隔一个短动作，只给中文意图，让学习者无提示说回原句。"],
+    "interleaved": ["学完两句后随机改变问题：完全没听清时请求重复，语速太快时请求放慢。"],
+    "final": ["结课不先给英文，只给咖啡店情景，让学习者自己选并说出两句表达。"]
+  },
+  "hint_ladder": [
+    "先更慢地重复任务或只说明沟通意图，不给英文答案。",
+    "仍卡住时给关键词或句首，例如 Could you。",
+    "两级提示后仍无法继续，才完整示范一次，并立即要求完整重说。"
+  ],
+  "answer_reveal_condition": "只有学习者完成两次真实尝试并使用前两级提示后仍无法继续，才给完整答案。",
+  "final_review": {
+    "learner_prompt": "你在咖啡店先没听清，后来觉得店员说得太快。请分别说出你需要的两句英语。",
+    "target_item_ids": ["supplement-repair-0001", "supplement-repair-0002"],
+    "completion_signal": "学习者在不先听答案的情况下独立说出两句，或在最小提示后完成并完整重说。"
+  },
+  "steps": [
+    {
+      "step_id": "M01",
+      "purpose": "无提示提取上一句请求重复的表达。",
+      "teacher_opening": "先复习一句。你完全没听清我刚才的话，请直接用英语让我再说一次。",
+      "learner_task": "独立说出请求重复的完整句子。",
+      "teacher_actions": ["等待完整尝试", "可靠识别到错误时只解释一个点", "纠正后要求完整重说"],
+      "target_item_ids": ["supplement-repair-0001"],
+      "stall_support": ["先重复中文意图", "仍卡住时给句首 Could you"],
+      "completion_signal": "学习者完整说出 Could you say that again?",
+      "transition": "这句复习完成。现在学语速太快时怎么说。",
+      "materials": ["supplement-repair-0001"],
+      "optional": false,
+      "time_hint_minutes": 4,
+      "fallback": "给句首后完成整句，但仍要求学习者独立重说一次。"
+    },
+    {
+      "step_id": "M02",
+      "purpose": "按生词到完整句子的顺序建立新表达。",
+      "teacher_opening": "先练一个词：slowly。听我慢慢说一遍，然后你跟读。",
+      "learner_task": "跟读 slowly 和 more slowly，再说完整目标句。",
+      "teacher_actions": ["慢速示范 slowly", "确认意思", "练 more slowly", "示范完整句一次", "让学习者重复多轮"],
+      "target_item_ids": ["supplement-repair-0002"],
+      "stall_support": ["把完整句切成 Could you speak 和 a little more slowly 两个意群", "仍困难时逐意群示范后合并"],
+      "completion_signal": "学习者以当前语速完整说出目标句两次。",
+      "transition": "完整句已经稳定。下面只替换一个位置。",
+      "materials": ["supplement-repair-0002"],
+      "optional": false,
+      "time_hint_minutes": 6,
+      "fallback": "减少重复轮数，但保留单词、短语和完整句三个层级。"
+    },
+    {
+      "step_id": "M03",
+      "purpose": "理解可替换结构并完成一次变式。",
+      "teacher_opening": "在 Could you speak 后面，说你希望对方怎样说。先把 slowly 换成 clearly。",
+      "learner_task": "分别用 clearly 和 louder 完成两个礼貌请求。",
+      "teacher_actions": ["一次只给一个替换信息", "先让学习者尝试", "错误后解释位置并完整重说"],
+      "target_item_ids": ["supplement-repair-0002"],
+      "stall_support": ["先给目标词 clearly", "仍卡住时给开头 Could you speak"],
+      "completion_signal": "学习者完成两个替换句，且能说明替换位置表达说话方式。",
+      "transition": "句型替换完成。现在把两句放进一个短对话。",
+      "materials": ["supplement-repair-0002"],
+      "optional": false,
+      "time_hint_minutes": 6,
+      "fallback": "只保留 clearly 一个替换，但必须完成完整重说。"
+    },
+    {
+      "step_id": "M04",
+      "purpose": "在微场景中主动选择并使用两句表达。",
+      "teacher_opening": "微场景：我是咖啡店店员，你在等取餐。你要听清还要等多久。现在开始。",
+      "learner_task": "根据是否完全没听清或语速太快，主动选择表达并确认取餐时间。",
+      "teacher_actions": ["先给一条稍快的取餐信息", "根据学习者请求调整", "等待学习者确认最终时间", "纠错后重做关键话轮"],
+      "target_item_ids": ["supplement-repair-0001", "supplement-repair-0002"],
+      "stall_support": ["只提醒现在是没听清还是太快", "仍卡住时给对应句首"],
+      "completion_signal": "学习者主动使用至少两种修复表达，并正确确认取餐时间。",
+      "transition": "场景任务完成。最后不看答案做一次混合复习。",
+      "materials": ["supplement-repair-0001", "supplement-repair-0002"],
+      "optional": false,
+      "time_hint_minutes": 9,
+      "fallback": "减少店员信息长度，但保留主动请求和确认结果。"
+    },
+    {
+      "step_id": "M05",
+      "purpose": "结课前完成无答案的最终提取。",
+      "teacher_opening": "最后复习。我只说情景，不先说答案。",
+      "learner_task": "根据两个情景分别提取请求重复和请求放慢的表达。",
+      "teacher_actions": ["先给情景", "按提示阶梯支援", "完整示范后必须要求重说", "完成后简短说明今天完成内容"],
+      "target_item_ids": ["supplement-repair-0001", "supplement-repair-0002"],
+      "stall_support": ["先给中文意图", "仍卡住时给关键词或句首"],
+      "completion_signal": "达到 final_review 的完成信号。",
+      "transition": "五个必修模块和最终回忆已完成。现在明确结束本课。",
+      "materials": ["supplement-repair-0001", "supplement-repair-0002"],
+      "optional": false,
+      "time_hint_minutes": 5,
+      "fallback": "使用最小提示完成两句，不删结课提取。"
+    }
+  ],
+  "source_review_ids": [],
+  "teacher_persona_version": "persona-v2",
+  "note": "课堂控制指令只改变课堂运行方式，不作为本课新教材。"
+}

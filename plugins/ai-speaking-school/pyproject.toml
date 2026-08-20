@@ -1,0 +1,13 @@
+[project]
+name = "ai-speaking-school-scaffold"
+version = "0.6.0a3"
+description = "Four-role AI Speaking School with 0.5.4 SQLite migration"
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2.7,<3", "PyYAML>=6,<7"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10"]
+retrieval = ["lancedb>=0.36,<1", "sentence-transformers>=5.1,<6"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

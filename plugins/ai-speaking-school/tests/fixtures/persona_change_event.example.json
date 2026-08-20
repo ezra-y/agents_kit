@@ -1,0 +1,10 @@
+{
+  "schema_version": "0.1",
+  "event_id": "PE-20260812-01",
+  "source": "live_class",
+  "requested_at": "2026-08-12T17:20:00+08:00",
+  "scope": "persistent",
+  "instruction": "以后纠错再直接一点，不用先安慰我。",
+  "status": "confirmed",
+  "effective_from": "2026-08-13T00:00:00+08:00"
+}

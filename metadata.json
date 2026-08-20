@@ -2,10 +2,52 @@
   "schema_version": 3,
   "taxonomy_version": 5,
   "skills": {
-    "skill:plugin/ai-speaking-coach/ai-speaking-coach": {
-      "recommendation": 5,
-      "description": "根据学习者目标和听说表现维护个性化计划，结合 GPT Live、间隔复习、知识库和定时提醒的一对一英语口语教练",
-      "trigger": "制定或开始个性化口语学习计划、上口语课、复习弱点、查看进度、设置上课提醒、导入课程或媒体时使用",
+    "skill:plugin/ai-speaking-school/speaking-head-teacher": {
+      "recommendation": 3,
+      "description": "Head teacher \"狗蛋\" for the AI speaking school. Use for learner onboarding, importing or building speaking curriculum, creating or revising a course plan, preparing today's lesson, or when T-30/T14 explicitly asks the head teacher to act. Do not use for live voice teaching or post-class evidence extraction.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/database",
+        "focus/knowledge-base",
+        "focus/workflow-automation",
+        "platform/macos",
+        "output/skill"
+      ],
+      "category": "ai-building"
+    },
+    "skill:plugin/ai-speaking-school/speaking-learning-analyst": {
+      "recommendation": 3,
+      "description": "Learning analyst \"小菜\" for the AI speaking school. Use after first planning to create or update T-30/T0/T14 scheduled tasks, every 14 days for cycle assessment, or when the learner asks to inspect long-term progress. Decide KEEP, ADJUST, REPLAN, or DEFER and hand plan changes to the head teacher. Do not perform item-level class review or directly rewrite the course plan.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/database",
+        "focus/knowledge-base",
+        "focus/workflow-automation",
+        "platform/macos",
+        "output/skill"
+      ],
+      "category": "ai-building"
+    },
+    "skill:plugin/ai-speaking-school/speaking-live-teacher": {
+      "recommendation": 3,
+      "description": "GPT Live speaking teacher \"小King\". Use in a voice session when the learner says phrases such as \"小King，上课\", \"开始今天的口语课\", \"打开今天的教案\", \"继续今天的口语练习\", or explicitly invokes this skill. Read the ready lesson, register the current Voice session ID, and teach. Do not create the long-term plan or perform the post-class review.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/database",
+        "focus/knowledge-base",
+        "focus/workflow-automation",
+        "platform/macos",
+        "output/skill"
+      ],
+      "category": "ai-building"
+    },
+    "skill:plugin/ai-speaking-school/speaking-teaching-assistant": {
+      "recommendation": 3,
+      "description": "Post-class teaching assistant \"小禾\". Use only when T-30 or the user explicitly requests a class review, backfill, or learning-record update. Read the pending Voice session by ID, compare it with the lesson and curriculum, extract item-level evidence, apply memory scheduling, and hand the result to the head teacher. Do not teach the live class or rewrite the course plan.",
+      "trigger": "",
       "tags": [
         "role/workflow",
         "focus/database",

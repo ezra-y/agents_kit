@@ -1,0 +1,46 @@
+# Local environment and Python artifacts.
+.DS_Store
+.env
+.env.*
+!.env.example
+.pytest_cache/
+.ruff_cache/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Durable learner data at supported plugin-local layouts.
+/learner/
+/private/
+/knowledge/
+/records/
+/backups/
+/skills/*/private/
+
+# Runtime state and rebuildable caches.
+/runtime/
+/cache/
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+*.log
+
+# Credentials and exported archives.
+*.key
+*.pem
+*.p12
+*.pfx
+*.tar.gz
+*.zip
+
+# Personal course material is local-only. The runtime accepts a missing seed.
+/assets/seed/items.jsonl
+/assets/source/
+/source-materials/
+
+# Local migration outputs.
+inventory*.json
+migration-report*.json
+candidate/

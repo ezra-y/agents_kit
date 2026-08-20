@@ -6,17 +6,17 @@
   },
   "plugins": [
     {
-      "name": "ai-speaking-coach",
+      "name": "ai-speaking-school",
       "source": {
         "source": "local",
-        "path": "./plugins/ai-speaking-coach"
+        "path": "./plugins/ai-speaking-school"
       },
       "policy": {
         "installation": "AVAILABLE",
         "authentication": "ON_INSTALL"
       },
-      "category": "Education & Research",
-      "description": "A stateful English speaking-course plugin with flexible GPT-Live lessons, durable module checkpoints, local retrieval, configurable teacher persona, reminders, and periodic assessment."
+      "category": "Developer Tools",
+      "description": "A four-role AI English speaking school for curriculum planning, GPT Live teaching, post-class review, spaced review, scheduled preparation, and cycle assessment."
     }
   ]
 }

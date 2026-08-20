@@ -1,0 +1,141 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "properties": {
+        "kind": {
+          "enum": [
+            "course_plan",
+            "lesson_plan",
+            "class_run",
+            "lesson_review_delta",
+            "cycle_review",
+            "persona_change_event"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "artifact_id": {
+          "minLength": 1,
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "version": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Version"
+        }
+      },
+      "required": [
+        "kind",
+        "artifact_id"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "default": "0.2",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "handoff_id": {
+      "pattern": "^HO-[0-9A-Za-z._-]+$",
+      "title": "Handoff Id",
+      "type": "string"
+    },
+    "workflow_run_id": {
+      "minLength": 1,
+      "title": "Workflow Run Id",
+      "type": "string"
+    },
+    "from_role": {
+      "enum": [
+        "head_teacher",
+        "live_teacher",
+        "teaching_assistant",
+        "learning_analyst",
+        "task_orchestrator"
+      ],
+      "title": "From Role",
+      "type": "string"
+    },
+    "to_role": {
+      "enum": [
+        "head_teacher",
+        "live_teacher",
+        "teaching_assistant",
+        "learning_analyst",
+        "task_orchestrator"
+      ],
+      "title": "To Role",
+      "type": "string"
+    },
+    "action": {
+      "minLength": 1,
+      "title": "Action",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "skipped",
+        "failed"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "artifacts": {
+      "items": {
+        "$ref": "#/$defs/ArtifactRef"
+      },
+      "title": "Artifacts",
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "idempotency_key": {
+      "minLength": 1,
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "note": {
+      "default": "",
+      "title": "Note",
+      "type": "string"
+    },
+    "skip_reason": {
+      "default": "",
+      "title": "Skip Reason",
+      "type": "string"
+    },
+    "error": {
+      "default": "",
+      "title": "Error",
+      "type": "string"
+    }
+  },
+  "required": [
+    "handoff_id",
+    "workflow_run_id",
+    "from_role",
+    "to_role",
+    "action",
+    "status",
+    "created_at",
+    "idempotency_key"
+  ],
+  "title": "Handoff",
+  "type": "object"
+}

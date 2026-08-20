@@ -1,0 +1,21 @@
+{
+  "schema_version": "0.1",
+  "handoff_id": "HO-20260813-T30-S3-S1",
+  "workflow_run_id": "2026-08-13-T30",
+  "from_role": "teaching_assistant",
+  "to_role": "head_teacher",
+  "action": "prepare_next_lesson",
+  "status": "completed",
+  "artifacts": [
+    {
+      "kind": "lesson_review_delta",
+      "artifact_id": "RV-012",
+      "version": 1
+    }
+  ],
+  "created_at": "2026-08-13T16:31:00+08:00",
+  "idempotency_key": "2026-08-13-T30:review:L012",
+  "note": "复盘已应用，班主任应重新查询到期项目后备课。",
+  "skip_reason": "",
+  "error": ""
+}

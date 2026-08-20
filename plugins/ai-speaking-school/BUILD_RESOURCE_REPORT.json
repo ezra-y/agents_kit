@@ -1,0 +1,345 @@
+{
+  "speaking-head-teacher": [
+    {
+      "source": "authoring/shared-runtime/contracts.py",
+      "target": "skills/speaking-head-teacher/scripts/_shared/contracts.py",
+      "sha256": "6f20b22fe99ffe79573fc0fe8c89ac5afd7adbbd3777addc887e14161b191197"
+    },
+    {
+      "source": "authoring/shared-runtime/database.py",
+      "target": "skills/speaking-head-teacher/scripts/_shared/database.py",
+      "sha256": "9a7d0c0aea5b81c6473e8b8445dc0d8581f105d694459d410cf937b8d82167c7"
+    },
+    {
+      "source": "authoring/shared-runtime/paths.py",
+      "target": "skills/speaking-head-teacher/scripts/_shared/paths.py",
+      "sha256": "e8f3aa6027d61d3599fff3b2c5441f8f9b11d63fde32970f6ca94feb5bc491e4"
+    },
+    {
+      "source": "authoring/shared-runtime/state_store.py",
+      "target": "skills/speaking-head-teacher/scripts/_shared/state_store.py",
+      "sha256": "bdde4918191d737049f91334ac41c5e42831ebc4b79c12ccfa018506e1914be6"
+    },
+    {
+      "source": "authoring/shared-runtime/handoff_store.py",
+      "target": "skills/speaking-head-teacher/scripts/_shared/handoff_store.py",
+      "sha256": "e1049581341d043ffbfe1ba7f5af9b2b8583dcac2aaa81f5679f2a67ec427c45"
+    },
+    {
+      "source": "authoring/shared-runtime/id_generator.py",
+      "target": "skills/speaking-head-teacher/scripts/_shared/id_generator.py",
+      "sha256": "7be301c0a44c8a2c27887e133e2e2c482fce0a346c43f00bf7087f1955f132a2"
+    },
+    {
+      "source": "authoring/shared-runtime/retrieval.py",
+      "target": "skills/speaking-head-teacher/scripts/_shared/retrieval.py",
+      "sha256": "54937f342fd88f928581acc13abd213aced20849bc49359d6adb19b4a0a9583b"
+    },
+    {
+      "source": "authoring/shared-runtime/material_service.py",
+      "target": "skills/speaking-head-teacher/scripts/_shared/material_service.py",
+      "sha256": "249f211476f69aee9ce8a2fc92d8a0cd8088e3bd7f0950bd76c67bfeb974c590"
+    },
+    {
+      "source": "authoring/shared-runtime/persona_service.py",
+      "target": "skills/speaking-head-teacher/scripts/_shared/persona_service.py",
+      "sha256": "f1165a16ca66d8751c0b5360c1263e8c701e0d6df2a2c4919762b93e212dd54a"
+    },
+    {
+      "source": "authoring/shared-runtime/schedule_service.py",
+      "target": "skills/speaking-head-teacher/scripts/_shared/schedule_service.py",
+      "sha256": "f4da2ccd91d30f1a8000c5647427ae83bac8926505e8fafd4680386e8d8792ab"
+    },
+    {
+      "source": "authoring/shared-runtime/cli_utils.py",
+      "target": "skills/speaking-head-teacher/scripts/_shared/cli_utils.py",
+      "sha256": "b248f77c686230461e91fee325ee8c761290233b032196a508a27958025678e2"
+    },
+    {
+      "source": "authoring/shared-references/shared-objects.md",
+      "target": "skills/speaking-head-teacher/references/_shared/shared-objects.md",
+      "sha256": "1df9f8ca77802ffe73b59ce836d83359b8a95927210258d8b75b371189cc81c7"
+    },
+    {
+      "source": "authoring/shared-references/handoff-contract.md",
+      "target": "skills/speaking-head-teacher/references/_shared/handoff-contract.md",
+      "sha256": "4f9efc36dbc9a918cf402cc0dd38127e0a6e6545b53bc2df75a98846062d9960"
+    },
+    {
+      "source": "authoring/shared-references/persona-writing.md",
+      "target": "skills/speaking-head-teacher/references/_shared/persona-writing.md",
+      "sha256": "37f89a0e2489d68ea78408ba63ebee4d66f8e45d7493fbec261009c6550cc5be"
+    },
+    {
+      "source": "authoring/shared-references/legacy-data-boundaries.md",
+      "target": "skills/speaking-head-teacher/references/_shared/legacy-data-boundaries.md",
+      "sha256": "be86d28502cf55948f3632d7066ef3670fdb269762876823a8decfc7b45489bc"
+    },
+    {
+      "source": "authoring/schemas/lesson_plan.schema.json",
+      "target": "skills/speaking-head-teacher/references/_shared/schemas/lesson_plan.schema.json",
+      "sha256": "a8f0406b00e7e0c4b5cda8ed49cbed8438d990b9b64ae808b1dd9cf6e0aaa6b9"
+    },
+    {
+      "source": "authoring/schemas/cycle_review.schema.json",
+      "target": "skills/speaking-head-teacher/references/_shared/schemas/cycle_review.schema.json",
+      "sha256": "02b989f7d99d811dc5800da7f9e8cf3f6310c2ae3c9fc1f50ad4ec0d84365893"
+    },
+    {
+      "source": "authoring/schemas/persona_change_event.schema.json",
+      "target": "skills/speaking-head-teacher/references/_shared/schemas/persona_change_event.schema.json",
+      "sha256": "2b144da8843109bcbd574b7eba50ea37aa65ec8580466dcee5570795155962f9"
+    },
+    {
+      "source": "authoring/schemas/handoff.schema.json",
+      "target": "skills/speaking-head-teacher/references/_shared/schemas/handoff.schema.json",
+      "sha256": "398dc3752c7d7a2e8115bd6fd0f7629f9526e639c4f971452b1d4c5aee5a0f8a"
+    }
+  ],
+  "speaking-live-teacher": [
+    {
+      "source": "authoring/shared-runtime/contracts.py",
+      "target": "skills/speaking-live-teacher/scripts/_shared/contracts.py",
+      "sha256": "6f20b22fe99ffe79573fc0fe8c89ac5afd7adbbd3777addc887e14161b191197"
+    },
+    {
+      "source": "authoring/shared-runtime/database.py",
+      "target": "skills/speaking-live-teacher/scripts/_shared/database.py",
+      "sha256": "9a7d0c0aea5b81c6473e8b8445dc0d8581f105d694459d410cf937b8d82167c7"
+    },
+    {
+      "source": "authoring/shared-runtime/paths.py",
+      "target": "skills/speaking-live-teacher/scripts/_shared/paths.py",
+      "sha256": "e8f3aa6027d61d3599fff3b2c5441f8f9b11d63fde32970f6ca94feb5bc491e4"
+    },
+    {
+      "source": "authoring/shared-runtime/state_store.py",
+      "target": "skills/speaking-live-teacher/scripts/_shared/state_store.py",
+      "sha256": "bdde4918191d737049f91334ac41c5e42831ebc4b79c12ccfa018506e1914be6"
+    },
+    {
+      "source": "authoring/shared-runtime/handoff_store.py",
+      "target": "skills/speaking-live-teacher/scripts/_shared/handoff_store.py",
+      "sha256": "e1049581341d043ffbfe1ba7f5af9b2b8583dcac2aaa81f5679f2a67ec427c45"
+    },
+    {
+      "source": "authoring/shared-runtime/id_generator.py",
+      "target": "skills/speaking-live-teacher/scripts/_shared/id_generator.py",
+      "sha256": "7be301c0a44c8a2c27887e133e2e2c482fce0a346c43f00bf7087f1955f132a2"
+    },
+    {
+      "source": "authoring/shared-runtime/retrieval.py",
+      "target": "skills/speaking-live-teacher/scripts/_shared/retrieval.py",
+      "sha256": "54937f342fd88f928581acc13abd213aced20849bc49359d6adb19b4a0a9583b"
+    },
+    {
+      "source": "authoring/shared-runtime/material_service.py",
+      "target": "skills/speaking-live-teacher/scripts/_shared/material_service.py",
+      "sha256": "249f211476f69aee9ce8a2fc92d8a0cd8088e3bd7f0950bd76c67bfeb974c590"
+    },
+    {
+      "source": "authoring/shared-runtime/persona_service.py",
+      "target": "skills/speaking-live-teacher/scripts/_shared/persona_service.py",
+      "sha256": "f1165a16ca66d8751c0b5360c1263e8c701e0d6df2a2c4919762b93e212dd54a"
+    },
+    {
+      "source": "authoring/shared-runtime/cli_utils.py",
+      "target": "skills/speaking-live-teacher/scripts/_shared/cli_utils.py",
+      "sha256": "b248f77c686230461e91fee325ee8c761290233b032196a508a27958025678e2"
+    },
+    {
+      "source": "authoring/shared-references/shared-objects.md",
+      "target": "skills/speaking-live-teacher/references/_shared/shared-objects.md",
+      "sha256": "1df9f8ca77802ffe73b59ce836d83359b8a95927210258d8b75b371189cc81c7"
+    },
+    {
+      "source": "authoring/shared-references/persona-writing.md",
+      "target": "skills/speaking-live-teacher/references/_shared/persona-writing.md",
+      "sha256": "37f89a0e2489d68ea78408ba63ebee4d66f8e45d7493fbec261009c6550cc5be"
+    },
+    {
+      "source": "authoring/shared-references/legacy-data-boundaries.md",
+      "target": "skills/speaking-live-teacher/references/_shared/legacy-data-boundaries.md",
+      "sha256": "be86d28502cf55948f3632d7066ef3670fdb269762876823a8decfc7b45489bc"
+    },
+    {
+      "source": "authoring/schemas/lesson_plan.schema.json",
+      "target": "skills/speaking-live-teacher/references/_shared/schemas/lesson_plan.schema.json",
+      "sha256": "a8f0406b00e7e0c4b5cda8ed49cbed8438d990b9b64ae808b1dd9cf6e0aaa6b9"
+    },
+    {
+      "source": "authoring/schemas/class_run.schema.json",
+      "target": "skills/speaking-live-teacher/references/_shared/schemas/class_run.schema.json",
+      "sha256": "068d97b77c176c95dcf89c56b8216b96cd7677935fe53eb9eaa8cecde9e47a7b"
+    },
+    {
+      "source": "authoring/schemas/handoff.schema.json",
+      "target": "skills/speaking-live-teacher/references/_shared/schemas/handoff.schema.json",
+      "sha256": "398dc3752c7d7a2e8115bd6fd0f7629f9526e639c4f971452b1d4c5aee5a0f8a"
+    }
+  ],
+  "speaking-teaching-assistant": [
+    {
+      "source": "authoring/shared-runtime/contracts.py",
+      "target": "skills/speaking-teaching-assistant/scripts/_shared/contracts.py",
+      "sha256": "6f20b22fe99ffe79573fc0fe8c89ac5afd7adbbd3777addc887e14161b191197"
+    },
+    {
+      "source": "authoring/shared-runtime/database.py",
+      "target": "skills/speaking-teaching-assistant/scripts/_shared/database.py",
+      "sha256": "9a7d0c0aea5b81c6473e8b8445dc0d8581f105d694459d410cf937b8d82167c7"
+    },
+    {
+      "source": "authoring/shared-runtime/paths.py",
+      "target": "skills/speaking-teaching-assistant/scripts/_shared/paths.py",
+      "sha256": "e8f3aa6027d61d3599fff3b2c5441f8f9b11d63fde32970f6ca94feb5bc491e4"
+    },
+    {
+      "source": "authoring/shared-runtime/state_store.py",
+      "target": "skills/speaking-teaching-assistant/scripts/_shared/state_store.py",
+      "sha256": "bdde4918191d737049f91334ac41c5e42831ebc4b79c12ccfa018506e1914be6"
+    },
+    {
+      "source": "authoring/shared-runtime/handoff_store.py",
+      "target": "skills/speaking-teaching-assistant/scripts/_shared/handoff_store.py",
+      "sha256": "e1049581341d043ffbfe1ba7f5af9b2b8583dcac2aaa81f5679f2a67ec427c45"
+    },
+    {
+      "source": "authoring/shared-runtime/id_generator.py",
+      "target": "skills/speaking-teaching-assistant/scripts/_shared/id_generator.py",
+      "sha256": "7be301c0a44c8a2c27887e133e2e2c482fce0a346c43f00bf7087f1955f132a2"
+    },
+    {
+      "source": "authoring/shared-runtime/memory_scheduler.py",
+      "target": "skills/speaking-teaching-assistant/scripts/_shared/memory_scheduler.py",
+      "sha256": "88da41dd17fff011bfbd6fe0e96648e08588113804305db837f05a13001ba193"
+    },
+    {
+      "source": "authoring/shared-runtime/persona_service.py",
+      "target": "skills/speaking-teaching-assistant/scripts/_shared/persona_service.py",
+      "sha256": "f1165a16ca66d8751c0b5360c1263e8c701e0d6df2a2c4919762b93e212dd54a"
+    },
+    {
+      "source": "authoring/shared-runtime/session_reader.py",
+      "target": "skills/speaking-teaching-assistant/scripts/_shared/session_reader.py",
+      "sha256": "a6df538adfb381045f5c686247624d11af8000dc13b7b5d46c5bc4370150de38"
+    },
+    {
+      "source": "authoring/shared-runtime/cli_utils.py",
+      "target": "skills/speaking-teaching-assistant/scripts/_shared/cli_utils.py",
+      "sha256": "b248f77c686230461e91fee325ee8c761290233b032196a508a27958025678e2"
+    },
+    {
+      "source": "authoring/shared-references/shared-objects.md",
+      "target": "skills/speaking-teaching-assistant/references/_shared/shared-objects.md",
+      "sha256": "1df9f8ca77802ffe73b59ce836d83359b8a95927210258d8b75b371189cc81c7"
+    },
+    {
+      "source": "authoring/shared-references/handoff-contract.md",
+      "target": "skills/speaking-teaching-assistant/references/_shared/handoff-contract.md",
+      "sha256": "4f9efc36dbc9a918cf402cc0dd38127e0a6e6545b53bc2df75a98846062d9960"
+    },
+    {
+      "source": "authoring/shared-references/persona-writing.md",
+      "target": "skills/speaking-teaching-assistant/references/_shared/persona-writing.md",
+      "sha256": "37f89a0e2489d68ea78408ba63ebee4d66f8e45d7493fbec261009c6550cc5be"
+    },
+    {
+      "source": "authoring/shared-references/legacy-data-boundaries.md",
+      "target": "skills/speaking-teaching-assistant/references/_shared/legacy-data-boundaries.md",
+      "sha256": "be86d28502cf55948f3632d7066ef3670fdb269762876823a8decfc7b45489bc"
+    },
+    {
+      "source": "authoring/schemas/class_run.schema.json",
+      "target": "skills/speaking-teaching-assistant/references/_shared/schemas/class_run.schema.json",
+      "sha256": "068d97b77c176c95dcf89c56b8216b96cd7677935fe53eb9eaa8cecde9e47a7b"
+    },
+    {
+      "source": "authoring/schemas/lesson_review_delta.schema.json",
+      "target": "skills/speaking-teaching-assistant/references/_shared/schemas/lesson_review_delta.schema.json",
+      "sha256": "3d7f6ec23f1fb896558c221d00eb72133d3366d5758874b66891e384c35f8c99"
+    },
+    {
+      "source": "authoring/schemas/persona_change_event.schema.json",
+      "target": "skills/speaking-teaching-assistant/references/_shared/schemas/persona_change_event.schema.json",
+      "sha256": "2b144da8843109bcbd574b7eba50ea37aa65ec8580466dcee5570795155962f9"
+    },
+    {
+      "source": "authoring/schemas/handoff.schema.json",
+      "target": "skills/speaking-teaching-assistant/references/_shared/schemas/handoff.schema.json",
+      "sha256": "398dc3752c7d7a2e8115bd6fd0f7629f9526e639c4f971452b1d4c5aee5a0f8a"
+    }
+  ],
+  "speaking-learning-analyst": [
+    {
+      "source": "authoring/shared-runtime/contracts.py",
+      "target": "skills/speaking-learning-analyst/scripts/_shared/contracts.py",
+      "sha256": "6f20b22fe99ffe79573fc0fe8c89ac5afd7adbbd3777addc887e14161b191197"
+    },
+    {
+      "source": "authoring/shared-runtime/database.py",
+      "target": "skills/speaking-learning-analyst/scripts/_shared/database.py",
+      "sha256": "9a7d0c0aea5b81c6473e8b8445dc0d8581f105d694459d410cf937b8d82167c7"
+    },
+    {
+      "source": "authoring/shared-runtime/paths.py",
+      "target": "skills/speaking-learning-analyst/scripts/_shared/paths.py",
+      "sha256": "e8f3aa6027d61d3599fff3b2c5441f8f9b11d63fde32970f6ca94feb5bc491e4"
+    },
+    {
+      "source": "authoring/shared-runtime/state_store.py",
+      "target": "skills/speaking-learning-analyst/scripts/_shared/state_store.py",
+      "sha256": "bdde4918191d737049f91334ac41c5e42831ebc4b79c12ccfa018506e1914be6"
+    },
+    {
+      "source": "authoring/shared-runtime/handoff_store.py",
+      "target": "skills/speaking-learning-analyst/scripts/_shared/handoff_store.py",
+      "sha256": "e1049581341d043ffbfe1ba7f5af9b2b8583dcac2aaa81f5679f2a67ec427c45"
+    },
+    {
+      "source": "authoring/shared-runtime/id_generator.py",
+      "target": "skills/speaking-learning-analyst/scripts/_shared/id_generator.py",
+      "sha256": "7be301c0a44c8a2c27887e133e2e2c482fce0a346c43f00bf7087f1955f132a2"
+    },
+    {
+      "source": "authoring/shared-runtime/schedule_service.py",
+      "target": "skills/speaking-learning-analyst/scripts/_shared/schedule_service.py",
+      "sha256": "f4da2ccd91d30f1a8000c5647427ae83bac8926505e8fafd4680386e8d8792ab"
+    },
+    {
+      "source": "authoring/shared-runtime/cli_utils.py",
+      "target": "skills/speaking-learning-analyst/scripts/_shared/cli_utils.py",
+      "sha256": "b248f77c686230461e91fee325ee8c761290233b032196a508a27958025678e2"
+    },
+    {
+      "source": "authoring/shared-references/shared-objects.md",
+      "target": "skills/speaking-learning-analyst/references/_shared/shared-objects.md",
+      "sha256": "1df9f8ca77802ffe73b59ce836d83359b8a95927210258d8b75b371189cc81c7"
+    },
+    {
+      "source": "authoring/shared-references/handoff-contract.md",
+      "target": "skills/speaking-learning-analyst/references/_shared/handoff-contract.md",
+      "sha256": "4f9efc36dbc9a918cf402cc0dd38127e0a6e6545b53bc2df75a98846062d9960"
+    },
+    {
+      "source": "authoring/shared-references/persona-writing.md",
+      "target": "skills/speaking-learning-analyst/references/_shared/persona-writing.md",
+      "sha256": "37f89a0e2489d68ea78408ba63ebee4d66f8e45d7493fbec261009c6550cc5be"
+    },
+    {
+      "source": "authoring/shared-references/legacy-data-boundaries.md",
+      "target": "skills/speaking-learning-analyst/references/_shared/legacy-data-boundaries.md",
+      "sha256": "be86d28502cf55948f3632d7066ef3670fdb269762876823a8decfc7b45489bc"
+    },
+    {
+      "source": "authoring/schemas/cycle_review.schema.json",
+      "target": "skills/speaking-learning-analyst/references/_shared/schemas/cycle_review.schema.json",
+      "sha256": "02b989f7d99d811dc5800da7f9e8cf3f6310c2ae3c9fc1f50ad4ec0d84365893"
+    },
+    {
+      "source": "authoring/schemas/handoff.schema.json",
+      "target": "skills/speaking-learning-analyst/references/_shared/schemas/handoff.schema.json",
+      "sha256": "398dc3752c7d7a2e8115bd6fd0f7629f9526e639c4f971452b1d4c5aee5a0f8a"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "properties": {
+    "schema_version": {
+      "default": "0.2",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "class_run_id": {
+      "pattern": "^CR-[0-9A-Za-z._-]+$",
+      "title": "Class Run Id",
+      "type": "string"
+    },
+    "lesson_id": {
+      "minLength": 1,
+      "title": "Lesson Id",
+      "type": "string"
+    },
+    "lesson_plan_version": {
+      "minimum": 1,
+      "title": "Lesson Plan Version",
+      "type": "integer"
+    },
+    "voice_session_id": {
+      "minLength": 1,
+      "title": "Voice Session Id",
+      "type": "string"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "status": {
+      "default": "review_pending",
+      "enum": [
+        "review_pending",
+        "reviewed",
+        "unreadable",
+        "abandoned"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "note": {
+      "default": "",
+      "title": "Note",
+      "type": "string"
+    }
+  },
+  "required": [
+    "class_run_id",
+    "lesson_id",
+    "lesson_plan_version",
+    "voice_session_id",
+    "started_at"
+  ],
+  "title": "ClassRun",
+  "type": "object"
+}

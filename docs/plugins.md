@@ -4,7 +4,7 @@
 
 | Plugin | 上游目标 | Claude | Codex | 内嵌 Skill | 来源 |
 |---|---|---|---|---|---|
-| `ai-speaking-coach` | — | unsupported | full | `ai-speaking-coach` | 本地维护 |
+| `ai-speaking-school` | — | unsupported | full | `speaking-head-teacher`, `speaking-learning-analyst`, `speaking-live-teacher`, `speaking-teaching-assistant` | 本地维护 |
 | `claude-md-management` | claude | full | review | `claude-md-improver` | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) |
 | `mcp-server-dev` | claude | full | review | `build-mcp-app`, `build-mcp-server`, `build-mcpb` | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) |
 
