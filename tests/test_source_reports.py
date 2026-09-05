@@ -58,7 +58,8 @@ class SourceReportTests(unittest.TestCase):
             markdown,
         )
         self.assertIn("```diff", markdown)
-        self.assertIn("agents-kit source update beta --yes", markdown)
+        self.assertIn("agents-kit source check beta --json", markdown)
+        self.assertNotIn("agents-kit source update beta --yes", markdown)
 
 
 if __name__ == "__main__":

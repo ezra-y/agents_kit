@@ -147,6 +147,16 @@ def build_parser() -> argparse.ArgumentParser:
     source_report.add_argument("--run-url", default="")
     source_report.set_defaults(handler=command_source_report, streaming=True)
 
+    source_notify = source_commands.add_parser(
+        "notify", help="仅在上游待办变化时更新同一条 Issue"
+    )
+    source_notify.add_argument("report", type=Path)
+    source_notify.add_argument("--repository", required=True, help="GitHub owner/name")
+    source_notify.add_argument("--run-url", default="")
+    source_notify.add_argument("--dry-run", action="store_true")
+    _json_flag(source_notify)
+    source_notify.set_defaults(handler=command_source_notify)
+
     skill = commands.add_parser("skill", help="管理中央技能库")
     skill_commands = skill.add_subparsers(dest="skill_command", required=True)
 
@@ -656,7 +666,7 @@ def _source_change(
     )
     if problems:
         comparison["status"] = "review_required"
-        comparison["decision"] = "review_required"
+        comparison["decision"] = "blocked"
         comparison["reasons"].append("candidate_validation_failed")
         comparison["validation_problems"] = problems
     return comparison
@@ -793,6 +803,7 @@ def command_source_update(args: argparse.Namespace, context: Context) -> dict[st
                     comparison.get("decision") == "auto_apply"
                     if auto_docs
                     else comparison.get("merge_state") == "upstream_only"
+                    and comparison.get("decision") != "blocked"
                 )
                 results.append(
                     {
@@ -812,8 +823,39 @@ def command_source_update(args: argparse.Namespace, context: Context) -> dict[st
                 "results": results,
                 "failures": failures,
             }
+        if (
+            not args.all
+            and not auto_docs
+            and (
+                failures
+                or any(
+                    row.get("decision") == "blocked"
+                    or row.get("merge_state") == "diverged"
+                    for row in results
+                )
+            )
+        ):
+            raise CommandError(
+                "更新未应用：请先处理报告中的缺失文件或本地合并项；当前内容未改动",
+                {"changed": [], "results": results, "failures": failures},
+            )
         combined = ChangeSet()
         with context.repo.write_lock():
+            # Recheck every candidate before the first write; downloads may take minutes.
+            for kind, name, snapshot in snapshots:
+                if kind == "plugin":
+                    check = plugins.classify_plugin_update(context.repo, name, snapshot)
+                else:
+                    check = _source_change(
+                        context, name, context.repo.source_record(name), snapshot
+                    )
+                if (
+                    check.get("merge_state") not in {"upstream_only", "unchanged"}
+                    or check.get("decision") == "blocked"
+                ):
+                    raise CommandError(
+                        f"{name}: 下载期间内容或依赖发生变化，未应用本批更新", check
+                    )
             for kind, name, snapshot in snapshots:
                 if kind == "plugin":
                     combined.merge(
@@ -855,6 +897,24 @@ def command_source_report(
     )
     print(markdown, end="")
     return {"rendered": str(args.report)}
+
+
+def command_source_notify(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    report = json.loads(args.report.read_text(encoding="utf-8"))
+    if not isinstance(report, dict):
+        raise CommandError("来源检查报告顶层必须是对象")
+    catalog = context.repo.read_sources()
+    records = {
+        **catalog["skills"],
+        **{f"plugin:{key}": value for key, value in catalog["plugins"].items()},
+    }
+    return source_reports.sync_review_issue(
+        report,
+        records,
+        repository=args.repository,
+        run_url=args.run_url,
+        dry_run=args.dry_run,
+    )
 
 
 def command_skill_import(args: argparse.Namespace, context: Context) -> dict[str, Any]:

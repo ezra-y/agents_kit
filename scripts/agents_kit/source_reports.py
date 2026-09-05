@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import hashlib
+import json
+import re
+import subprocess
 import urllib.parse
 from collections.abc import Mapping
 from typing import Any
@@ -18,6 +22,7 @@ def render_source_review_markdown(
     sources: Mapping[str, Any],
     *,
     run_url: str = "",
+    include_details: bool = True,
 ) -> str:
     results = list(report.get("results", []))
     failures = list(report.get("failures", []))
@@ -27,15 +32,7 @@ def render_source_review_markdown(
         if (row.get("decision") == "auto_apply" or row.get("status") == "safe_update")
         and row.get("applied")
     ]
-    review = [
-        row
-        for row in results
-        if (
-            row.get("decision") == "review_required"
-            or row.get("status") == "review_required"
-        )
-        and row.get("upstream_modified") is not False
-    ]
+    review = pending_updates(report)
     unchanged = sum(
         row.get("merge_state") in {"unchanged", "local_only"}
         or row.get("status") == "unchanged"
@@ -45,7 +42,8 @@ def render_source_review_markdown(
     lines = [
         "# 上游技能审核",
         "",
-        "> 逐项检查待确认内容；不要使用 `source update --all` 批量接受。",
+        "更新检查已完成。以下待办不影响当前安装；只有确认过的更新才会应用。",
+        "同一批变化不重复更新此事项。每次运行的完整结果仍保存在 Actions 报告。",
         "",
         "| 结果 | 数量 |",
         "|---|---:|",
@@ -73,7 +71,7 @@ def render_source_review_markdown(
     else:
         lines.extend(
             [
-                "| Skill | 拦截原因 | 变化规模 | 上游 |",
+                "| Skill | 更新内容 / 待处理原因 | 变化规模 | 上游 |",
                 "|---|---|---:|---|",
             ]
         )
@@ -87,9 +85,10 @@ def render_source_review_markdown(
                 f"| `{_escape_table(name)}` | {_escape_table(reason)} | "
                 f"{_escape_table(scale)} | {source} |"
             )
-        for row in review:
-            name = _row_name(row)
-            lines.extend(_review_details(row, sources.get(name, {})))
+        if include_details:
+            for row in review:
+                name = _row_name(row)
+                lines.extend(_review_details(row, sources.get(name, {})))
 
     if failures:
         lines.extend(["", "## 检查失败", ""])
@@ -102,6 +101,7 @@ def render_source_review_markdown(
             )
             lines.append(f"- `{name}`：{failure.get('error', '未知错误')}")
 
+    lines.extend(["", f"<!-- agents-kit-review:v1:{review_fingerprint(report)} -->"])
     return "\n".join(lines).rstrip() + "\n"
 
 
@@ -146,18 +146,21 @@ def _review_details(
             )
         lines.append("```")
 
-    lines.extend(
-        [
-            "",
-            "确认后单独更新：",
-            "",
-            "```bash",
-            f"agents-kit source update {name} --yes",
-            "```",
-            "",
-            "</details>",
-        ]
-    )
+    blocked = bool(problems) or row.get("decision") == "blocked"
+    conflict = row.get(
+        "merge_state"
+    ) == "diverged" or "local_upstream_conflict" in row.get("reasons", [])
+    if blocked or conflict:
+        instruction = (
+            "新版文件尚不完整，需补齐来源后重新检查；当前版本保持不变。"
+            if blocked
+            else "本地与上游都有修改，需逐项合并；不会自动覆盖本地内容。"
+        )
+        command = f"agents-kit source check {name} --json"
+    else:
+        instruction = "确认后单独更新："
+        command = f"agents-kit source update {name} --yes"
+    lines.extend(["", instruction, "", "```bash", command, "```", "", "</details>"])
     return lines
 
 
@@ -223,3 +226,169 @@ def _escape_table(value: str) -> str:
 
 def _row_name(row: Mapping[str, Any]) -> str:
     return str(row.get("skill") or row.get("asset") or row.get("plugin") or "unknown")
+
+
+def pending_updates(report: Mapping[str, Any]) -> list[dict[str, Any]]:
+    return sorted(
+        (
+            row
+            for row in report.get("results", [])
+            if not row.get("applied")
+            and row.get("upstream_modified") is not False
+            and (
+                row.get("decision") in {"review_required", "blocked"}
+                or row.get("status") == "review_required"
+            )
+        ),
+        key=_row_name,
+    )
+
+
+def review_fingerprint(report: Mapping[str, Any]) -> str:
+    """Only actionable content changes matter, not run URLs or unrelated commits."""
+    fields = (
+        "merge_state",
+        "decision",
+        "risk_class",
+        "local_sha256",
+        "remote_sha256",
+        "resolved_sha256",
+        "reasons",
+        "validation_problems",
+        "authority_conflicts",
+        "changed_paths",
+        "skill_diff",
+    )
+    pending = [
+        {"asset": _row_name(row), **{key: row[key] for key in fields if key in row}}
+        for row in pending_updates(report)
+    ]
+    for row in pending:
+        for key in (
+            "reasons",
+            "validation_problems",
+            "authority_conflicts",
+            "changed_paths",
+        ):
+            if key in row:
+                row[key] = sorted(row[key])
+    failures = sorted(
+        (
+            {"asset": _row_name(row), "error": row.get("error", "未知错误")}
+            for row in report.get("failures", [])
+        ),
+        key=lambda row: (row["asset"], row["error"]),
+    )
+    payload = json.dumps(
+        {"pending": pending, "failures": failures},
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(payload.encode()).hexdigest()
+
+
+def _gh(args: list[str], *, body: str | None = None) -> str:
+    try:
+        result = subprocess.run(
+            ["gh", *args],
+            input=body,
+            capture_output=True,
+            text=True,
+            timeout=45,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise RuntimeError(f"上游待办同步失败：{exc}") from exc
+    if result.returncode:
+        raise RuntimeError((result.stderr or result.stdout).strip()[:2000])
+    return result.stdout
+
+
+def sync_review_issue(
+    report: Mapping[str, Any],
+    sources: Mapping[str, Any],
+    *,
+    repository: str,
+    run_url: str = "",
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """One issue, updated only when its pending work changes. Never changes subscriptions."""
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository):
+        raise ValueError("仓库必须使用 owner/name 格式")
+    # A missing/truncated report must not close an unresolved issue.
+    if not all(isinstance(report.get(key), list) for key in ("results", "failures")):
+        raise ValueError("报告缺少完整的 results/failures 数组")
+    if not all(
+        isinstance(row, dict) for key in ("results", "failures") for row in report[key]
+    ):
+        raise ValueError("报告条目必须是对象")
+    title = "上游技能待更新"
+    issues = json.loads(
+        _gh(
+            [
+                "issue",
+                "list",
+                "--repo",
+                repository,
+                "--state",
+                "all",
+                "--limit",
+                "100",
+                "--search",
+                f'"{title}" in:title',
+                "--json",
+                "number,title,body,state",
+            ]
+        )
+    )
+    exact = sorted(
+        (item for item in issues if item["title"] == title),
+        key=lambda item: (item["state"] != "OPEN", -item["number"]),
+    )
+    current = exact[0] if exact else None
+    needed = bool(pending_updates(report) or report["failures"])
+    marker = f"<!-- agents-kit-review:v1:{review_fingerprint(report)} -->"
+    if not needed:
+        action = "close" if current and current["state"] == "OPEN" else "unchanged"
+    elif (
+        current and marker in (current.get("body") or "") and current["state"] == "OPEN"
+    ):
+        action = "unchanged"
+    else:
+        action = "update" if current else "create"
+    result = {
+        "action": action,
+        "issue": current["number"] if current else None,
+        "pending": len(pending_updates(report)),
+        "failures": len(report["failures"]),
+        "dry_run": dry_run,
+    }
+    if dry_run or action == "unchanged":
+        return result
+    selector = [str(current["number"]), "--repo", repository] if current else []
+    if action == "close":
+        _gh(["issue", "close", *selector])
+    else:
+        body = render_source_review_markdown(
+            report, sources, run_url=run_url, include_details=False
+        )
+        if current:
+            _gh(["issue", "edit", *selector, "--body-file", "-"], body=body)
+            if current["state"] != "OPEN":
+                _gh(["issue", "reopen", *selector])
+        else:
+            _gh(
+                [
+                    "issue",
+                    "create",
+                    "--repo",
+                    repository,
+                    "--title",
+                    title,
+                    "--body-file",
+                    "-",
+                ],
+                body=body,
+            )
+    return result

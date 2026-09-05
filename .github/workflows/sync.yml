@@ -8,6 +8,10 @@ on:
     - cron: "0 18 * * *"
   workflow_dispatch:
 
+concurrency:
+  group: agents-kit-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: read
 
@@ -122,25 +126,12 @@ jobs:
           git pull --rebase origin main
           git push origin HEAD:main
 
-      - name: 更新待确认 Issue
+      - name: 更新有变化的上游待办
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
-          title="上游技能待更新"
-          updated=$(jq '[.results[] | select(.status == "safe_update" and .applied)] | length' "$RUNNER_TEMP/source-check.json")
-          review=$(jq '[.results[] | select(.status == "review_required")] | length' "$RUNNER_TEMP/source-check.json")
-          failed=$(jq '.failures | length' "$RUNNER_TEMP/source-check.json")
-          number=$(gh issue list --state open --search "$title in:title" --json number --jq '.[0].number // empty')
-
-          if [ "$review" -eq 0 ] && [ "$failed" -eq 0 ]; then
-            if [ -n "$number" ]; then
-              gh issue close "$number" --comment "本次自动更新 ${updated} 个小改动，没有需要人工确认的变化，自动关闭。"
-            fi
-            exit 0
-          fi
-
-          if [ -n "$number" ]; then
-            gh issue edit "$number" --body-file "$RUNNER_TEMP/source-review.md"
-          else
-            gh issue create --title "$title" --body-file "$RUNNER_TEMP/source-review.md"
-          fi
+          scripts/agents-kit source notify "$RUNNER_TEMP/source-check.json" \
+            --repository "$GH_REPO" \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --json

@@ -49,16 +49,17 @@ options:
   --json
 
 $ agents-kit source --help
-usage: agents-kit source [-h] {providers,inspect,detach,check,update,report} ...
+usage: agents-kit source [-h] {providers,inspect,detach,check,update,report,notify} ...
 
 positional arguments:
-  {providers,inspect,detach,check,update,report}
+  {providers,inspect,detach,check,update,report,notify}
     providers           列出来源适配器
     inspect             检查来源；--save 把技能索引存入收藏（scout.json）
     detach              停止跟踪技能来源
     check               检查来源变化
     update              获取并应用经过确认的来源更新
     report              把来源检查 JSON 渲染为人工审核 Markdown
+    notify              仅在上游待办变化时更新同一条 Issue
 
 options:
   -h, --help            show this help message and exit
@@ -134,6 +135,20 @@ positional arguments:
 options:
   -h, --help         show this help message and exit
   --run-url RUN_URL
+
+$ agents-kit source notify --help
+usage: agents-kit source notify [-h] --repository REPOSITORY [--run-url RUN_URL] [--dry-run] [--json] report
+
+positional arguments:
+  report
+
+options:
+  -h, --help            show this help message and exit
+  --repository REPOSITORY
+                        GitHub owner/name
+  --run-url RUN_URL
+  --dry-run
+  --json
 
 $ agents-kit skill --help
 usage: agents-kit skill [-h] {import,list,show,open,metadata,rename,move,remove} ...

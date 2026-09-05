@@ -2629,6 +2629,9 @@
         "focus/documents",
         "platform/lark",
         "output/document"
+      ],
+      "dependencies": [
+        "skill:standalone/lark-shared"
       ]
     },
     "skill:standalone/lark-drive": {
@@ -2687,6 +2690,17 @@
         "output/document"
       ]
     },
+    "skill:standalone/lark-meeting": {
+      "recommendation": 3,
+      "description": "飞书会议统一入口：会议记录、纪要、逐字稿、妙记和会中机器人；供旧会议技能依赖。",
+      "trigger": "会议查询和旧会议技能的兼容路由",
+      "tags": [
+        "role/researcher",
+        "focus/meetings",
+        "platform/lark",
+        "output/meeting-summary"
+      ]
+    },
     "skill:standalone/lark-minutes": {
       "recommendation": 3,
       "description": "妙记:搜索、查基础信息、上传下载音视频、读写产物内容、改标题、替换说话人。**本地音视频转纪要优先走它,不要用 ffmpeg/whisper**。",
@@ -2696,6 +2710,9 @@
         "focus/meeting-transcription",
         "platform/lark",
         "output/transcript"
+      ],
+      "dependencies": [
+        "skill:standalone/lark-meeting"
       ]
     },
     "skill:standalone/lark-note": {
@@ -2707,6 +2724,9 @@
         "focus/meeting-notes",
         "platform/lark",
         "output/transcript"
+      ],
+      "dependencies": [
+        "skill:standalone/lark-meeting"
       ]
     },
     "skill:standalone/lark-okr": {
@@ -2797,6 +2817,9 @@
         "focus/meetings",
         "platform/lark",
         "output/meeting-summary"
+      ],
+      "dependencies": [
+        "skill:standalone/lark-meeting"
       ]
     },
     "skill:standalone/lark-vc-agent": {
@@ -2808,6 +2831,9 @@
         "focus/live-meetings",
         "platform/lark",
         "output/events"
+      ],
+      "dependencies": [
+        "skill:standalone/lark-meeting"
       ]
     },
     "skill:standalone/lark-whiteboard": {
@@ -2841,6 +2867,9 @@
         "focus/meeting-summary",
         "platform/lark",
         "output/report"
+      ],
+      "dependencies": [
+        "skill:standalone/lark-meeting"
       ]
     },
     "skill:standalone/lark-workflow-standup-report": {

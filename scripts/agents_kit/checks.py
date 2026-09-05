@@ -543,7 +543,20 @@ def _missing_markdown_links(
             continue
         if "/" not in relative and not Path(relative).suffix:
             continue
+        skills_root = skill_root.parents[1].resolve()
         target = (skill_root / relative).resolve()
+        # References outside the candidate must resolve against installed assets,
+        # not uninstalled sibling folders that happen to be in an upstream checkout.
+        entry = inventory.get(name) or next(
+            (item for item in inventory.values() if item.qualified_id == name), None
+        )
+        if (
+            entry is not None
+            and target != skill_root.resolve()
+            and skill_root.resolve() not in target.parents
+        ):
+            target = (entry.path / relative).resolve()
+            skills_root = entry.path.parents[1].resolve()
         parts = Path(relative).parts
         referenced_skill = (
             parts[-2] if len(parts) >= 2 and parts[-1] == "SKILL.md" else None

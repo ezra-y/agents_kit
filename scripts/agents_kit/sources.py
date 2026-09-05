@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import codecs
 import difflib
 import io
 import os
@@ -203,13 +204,15 @@ def _path_is_binary(path: Path) -> bool:
     if not path.is_file():
         return False
     try:
-        data = path.read_bytes()[:8192]
+        with path.open("rb") as stream:
+            data = stream.read(8192)
+            complete = not stream.read(1)
     except OSError:
         return True
     if b"\0" in data:
         return True
     try:
-        data.decode("utf-8")
+        codecs.getincrementaldecoder("utf-8")().decode(data, final=complete)
     except UnicodeDecodeError:
         return True
     return False

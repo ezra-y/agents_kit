@@ -983,328 +983,423 @@
       }
     },
     "skill:standalone/lark-approval": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-approval/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-approval"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "fee377eca410dcda36b0bbbd632aab085b2e26e8232bb2ff88d394a1571d5ae2"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "3514cc2c19d919559ab7d5643f1f68c66a93bdcc539f133e249dd5f0aa1fd622"
+      },
+      "source_name": "lark-approval"
     },
     "skill:standalone/lark-apps": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-apps/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-apps"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "4bd8d41467b40f1aa1d0e115a36d9c7115d5bb79d31e0809f0f1b48ec85e4bd9"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "2f3891b3adc66e1a326e291b6e04812029a7af5998af68992f4b74950c0ac003"
+      },
+      "source_name": "lark-apps"
     },
     "skill:standalone/lark-attendance": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-attendance/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-attendance"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "a0ea5f3fa176496dda31d912f7e55ad7cfed5243b30567d16e7f9dc96eebbe8b"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "eda53ee555fda5105744e632768b30c6156968b02acc7c4bfc7b2b710c7b71a6"
+      },
+      "source_name": "lark-attendance"
     },
     "skill:standalone/lark-base": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-base/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-base"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "aef3c07dbeb11cc87352b217fd3d9868b41f31f0cf3ae3de906e4e8443c4a01e"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "f1da25573ede271998d90f3a4a230ec53aa2c57058c7f4f8e53d7f414c4949fc"
+      },
+      "source_name": "lark-base"
     },
     "skill:standalone/lark-calendar": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-calendar/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-calendar"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "9110f1adc306d04ccf4ea7c439039e95448b12757a5a8e7d76bc62d48553bcb8"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "396b931602d749e356178b11edf5624232582bc85ab72b19d26c7676f7440ec2"
+      },
+      "source_name": "lark-calendar"
     },
     "skill:standalone/lark-contact": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-contact/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-contact"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "3f8cd36b6dfddfc4974ec3f796b4163d6511aafabd46f7eeacb2798c647f8f06"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "3db4339e13193eb29627f1fef7f83cd36616da3905612fa35191d8fce7b74051"
+      },
+      "source_name": "lark-contact"
     },
     "skill:standalone/lark-doc": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-doc/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-doc"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "164de4ed954112c948952b28d4cde5ffe92cdbf8b1db4e69d73dc93fccd52f3b"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "c78bc440d2d3f61c712905fc92ee60dfc1b55271e4e47857c039c7478804a9b2"
+      },
+      "source_name": "lark-doc"
     },
     "skill:standalone/lark-drive": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-drive/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-drive"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "5423817c78709d70b0b84bb7bee15b8abc21c5982fc48c7e37ca2ddc42972c19"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "c8e87ed82e671a8e20a3ded6c343e47d58836d6194136e3f6daf68de4023ffd0"
+      },
+      "source_name": "lark-drive"
     },
     "skill:standalone/lark-event": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-event/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-event"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "e82b31451938a5c6bc5e65c1bc1ea241c75d0097d7deb1406f2ca3876c9802e3"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "857d30496598474c3ac577ecb1b6db30db1e1e4277b0ea0d669a8e45559fec3f"
+      },
+      "source_name": "lark-event"
     },
     "skill:standalone/lark-im": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-im/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-im"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "74bbb7dde225e6ffd7e44f2a7bd03f78d235723742f5d19befa9ecfd762210e8"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "2cd0aa312abf29bc1d93f0ab054f2402ed745a1827382a9be4b3eb40b8f3ad79"
+      },
+      "source_name": "lark-im"
     },
     "skill:standalone/lark-mail": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-mail/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-mail"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "bee1da98483c1dfc1d6dc3b5a4ac6403279dad6f6a8bde77f7fdb5b1f4725d38"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "9d958ecd4990de4ed13ac9dc45467285a771dea7dd92ceb55fe4f57dbbf6a81c"
+      },
+      "source_name": "lark-mail"
     },
     "skill:standalone/lark-markdown": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-markdown/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-markdown"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "50024d5e506a95f122fb818011b7624c1948342ea8617089a102fcd72bab0a1b"
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "5e820b2f86e9b9be10b3133a475f408cb0ecb2c76bad9d1dc40d8f8fcca7caff"
+      },
+      "source_name": "lark-markdown"
+    },
+    "skill:standalone/lark-meeting": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-meeting"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "1cc0a77961fe424452b498fc9bc340caa112d2afbde384efd903a32152efb217"
       }
     },
     "skill:standalone/lark-minutes": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-minutes/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-minutes"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "7716be8f07b15abd6a6cdfc4ff4aafd55caabd40fab6b9c0562d5b70e134c675"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "a92e917b5cd497b8fe459951d4de8431934da735e3d316ae490f06eb0ca89411"
+      },
+      "source_name": "lark-minutes"
     },
     "skill:standalone/lark-note": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-note/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-note"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "51ce47948e5ea9361dd0ecc6633519b01dfa8ae86729874217d08a0b0831df48"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "1fc2b2a484069a15b3d00d19dcc1d11987343554d5ae7bc705de67ca06abb98c"
+      },
+      "source_name": "lark-note"
     },
     "skill:standalone/lark-okr": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-okr/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-okr"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "658ec51f59e3af529064821fb5fbee2ed3ff5cac9e22b66887541cfab4353772"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "6580eafa341817932f7f0d19bc20eaa3698f2899748f86cb61fe59fb71d0d86a"
+      },
+      "source_name": "lark-okr"
     },
     "skill:standalone/lark-openapi-explorer": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-openapi-explorer/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-openapi-explorer"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "ae89debc3f807f9947831b4525e1c118bc14544877c14c14aaa47298b1e863b4"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "2ebfe32bddaea41f7d9bd13bbe3fa3350a1881c79cad60711784f0c1675338e3"
+      },
+      "source_name": "lark-openapi-explorer"
     },
     "skill:standalone/lark-shared": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-shared/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-shared"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "22e60b0684ee78cb3420af198203ee4f564433a486f4936c96632782fa2dfb54"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "eca53c3a893f929f9c4d8dec64008606d902d437385ff0da9c20eed4e124f0ac"
+      },
+      "source_name": "lark-shared"
     },
     "skill:standalone/lark-sheets": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-sheets/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-sheets"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "8c470db8e85b38ff81de56255f878f63ba4822bc892ba3355386435eca41e2fa"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "cc9ef94d4dcbda74dfd42ced1861eb09c09d1b89838f3ae936b4924a2e79b0c7"
+      },
+      "source_name": "lark-sheets"
     },
     "skill:standalone/lark-skill-maker": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-skill-maker/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-skill-maker"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "8591158289a3cb003c7ac18001ce6b42837c780d2567492cea87bf98982b3678"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "8ad66341a791430a0d8b52336ce89c54a573de15f8c84c588b24dd18dd6862b9"
+      },
+      "source_name": "lark-skill-maker"
     },
     "skill:standalone/lark-slides": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-slides/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-slides"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "226552ad2dc8e3ae16d0562995363dec3e57ad99a3aa58ac5dc11a5e653eb417"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "906c1f2e240a7eb652ecde9e83239e11e804c1b1c26be4b66cb1c3916aeeb800"
+      },
+      "source_name": "lark-slides"
     },
     "skill:standalone/lark-task": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-task/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-task"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "c9bae3576de69599b8b0587c120042fe8e6b27e9837b2d23ee6f43ca4974a41a"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "092db6a1e44208a7436203e2b22b78f9dbf44d689be10197bc5a7c2a9d34d206"
+      },
+      "source_name": "lark-task"
     },
     "skill:standalone/lark-vc": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-vc/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-vc"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "07663b7ba87a5ab97e6b23f453ceb619b4de365720998d143fabe9b57c0ecb76"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "3ce12599ca44e0a9af06c880a5e89cbf1d3070926b39b366fadca9b6dc171fcd"
+      },
+      "source_name": "lark-vc"
     },
     "skill:standalone/lark-vc-agent": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-vc-agent/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-vc-agent"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "1d6d57b68e23e965d7f7b6510414dce04d5dcaa6efcf51e9a80db3f6bf27f973"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "43bccca66e07eebb5207f6ca51dc22a9d2f6765327032703657d6718034138d6"
+      },
+      "source_name": "lark-vc-agent"
     },
     "skill:standalone/lark-whiteboard": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-whiteboard/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-whiteboard"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "78a3fbffa0da5c561b3e7035543fe1e80dbd7854c38d84e35e1392598b288f07"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "1bdc5f93e009c81c58490b4587cc41d894fc4f43309614f67305da85d063278d"
+      },
+      "source_name": "lark-whiteboard"
     },
     "skill:standalone/lark-wiki": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-wiki/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-wiki"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "a4ccfe6b3708f03fcdbcde69207d4082c2bfed7ac83e8b8c55a0cfea7c1e743f"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "792325299f0090352649923ed7ba8e20a3422e98be683ada64df3e39b24ae844"
+      },
+      "source_name": "lark-wiki"
     },
     "skill:standalone/lark-workflow-meeting-summary": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-workflow-meeting-summary/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-workflow-meeting-summary"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "ad3db979a2e6d8932ab33058967e1dab82090f8d8d82b16c59ee2955eb967d61"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "40424e88067b819589db9ae73ea10a9d01bd8c9220885a4e96deb36bddc8db51"
+      },
+      "source_name": "lark-workflow-meeting-summary"
     },
     "skill:standalone/lark-workflow-standup-report": {
-      "provider": "http",
+      "provider": "git",
       "locator": {
-        "url": "https://open.feishu.cn/.well-known/skills/lark-workflow-standup-report/SKILL.md"
+        "url": "https://github.com/larksuite/cli.git",
+        "ref": "main",
+        "path": "skills/lark-workflow-standup-report"
       },
-      "content_mode": "skill_file",
+      "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": null,
-        "content_sha256": "a283de746e65f97d7d25c3b9e351c2e5c16702be81c0f004d5be718c50994690"
-      }
+        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
+        "content_sha256": "e7f481b74274c87d8e386bf60c94acba98321c4928c665e89dbfcb9e84ecf09a"
+      },
+      "source_name": "lark-workflow-standup-report"
     },
     "skill:standalone/last30days": {
       "provider": "git",
