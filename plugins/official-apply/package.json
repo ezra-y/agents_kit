@@ -1,0 +1,25 @@
+{
+  "name": "official-apply",
+  "version": "0.2.0",
+  "private": true,
+  "description": "网申助手：Codex 与 Claude Code 共用的官网填写、检查与授权投递程序。",
+  "type": "module",
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "scripts": {
+    "init": "node bin/applyctl.js init",
+    "cli": "node bin/applyctl.js",
+    "mcp": "node bin/applyctl-mcp.js",
+    "doctor": "node bin/applyctl.js doctor"
+  },
+  "dependencies": {
+    "pdfjs-dist": "6.2.108",
+    "playwright": "1.62.1",
+    "yaml": "2.9.0"
+  },
+  "bin": {
+    "applyctl": "bin/applyctl.js",
+    "applyctl-mcp": "bin/applyctl-mcp.js"
+  }
+}

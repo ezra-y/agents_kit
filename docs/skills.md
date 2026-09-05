@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **298** 个 · 常驻 **148** 个 · 有上游可检查更新 **153** 个
+共 **304** 个 · 常驻 **154** 个 · 有上游可检查更新 **153** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -297,7 +297,7 @@
 | `social-science-paper-writing` | 面向社会科学与设计研究的论文工作流：支持选题诊断、研究问题细化、文献综述规划、CNKI/Google Scholar 到 Zotero 的资 | `role/workflow` `focus/literature-review` `focus/long-form-writing` `focus/research-question-refinement` `platform/zotero` `output/article` `output/report` |  | [raw.githubusercontent.com](https://raw.githubusercontent.com/fakerqwq/social-science-paper-writing-skill/main/social-science-paper-writing-skill/SKILL.md) |
 | `thesis-figure-skill` | 面向论文研究框架、方法流程、概念模型、服务蓝图和系统关系的可编辑配图工作流：先明确关系与布局，再用 TikZ 或 draw.io 实现、渲染 | `role/workflow` `focus/design-analysis` `focus/visual-design` `output/diagram` |  | — |
 
-## 研究与办公 (`research-office`，33 个)
+## 研究与办公 (`research-office`，39 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
@@ -305,6 +305,7 @@
 | `deep-dive` | 不依赖外部 API 的深度研究:把问题拆成 DAG、按依赖顺序并行跑子代理、按缺口迭代一轮。 | `role/researcher` `focus/deep-research` `focus/evidence-synthesis` `output/report` |  | [github.com/rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit/tree/main/skills/deep-dive) |
 | `deep-research-skill` | 论点驱动的深度调研工作流：优先一手源、交叉验证、反例分析，并输出带来源的判断型报告。 | `role/researcher` `focus/web-research` `output/research` | ● | — |
 | `eli5` | Explain a topic like I'm a 5 year old. Use when the user types /eli5 < | `role/builder` `focus/interactive-tools` `stack/html` `output/app` | ● | [github.com/anthropics/claude-plugins-community](https://github.com/anthropics/claude-plugins-community) |
+| `job-application-submit` | 在企业招聘官网完成已经明确岗位的申请和最终提交。仅当用户要求申请或提交，而且任务已有用户提供的具体岗位，或用户明确授权 Agent 代选岗位 | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
 | `lark-approval` | 审批:查处理待办已办实例、搜可发起的审批定义、看详情并发起原生审批实例。 | `role/integration` `focus/approvals` `platform/lark` `output/approval` |  | [github.com/larksuite/cli](https://github.com/larksuite/cli/tree/main/skills/lark-approval) |
 | `lark-attendance` | 考勤打卡:只能查自己的打卡记录。 | `role/integration` `focus/attendance` `platform/lark` `output/report` |  | [github.com/larksuite/cli](https://github.com/larksuite/cli/tree/main/skills/lark-attendance) |
 | `lark-base` | 多维表格:建表、字段、记录、视图、统计、公式与 lookup、表单、仪表盘、workflow、角色权限。25 个附件。 | `role/integration` `focus/database` `focus/workflow-automation` `platform/lark` `output/database` |  | [github.com/larksuite/cli](https://github.com/larksuite/cli/tree/main/skills/lark-base) |
@@ -332,7 +333,12 @@
 | `lark-workflow-meeting-summary` | 工作流:汇总指定时间范围内的会议纪要,生成结构化报告(会议周报)。 | `role/workflow` `focus/meeting-summary` `platform/lark` `output/report` |  | [github.com/larksuite/cli](https://github.com/larksuite/cli/tree/main/skills/lark-workflow-meeting-summary) |
 | `lark-workflow-standup-report` | 工作流:编排日历日程和任务,生成指定日期的日程与未完成任务摘要。 | `role/workflow` `focus/daily-planning` `platform/lark` `output/report` |  | [github.com/larksuite/cli](https://github.com/larksuite/cli/tree/main/skills/lark-workflow-standup-report) |
 | `last30days` | 研究一个话题最近 30 天在 Reddit、X、YouTube、TikTok、Hacker News、Polymarket、GitHub 和 | `role/researcher` `focus/trend-research` `platform/social-media` `output/report` | ● | [github.com/mvanhorn/last30days-skill](https://github.com/mvanhorn/last30days-skill/tree/main/skills/last30days) |
+| `official-apply` | 统一处理网申任务。用户要整理岗位来源、导入任务、登录招聘官网、填写或检查站内简历、继续上次任务、准备或确认最终投递时使用。根据用户目的和已有 | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
 | `qiuzhao-feed` | 实时拉取 xixicc2027 的 2027 届秋招 jobs.json，按行业、关键词和截止时间筛选并生成可交互网页与简报。 | `role/researcher` `focus/trend-research` `focus/web-research` `platform/web` `output/report` |  | [github.com/xixicc186/xixicc2027](https://github.com/xixicc186/xixicc2027) |
+| `recruitment-capability-evolution` | 演进企业招聘自动化能力。真实站点暴露出重复人工操作、现有 Skill 或 PageScript 不适用、共享核心缺少能力，或 Agent 需 | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
+| `recruitment-link` | 获取企业招聘官网的稳定岗位或简历链接。用户给出公司、岗位表、飞书 Base、招聘汇总、官网首页，或现有链接失效时使用。先复用已有官网链接；缺 | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
+| `recruitment-session` | 为企业招聘官网准备登录状态并找到站内简历入口。用户要求登录招聘站、复用 Chrome/Edge 登录态、处理短信或图片验证码、进入个人中心或 | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
+| `resume-fill-review` | 在企业招聘官网填写、保存并审查站内简历。用户要求更新简历、补教育/工作/项目、上传 PDF、检查站内简历，或已经有 recruitment- | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
 | `smart-search` | 基于本机 opencli 的智能搜索路由:指定站点、社交媒体、技术资料、新闻、购物、旅游、求职、金融、中文内容各走不同的源。含强制预检、单题 | `role/router` `focus/web-research` `platform/opencli` `output/research` | ● | — |
 
 ## AI Building (`ai-building`，19 个)

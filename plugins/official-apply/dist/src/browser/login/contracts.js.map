@@ -1,0 +1,1 @@
+{"version":3,"file":"contracts.js","sourceRoot":"","sources":["../../../../src/browser/login/contracts.ts"],"names":[],"mappings":"AAgDA,MAAM,UAAU,kBAAkB,CAAC,GAAW;IAC5C,IAAI,CAAC;QACH,MAAM,GAAG,GAAG,IAAI,GAAG,CAAC,GAAG,CAAC,CAAC;QACzB,OAAO,GAAG,GAAG,CAAC,MAAM,GAAG,GAAG,CAAC,QAAQ,EAAE,CAAC;IACxC,CAAC;IAAC,MAAM,CAAC;QACP,OAAO,aAAa,CAAC;IACvB,CAAC;AACH,CAAC"}

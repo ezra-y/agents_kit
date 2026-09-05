@@ -426,6 +426,72 @@
       ],
       "category": "ai-building"
     },
+    "skill:plugin/official-apply/job-application-submit": {
+      "recommendation": 3,
+      "description": "在企业招聘官网完成已经明确岗位的申请和最终提交。仅当用户要求申请或提交，而且任务已有用户提供的具体岗位，或用户明确授权 Agent 代选岗位时使用。只有公司招聘入口、登录、填写站内简历或寻找简历入口时不使用。填写岗位专属信息后展示摘要；获得用户后续确认或读取到匹配摘要的专用“确认投递”勾选后，使用一次性批准令牌提交并读回应聘记录。",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/workflow-automation",
+        "output/skill"
+      ],
+      "category": "research-office"
+    },
+    "skill:plugin/official-apply/official-apply": {
+      "recommendation": 3,
+      "description": "统一处理网申任务。用户要整理岗位来源、导入任务、登录招聘官网、填写或检查站内简历、继续上次任务、准备或确认最终投递时使用。根据用户目的和已有状态进入对应阶段，不要求用户选择阶段技能。",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/workflow-automation",
+        "output/skill"
+      ],
+      "category": "research-office"
+    },
+    "skill:plugin/official-apply/recruitment-capability-evolution": {
+      "recommendation": 3,
+      "description": "演进企业招聘自动化能力。真实站点暴露出重复人工操作、现有 Skill 或 PageScript 不适用、共享核心缺少能力，或 Agent 需要新增或调整 MCP 工具时使用。查看当前能力边界，选择合适代码位置，完成真实站验证后继续原任务；不参与普通网申阶段调度。",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/workflow-automation",
+        "output/skill"
+      ],
+      "category": "research-office"
+    },
+    "skill:plugin/official-apply/recruitment-link": {
+      "recommendation": 3,
+      "description": "获取企业招聘官网的稳定岗位或简历链接。用户给出公司、岗位表、飞书 Base、招聘汇总、官网首页，或现有链接失效时使用。先复用已有官网链接；缺失时从官网导航、页面源码和网络路由中找到，并创建或更新任务。",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/workflow-automation",
+        "output/skill"
+      ],
+      "category": "research-office"
+    },
+    "skill:plugin/official-apply/recruitment-session": {
+      "recommendation": 3,
+      "description": "为企业招聘官网准备登录状态并找到站内简历入口。用户要求登录招聘站、复用 Chrome/Edge 登录态、处理短信或图片验证码、进入个人中心或“我的简历”时使用。输出长期 runId、简历 URL 和匹配的 PageScript。",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/workflow-automation",
+        "output/skill"
+      ],
+      "category": "research-office"
+    },
+    "skill:plugin/official-apply/resume-fill-review": {
+      "recommendation": 3,
+      "description": "在企业招聘官网填写、保存并审查站内简历。用户要求更新简历、补教育/工作/项目、上传 PDF、检查站内简历，或已经有 recruitment-session 的 runId 时使用。读取官网真实字段，调用 PageScript 填写，保存后重新打开服务器简历并检查结构和语义。",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/workflow-automation",
+        "output/skill"
+      ],
+      "category": "research-office"
+    },
     "skill:plugin/ponytail/ponytail": {
       "recommendation": 4,
       "description": "以 YAGNI、标准库优先、复用现有代码和最小可行改动约束编码决策，减少不必要的抽象、依赖、样板代码与未来式设计；支持 lite、full、ultra 三档强度。",

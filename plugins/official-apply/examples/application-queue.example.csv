@@ -1,0 +1,4 @@
+execute,batch_id,task_kind,company_key,company_name,job_key,job_title,job_url,job_selection_source,job_selection_evidence,mode,resume_material_id,additional_material_ids,status,result_note
+true,batch_example_2027,job_application,tencent,腾讯（示例）,tencent-ai-pm-2027,AI产品经理（示例）,https://careers.tencent.example/job/123,user_table,row-tencent-ai-pm,review,resume_ai_pm,"[portfolio_product]",queued,
+true,batch_example_2027,job_application,alibaba,阿里（示例）,alibaba-ai-product-2027,AI产品岗位（示例）,https://jobs.alibaba.example/job/456,user_link,https://jobs.alibaba.example/job/456,review,resume_ai_pm,"[]",queued,
+false,batch_example_2027,job_application,example-c,示例公司C,example-c-design-2027,产品设计（示例）,https://career.example-c.invalid/job/789,user_table,row-example-c-design,review,resume_design,"[portfolio_design]",queued,用户明确不执行

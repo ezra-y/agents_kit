@@ -1,0 +1,12 @@
+# official-apply · Codex 接入配置
+# 从仓库根目录打开项目。路径不含本机绝对值。
+
+[mcp_servers.official-apply]
+command = "node"
+args = ["bin/applyctl-mcp.js"]
+cwd = "."
+
+# Codex 侧只需要接两件事，其他全部走共享核心：
+#   1. 能力探测（真实 CU 工具名）
+#   2. 局部视觉兜底的动作转换
+# 对应 src/adapters/codex/，不要在那里复制任何业务逻辑。

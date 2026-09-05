@@ -1,0 +1,1 @@
+{"version":3,"file":"open-private-database.js","sourceRoot":"","sources":["../../../src/storage/open-private-database.ts"],"names":[],"mappings":"AAAA;;;;;;;;;GASG;AACH,OAAO,EAAE,iBAAiB,EAAE,MAAM,wBAAwB,CAAC;AAI3D,MAAM,UAAU,mBAAmB,CAAC,KAAwB;IAC1D,OAAO,iBAAiB,CAAC,KAAK,CAAC,KAAK,EAAE,SAAS,CAAC,CAAC;AACnD,CAAC"}

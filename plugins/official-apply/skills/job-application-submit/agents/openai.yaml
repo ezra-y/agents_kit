@@ -1,0 +1,6 @@
+interface:
+  display_name: "确认并投递"
+  short_description: "核对岗位和材料，按明确授权提交并读回结果"
+  default_prompt: "使用 $job-application-submit 处理已经明确授权的岗位。"
+policy:
+  allow_implicit_invocation: false

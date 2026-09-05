@@ -1,0 +1,45 @@
+# ============================================================
+# official-apply：Skill 内的本机私有区
+# 除 .local/README.md 外，.local/ 的真实内容永远不进入 Git。
+# ============================================================
+/.local/*
+!/.local/README.md
+
+# 环境变量与密钥
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Node / TypeScript
+node_modules/
+build/
+coverage/
+*.tsbuildinfo
+
+# Playwright 与测试输出
+playwright-report/
+test-results/
+blob-report/
+trace.zip
+
+# 日志、缓存、临时文件
+*.log
+.tmp/
+tmp/
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+
+# 重要：不要全局忽略 *.sqlite / *.db。
+# 真实数据库只能出现在 .local/db/。
+# 如果数据库误放到公开目录，应让 git status 和 checkGitBoundary() 把错误暴露出来。
+
+# 本机 Agent 工具配置（可能包含本机绝对路径）
+.claude/settings.local.json

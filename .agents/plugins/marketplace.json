@@ -45,6 +45,19 @@
       "description": "Matt Pocock's agent skills for real engineering: grilling, spec/ticket flows, TDD, code review, domain modelling and more. Plug-and-play, not vibe coding."
     },
     {
+      "name": "official-apply",
+      "source": {
+        "source": "local",
+        "path": "./plugins/official-apply"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity",
+      "description": "网申助手：准备私有资料、填写官网简历、按授权投递并记录进度。"
+    },
+    {
       "name": "ponytail",
       "source": {
         "source": "local",

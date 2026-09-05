@@ -1,0 +1,27 @@
+# official-apply · Codex agent 声明
+#
+# 真实宿主结果见 docs/CODEX-INTEGRATION-HANDOFF.md。
+# 路径全部相对仓库根目录，不含本机绝对值。
+
+name: official-apply
+description: >-
+  在企业招聘官网上完成网申。官网页面上实际出现的字段是唯一事实源；
+  填写和最终提交严格分开，最终提交只允许点一次。支持两轮简历解析；
+  用户要求查找秋招岗位时，调用可选的 qiuzhao-feed Skill。
+
+entrypoints:
+  cli: bin/applyctl.js
+  mcp: bin/applyctl-mcp.js
+
+# 与 Claude Code 共用同一套核心。平台差异只允许出现在这两个文件里。
+adapters:
+  runtime: dist/src/adapters/codex/runtime-adapter.js
+  visual_fallback: dist/src/adapters/codex/visual-fallback-adapter.js
+
+boundaries:
+  - 最终提交只允许点一次，结果不确定时绝不自动再点
+  - 真实答案、简历、Cookie 和运行记录只能进 .local/
+  - 普通控件用 DOM 和 ARIA，CU 只做局部视觉兜底
+  - 不绕过登录、验证码或风控
+
+status: MCP 真实宿主已通过；可见 skills/ 单一目录的宿主发现待重新验收

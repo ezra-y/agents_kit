@@ -1,0 +1,1305 @@
+version: 2
+purpose: 公共字段概念种子。官网先动态发现字段，再用本目录理解含义。此文件不保存任何用户具体答案，也不保存腾讯、阿里等网站的 HTML 名称和选项。
+source_of_truth: knowledge/field-catalog.yaml；导入 knowledge.sqlite 的 catalog_fields_cache 只是运行期缓存。
+status_levels:
+- candidate
+- verified
+- stable
+- deprecated
+answer_scopes:
+  global: 大多数公司可复用，例如姓名、手机号。
+  profile_record: 绑定某条教育、经历或项目记录。
+  company: 只对某家公司有效。
+  job: 只对某个岗位有效。
+  application: 只对本次申请有效。
+  session: 只在当前会话有效，不长期保存。
+answer_policies:
+  extract_or_ask: 可从简历或附件确定，找不到再询问
+  reuse_if_explicit: 只有用户曾明确回答过才能复用
+  confirm_each_application: 历史答案存在也要按本次申请确认
+  never_infer: 绝不能根据其他资料推断
+fields:
+- key: person.identity.full_name
+  name: 姓名
+  category: identity
+  aliases:
+  - 姓名
+  - 真实姓名
+  - 中文姓名
+  - 姓名（中文）
+  - Full Name
+  - Name
+  value_type: text
+  common_controls:
+  - text
+  - textbox
+  answer_policy: extract_or_ask
+  sensitivity: personal
+  status: stable
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: person.identity.english_name
+  name: 英文姓名
+  category: identity
+  aliases:
+  - 英文名
+  - 英文姓名
+  - 姓名拼音
+  - 拼音姓名
+  - English Name
+  value_type: text
+  common_controls:
+  - text
+  - textbox
+  answer_policy: extract_or_ask
+  sensitivity: personal
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: person.identity.gender
+  name: 性别
+  category: identity
+  aliases:
+  - 性别
+  - Gender
+  value_type: enum
+  common_controls:
+  - radio
+  - select
+  - combobox
+  answer_policy: reuse_if_explicit
+  sensitivity: personal
+  option_normalization:
+    male:
+    - 男
+    - 男性
+    - Male
+    female:
+    - 女
+    - 女性
+    - Female
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: person.identity.marital_status
+  name: 婚姻状况
+  category: identity
+  aliases:
+  - 婚姻状况
+  - 婚姻状态
+  - Marital Status
+  value_type: enum
+  common_controls:
+  - radio
+  - select
+  - combobox
+  answer_policy: never_infer
+  sensitivity: sensitive
+  option_normalization:
+    married:
+    - 已婚
+    - Married
+    single:
+    - 未婚
+    - Single
+  status: verified
+  answer_scope: global
+  reuse_note: 只有用户明确回答后才可跨公司复用，禁止根据年龄推断。
+- key: person.credential.has_driver_license
+  name: 是否有驾驶证
+  category: identity
+  aliases:
+  - 是否有驾驶证
+  - 是否有驾照
+  - 驾驶证
+  - 驾照
+  - Driver License
+  - Driving Licence
+  value_type: boolean
+  common_controls:
+  - radio
+  - select
+  - combobox
+  answer_policy: never_infer
+  sensitivity: personal
+  option_normalization:
+    yes:
+    - 是
+    - 有
+    - Yes
+    no:
+    - 否
+    - 无
+    - 没有
+    - No
+  status: verified
+  answer_scope: global
+  reuse_note: 只有用户明确回答后才可跨公司复用。
+- key: person.identity.birth_date
+  name: 出生日期
+  category: identity
+  aliases:
+  - 出生日期
+  - 出生年月
+  - 生日
+  - Date of Birth
+  - Birth Date
+  value_type: date
+  common_controls:
+  - date
+  - text
+  - datepicker
+  answer_policy: extract_or_ask
+  sensitivity: sensitive
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: person.identity.nationality
+  name: 国籍
+  category: identity
+  aliases:
+  - 国籍
+  - 国家或地区
+  - Nationality
+  - Citizenship
+  value_type: enum
+  common_controls:
+  - select
+  - combobox
+  - text
+  answer_policy: reuse_if_explicit
+  sensitivity: personal
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: person.identity.ethnicity
+  name: 民族
+  category: identity
+  aliases:
+  - 民族
+  - Ethnicity
+  value_type: enum
+  common_controls:
+  - select
+  - combobox
+  - text
+  answer_policy: never_infer
+  sensitivity: sensitive
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: person.identity.political_status
+  name: 政治面貌
+  category: identity
+  aliases:
+  - 政治面貌
+  - 政治身份
+  value_type: enum
+  common_controls:
+  - select
+  - combobox
+  - radio
+  answer_policy: never_infer
+  sensitivity: sensitive
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: person.identity.id_type
+  name: 证件类型
+  category: identity
+  aliases:
+  - 证件类型
+  - 身份证件类型
+  - ID Type
+  value_type: enum
+  common_controls:
+  - select
+  - combobox
+  answer_policy: never_infer
+  sensitivity: highly_sensitive
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: person.identity.id_number
+  name: 证件号码
+  category: identity
+  aliases:
+  - 证件号码
+  - 身份证号
+  - 身份证号码
+  - ID Number
+  value_type: text
+  common_controls:
+  - text
+  - textbox
+  answer_policy: never_infer
+  sensitivity: highly_sensitive
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: person.contact.phone
+  name: 手机号
+  category: contact
+  aliases:
+  - 手机号
+  - 手机号码
+  - 联系电话
+  - 联系手机
+  - 移动电话
+  - 电话号码
+  - Mobile
+  - Phone
+  value_type: phone
+  common_controls:
+  - tel
+  - text
+  - textbox
+  answer_policy: extract_or_ask
+  sensitivity: personal
+  validation: site_rule_then_phone_format
+  status: stable
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: person.contact.email
+  name: 邮箱
+  category: contact
+  aliases:
+  - 邮箱
+  - 邮箱地址
+  - 电子邮箱
+  - E-mail
+  - Email
+  - Email Address
+  value_type: email
+  common_controls:
+  - email
+  - text
+  - textbox
+  answer_policy: extract_or_ask
+  sensitivity: personal
+  validation: site_rule_then_email_format
+  status: stable
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: person.contact.wechat
+  name: 微信号
+  category: contact
+  aliases:
+  - 微信
+  - 微信号
+  - 微信账号
+  - WeChat
+  value_type: text
+  common_controls:
+  - text
+  - textbox
+  answer_policy: extract_or_ask
+  sensitivity: personal
+  status: verified
+  answer_scope: global
+  reuse_note: 只复用用户提供的明确值，不根据手机号或其他资料猜测。
+- key: person.physical.height_cm
+  name: 身高（厘米）
+  category: physical
+  aliases:
+  - 身高
+  - 身高（厘米）
+  - 身高(cm)
+  - Height
+  value_type: number
+  common_controls:
+  - number
+  - text
+  - textbox
+  answer_policy: extract_or_ask
+  sensitivity: personal
+  status: verified
+  answer_scope: global
+  reuse_note: 只复用用户提供的厘米值，不根据其他资料猜测。
+- key: person.contact.current_city
+  name: 当前所在城市
+  category: contact
+  aliases:
+  - 当前城市
+  - 现居城市
+  - 当前所在地
+  - 现居地
+  - Current City
+  - Location
+  value_type: location
+  common_controls:
+  - select
+  - combobox
+  - text
+  answer_policy: reuse_if_explicit
+  sensitivity: personal
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: person.contact.address
+  name: 通讯地址
+  category: contact
+  aliases:
+  - 通讯地址
+  - 联系地址
+  - 现住址
+  - 居住地址
+  - Address
+  value_type: address
+  common_controls:
+  - text
+  - textarea
+  - cascading_select
+  answer_policy: never_infer
+  sensitivity: sensitive
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: person.contact.hukou_location
+  name: 户籍所在地
+  category: contact
+  aliases:
+  - 户籍所在地
+  - 户口所在地
+  - 户籍地址
+  value_type: location
+  common_controls:
+  - select
+  - combobox
+  - cascading_select
+  - text
+  answer_policy: never_infer
+  sensitivity: sensitive
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: person.contact.native_place
+  name: 籍贯
+  category: contact
+  aliases:
+  - 籍贯
+  - 生源地
+  value_type: location
+  common_controls:
+  - select
+  - combobox
+  - cascading_select
+  - text
+  answer_policy: never_infer
+  sensitivity: sensitive
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: profile.education[].school
+  name: 学校
+  category: education
+  aliases:
+  - 学校
+  - 院校
+  - 毕业院校
+  - 就读院校
+  - 学校名称
+  - University
+  - School
+  value_type: organization
+  common_controls:
+  - text
+  - select
+  - combobox
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.education[].degree
+  name: 学历
+  category: education
+  aliases:
+  - 学历
+  - 最高学历
+  - 学历层次
+  - Degree
+  - Education Level
+  value_type: enum
+  common_controls:
+  - select
+  - combobox
+  - radio
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.education[].major
+  name: 专业
+  category: education
+  aliases:
+  - 专业
+  - 所学专业
+  - 专业名称
+  - Major
+  - Field of Study
+  value_type: text
+  common_controls:
+  - text
+  - select
+  - combobox
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.education[].college
+  name: 院系
+  category: education
+  aliases:
+  - 院系
+  - 学院
+  - 院系名称
+  - Department
+  - College
+  value_type: text
+  common_controls:
+  - text
+  - select
+  - combobox
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: verified
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.education[].start_date
+  name: 入学时间
+  category: education
+  aliases:
+  - 入学时间
+  - 开始时间
+  - 教育开始时间
+  - Start Date
+  value_type: month_or_date
+  common_controls:
+  - date
+  - text
+  - datepicker
+  - select
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.education[].end_date
+  name: 毕业时间
+  category: education
+  aliases:
+  - 毕业时间
+  - 预计毕业时间
+  - 结束时间
+  - Education End Date
+  - Graduation Date
+  value_type: month_or_date
+  common_controls:
+  - date
+  - text
+  - datepicker
+  - select
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.education[].gpa
+  name: GPA
+  category: education
+  aliases:
+  - GPA
+  - 平均绩点
+  - 绩点
+  - 平均成绩
+  value_type: score
+  common_controls:
+  - number
+  - text
+  - textbox
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: verified
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.education[].rank
+  name: 专业排名
+  category: education
+  aliases:
+  - 专业排名
+  - 综合排名
+  - 成绩排名
+  - 班级排名
+  - Rank
+  value_type: rank
+  common_controls:
+  - text
+  - number
+  - select
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: verified
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.education[].full_time
+  name: 是否全日制
+  category: education
+  aliases:
+  - 是否全日制
+  - 学习形式
+  - 培养方式
+  value_type: boolean_or_enum
+  common_controls:
+  - radio
+  - select
+  - combobox
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: verified
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: qualification.exam.cet4_score
+  name: 四级成绩
+  category: exam
+  aliases:
+  - 四级成绩
+  - 大学英语四级
+  - CET-4
+  - CET4
+  value_type: score
+  common_controls:
+  - number
+  - text
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: qualification.english.proficiency
+  name: 英语熟练程度
+  category: exam
+  aliases:
+  - 英语水平
+  - 英语熟练度
+  - 英语能力
+  - English Proficiency
+  value_type: enum
+  common_controls:
+  - select
+  - radio
+  - text
+  answer_policy: reuse_if_explicit
+  sensitivity: normal
+  status: verified
+  answer_scope: global
+  reuse_note: 用户要求尽可能往高处填写；有“熟练”时选熟练。
+- key: qualification.english.tier_preference
+  name: 英语档次偏好
+  category: exam
+  aliases:
+  - 英语档次
+  - 英语等级档次
+  value_type: enum
+  common_controls:
+  - select
+  - radio
+  answer_policy: reuse_if_explicit
+  sensitivity: normal
+  status: verified
+  answer_scope: global
+  reuse_note: 官网只给低中高档时优先选择高档。
+- key: qualification.english.certificate
+  name: 英语证书
+  category: exam
+  aliases:
+  - 英语证书
+  - 英语等级证书
+  - 四六级证书
+  value_type: enum_or_text
+  common_controls:
+  - select
+  - radio
+  - text
+  answer_policy: reuse_if_explicit
+  sensitivity: normal
+  status: verified
+  answer_scope: global
+  reuse_note: 用户明确没有四六级；要求证书时填写“无”。
+- key: qualification.exam.postgraduate_english_score
+  name: 考研英语成绩
+  category: exam
+  aliases:
+  - 考研英语
+  - 考研英语成绩
+  - 研究生入学考试英语
+  value_type: score
+  common_controls:
+  - number
+  - text
+  answer_policy: reuse_if_explicit
+  sensitivity: normal
+  status: verified
+  answer_scope: global
+  reuse_note: 仅用于考研英语或其他明确允许填写该考试的成绩字段。
+- key: qualification.exam.cet6_score
+  name: 六级成绩
+  category: exam
+  aliases:
+  - 六级成绩
+  - 大学英语六级
+  - CET-6
+  - CET6
+  value_type: score
+  common_controls:
+  - number
+  - text
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: qualification.exam.ielts_score
+  name: IELTS 成绩
+  category: exam
+  aliases:
+  - 雅思成绩
+  - IELTS
+  - IELTS Score
+  value_type: score
+  common_controls:
+  - number
+  - text
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: qualification.exam.toefl_score
+  name: TOEFL 成绩
+  category: exam
+  aliases:
+  - 托福成绩
+  - TOEFL
+  - TOEFL Score
+  value_type: score
+  common_controls:
+  - number
+  - text
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: qualification.exam.gaokao_location
+  name: 高考所在地
+  category: exam
+  aliases:
+  - 高考所在地
+  - 高考省份
+  - 高考生源地
+  value_type: location
+  common_controls:
+  - select
+  - combobox
+  - cascading_select
+  answer_policy: never_infer
+  sensitivity: personal
+  status: verified
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: profile.experience[].company
+  name: 实习或工作单位
+  category: experience
+  aliases:
+  - 公司名称
+  - 实习单位
+  - 工作单位
+  - 雇主
+  - Employer
+  - Company
+  value_type: organization
+  common_controls:
+  - text
+  - textbox
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.experience[].department
+  name: 部门
+  category: experience
+  aliases:
+  - 部门
+  - 所属部门
+  - Department
+  value_type: text
+  common_controls:
+  - text
+  - textbox
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: verified
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.experience[].title
+  name: 职位
+  category: experience
+  aliases:
+  - 职位
+  - 职务
+  - 岗位
+  - 实习岗位
+  - Job Title
+  - Position
+  value_type: text
+  common_controls:
+  - text
+  - textbox
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.experience[].start_date
+  name: 经历开始时间
+  category: experience
+  aliases:
+  - 开始时间
+  - 入职时间
+  - Start Date
+  value_type: month_or_date
+  common_controls:
+  - date
+  - datepicker
+  - text
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.experience[].end_date
+  name: 经历结束时间
+  category: experience
+  aliases:
+  - 结束时间
+  - 离职时间
+  - End Date
+  value_type: month_or_date
+  common_controls:
+  - date
+  - datepicker
+  - text
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.experience[].description
+  name: 经历描述
+  category: experience
+  aliases:
+  - 工作内容
+  - 实习内容
+  - 职责描述
+  - 经历描述
+  - Description
+  - Responsibilities
+  value_type: long_text
+  common_controls:
+  - textarea
+  - contenteditable
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.project[].name
+  name: 项目名称
+  category: project
+  aliases:
+  - 项目名称
+  - Project Name
+  value_type: text
+  common_controls:
+  - text
+  - textbox
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.project[].role
+  name: 项目角色
+  category: project
+  aliases:
+  - 项目角色
+  - 担任角色
+  - 个人职责
+  - Role
+  value_type: text
+  common_controls:
+  - text
+  - textbox
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.project[].description
+  name: 项目描述
+  category: project
+  aliases:
+  - 项目描述
+  - 项目内容
+  - 项目成果
+  - Project Description
+  value_type: long_text
+  common_controls:
+  - textarea
+  - contenteditable
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
+  reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: application.preference.desired_city
+  name: 期望工作城市
+  category: intention
+  aliases:
+  - 期望城市
+  - 意向城市
+  - 工作地点
+  - 第一志愿城市
+  - Desired Location
+  value_type: location_or_list
+  common_controls:
+  - select
+  - combobox
+  - multiselect
+  - text
+  answer_policy: reuse_if_explicit
+  sensitivity: normal
+  status: verified
+  answer_scope: job
+  reuse_note: 只在目标岗位范围内复用；同公司不同岗位也要重新匹配或确认。
+- key: application.preference.desired_role
+  name: 期望岗位
+  category: intention
+  aliases:
+  - 期望岗位
+  - 意向岗位
+  - 应聘职位
+  - Desired Position
+  value_type: text_or_enum
+  common_controls:
+  - select
+  - combobox
+  - text
+  answer_policy: confirm_each_application
+  sensitivity: normal
+  status: verified
+  answer_scope: job
+  reuse_note: 只在目标岗位范围内复用；同公司不同岗位也要重新匹配或确认。
+- key: application.preference.business_unit
+  name: 期望部门或事业群
+  category: intention
+  aliases:
+  - 期望部门
+  - 意向部门
+  - 期望事业群
+  - 意向事业群
+  value_type: enum_or_list
+  common_controls:
+  - select
+  - combobox
+  - multiselect
+  answer_policy: confirm_each_application
+  sensitivity: normal
+  status: verified
+  answer_scope: job
+  reuse_note: 只在目标岗位范围内复用；同公司不同岗位也要重新匹配或确认。
+- key: application.preference.accept_transfer
+  name: 是否接受调剂
+  category: intention
+  aliases:
+  - 是否接受调剂
+  - 是否服从调剂
+  - 是否接受岗位调配
+  - 是否服从岗位分配
+  value_type: boolean
+  common_controls:
+  - radio
+  - select
+  - checkbox
+  answer_policy: confirm_each_application
+  sensitivity: normal
+  option_normalization:
+    true:
+    - 是
+    - 接受
+    - 愿意
+    - 服从
+    false:
+    - 否
+    - 不接受
+    - 不愿意
+    - 不服从
+  status: verified
+  answer_scope: job
+  reuse_note: 只在目标岗位范围内复用；同公司不同岗位也要重新匹配或确认。
+- key: application.preference.accept_assignment
+  name: 是否接受派遣
+  category: intention
+  aliases:
+  - 是否接受派遣
+  - 是否接受工作派遣
+  - 是否接受全球派遣
+  - 是否接受外派
+  value_type: boolean
+  common_controls:
+  - radio
+  - select
+  - checkbox
+  answer_policy: confirm_each_application
+  sensitivity: normal
+  option_normalization:
+    true:
+    - 是
+    - 接受
+    - 愿意
+    false:
+    - 否
+    - 不接受
+    - 不愿意
+  status: verified
+  answer_scope: job
+  reuse_note: 只在目标岗位范围内复用；用户可在私有资料中设置长期偏好。
+- key: application.availability.available_date
+  name: 可入职时间
+  category: intention
+  aliases:
+  - 可入职时间
+  - 最早入职时间
+  - 到岗时间
+  - Available Date
+  value_type: date_or_text
+  common_controls:
+  - date
+  - text
+  - select
+  answer_policy: confirm_each_application
+  sensitivity: normal
+  status: verified
+  answer_scope: application
+  reuse_note: 只属于本次申请；历史值只能作为提示，不能直接套用。
+- key: application.compensation.expected_salary
+  name: 期望薪资
+  category: intention
+  aliases:
+  - 期望薪资
+  - 薪资期望
+  - 期望年薪
+  - Expected Salary
+  value_type: money_or_range
+  common_controls:
+  - number
+  - text
+  - select
+  answer_policy: confirm_each_application
+  sensitivity: personal
+  status: verified
+  answer_scope: job
+  reuse_note: 只在目标岗位范围内复用；同公司不同岗位也要重新匹配或确认。
+- key: application.compliance.relative_in_target_company
+  name: 是否有亲属在本公司
+  category: compliance
+  aliases:
+  - 是否有亲属在本公司
+  - 是否有亲友在公司任职
+  - 亲属关系申报
+  value_type: boolean_or_detail
+  common_controls:
+  - radio
+  - select
+  - textarea
+  answer_policy: never_infer
+  sensitivity: sensitive
+  status: verified
+  answer_scope: company
+  reuse_note: 只在目标公司范围内复用；不得带到另一家公司。
+- key: application.compliance.prior_employment_in_target_company
+  name: 是否曾在本公司任职
+  category: compliance
+  aliases:
+  - 是否曾在本公司任职
+  - 是否曾在本集团工作
+  - 是否为公司前员工
+  value_type: boolean_or_detail
+  common_controls:
+  - radio
+  - select
+  - textarea
+  answer_policy: never_infer
+  sensitivity: sensitive
+  status: verified
+  answer_scope: company
+  reuse_note: 只在目标公司范围内复用；不得带到另一家公司。
+- key: application.compliance.non_compete
+  name: 是否受竞业限制
+  category: compliance
+  aliases:
+  - 是否受竞业限制
+  - 是否签署竞业协议
+  - 竞业限制情况
+  value_type: boolean_or_detail
+  common_controls:
+  - radio
+  - select
+  - textarea
+  answer_policy: never_infer
+  sensitivity: sensitive
+  status: verified
+  answer_scope: application
+  reuse_note: 只属于本次申请；历史值只能作为提示，不能直接套用。
+- key: application.source.referral_code
+  name: 内推码
+  category: source
+  aliases:
+  - 内推码
+  - 推荐码
+  - Referral Code
+  value_type: text
+  common_controls:
+  - text
+  - textbox
+  answer_policy: never_infer
+  sensitivity: personal
+  status: verified
+  answer_scope: application
+  reuse_note: 只属于本次申请；历史值只能作为提示，不能直接套用。
+- key: application.source.application_channel
+  name: 获知渠道
+  category: source
+  aliases:
+  - 获知渠道
+  - 招聘信息来源
+  - 如何了解到我们
+  - Application Source
+  value_type: enum_or_text
+  common_controls:
+  - select
+  - combobox
+  - radio
+  - text
+  answer_policy: reuse_if_explicit
+  sensitivity: normal
+  status: verified
+  answer_scope: application
+  reuse_note: 只属于本次申请；历史值只能作为提示，不能直接套用。
+- key: application.source.company_event_attendance
+  name: 是否参加宣讲会
+  category: source
+  aliases:
+  - 是否参加宣讲会
+  - 参加过哪场宣讲会
+  - 校招活动
+  value_type: boolean_or_detail
+  common_controls:
+  - radio
+  - select
+  - text
+  answer_policy: never_infer
+  sensitivity: normal
+  status: verified
+  answer_scope: company
+  reuse_note: 只在目标公司范围内复用；不得带到另一家公司。
+- key: attachment.resume
+  name: 简历附件
+  category: attachment
+  aliases:
+  - 上传简历
+  - 简历附件
+  - 个人简历
+  - Resume
+  - CV
+  value_type: file
+  common_controls:
+  - file
+  answer_policy: extract_or_ask
+  sensitivity: sensitive
+  status: stable
+  answer_scope: job
+  reuse_note: 只在目标岗位范围内复用；同公司不同岗位也要重新匹配或确认。
+- key: attachment.portfolio
+  name: 作品集附件
+  category: attachment
+  aliases:
+  - 上传作品集
+  - 作品集
+  - Portfolio
+  value_type: file
+  common_controls:
+  - file
+  answer_policy: extract_or_ask
+  sensitivity: sensitive
+  status: stable
+  answer_scope: job
+  reuse_note: 只在目标岗位范围内复用；同公司不同岗位也要重新匹配或确认。
+- key: attachment.transcript
+  name: 成绩单附件
+  category: attachment
+  aliases:
+  - 上传成绩单
+  - 成绩单
+  - Transcript
+  value_type: file
+  common_controls:
+  - file
+  answer_policy: extract_or_ask
+  sensitivity: sensitive
+  status: stable
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: attachment.photo
+  name: 证件照
+  category: attachment
+  aliases:
+  - 上传照片
+  - 证件照
+  - 个人照片
+  - Photo
+  value_type: file
+  common_controls:
+  - file
+  answer_policy: extract_or_ask
+  sensitivity: highly_sensitive
+  status: stable
+  answer_scope: global
+  reuse_note: 通常可跨公司复用；仍需遵守 answer_policy 和有效期。
+- key: open_question.why_company
+  name: 为什么选择本公司
+  category: open_question
+  aliases:
+  - 为什么选择我们
+  - 为什么申请本公司
+  - 申请动机
+  - Why Us
+  value_type: long_text
+  common_controls:
+  - textarea
+  - contenteditable
+  answer_policy: confirm_each_application
+  sensitivity: normal
+  status: verified
+  answer_scope: company
+  reuse_note: 只在目标公司范围内复用；不得带到另一家公司。
+- key: open_question.career_plan
+  name: 职业规划
+  category: open_question
+  aliases:
+  - 职业规划
+  - 未来规划
+  - 三年职业规划
+  - Career Plan
+  value_type: long_text
+  common_controls:
+  - textarea
+  - contenteditable
+  answer_policy: confirm_each_application
+  sensitivity: normal
+  status: verified
+  answer_scope: application
+  reuse_note: 只属于本次申请；历史值只能作为提示，不能直接套用。
+- key: open_question.self_evaluation
+  name: 自我评价
+  category: open_question
+  aliases:
+  - 自我评价
+  - 个人评价
+  - 自我介绍
+  - Self Evaluation
+  value_type: long_text
+  common_controls:
+  - textarea
+  - contenteditable
+  answer_policy: reuse_if_explicit
+  sensitivity: normal
+  status: verified
+  answer_scope: global
+  reuse_note: 用户明确提供的通用自我介绍可复用；岗位特定问题应另行回答。
+- key: open_question.why_job
+  name: 为什么选择本岗位
+  category: open_question
+  aliases:
+  - 为什么选择本岗位
+  - 为什么申请该岗位
+  - 岗位申请动机
+  - Why this role
+  - Why this position
+  value_type: long_text
+  common_controls:
+  - textarea
+  - textbox
+  answer_policy: confirm_each_application
+  sensitivity: normal
+  status: verified
+  answer_scope: job
+  reuse_note: 只在目标岗位范围内复用；同公司不同岗位也要重新匹配或确认。
+- key: application.compliance.current_declaration
+  name: 本次申请声明
+  category: compliance
+  aliases:
+  - 本人确认以上信息真实
+  - 申请声明
+  - 诚信声明
+  - 信息真实性确认
+  value_type: boolean_or_text
+  common_controls:
+  - checkbox
+  - radio
+  - textarea
+  answer_policy: confirm_each_application
+  sensitivity: sensitive
+  status: candidate
+  answer_scope: application
+  reuse_note: 只属于本次申请；历史值只能作为提示，不能直接套用。
+- key: profile.experience.overseas.has_experience
+  name: 是否有海外经历
+  category: experience
+  aliases:
+  - 是否有海外经历
+  - 海外学习经历
+  - 海外工作经历
+  - 国际经历
+  value_type: boolean
+  common_controls:
+  - radio
+  - select
+  - combobox
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: candidate
+  answer_scope: profile_record
+  reuse_note: 值应绑定到明确的海外教育、工作或项目记录；条件字段展开后再填写明细。
+- key: session.verification.sms_code
+  name: 短信验证码
+  category: session
+  aliases:
+  - 短信验证码
+  - 手机验证码
+  - 动态验证码
+  - SMS Code
+  - One-time code
+  value_type: one_time_code
+  common_controls:
+  - text
+  - textbox
+  answer_policy: never_infer
+  sensitivity: credential
+  status: candidate
+  answer_scope: session
+  reuse_note: 只在当前会话使用，不进入长期答案库；使用后立即失效。

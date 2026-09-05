@@ -1,0 +1,4 @@
+interface:
+  display_name: "网申助手"
+  short_description: "整理网申任务，填写和保存，并在最终投递前等待确认"
+  default_prompt: "使用 $official-apply 继续我的网申任务，并告诉我当前进度。"

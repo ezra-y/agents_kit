@@ -110,6 +110,10 @@
           "distribution": "marketplace"
         },
         {
+          "ref": "plugin:official-apply",
+          "distribution": "marketplace"
+        },
+        {
           "ref": "plugin:pstack",
           "distribution": "marketplace"
         },

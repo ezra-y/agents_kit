@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "official-apply": {
+      "command": "node",
+      "args": [
+        "bin/applyctl-mcp.js"
+      ],
+      "cwd": ".",
+      "startup_timeout_sec": 120,
+      "env": {}
+    }
+  }
+}

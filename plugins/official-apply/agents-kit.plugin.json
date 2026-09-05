@@ -1,0 +1,111 @@
+{
+  "schema_version": 2,
+  "package_id": "official-apply",
+  "upstream_targets": [],
+  "targets": {
+    "claude": {
+      "support": "unsupported",
+      "limitations": [
+        "尚未创建或验证该平台 manifest"
+      ]
+    },
+    "codex": {
+      "support": "full",
+      "manifest": {
+        "path": ".codex-plugin/plugin.json",
+        "authority": "local"
+      },
+      "marketplace": {
+        "category": "Productivity",
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "limitations": [
+        "后台表格监听和定时进度检查尚未实现；真实网站兼容性按站点验证。"
+      ]
+    }
+  },
+  "embedded_skills": {
+    "job-application-submit": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "official-apply": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "recruitment-capability-evolution": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "recruitment-link": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "recruitment-session": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "resume-fill-review": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    }
+  },
+  "local_paths": [
+    ".codex-plugin/plugin.json"
+  ]
+}

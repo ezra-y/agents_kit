@@ -1,0 +1,1 @@
+{"version":3,"file":"open-knowledge-database.js","sourceRoot":"","sources":["../../../src/storage/open-knowledge-database.ts"],"names":[],"mappings":"AAAA;;;;;;;GAOG;AACH,OAAO,EAAE,iBAAiB,EAAE,MAAM,wBAAwB,CAAC;AAI3D,MAAM,UAAU,qBAAqB,CAAC,KAAwB;IAC5D,OAAO,iBAAiB,CAAC,KAAK,CAAC,KAAK,EAAE,WAAW,CAAC,CAAC;AACrD,CAAC"}
