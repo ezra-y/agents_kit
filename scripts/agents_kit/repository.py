@@ -474,7 +474,12 @@ class Repository:
     @contextmanager
     def write_lock(self) -> Iterator[None]:
         lock_dir = self.root / ".git"
-        if not lock_dir.is_dir():
+        if lock_dir.is_file():
+            marker = lock_dir.read_text(encoding="utf-8").strip()
+            if not marker.startswith("gitdir: "):
+                raise RepositoryError("工作树 .git 定位文件无效")
+            lock_dir = (self.root / marker.removeprefix("gitdir: ")).resolve()
+        elif not lock_dir.is_dir():
             lock_dir = self.root
         lock_path = lock_dir / "agents-kit.lock"
         with lock_path.open("a+", encoding="utf-8") as lock_file:

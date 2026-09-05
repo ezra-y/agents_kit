@@ -260,7 +260,6 @@ class GitProvider:
     def __init__(self) -> None:
         self._cache: dict[tuple[str, str], tuple[Path, str, set[str] | None]] = {}
         self._failures: dict[tuple[str, str], str] = {}
-        self._github_ssh_enabled = True
 
     def can_handle(self, raw_source: str) -> bool:
         if raw_source.startswith(("git@", "ssh://", "git://")):
@@ -455,37 +454,18 @@ class GitProvider:
                 )
             except subprocess.TimeoutExpired:
                 errors.append(f"{label} 超过 {remaining} 秒")
-                if label == "SSH":
-                    self._github_ssh_enabled = False
                 continue
             if result.returncode == 0:
                 return
             errors.append(f"{label}: {result.stderr.strip() or 'clone 失败'}")
-            if label == "SSH":
-                self._github_ssh_enabled = False
         raise SourceError("Git 获取失败：\n  " + "\n  ".join(errors))
 
     def _clone_urls(self, url: str) -> list[tuple[str, str, dict[str, str]]]:
+        # Keep the caller's transport. Rewriting HTTPS to SSH also makes later
+        # partial-clone fetches use SSH, bypassing the user's HTTPS proxy.
         parsed = urllib.parse.urlparse(url)
-        if parsed.hostname == "github.com" and parsed.scheme in {"http", "https"}:
-            repo_path = parsed.path.removesuffix(".git").strip("/")
-            attempts: list[tuple[str, str, dict[str, str]]] = []
-            if self._github_ssh_enabled:
-                attempts.append(
-                    (
-                        "SSH",
-                        f"git@github.com:{repo_path}.git",
-                        {
-                            "GIT_SSH_COMMAND": (
-                                "ssh -o BatchMode=yes -o ConnectTimeout=8 "
-                                "-o ServerAliveInterval=5 -o ServerAliveCountMax=2"
-                            )
-                        },
-                    )
-                )
-            attempts.append(("HTTPS", url, {}))
-            return attempts
-        return [("Git", url, {})]
+        label = "HTTPS" if parsed.scheme in {"http", "https"} else "Git"
+        return [(label, url, {})]
 
     @staticmethod
     def _run(command: list[str], *, timeout: int) -> subprocess.CompletedProcess[str]:

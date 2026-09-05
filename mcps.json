@@ -85,7 +85,8 @@
         "args": [
           "-y",
           "{package}@{version}",
-          "https://mcp.firecrawl.dev/v2/mcp"
+          "https://mcp.firecrawl.dev/v2/mcp",
+          "--enable-proxy"
         ]
       },
       "environment": {},

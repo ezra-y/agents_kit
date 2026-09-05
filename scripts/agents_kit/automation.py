@@ -34,6 +34,8 @@ def read_status(repo: Repository) -> dict[str, Any]:
         }
     try:
         data = json.loads(path.read_text())
+        if not isinstance(data, dict):
+            raise TypeError("同步记录必须是对象")
         if data.get("repository") != str(repo.root):
             return {
                 "status": "other_repository",
@@ -41,7 +43,7 @@ def read_status(repo: Repository) -> dict[str, Any]:
                 "last_success_at": None,
             }
         return data
-    except (OSError, ValueError):
+    except (OSError, ValueError, TypeError):
         return {
             "status": "invalid_record",
             "message": "同步记录无法读取",
@@ -146,7 +148,8 @@ def sync(repo: Repository) -> dict[str, Any]:
                     ("插件索引", ["marketplace", "build", "--json"]),
                     ("技能清单", ["docs", "build", "--json"]),
                     ("同步安装", ["global", "apply", "--json"]),
-                    ("实际加载验收", ["check", "--repo-only", "--runtime", "--json"]),
+                    ("工具配置", ["mcp", "apply", "--all", "--json"]),
+                    ("实际加载验收", ["check", "--runtime", "--json"]),
                 ]:
                     output = _run(repo, [launcher, *args], 180)
                     result["completed_steps"].append(phase)
@@ -154,10 +157,16 @@ def sync(repo: Repository) -> dict[str, Any]:
                         result["runtime"] = (
                             json.loads(output).get("sections", {}).get("runtime")
                         )
+                if _run(
+                    repo, ["git", "status", "--porcelain", "--untracked-files=normal"]
+                ):
+                    raise RuntimeError(
+                        "同步后发现未提交变化，未标记成功；请检查生成文件或并发修改"
+                    )
                 result.update(
                     status="success",
                     message="仓库、安装和实际插件加载已核验",
-                    last_success_at=now,
+                    last_success_at=datetime.now(timezone.utc).isoformat(),
                 )
         except (OSError, RuntimeError, ValueError) as exc:
             result.update(status="failed", phase=phase, message=str(exc))

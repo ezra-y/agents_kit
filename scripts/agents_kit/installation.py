@@ -986,7 +986,7 @@ def _execute_marketplace_action(action: dict[str, Any]) -> None:
 
 def _receipt_path(repo: Repository) -> Path | None:
     explicit_state_home = os.environ.get("AGENTS_KIT_STATE_HOME")
-    if explicit_state_home is None and not (repo.root / ".git").is_dir():
+    if explicit_state_home is None and not (repo.root / ".git").exists():
         return None
     state_home = Path(
         explicit_state_home

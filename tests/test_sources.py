@@ -130,12 +130,14 @@ class SourceTests(unittest.TestCase):
             self.assertEqual(session.snapshot(alpha).declared_name, "alpha")
             self.assertEqual(session.snapshot(beta).declared_name, "beta")
 
-    def test_github_clone_tries_ssh_before_https(self):
+    def test_github_clone_preserves_requested_https_transport(self):
         attempts = GitProvider()._clone_urls(
             "https://github.com/example/repository.git"
         )
 
-        self.assertEqual([label for label, _, _ in attempts], ["SSH", "HTTPS"])
+        self.assertEqual(
+            attempts, [("HTTPS", "https://github.com/example/repository.git", {})]
+        )
 
     def test_sparse_paths_collapse_to_common_parent(self):
         self.assertEqual(

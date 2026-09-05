@@ -32,7 +32,7 @@ def run(
     report = CheckReport()
     try:
         inventory = repo.skill_registry(refresh=True)
-    except RepositoryError as exc:
+    except (RepositoryError, plugins.PluginError, OSError, ValueError) as exc:
         report.problems.append(str(exc))
         return report
 
@@ -52,6 +52,10 @@ def run(
         native = runtime.plugin_report(repo)
         report.sections["runtime"] = native
         report.problems.extend(native["problems"])
+        if not repo_only:
+            mcp_native = runtime.mcp_report(repo)
+            report.sections["mcp_runtime"] = mcp_native
+            report.problems.extend(mcp_native["problems"])
     report.sections["summary"] = {
         "skills": len(inventory),
         "active": len(repo.read_active()),

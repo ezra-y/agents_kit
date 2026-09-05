@@ -9,6 +9,8 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+import tomllib
+
 from .models import ChangeSet, Effect
 from .repository import Repository
 
@@ -115,41 +117,47 @@ def apply(
     if unknown:
         raise McpError("找不到 MCP：" + ", ".join(unknown))
 
+    # Preflight the complete batch before installing packages or changing a client.
     actions: list[dict[str, Any]] = []
     conflicts: list[str] = []
     for name in selected:
         record = catalog["servers"][name]
-        if record["enabled"]:
-            ensure_distribution(record, dry_run=dry_run)
         for target in record["targets"]:
             state = _target_state(repo, target, name)
-            managed = state["managed"]
-            exists = state["exists"]
+            managed, exists = state["managed"], state["exists"]
             if record["enabled"]:
                 if managed:
-                    actions.append(
-                        {"target": target, "mcp": name, "action": "unchanged"}
-                    )
-                    continue
-                if exists and not replace:
+                    action = "unchanged" if state.get("enabled", True) else "enable"
+                elif exists and not replace:
                     conflicts.append(
                         f"{target} 已有同名 MCP {name}，但不由 agents-kit 管理"
                     )
                     continue
-                if exists:
-                    actions.append({"target": target, "mcp": name, "action": "replace"})
-                    if not dry_run:
-                        _remove_target(target, name)
                 else:
-                    actions.append({"target": target, "mcp": name, "action": "add"})
-                if not dry_run:
-                    _add_target(repo, target, name)
+                    action = "replace" if exists else "add"
+                actions.append({"target": target, "mcp": name, "action": action})
             elif managed:
                 actions.append({"target": target, "mcp": name, "action": "remove"})
-                if not dry_run:
-                    _remove_target(target, name)
     if conflicts:
         raise McpError("\n".join(conflicts))
+    for name in selected:
+        if catalog["servers"][name]["enabled"]:
+            ensure_distribution(catalog["servers"][name], dry_run=dry_run)
+    if not dry_run:
+        completed: list[dict[str, Any]] = []
+        for action in actions:
+            target, name, kind = action["target"], action["mcp"], action["action"]
+            try:
+                if kind in {"replace", "remove"}:
+                    _remove_target(target, name)
+                if kind in {"replace", "add", "enable"}:
+                    _add_target(repo, target, name)
+                completed.append(action)
+            except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
+                raise McpError(
+                    f"MCP 同步未完成：{target}/{name} {kind}；"
+                    f"已处理 {len(completed)} 项，修正后可重试。{exc}"
+                ) from exc
     return {"dry_run": dry_run, "actions": actions, "conflicts": []}
 
 
@@ -311,7 +319,7 @@ def runtime_issues(repo: Repository, *, include_targets: bool) -> list[str]:
         if include_targets:
             for target in record["targets"]:
                 state = _target_state(repo, target, name)
-                if not state["managed"]:
+                if not state["managed"] or not state.get("enabled", True):
                     issues.append(f"{name}: {target} 全局配置未收敛")
     return issues
 
@@ -479,48 +487,44 @@ def _runtime_path() -> str:
 
 def _target_state(repo: Repository, target: str, name: str) -> dict[str, bool]:
     launcher = str(repo.root / "scripts" / "agents-kit")
-    if target == "codex":
-        result = subprocess.run(
-            ["codex", "mcp", "get", name, "--json"],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if result.returncode != 0:
-            return {"exists": False, "managed": False}
-        try:
-            payload = json.loads(result.stdout)
-        except json.JSONDecodeError:
-            return {"exists": True, "managed": False}
-        transport = payload.get("transport", {})
-        return {
-            "exists": True,
-            "managed": (
-                transport.get("type") == "stdio"
-                and transport.get("command") == launcher
-                and transport.get("args") == ["mcp", "run", name]
-            ),
-        }
     if target == "claude":
-        result = subprocess.run(
-            ["claude", "mcp", "get", name],
-            capture_output=True,
-            text=True,
-            check=False,
+        config_dir = os.environ.get("CLAUDE_CONFIG_DIR")
+        path = (
+            Path(config_dir).expanduser() if config_dir else Path.home()
+        ) / ".claude.json"
+        key = "mcpServers"
+    elif target == "codex":
+        path = (
+            Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex"))).expanduser()
+            / "config.toml"
         )
-        if result.returncode != 0:
-            return {"exists": False, "managed": False}
-        normalized = " ".join(result.stdout.split())
-        return {
-            "exists": True,
-            "managed": (
-                launcher in normalized
-                and "mcp" in normalized
-                and "run" in normalized
-                and name in normalized
-            ),
-        }
-    raise McpError(f"不支持的 MCP target：{target}")
+        key = "mcp_servers"
+    else:
+        raise McpError(f"不支持的 MCP target：{target}")
+    if not path.is_file():
+        return {"exists": False, "managed": False, "enabled": False}
+    try:
+        text = path.read_text(encoding="utf-8")
+        data = tomllib.loads(text) if target == "codex" else json.loads(text)
+        entries = data.get(key, {})
+        if not isinstance(entries, dict):
+            raise TypeError(f"{key} 必须是对象")
+        entry = entries.get(name)
+        if entry is None:
+            return {"exists": False, "managed": False, "enabled": False}
+        if not isinstance(entry, dict):
+            raise TypeError(f"{name} 必须是对象")
+    except (OSError, ValueError, TypeError, AttributeError) as exc:
+        raise McpError(f"无法读取 {target} 全局 MCP 配置：{path}: {exc}") from exc
+    return {
+        "exists": True,
+        "managed": (
+            entry.get("type", "stdio") == "stdio"
+            and entry.get("command") == launcher
+            and entry.get("args") == ["mcp", "run", name]
+        ),
+        "enabled": entry.get("enabled", True) is not False,
+    }
 
 
 def _add_target(repo: Repository, target: str, name: str) -> None:
@@ -546,7 +550,7 @@ def _remove_target(target: str, name: str) -> None:
 
 
 def _run_checked(
-    command: list[str], *, timeout: int | None = None
+    command: list[str], *, timeout: int | None = 60
 ) -> subprocess.CompletedProcess[str]:
     executable = shutil.which(command[0], path=_runtime_path())
     if executable is None:

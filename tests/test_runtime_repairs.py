@@ -3,6 +3,7 @@ import os
 import runpy
 import shutil
 import subprocess
+import sys
 import threading
 import unittest
 import urllib.error
@@ -407,3 +408,167 @@ for (const [owner, expected, rejected] of [['one','FIRST_UNIQUE_BODY','SECOND_UN
         self.assertEqual(narrow, wide)
         self.assertIn("{status,sync,", narrow.splitlines()[0])
         self.assertTrue(narrow.splitlines()[0].endswith(" ..."))
+
+    def test_claude_loaded_plugin_with_missing_skill_fails(self):
+        self.install()
+        self.enable_claude()
+        with (
+            patch.object(
+                runtime,
+                "read_json",
+                return_value=[{"id": "example-plugin@skills-dir", "enabled": True}],
+            ),
+            patch.object(runtime, "claude_skills", return_value=set()),
+        ):
+            report = runtime.plugin_report(self.repo)
+        self.assertFalse(report["ok"])
+        self.assertEqual(
+            report["plugins"][0]["missing_skills"], ["example-plugin:review"]
+        )
+
+    def test_native_details_checks_names_not_only_count(self):
+        result = subprocess.CompletedProcess(
+            [], 0, "  Skills (2)  first, second\n  Agents (0)\n", ""
+        )
+        with patch.object(runtime.subprocess, "run", return_value=result):
+            self.assertEqual(runtime.claude_skills("demo"), {"first", "second"})
+        result.stdout = "  Skills (3)  first, second\n"
+        with (
+            patch.object(runtime.subprocess, "run", return_value=result),
+            self.assertRaisesRegex(RuntimeError, "不完整"),
+        ):
+            runtime.claude_skills("demo")
+
+    def test_stdio_probe_handles_notices_and_reaps_child(self):
+        pidfile = self.root / "child.pid"
+        program = (
+            "import os,sys,json,pathlib\n"
+            f"pathlib.Path({str(pidfile)!r}).write_text(str(os.getpid()))\n"
+            "print('startup notice',flush=True)\n"
+            "for line in sys.stdin:\n"
+            " m=json.loads(line)\n"
+            " if 'id' in m: print(json.dumps({'id':m['id'],'result':{'tools':[{'name':'demo'}]}}),flush=True)\n"
+        )
+        with runtime.stdio_session(
+            [sys.executable, "-u", "-c", program], cwd=str(self.root)
+        ) as query:
+            result = query({"id": 1, "method": "tools/list"})
+        self.assertEqual(result["tools"][0]["name"], "demo")
+        with self.assertRaises(ProcessLookupError):
+            os.kill(int(pidfile.read_text()), 0)
+
+    def test_stdio_timeout_reaps_process(self):
+        pidfile = self.root / "timeout.pid"
+        program = f"import os,time,pathlib; pathlib.Path({str(pidfile)!r}).write_text(str(os.getpid())); time.sleep(60)"
+        with (
+            self.assertRaisesRegex(RuntimeError, "超时"),
+            runtime.stdio_session(
+                [sys.executable, "-u", "-c", program], cwd=str(self.root), timeout=0.5
+            ) as query,
+        ):
+            query({"id": 1, "method": "initialize"})
+        with self.assertRaises(ProcessLookupError):
+            os.kill(int(pidfile.read_text()), 0)
+
+    def test_worktree_lock_stays_outside_tracked_tree(self):
+        gitdir = self.root / "admin"
+        gitdir.mkdir()
+        (self.root / ".git").write_text("gitdir: admin\n")
+        with self.repo.write_lock():
+            self.assertTrue((gitdir / "agents-kit.lock").is_file())
+        self.assertFalse((self.root / "agents-kit.lock").exists())
+
+    def test_inherited_skill_paths_revert_to_default_when_removed_upstream(self):
+        manifest = self.case.upstream / ".claude-plugin/plugin.json"
+        data = json.loads(manifest.read_text())
+        data["skills"] = ["./skills/review"]
+        manifest.write_text(json.dumps(data))
+        root = self.install()
+        data.pop("skills")
+        data["version"] = "2.0.0"
+        manifest.write_text(json.dumps(data))
+        plugins.update_plugin_from_snapshot(
+            self.repo, "example-plugin", self.case._snapshot()
+        )
+        self.assertEqual(
+            json.loads((root / ".codex-plugin/plugin.json").read_text())["skills"],
+            "./skills/",
+        )
+
+    def test_sync_failure_never_replaces_success_time_and_retry_recovers(self):
+        commands = []
+        fail = [True]
+
+        def runner(repo, args, timeout=120):
+            commands.append(args)
+            if args[0] == "git":
+                if "status" in args:
+                    return ""
+                if "branch" in args:
+                    return "main"
+                return "same-revision"
+            if args[1:3] == ["mcp", "apply"] and fail[0]:
+                raise RuntimeError("injected connection failure")
+            return "{}"
+
+        with (
+            patch.dict(os.environ, {"AGENTS_KIT_STATE_HOME": str(self.root / "state")}),
+            patch.object(automation, "_run", side_effect=runner),
+        ):
+            self.repo.write_json_if_changed(
+                automation.state_path(self.repo),
+                {"repository": str(self.repo.root), "last_success_at": "previous"},
+            )
+            failed = automation.sync(self.repo)
+            self.assertEqual(failed["status"], "failed")
+            self.assertEqual(failed["last_success_at"], "previous")
+            self.assertEqual(failed["phase"], "工具配置")
+            fail[0] = False
+            recovered = automation.sync(self.repo)
+            self.assertEqual(recovered["status"], "success")
+            self.assertNotEqual(recovered["last_success_at"], "previous")
+            self.assertIn(
+                [
+                    str(self.repo.root / "scripts/agents-kit"),
+                    "check",
+                    "--runtime",
+                    "--json",
+                ],
+                commands,
+            )
+
+    def test_invalid_sync_record_is_recoverable(self):
+        with patch.dict(
+            os.environ, {"AGENTS_KIT_STATE_HOME": str(self.root / "state")}
+        ):
+            self.repo.write_json_if_changed(automation.state_path(self.repo), [])
+            self.assertEqual(
+                automation.read_status(self.repo)["status"], "invalid_record"
+            )
+
+    def test_zero_skill_plugin_does_not_consume_next_component_line(self):
+        result = subprocess.CompletedProcess(
+            [], 0, "  Skills (0)\n  Agents (2) writer, reviewer\n", ""
+        )
+        with patch.object(runtime.subprocess, "run", return_value=result):
+            self.assertEqual(runtime.claude_skills("demo"), set())
+
+    def test_pinned_plugin_update_never_fetches_or_changes_assets(self):
+        self.install()
+        sources = self.repo.read_sources()
+        sources["plugins"]["example-plugin"]["policy"] = "pinned"
+        self.repo.write_sources(sources)
+        cli = runpy.run_path(
+            str(Path(__file__).resolve().parents[1] / "scripts/agents-kit")
+        )
+        from types import SimpleNamespace
+
+        context = cli["Context"](self.repo, cli["build_parser"]())
+        args = SimpleNamespace(all=True, dry_run=True, auto_docs=False, repo_only=True)
+        with patch.object(cli["SourceSession"], "directory") as fetch:
+            result = cli["command_plugin_update"](args, context)
+        fetch.assert_not_called()
+        self.assertEqual(
+            result["results"],
+            [{"plugin": "example-plugin", "status": "pinned", "applied": False}],
+        )

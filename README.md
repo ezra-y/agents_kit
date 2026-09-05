@@ -1,6 +1,6 @@
 # agents_kit
 
-Ezra 的私有 Agent Skill 与 MCP 中央仓库。Claude Code 与 Codex 共用同一份事实，
+Ezra 的 Agent Skill 与 MCP 中央仓库。Claude Code 与 Codex 共用同一份事实，
 所有收录、更新、安装和检查都从一个命令进入：`agents-kit`。
 
 ## 快速开始
@@ -236,3 +236,17 @@ agents-kit check
 可搜索网页生成到 `docs/index.html`，由 CI 上传为 artifact，不写入 Git 历史。
 运行 `agents-kit ui` 会先更新网页，再启动本地服务并自动打开浏览器；网页中的
 Finder 按钮可以直接打开对应技能目录。
+
+### 完整验收与故障恢复
+
+`agents-kit check` 只读配置，不会为检查配置而启动 MCP 服务。
+`agents-kit check --runtime` 再核验两端插件内的真实技能清单，并对启用的
+MCP 做初始化和工具列表握手，不调用模型或执行业务工具。检查有超时和进程清理。
+`--repo-only --runtime` 仅核验插件，适合不需要检查本机 MCP 的场景。
+
+每小时同步也会应用受管 MCP 配置并执行完整验收。失败会保留上一次成功时间，
+明确标出失败步骤，修正后可重复运行 `agents-kit sync`。未提交修改、分支分叉、
+或检查后出现的新修改，都不会被当成同步成功。
+
+同名外部 MCP 与中央清单冲突时，整批安装在修改前停止；不会先安装一半再报冲突。
+受管版本固定为 `pinned` 的插件不会被更新命令越过。

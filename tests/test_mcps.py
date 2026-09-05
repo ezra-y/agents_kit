@@ -1,4 +1,5 @@
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -126,6 +127,74 @@ class McpTests(unittest.TestCase):
             [{"target": "codex", "mcp": "example", "action": "remove"}],
         )
         remove.assert_called_once_with("codex", "example")
+
+    def test_user_config_check_is_passive_and_uses_exact_command(self):
+        home = self.root / "config"
+        home.mkdir()
+        launcher = str(self.repo.root / "scripts/agents-kit")
+        (home / ".claude.json").write_text(
+            json.dumps(
+                {
+                    "mcpServers": {
+                        "example": {
+                            "command": launcher,
+                            "args": ["mcp", "run", "example"],
+                        }
+                    }
+                }
+            )
+        )
+        with (
+            mock.patch.dict(os.environ, {"CLAUDE_CONFIG_DIR": str(home)}),
+            mock.patch.object(mcps.subprocess, "run") as run,
+        ):
+            state = mcps._target_state(self.repo, "claude", "example")
+        self.assertEqual(state, {"exists": True, "managed": True, "enabled": True})
+        run.assert_not_called()
+        (home / ".claude.json").write_text("not JSON")
+        with (
+            mock.patch.dict(os.environ, {"CLAUDE_CONFIG_DIR": str(home)}),
+            self.assertRaises(mcps.McpError),
+        ):
+            mcps._target_state(self.repo, "claude", "example")
+
+    def test_codex_user_scope_preserves_disabled_state(self):
+        home = self.root / "codex"
+        home.mkdir()
+        (home / "config.toml").write_text(
+            "[mcp_servers.example]\ncommand = "
+            + json.dumps(str(self.repo.root / "scripts/agents-kit"))
+            + '\nargs = ["mcp", "run", "example"]\nenabled = false\n'
+        )
+        with (
+            mock.patch.dict(os.environ, {"CODEX_HOME": str(home)}),
+            mock.patch.object(mcps.subprocess, "run") as run,
+        ):
+            state = mcps._target_state(self.repo, "codex", "example")
+        self.assertTrue(state["managed"])
+        self.assertFalse(state["enabled"])
+        run.assert_not_called()
+
+    def test_batch_conflict_causes_no_install_or_client_mutation(self):
+        record = self.record()
+        record["enabled"] = True
+        mcps.import_server(self.repo, "example", record)
+        with (
+            mock.patch.object(
+                mcps,
+                "_target_state",
+                side_effect=[
+                    {"exists": False, "managed": False},
+                    {"exists": True, "managed": False},
+                ],
+            ),
+            mock.patch.object(mcps, "ensure_distribution") as install,
+            mock.patch.object(mcps, "_add_target") as add,
+            self.assertRaises(mcps.McpError),
+        ):
+            mcps.apply(self.repo)
+        install.assert_not_called()
+        add.assert_not_called()
 
 
 if __name__ == "__main__":

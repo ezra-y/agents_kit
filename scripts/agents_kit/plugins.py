@@ -861,11 +861,22 @@ def _refresh_generated_manifests(current: PluginSpec, stage: Path) -> None:
         for key in common:
             old_value = before.get(key, "./skills/" if key == "skills" else None)
             local_value = local.get(key, "./skills/" if key == "skills" else None)
-            if local_value != old_value:
+            if key == "skills":
+
+                def normalized(value):
+                    paths = [value] if isinstance(value, str) else value
+                    return sorted(PurePosixPath(path).as_posix() for path in paths)
+
+                same = normalized(local_value) == normalized(old_value)
+            else:
+                same = local_value == old_value
+            if not same:
                 continue
             if key in after:
                 updated[key] = after[key]
-            elif key != "skills":
+            elif key == "skills":
+                updated[key] = "./skills/"
+            else:
                 updated.pop(key, None)
         if updated != local:
             _write_json(stage / spec.manifest.path, updated)

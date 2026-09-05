@@ -1228,6 +1228,9 @@ def command_plugin_update(args: argparse.Namespace, context: Context) -> dict[st
             if record is None:
                 failures.append({"plugin": name, "error": "没有来源登记"})
                 continue
+            if record.get("policy") == "pinned":
+                results.append({"plugin": name, "status": "pinned", "applied": False})
+                continue
             try:
                 spec = SourceSpec(
                     provider=str(record["provider"]),
