@@ -1688,7 +1688,21 @@ class Context:
 
 
 def full_help(parser: argparse.ArgumentParser) -> str:
-    chunks: list[str] = [parser.format_help().rstrip()]
+    def stable_help(current: argparse.ArgumentParser) -> str:
+        formatter = current.formatter_class
+        try:
+            current.formatter_class = lambda prog: argparse.HelpFormatter(
+                prog, width=80
+            )
+            text = current.format_help().rstrip()
+        finally:
+            current.formatter_class = formatter
+        usage, separator, body = text.partition("\n\n")
+        # argparse's usage wrapping changed between Python 3.12 and 3.13.
+        # Store one canonical usage line; the remaining text has a fixed width.
+        return " ".join(usage.split()) + separator + body
+
+    chunks: list[str] = [stable_help(parser)]
 
     def walk(current: argparse.ArgumentParser, prefix: list[str]) -> None:
         for action in current._actions:
@@ -1696,9 +1710,7 @@ def full_help(parser: argparse.ArgumentParser) -> str:
                 continue
             for name, child in action.choices.items():
                 command = [*prefix, name]
-                chunks.append(
-                    f"$ {' '.join(command)} --help\n{child.format_help().rstrip()}"
-                )
+                chunks.append(f"$ {' '.join(command)} --help\n{stable_help(child)}")
                 walk(child, command)
 
     walk(parser, ["agents-kit"])

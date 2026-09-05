@@ -3,8 +3,7 @@
 本文件由 `agents-kit docs build` 生成。
 
 ```text
-usage: agents-kit [-h]
-                  {status,sync,migrate,source,skill,plugin,marketplace,mcp,global,project,docs,ui,check} ...
+usage: agents-kit [-h] {status,sync,migrate,source,skill,plugin,marketplace,mcp,global,project,docs,ui,check} ...
 
 统一管理 agents_kit 中的技能、来源、安装和生成文档
 
@@ -50,8 +49,7 @@ options:
   --json
 
 $ agents-kit source --help
-usage: agents-kit source [-h]
-                         {providers,inspect,detach,check,update,report} ...
+usage: agents-kit source [-h] {providers,inspect,detach,check,update,report} ...
 
 positional arguments:
   {providers,inspect,detach,check,update,report}
@@ -73,11 +71,7 @@ options:
   --json
 
 $ agents-kit source inspect --help
-usage: agents-kit source inspect [-h] [--provider PROVIDER] [--ref REF]
-                                 [--source-path SOURCE_PATH] [--save]
-                                 [--name NAME] [--note NOTE] [--refresh-index]
-                                 [--json]
-                                 [source]
+usage: agents-kit source inspect [-h] [--provider PROVIDER] [--ref REF] [--source-path SOURCE_PATH] [--save] [--name NAME] [--note NOTE] [--refresh-index] [--json] [source]
 
 positional arguments:
   source
@@ -116,9 +110,7 @@ options:
   --json
 
 $ agents-kit source update --help
-usage: agents-kit source update [-h] [--all] [--dry-run] [--safe]
-                                [--auto-docs] [--yes] [--repo-only] [--json]
-                                [name]
+usage: agents-kit source update [-h] [--all] [--dry-run] [--safe] [--auto-docs] [--yes] [--repo-only] [--json] [name]
 
 positional arguments:
   name
@@ -144,8 +136,7 @@ options:
   --run-url RUN_URL
 
 $ agents-kit skill --help
-usage: agents-kit skill [-h]
-                        {import,list,show,open,metadata,rename,move,remove} ...
+usage: agents-kit skill [-h] {import,list,show,open,metadata,rename,move,remove} ...
 
 positional arguments:
   {import,list,show,open,metadata,rename,move,remove}
@@ -162,15 +153,7 @@ options:
   -h, --help            show this help message and exit
 
 $ agents-kit skill import --help
-usage: agents-kit skill import [-h] --category CATEGORY
-                               --scope {library,global,project} [--name NAME]
-                               --description DESCRIPTION [--trigger TRIGGER]
-                               --tag TAG [--recommendation {1,2,3,4,5}]
-                               [--project PROJECT] [--replace] [--dry-run]
-                               [--yes] [--provider PROVIDER] [--ref REF]
-                               [--source-path SOURCE_PATH]
-                               [--candidate CANDIDATE] [--json]
-                               source
+usage: agents-kit skill import [-h] --category CATEGORY --scope {library,global,project} [--name NAME] --description DESCRIPTION [--trigger TRIGGER] --tag TAG [--recommendation {1,2,3,4,5}] [--project PROJECT] [--replace] [--dry-run] [--yes] [--provider PROVIDER] [--ref REF] [--source-path SOURCE_PATH] [--candidate CANDIDATE] [--json] source
 
 positional arguments:
   source
@@ -195,8 +178,7 @@ options:
   --json
 
 $ agents-kit skill list --help
-usage: agents-kit skill list [-h] [--active] [--category CATEGORY] [--tag TAG]
-                             [--tracked] [--json]
+usage: agents-kit skill list [-h] [--active] [--category CATEGORY] [--tag TAG] [--tracked] [--json]
 
 options:
   -h, --help           show this help message and exit
@@ -238,13 +220,7 @@ options:
   -h, --help  show this help message and exit
 
 $ agents-kit skill metadata set --help
-usage: agents-kit skill metadata set [-h] [--description DESCRIPTION]
-                                     [--trigger TRIGGER]
-                                     [--recommendation {1,2,3,4,5}]
-                                     [--dependency DEPENDENCY]
-                                     [--clear-dependencies] [--tag TAG]
-                                     [--clear-tags] [--dry-run] [--json]
-                                     name
+usage: agents-kit skill metadata set [-h] [--description DESCRIPTION] [--trigger TRIGGER] [--recommendation {1,2,3,4,5}] [--dependency DEPENDENCY] [--clear-dependencies] [--tag TAG] [--clear-tags] [--dry-run] [--json] name
 
 positional arguments:
   name
@@ -298,8 +274,7 @@ options:
   --json
 
 $ agents-kit plugin --help
-usage: agents-kit plugin [-h]
-                         {inspect,import,list,show,open,enable,disable,update,detach,remove} ...
+usage: agents-kit plugin [-h] {inspect,import,list,show,open,enable,disable,update,detach,remove} ...
 
 positional arguments:
   {inspect,import,list,show,open,enable,disable,update,detach,remove}
@@ -318,10 +293,7 @@ options:
   -h, --help            show this help message and exit
 
 $ agents-kit plugin inspect --help
-usage: agents-kit plugin inspect [-h] [--candidate CANDIDATE]
-                                 [--provider PROVIDER] [--ref REF]
-                                 [--source-path SOURCE_PATH] [--json]
-                                 source
+usage: agents-kit plugin inspect [-h] [--candidate CANDIDATE] [--provider PROVIDER] [--ref REF] [--source-path SOURCE_PATH] [--json] source
 
 positional arguments:
   source
@@ -335,12 +307,7 @@ options:
   --json
 
 $ agents-kit plugin import --help
-usage: agents-kit plugin import [-h] [--candidate CANDIDATE]
-                                --category CATEGORY [--target {claude,codex}]
-                                --tag TAG [--replace] [--dry-run] [--yes]
-                                [--provider PROVIDER] [--ref REF]
-                                [--source-path SOURCE_PATH] [--json]
-                                source
+usage: agents-kit plugin import [-h] [--candidate CANDIDATE] --category CATEGORY [--target {claude,codex}] --tag TAG [--replace] [--dry-run] [--yes] [--provider PROVIDER] [--ref REF] [--source-path SOURCE_PATH] [--json] source
 
 positional arguments:
   source
@@ -388,10 +355,7 @@ options:
   --json
 
 $ agents-kit plugin enable --help
-usage: agents-kit plugin enable [-h] --target {claude,codex}
-                                [--distribution {skills-dir,marketplace}]
-                                [--dry-run] [--json]
-                                name
+usage: agents-kit plugin enable [-h] --target {claude,codex} [--distribution {skills-dir,marketplace}] [--dry-run] [--json] name
 
 positional arguments:
   name
@@ -404,10 +368,7 @@ options:
   --json
 
 $ agents-kit plugin disable --help
-usage: agents-kit plugin disable [-h] --target {claude,codex}
-                                 [--distribution {skills-dir,marketplace}]
-                                 [--dry-run] [--json]
-                                 name
+usage: agents-kit plugin disable [-h] --target {claude,codex} [--distribution {skills-dir,marketplace}] [--dry-run] [--json] name
 
 positional arguments:
   name
@@ -420,9 +381,7 @@ options:
   --json
 
 $ agents-kit plugin update --help
-usage: agents-kit plugin update [-h] [--all] [--auto-docs] [--dry-run] [--yes]
-                                [--repo-only] [--json]
-                                [name]
+usage: agents-kit plugin update [-h] [--all] [--auto-docs] [--dry-run] [--yes] [--repo-only] [--json] [name]
 
 positional arguments:
   name
@@ -493,8 +452,7 @@ options:
   --json
 
 $ agents-kit mcp --help
-usage: agents-kit mcp [-h]
-                      {import,list,show,enable,disable,apply,update,remove,run} ...
+usage: agents-kit mcp [-h] {import,list,show,enable,disable,apply,update,remove,run} ...
 
 positional arguments:
   {import,list,show,enable,disable,apply,update,remove,run}
@@ -512,17 +470,7 @@ options:
   -h, --help            show this help message and exit
 
 $ agents-kit mcp import --help
-usage: agents-kit mcp import [-h] --name NAME --description DESCRIPTION
-                             [--tag TAG] [--recommendation {1,2,3,4,5}]
-                             --distribution {brew,npm,pypi,remote}
-                             [--package PACKAGE] [--version VERSION]
-                             --command COMMAND [--arg ARG]
-                             [--secret-env SECRET_ENV]
-                             [--secret-command NAME=COMMAND]
-                             [--target {claude,codex}]
-                             --scope {library,global} [--replace] [--dry-run]
-                             [--yes] [--json]
-                             source
+usage: agents-kit mcp import [-h] --name NAME --description DESCRIPTION [--tag TAG] [--recommendation {1,2,3,4,5}] --distribution {brew,npm,pypi,remote} [--package PACKAGE] [--version VERSION] --command COMMAND [--arg ARG] [--secret-env SECRET_ENV] [--secret-command NAME=COMMAND] [--target {claude,codex}] --scope {library,global} [--replace] [--dry-run] [--yes] [--json] source
 
 positional arguments:
   source
@@ -566,9 +514,7 @@ options:
   --json
 
 $ agents-kit mcp enable --help
-usage: agents-kit mcp enable [-h] [--target {claude,codex}] [--dry-run]
-                             [--json]
-                             name
+usage: agents-kit mcp enable [-h] [--target {claude,codex}] [--dry-run] [--json] name
 
 positional arguments:
   name
@@ -580,9 +526,7 @@ options:
   --json
 
 $ agents-kit mcp disable --help
-usage: agents-kit mcp disable [-h] [--target {claude,codex}] [--dry-run]
-                              [--json]
-                              name
+usage: agents-kit mcp disable [-h] [--target {claude,codex}] [--dry-run] [--json] name
 
 positional arguments:
   name
@@ -594,9 +538,7 @@ options:
   --json
 
 $ agents-kit mcp apply --help
-usage: agents-kit mcp apply [-h] [--all] [--replace] [--dry-run] [--yes]
-                            [--json]
-                            [name]
+usage: agents-kit mcp apply [-h] [--all] [--replace] [--dry-run] [--yes] [--json] [name]
 
 positional arguments:
   name
@@ -656,9 +598,7 @@ options:
   -h, --help            show this help message and exit
 
 $ agents-kit global enable --help
-usage: agents-kit global enable [-h] [--target {claude,codex}] [--dry-run]
-                                [--json]
-                                name
+usage: agents-kit global enable [-h] [--target {claude,codex}] [--dry-run] [--json] name
 
 positional arguments:
   name
@@ -670,9 +610,7 @@ options:
   --json
 
 $ agents-kit global disable --help
-usage: agents-kit global disable [-h] [--target {claude,codex}] [--dry-run]
-                                 [--json]
-                                 name
+usage: agents-kit global disable [-h] [--target {claude,codex}] [--dry-run] [--json] name
 
 positional arguments:
   name
@@ -684,8 +622,7 @@ options:
   --json
 
 $ agents-kit global apply --help
-usage: agents-kit global apply [-h] [--target {claude,codex}] [--dry-run]
-                               [--json]
+usage: agents-kit global apply [-h] [--target {claude,codex}] [--dry-run] [--json]
 
 options:
   -h, --help            show this help message and exit
@@ -704,9 +641,7 @@ options:
   -h, --help  show this help message and exit
 
 $ agents-kit project install --help
-usage: agents-kit project install [-h] --project PROJECT [--replace]
-                                  [--dry-run] [--yes] [--json]
-                                  target
+usage: agents-kit project install [-h] --project PROJECT [--replace] [--dry-run] [--yes] [--json] target
 
 positional arguments:
   target

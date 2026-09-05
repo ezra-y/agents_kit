@@ -395,3 +395,15 @@ for (const [owner, expected, rejected] of [['one','FIRST_UNIQUE_BODY','SECOND_UN
         apply.assert_not_called()
         native.assert_not_called()
         self.assertEqual(result["effects"], {})
+
+    def test_generated_cli_help_is_stable_across_terminal_widths(self):
+        cli = runpy.run_path(
+            str(Path(__file__).resolve().parents[1] / "scripts/agents-kit")
+        )
+        with patch.dict(os.environ, {"COLUMNS": "50"}):
+            narrow = cli["full_help"](cli["build_parser"]())
+        with patch.dict(os.environ, {"COLUMNS": "160"}):
+            wide = cli["full_help"](cli["build_parser"]())
+        self.assertEqual(narrow, wide)
+        self.assertIn("{status,sync,", narrow.splitlines()[0])
+        self.assertTrue(narrow.splitlines()[0].endswith(" ..."))
