@@ -1,0 +1,30 @@
+{
+  "mode": "correctness",
+  "solver": "claude-sonnet-4-6",
+  "n": 40,
+  "acc_with_skill": 0.975,
+  "acc_with_skill_ci": [
+    0.871,
+    0.996
+  ],
+  "acc_placebo": 1,
+  "acc_placebo_ci": [
+    0.912,
+    1
+  ],
+  "delta_pp": -2.5,
+  "mcnemar_p": 1,
+  "significant": false,
+  "discordant": 1,
+  "by_skill": [
+    {
+      "skill": "debiasing",
+      "n": 40,
+      "acc_with": 0.975,
+      "acc_placebo": 1,
+      "delta_pp": -2.5,
+      "discordant": 1,
+      "mcnemar_p": 1
+    }
+  ]
+}

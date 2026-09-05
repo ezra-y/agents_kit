@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-07-17T05:17:22Z",
+  "source_manifest": {
+    "path": "evals/studies/catalog-cutover/manifest.json",
+    "sha256": "7dd830f53b88fa5cf23f8f801204b8d06710a54b6aa1c83ac3f9233f0da85042"
+  },
+  "incident": {
+    "status": "unrecoverable_local_deletion",
+    "cause": "A Phase-6 cleanup command incorrectly treated every untracked result not cited by a July study bundle as deletion-eligible. The frozen manifest explicitly required these artifacts to remain because no durable raw-response archive existed.",
+    "preserved_artifact_count": 14,
+    "post_baseline_scratch_count": 1,
+    "current_claim_registry_directly_references_lost_paths": false,
+    "evidence_effect": "Historical workflow evidence at these paths is no longer inspectable. Their frozen path, byte count, SHA-256, and original disposition remain in the source manifest. They cannot support a confirmatory or public claim unless exact bytes are restored from an external source.",
+    "recovery_attempts": [
+      "Checked the Git index for staged path blobs; none existed.",
+      "Checked unreachable Git objects and SHA-256-matched both dangling blobs; neither matched a lost artifact.",
+      "Checked open unlinked file descriptors; none referenced the lost artifacts.",
+      "Searched local Spotlight indexes for duplicate filenames; none were found.",
+      "Checked the cleanup agents' persistent kernels and transcripts; neither retained full payload bytes or backups.",
+      "Checked canonical study bundles for byte-identical copies; none existed."
+    ]
+  },
+  "lost_artifacts": [
+    {
+      "path": "evals/results/challenging-v1/agentic-workflow.json",
+      "bytes": 236155,
+      "sha256": "292ed0166874b7efcf261f1cdfe2cb9bd5ce91ab9fa5742743a01fdfc8c037ee",
+      "original_disposition": "bundle"
+    },
+    {
+      "path": "evals/results/challenging-v1/workflow-factorial-checkpoint.json",
+      "bytes": 395287,
+      "sha256": "33f1d821eb229a28f4a8791b096300b68e7f3d5b6c2c6a61d2f374fa6b40e337",
+      "original_disposition": "preserve_in_place"
+    },
+    {
+      "path": "evals/results/challenging-v1/workflow-objective.json",
+      "bytes": 134995,
+      "sha256": "2ee568cd4ab79aa90726df5f37a4958b1e40c1d84a568e5c784fc6134c4825aa",
+      "original_disposition": "bundle"
+    },
+    {
+      "path": "evals/results/challenging-v1/workflow-vs-skill.json",
+      "bytes": 194368,
+      "sha256": "5f3370e28600e5812a9428c9cf9a596551b46a572791f42a950d10e93cfb81c3",
+      "original_disposition": "bundle"
+    },
+    {
+      "path": "evals/results/full-phase5/agentic-workflow.json",
+      "bytes": 236471,
+      "sha256": "08bb703e52ed5d838295b7c96637c16fd8b15ce04590eeee578bd44eec3588b9",
+      "original_disposition": "preserve_in_place"
+    },
+    {
+      "path": "evals/results/full-phase5/workflow-objective.json",
+      "bytes": 772003,
+      "sha256": "854b5187408a9c4a76df5e21edd91a856baae0fd973f2b947fc1f612d66b3e47",
+      "original_disposition": "preserve_in_place"
+    },
+    {
+      "path": "evals/results/verdict-structural/tier0-structural.json",
+      "bytes": 10228,
+      "sha256": "a1f0f1bb7f5a199866f59e6390a3bb616997c6649421e211ae7aad284846765c",
+      "original_disposition": "preserve_in_place"
+    },
+    {
+      "path": "evals/results/workflow-factorial-refresh/workflow-factorial.json",
+      "bytes": 187312,
+      "sha256": "657a7640ae2f9483f1fa221deca7ec6e13b3048d353ad49abebb8a81c92f586a",
+      "original_disposition": "bundle"
+    },
+    {
+      "path": "evals/results/workflow-objective-all/workflow-objective.json",
+      "bytes": 201915,
+      "sha256": "62c6d69d806c294304ebaddb1251f7eddbae584cd566b30d1fd6350fc8d3f8ac",
+      "original_disposition": "preserve_in_place"
+    },
+    {
+      "path": "evals/results/workflow-objective-primary-rerun/workflow-objective.json",
+      "bytes": 210648,
+      "sha256": "f54ce0117740d6b8b9da20f3889cf00c2bbf703ea3b1d05e547566036279ec87",
+      "original_disposition": "bundle"
+    },
+    {
+      "path": "evals/results/workflow-objective-proof/workflow-objective.json",
+      "bytes": 421358,
+      "sha256": "16f1a5dd5efd3c40d80e1a3555a3446b12ea3970a5c466f962b0a2b0ba77fb0b",
+      "original_disposition": "bundle"
+    },
+    {
+      "path": "evals/results/workflow-objective-subset/workflow-objective.json",
+      "bytes": 125149,
+      "sha256": "f646361b13d0b96da36e892ea0af45e247f49626a10217553a3b2bdfcd958047",
+      "original_disposition": "preserve_in_place"
+    },
+    {
+      "path": "evals/results/workflow-vs-skill-pilot-refresh/workflow-vs-skill.json",
+      "bytes": 99837,
+      "sha256": "969662185c083d0e9d031c2e5054378fb76f7b532183fda5797d82901e958b4a",
+      "original_disposition": "preserve_in_place"
+    },
+    {
+      "path": "evals/results/workflow-vs-skill/workflow-vs-skill.json",
+      "bytes": 99659,
+      "sha256": "59a8ac064ab49fd225c30e76601bb7080557c6ed2a6bd6d6fef3aaed8e58b0cf",
+      "original_disposition": "preserve_in_place"
+    }
+  ],
+  "excluded_post_baseline_scratch": [
+    {
+      "path": "evals/results/final-structural/tier0-structural.json",
+      "reason": "Generated during final verification after the frozen inventory; intentionally transient and not evidence."
+    }
+  ]
+}

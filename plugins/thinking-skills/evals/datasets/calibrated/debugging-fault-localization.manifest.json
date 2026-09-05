@@ -1,0 +1,83 @@
+{
+  "family": "Debugging/fault-localization",
+  "family_key": "debugging-fault-localization",
+  "skills": [
+    "scientific-method",
+    "five-whys-plus",
+    "systems",
+    "map-territory",
+    "kepner-tregoe",
+    "second-order",
+    "theory-of-constraints"
+  ],
+  "value_surface": "localization",
+  "source": "Combined from 3 source files. external: swebench, glm-distractor; authored: map-territory-verify",
+  "leakage": "SWE-bench data cutoff is 2024-06. All solver models used in this mission have training data post-dating the SWE-bench collection cutoff. However, the task is fault localization on specific GitHub issues from individual repos (astropy, django, etc.), which are unlikely to be memorized verbatim. The specific file-path answers may appear in model training data from public GitHub discussions. Leakage risk is moderate for popular repos (django, scikit-learn) and low for niche repos (astropy subpackages). Cross-contamination with the DiverseVul security dataset is negligible — different domains entirely. GLM distractor items are from a 2025 reasoning dataset and may overlap with training data for models released after 2025-Q1.\n\nSource breakdown: 1 external dataset(s) with potential training-data leakage; 1 authored dataset(s) with zero external leakage; ",
+  "label": {
+    "definition": "Fault localization accuracy: whether the model correctly identifies the source file(s) responsible for a described bug or issue.",
+    "values": {
+      "true": "Correct file identified (matches gold_files)",
+      "false": "Incorrect file identified"
+    },
+    "eval_mode": "ground_truth",
+    "ground_truth_field": "gold_files"
+  },
+  "calibration": {
+    "baseline": 0.792,
+    "baseline_estimated": false,
+    "band": [
+      0.4,
+      0.7
+    ],
+    "status": "ceiling_needs_harder_data",
+    "baseline_source": "measured_sample",
+    "in_band": false,
+    "verdict": "CEILING-NEEDS-HARDER-DATA",
+    "verdict_note": "Honest measured baseline is 79.2% (25 items, K_TRIALS=5, solver claude-sonnet-4-6). 19/25 items are ceiling (100% placebo), 4 floor (0%), 1 in-band (60%), 1 other out-of-band (20%). The claude-sonnet-4-6 solver is already very strong at SWE-bench fault localization without any thinking skill — placebo ceiling is genuine, not an artifact of parsing bugs or truncation. Per Invariant #4, ceiling is NOT a kill verdict; this family needs genuinely harder fault-localization items (more obscure repos, subtler bugs, multi-file localization) before a fair headroom-gated evaluation is possible. The one in-band item (swebench-3: astropy NDDataRef mask propagation, 60%) suggests that items requiring deeper domain knowledge can reach the calibration band. The scoring bug (ANSWER:-vs-JSON parsing + MAX_PROMPT_LEN truncation) was fixed before this measurement — all 125 trials scored successfully.",
+    "exemption": "Genuine ceiling: placebo baseline 79.2% on 25-item SWE-bench sample (K_TRIALS=5). 19/25 items at 100% accuracy — the solver localizes fault files trivially well without any skill. This is NOT a measurement artifact; the ANSWER:-vs-JSON parsing and MAX_PROMPT_LEN truncation bugs were fixed before this run (all 125 trials scored). CEILING-NEEDS-HARDER-DATA per Invariant #4 — not a kill. The family needs harder items (subtler bugs, more obscure repos, multi-file patches) to reach the 40-70% calibration band.",
+    "calibrated_items": 25,
+    "in_band_items": 1,
+    "decisive_split_items": 224,
+    "calibration_only_items": 0,
+    "exempt_items": 0,
+    "calibration_run_id": "calib-m3-fixed",
+    "calibration_result_file": "evals/results/calib-m3-fixed/calibration-debugging-fault-localization-candidate-pool-calib-m3-fixed.json",
+    "calibration_solver": "claude-sonnet-4-6",
+    "calibration_k_trials": 5,
+    "sample_size": 25,
+    "ceiling_items": 19,
+    "floor_items": 4,
+    "other_out_of_band": 1,
+    "exemption_reason": "ceiling_needs_harder_data"
+  },
+  "item_counts": {
+    "total": 224,
+    "target": 150,
+    "near_miss": 30,
+    "distractor": 44,
+    "ambiguous": 0,
+    "decisive": 224,
+    "calibration_only": 0,
+    "exempt": 0,
+    "calibrated": 25
+  },
+  "item_class_definitions": {
+    "target": "Items that directly measure the family value surface — in-domain, skill-relevant items where the skill is expected to help.",
+    "near_miss": "Items that are similar to the family domain but not an exact match. Useful for calibration but may not benefit from the skill.",
+    "distractor": "Items that are clearly off-target (target=false). Used to measure false-positive rate and specificity.",
+    "ambiguous": "Items whose relevance to the family is unclear. Excluded from decisive splits."
+  },
+  "decisive_split_rules": {
+    "min_target": 1,
+    "min_distractor": 1,
+    "max_ambiguous": 0,
+    "satisfied": true,
+    "decisive_targets": 150,
+    "decisive_distractors": 74,
+    "ambiguous_in_split": 0
+  },
+  "created": "2026-06-06",
+  "frozen": true,
+  "frozen_at": "2026-06-06T20:00:00.000Z",
+  "frozen_by": "fix-m3-debugging-localization-scorer"
+}

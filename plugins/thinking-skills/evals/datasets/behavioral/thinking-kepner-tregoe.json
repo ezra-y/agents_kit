@@ -1,0 +1,50 @@
+{
+  "skill": "thinking-kepner-tregoe",
+  "problems": [
+    {
+      "id": "kepner-tregoe-1",
+      "prompt": "Since Tuesday around 2pm, roughly 15% of image uploads to our app are failing with a generic 502. It's not all uploads, and downloads work fine. The team has theories flying around: someone says it's the new image-resize Lambda we deployed Tuesday morning, someone blames the CDN, someone thinks S3 is throttling us, and someone says it's a memory leak in the API. People want to start rolling things back. How should we figure out what's actually causing this?",
+      "failure_mode": "Latches onto the most salient suspect (the Tuesday Lambda deploy) and proposes rolling it back as the fix, or starts shotgun-changing things; doesn't systematically specify what IS vs IS-NOT failing (only uploads not downloads, only ~15%, only since Tuesday 2pm not the morning deploy time) to narrow distinctions and test each candidate cause against all the evidence before acting."
+    },
+    {
+      "id": "kepner-tregoe-2",
+      "prompt": "We need to choose a database for a new high-write telemetry service: it must sustain 50k writes/sec, retain 90 days of data, stay under $8k/month all-in, and integrate with our existing Grafana/Prometheus stack. Beyond that we'd like good operational simplicity, strong community support, and flexible querying. The candidates on the table are TimescaleDB, InfluxDB, ClickHouse, and Cassandra. The team is leaning ClickHouse because two engineers used it before and liked it. What should we pick?",
+      "failure_mode": "Picks ClickHouse based on team familiarity and vibes, or compares the options on a flat pros/cons list; doesn't separate the hard pass/fail requirements (throughput, retention cost, stack integration) from the weighted nice-to-haves, screen candidates against the musts first, then score the survivors on weighted wants—so it may advance an option that silently fails a non-negotiable or let one strong dimension mask a dealbreaker."
+    },
+    {
+      "id": "kepner-tregoe-3",
+      "prompt": "We have a pile of issues hitting us at once and I'm overwhelmed: prod API latency is up about 2x, a key engineer just gave notice, the Q3 roadmap is still undefined, a customer is escalating about checkout errors, our staging environment has been broken for a week, and we're over budget on cloud spend. Leadership wants 'a plan' by tomorrow. Help me get a handle on all of this.",
+      "failure_mode": "Either tries to solve everything at once in a flat to-do list or grabs whichever item feels loudest, with no structured triage; doesn't first inventory and separate the tangled concerns, then prioritize each by urgency, impact, and trend, and route each to the right kind of follow-up (root-cause investigation vs. decision vs. risk planning) before producing the plan."
+    },
+    {
+      "id": "kepner-tregoe-4",
+      "prompt": "A slice of our orders keep shipping to the wrong address. It isn't every order and it isn't random-looking to the fulfillment team, who swear the packing slips are correct. It started sometime in the last two weeks, affects maybe 3-4% of shipments, seems concentrated in certain regions, and only shows up for orders placed through the mobile app, not the website. Customer service is furious, an engineer wants to revert the address-autocomplete change from last sprint, and someone in ops thinks the warehouse label printers are the real culprit. Where do we even start pinning this down?",
+      "failure_mode": "Grabs the loudest suspect (the recent autocomplete change) and reverts it, or fans out on parallel guesses, without first sharply specifying the deviation along what/where/when/extent dimensions -- what IS vs IS-NOT going wrong (mobile-app orders but not web, certain regions but not others, ~3-4% not all, started ~2 weeks ago), so it never derives distinctions and changes that a candidate cause must explain, and never tests each hypothesis against the full IS/IS-NOT picture before acting."
+    },
+    {
+      "id": "kepner-tregoe-5",
+      "prompt": "Our checkout API's p95 latency has crept from about 180ms to roughly 900ms over the past month. There was no single deploy that lines up with it -- it's a slow drift, not a step change. Traffic is up maybe 10%, which shouldn't explain a 5x latency increase. The database looks healthy on dashboards, the app servers aren't CPU-bound, and nothing obvious changed in the code path. The team is tempted to just throw more instances at it before the holiday rush. How should I approach finding what's actually going on?",
+      "failure_mode": "Treats it as a capacity problem and scales out (or blames generic 'load') instead of framing it as a deviation from a known-good baseline, so it skips specifying exactly where and when the drift IS and IS-NOT present (which endpoints, which percentiles, which time windows, since when) and fails to reason about what could have changed to produce a gradual regression -- data growth, a widening query, cache hit-rate decay -- and to test those causes against the specifics before adding hardware."
+    },
+    {
+      "id": "kepner-tregoe-6",
+      "prompt": "We're replacing our customer-support tooling and have to decide this quarter. Non-negotiables: it has to support our current 40k monthly tickets without per-agent pricing that blows past $6k/month, integrate with our existing Salesforce instance, offer SOC 2 and EU data residency, and let us keep our historical ticket data. On top of that we'd love strong automation/AI triage, good reporting, a clean agent UI our team will actually like, and a short onboarding time. Three vendors made it to demos, and honestly the whole team fell in love with the flashiest one's AI features. How do we make this call defensibly?",
+      "failure_mode": "Anchors on the flashy AI demo and rationalizes toward it, or lays the vendors out in a flat feature comparison, instead of first separating the hard pass/fail requirements (ticket volume within budget, Salesforce integration, SOC 2 + EU residency, data portability) from the weighted desirables, screening every option against the musts to eliminate anyone who fails one, and only then scoring the survivors on weighted wants -- so it risks advancing a vendor that silently violates a non-negotiable or letting the AI wow-factor mask a dealbreaker or a serious downside."
+    },
+    {
+      "id": "kepner-tregoe-7",
+      "prompt": "We're down to two finalists for a senior backend role and need to pick one. Candidate A is a phenomenal systems engineer, aced the design interview, but was lukewarm about our on-call culture and would need relocation that they seem hesitant about. Candidate B is a strong-but-not-dazzling engineer, clearly excited about the mission, local, and great with the team, but lighter on the distributed-systems depth this role leans on. The hiring manager keeps saying 'A just interviewed better.' I want us to choose in a way we won't second-guess in six months. How should we structure this decision?",
+      "failure_mode": "Defaults to 'who interviewed better' or overall gut impression instead of defining the role's genuine must-have qualifications versus the weighted desirables, scoring both candidates against those criteria, and then explicitly weighing the adverse consequences and risks of the leading choice (A's relocation/on-call hesitancy as a retention risk; B's systems-depth gap as a ramp risk) before committing -- so the decision rests on charisma rather than a criteria-based comparison plus a sober risk check on the front-runner."
+    },
+    {
+      "id": "kepner-tregoe-8",
+      "prompt": "In three weeks we're migrating our primary transactional database from the old self-managed cluster to a managed service, cutting over during a weekend maintenance window. The plan on paper is: replicate data ahead of time, flip the connection strings, verify, done. Leadership is treating it as low-risk because 'the replication is already running.' I'm the one who has to sign off, and I have a bad feeling we're being too optimistic. Help me pressure-test this before we commit to the date.",
+      "failure_mode": "Reviews the happy-path plan and offers generic reassurance or a vague 'make a backup' rather than systematically anticipating what could go wrong -- replication lag or drift at cutover, connection-pool exhaustion, an undiscovered feature depending on the old cluster's config, rollback taking longer than the window -- then ranking those potential problems by probability and severity, identifying their likely causes, and specifying preventive actions plus contingent actions with clear trigger points and an abort/rollback threshold for the window."
+    },
+    {
+      "id": "kepner-tregoe-9",
+      "prompt": "We're deprecating v1 of our public API and forcing everyone onto v2, which has breaking changes. The current plan is to announce a sunset date four months out, send an email, and shut v1 off on that date. We have a few thousand active integrations, some built by customers who've since churned their engineering teams, and a handful of large accounts whose contracts don't say anything about API version support. My gut says 'send the email and flip the switch' is going to blow up on us. What should we be thinking about?",
+      "failure_mode": "Accepts the announce-and-cut-off plan and maybe suggests a nicer email, instead of proactively surfacing the ways it could fail -- integrations that never migrate and break on sunset day, large or contractual accounts with no migration path, zombie integrations from churned teams, support and reputational blowback -- then assessing each by likelihood and impact, tracing likely causes, and building in preventive measures (usage telemetry, staged throttling, targeted outreach to high-usage/contractual accounts) and contingency plans with triggers for the sunset date rather than a single hard cutoff."
+    }
+  ]
+}

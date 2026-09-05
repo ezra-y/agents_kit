@@ -1,0 +1,24 @@
+{
+  "name": "thinking-skills",
+  "description": "28 eval-informed mental models and critical-thinking skills for Claude Code, GitHub Copilot, Codex, Cursor, and other Agent Skills-compatible tools",
+  "version": "1.0.0",
+  "author": {
+    "name": "TJ Boudreaux",
+    "url": "https://github.com/tjboudreaux"
+  },
+  "homepage": "https://github.com/tjboudreaux/cc-thinking-skills",
+  "repository": "https://github.com/tjboudreaux/cc-thinking-skills",
+  "license": "MIT",
+  "keywords": [
+    "mental-models",
+    "thinking",
+    "decision-making",
+    "systems-thinking",
+    "first-principles",
+    "probabilistic-reasoning",
+    "cognitive-bias",
+    "strategic-thinking",
+    "problem-solving"
+  ],
+  "skills": ["skills/"]
+}

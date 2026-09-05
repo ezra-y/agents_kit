@@ -351,19 +351,30 @@ def codex_home():
     return Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex")
 
 
-def codex_candidates(cwd):
-    """Rollout files whose session_meta cwd matches, newest first."""
+def codex_candidates(cwd, limit=None):
+    """Rollout files whose session_meta cwd matches, newest first.
+
+    Reading a file's head line is the expensive step, so stop as soon as
+    `limit` matches are found — discovery only ever needs the newest one,
+    while a Codex home can hold thousands of historical rollouts.
+    """
     root = codex_home() / "sessions"
     if not root.is_dir():
         return []
     matched = []
+    needle = json.dumps(str(cwd), ensure_ascii=False)
     for p in sorted(root.rglob("rollout-*.jsonl"), key=lambda p: p.stat().st_mtime, reverse=True):
         try:
             with open(p, encoding="utf-8", errors="replace") as f:
                 head = f.readline()
+            # Cheap substring screen before the JSON parse.
+            if needle[1:-1] not in head:
+                continue
             meta = json.loads(head)
             if meta.get("type") == "session_meta" and meta.get("payload", {}).get("cwd") == str(cwd):
                 matched.append(p)
+                if limit is not None and len(matched) >= limit:
+                    break
         except (OSError, json.JSONDecodeError):
             continue
     return matched
@@ -547,7 +558,7 @@ def finalize(data):
 def discover(host, cwd):
     """Return (host, path) of the newest matching session, or exit with help."""
     claude = claude_candidates(cwd) if host in ("auto", "claude") else []
-    codex = codex_candidates(cwd) if host in ("auto", "codex") else []
+    codex = codex_candidates(cwd, limit=1) if host in ("auto", "codex") else []
     best = None
     for h, paths in (("claude", claude), ("codex", codex)):
         if paths:
@@ -576,7 +587,7 @@ def main():
     session = args.session or env_session
 
     if args.list:
-        for h, paths in (("claude", claude_candidates(args.cwd)), ("codex", codex_candidates(args.cwd))):
+        for h, paths in (("claude", claude_candidates(args.cwd)), ("codex", codex_candidates(args.cwd, limit=10))):
             for p in paths[:10]:
                 mtime = datetime.fromtimestamp(
                     p.stat().st_mtime, timezone.utc

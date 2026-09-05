@@ -1,0 +1,23 @@
+{
+  "skill": "probabilistic",
+  "primary_value_surface": "calibrated classification",
+  "primary_metric": "forecast_calibration_error",
+  "secondary_metrics": ["interval_coverage_accuracy", "base_rate_anchoring", "update_frequency", "equivalent_bet_consistency"],
+  "distractors": {
+    "off_target_set": "Quantities that are directly measurable; decisions insensitive to probability range; meta-questions about probabilistic thinking",
+    "description": "Items where the number is knowable, or where the decision doesn't depend on the probability estimate"
+  },
+  "calibration_range": [0.40, 0.70],
+  "calibration_exception": null,
+  "min_sample_primary": 60,
+  "min_sample_replication": 60,
+  "planned_comparison": "placebo",
+  "decision_gate": {
+    "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND interval_coverage_accuracy >= 0.80",
+    "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+    "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+    "quarantine_redirect": "primary_delta_pp < 0 OR base_rate_anchoring < 0.50",
+    "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+  },
+  "eval_family": "Quantitative/uncertainty"
+}

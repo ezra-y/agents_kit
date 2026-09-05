@@ -17,6 +17,71 @@
       },
       "category": "Developer Tools",
       "description": "A four-role AI English speaking school for curriculum planning, GPT Live teaching, post-class review, spaced review, scheduled preparation, and cycle assessment."
+    },
+    {
+      "name": "eli5",
+      "source": {
+        "source": "local",
+        "path": "./plugins/eli5"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools",
+      "description": "Explain any topic like I'm 5: a dead-simple HTML picture explainer with big visuals and few words. Use /eli5 <topic>."
+    },
+    {
+      "name": "mattpocock-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/mattpocock-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools",
+      "description": "Matt Pocock's agent skills for real engineering: grilling, spec/ticket flows, TDD, code review, domain modelling and more. Plug-and-play, not vibe coding."
+    },
+    {
+      "name": "ponytail",
+      "source": {
+        "source": "local",
+        "path": "./plugins/ponytail"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools",
+      "description": "Lazy senior dev mode. Forces the simplest, shortest solution that actually works: YAGNI, stdlib first, no unrequested abstractions."
+    },
+    {
+      "name": "pstack",
+      "source": {
+        "source": "local",
+        "path": "./plugins/pstack"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools",
+      "description": "if you want to go fast, go deep first. pstack helps you write less, but higher quality code. rigorous agent workflows you can parallelize with confidence. Codex port of the Claude Code plugin; skills are shared, tool names resolve via skills/poteto-mode/references/codex-tools.md."
+    },
+    {
+      "name": "thinking-skills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/thinking-skills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools",
+      "description": "28 eval-informed mental models and critical-thinking skills for Claude Code, GitHub Copilot, Codex, Cursor, and other Agent Skills-compatible tools"
     }
   ]
 }

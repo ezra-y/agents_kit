@@ -1,0 +1,1050 @@
+{
+  "schema_version": 1,
+  "study_id": "legacy-july-wf-confirm-haiku",
+  "study_kind": "legacy_july_workflow_objective",
+  "created_at": "2026-07-16T00:00:00.000Z",
+  "mode": "workflow-objective-proof-arms",
+  "solver": {
+    "model": "claude-haiku-4-5-20251001",
+    "effort": "medium"
+  },
+  "arms": [
+    {
+      "id": "workflow_validated",
+      "role": "workflow"
+    },
+    {
+      "id": "full_skill_typed_verified",
+      "role": "full_skill"
+    }
+  ],
+  "split": "heldout",
+  "n_skills": 12,
+  "n_items": 364,
+  "skills": [
+    {
+      "skill": "thinking-socratic",
+      "n": 35,
+      "source_file": "evals/datasets/authored/socratic-clarify.jsonl",
+      "source_sha256": "abd143021f06976738fe0bef74b2692adbb97627d6de180c58c96fe0e25cf2e5",
+      "skill_sha256": "b0b90c3cd3e83c915f35985b05cdd6d7be98655238c973592e2a46e74089a7a8",
+      "workflow_sha256": "2f04d1fe6f0fd50c053d47c268aab8393ed7e2033bd0255a8f35bc4978b430d5",
+      "by_arm": {
+        "workflow_validated": {
+          "n": 35,
+          "correct": 32,
+          "case_success": 32,
+          "acc": 0.914,
+          "case_success_rate": 0.914,
+          "acc_ci": [
+            0.776,
+            0.97
+          ],
+          "case_success_ci": [
+            0.776,
+            0.97
+          ],
+          "tp": 16,
+          "fp": 3,
+          "tn": 16,
+          "fn": 0,
+          "fpr": 0.158,
+          "fnr": 0,
+          "parse_ok": 35,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        },
+        "full_skill_typed_verified": {
+          "n": 35,
+          "correct": 34,
+          "case_success": 34,
+          "acc": 0.971,
+          "case_success_rate": 0.971,
+          "acc_ci": [
+            0.855,
+            0.995
+          ],
+          "case_success_ci": [
+            0.855,
+            0.995
+          ],
+          "tp": 16,
+          "fp": 1,
+          "tn": 18,
+          "fn": 0,
+          "fpr": 0.053,
+          "fnr": 0,
+          "parse_ok": 35,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        }
+      },
+      "contrasts": {
+        "primary_workflow_validated_vs_full_skill_typed_verified": {
+          "delta_pp": -5.7,
+          "mcnemar_p": 0.617,
+          "discordant": 4,
+          "left_wins": 1,
+          "right_wins": 3
+        },
+        "workflow_vs_full_skill": null,
+        "workflow_vs_placebo": null,
+        "full_skill_vs_placebo": null
+      }
+    },
+    {
+      "skill": "thinking-cynefin",
+      "n": 30,
+      "source_file": "evals/datasets/authored/cynefin-classify.jsonl",
+      "source_sha256": "8b4fda79c0952b97ec184cfb4bcf7fc53ceb5384a8fdf4b4683d2fec2dff723b",
+      "skill_sha256": "504ee63b95118a3315cceb2eed950fe9a807d58b6e29175e5f2071a03744f08b",
+      "workflow_sha256": "9abd38d317633c7060a340207798f85e181bc67c2d839171c055c4d9a4bbeed0",
+      "by_arm": {
+        "workflow_validated": {
+          "n": 30,
+          "correct": 30,
+          "case_success": 30,
+          "acc": 1,
+          "case_success_rate": 1,
+          "acc_ci": [
+            0.886,
+            1
+          ],
+          "case_success_ci": [
+            0.886,
+            1
+          ],
+          "tp": 12,
+          "fp": 0,
+          "tn": 18,
+          "fn": 0,
+          "fpr": 0,
+          "fnr": 0,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        },
+        "full_skill_typed_verified": {
+          "n": 30,
+          "correct": 30,
+          "case_success": 30,
+          "acc": 1,
+          "case_success_rate": 1,
+          "acc_ci": [
+            0.886,
+            1
+          ],
+          "case_success_ci": [
+            0.886,
+            1
+          ],
+          "tp": 12,
+          "fp": 0,
+          "tn": 18,
+          "fn": 0,
+          "fpr": 0,
+          "fnr": 0,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        }
+      },
+      "contrasts": {
+        "primary_workflow_validated_vs_full_skill_typed_verified": {
+          "delta_pp": 0,
+          "mcnemar_p": 1,
+          "discordant": 0,
+          "left_wins": 0,
+          "right_wins": 0
+        },
+        "workflow_vs_full_skill": null,
+        "workflow_vs_placebo": null,
+        "full_skill_vs_placebo": null
+      }
+    },
+    {
+      "skill": "thinking-reversibility",
+      "n": 30,
+      "source_file": "evals/datasets/authored/reversibility-doors.jsonl",
+      "source_sha256": "bd09c22d42de383d5d0a55c93b11177e1e3b0fc86f64da06b80b3f37458e80a9",
+      "skill_sha256": "dd796a56a74042b7c04ea9d904f68ccf286cdfd5f061607fdd925641bf8b37f2",
+      "workflow_sha256": "5085115d422090fd40793fcbed3086d15e528e9011344b4eae2e48e461b45ce9",
+      "by_arm": {
+        "workflow_validated": {
+          "n": 30,
+          "correct": 30,
+          "case_success": 30,
+          "acc": 1,
+          "case_success_rate": 1,
+          "acc_ci": [
+            0.886,
+            1
+          ],
+          "case_success_ci": [
+            0.886,
+            1
+          ],
+          "tp": 15,
+          "fp": 0,
+          "tn": 15,
+          "fn": 0,
+          "fpr": 0,
+          "fnr": 0,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        },
+        "full_skill_typed_verified": {
+          "n": 30,
+          "correct": 30,
+          "case_success": 30,
+          "acc": 1,
+          "case_success_rate": 1,
+          "acc_ci": [
+            0.886,
+            1
+          ],
+          "case_success_ci": [
+            0.886,
+            1
+          ],
+          "tp": 15,
+          "fp": 0,
+          "tn": 15,
+          "fn": 0,
+          "fpr": 0,
+          "fnr": 0,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        }
+      },
+      "contrasts": {
+        "primary_workflow_validated_vs_full_skill_typed_verified": {
+          "delta_pp": 0,
+          "mcnemar_p": 1,
+          "discordant": 0,
+          "left_wins": 0,
+          "right_wins": 0
+        },
+        "workflow_vs_full_skill": null,
+        "workflow_vs_placebo": null,
+        "full_skill_vs_placebo": null
+      }
+    },
+    {
+      "skill": "thinking-margin-of-safety",
+      "n": 30,
+      "source_file": "evals/datasets/authored/margin-of-safety-provision.jsonl",
+      "source_sha256": "c69bc56bd1ccec492ca31c03ca6ce37768271de8547221480a33e8eda82ca14e",
+      "skill_sha256": "d8eacd9c9487434572edd6ad553427054c86a880f6fb40b44b93c70e36b6b759",
+      "workflow_sha256": "88a91d18a4a00ee6fd4cf47e5159dbd6bae62e0e58743538074e2891c0b42ae1",
+      "by_arm": {
+        "workflow_validated": {
+          "n": 30,
+          "correct": 25,
+          "case_success": 25,
+          "acc": 0.833,
+          "case_success_rate": 0.833,
+          "acc_ci": [
+            0.664,
+            0.927
+          ],
+          "case_success_ci": [
+            0.664,
+            0.927
+          ],
+          "tp": 7,
+          "fp": 0,
+          "tn": 18,
+          "fn": 5,
+          "fpr": 0,
+          "fnr": 0.417,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        },
+        "full_skill_typed_verified": {
+          "n": 30,
+          "correct": 23,
+          "case_success": 23,
+          "acc": 0.767,
+          "case_success_rate": 0.767,
+          "acc_ci": [
+            0.591,
+            0.882
+          ],
+          "case_success_ci": [
+            0.591,
+            0.882
+          ],
+          "tp": 5,
+          "fp": 0,
+          "tn": 18,
+          "fn": 7,
+          "fpr": 0,
+          "fnr": 0.583,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        }
+      },
+      "contrasts": {
+        "primary_workflow_validated_vs_full_skill_typed_verified": {
+          "delta_pp": 6.7,
+          "mcnemar_p": 0.479,
+          "discordant": 2,
+          "left_wins": 2,
+          "right_wins": 0
+        },
+        "workflow_vs_full_skill": null,
+        "workflow_vs_placebo": null,
+        "full_skill_vs_placebo": null
+      }
+    },
+    {
+      "skill": "thinking-map-territory",
+      "n": 30,
+      "source_file": "evals/datasets/authored/map-territory-verify.jsonl",
+      "source_sha256": "0cde9265928a7422092226f318380e3f4a5050ff950492258887fb67ac808ccf",
+      "skill_sha256": "590212d7141e143b875eb9934d269bbf14cda235a02e76faf952fc09eff81700",
+      "workflow_sha256": "b5ed091bea40acffb433c4b9611205e90232b842dbc3dac16c4fd23d820f72a5",
+      "by_arm": {
+        "workflow_validated": {
+          "n": 30,
+          "correct": 29,
+          "case_success": 29,
+          "acc": 0.967,
+          "case_success_rate": 0.967,
+          "acc_ci": [
+            0.833,
+            0.994
+          ],
+          "case_success_ci": [
+            0.833,
+            0.994
+          ],
+          "tp": 14,
+          "fp": 0,
+          "tn": 15,
+          "fn": 1,
+          "fpr": 0,
+          "fnr": 0.067,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        },
+        "full_skill_typed_verified": {
+          "n": 30,
+          "correct": 30,
+          "case_success": 30,
+          "acc": 1,
+          "case_success_rate": 1,
+          "acc_ci": [
+            0.886,
+            1
+          ],
+          "case_success_ci": [
+            0.886,
+            1
+          ],
+          "tp": 15,
+          "fp": 0,
+          "tn": 15,
+          "fn": 0,
+          "fpr": 0,
+          "fnr": 0,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        }
+      },
+      "contrasts": {
+        "primary_workflow_validated_vs_full_skill_typed_verified": {
+          "delta_pp": -3.3,
+          "mcnemar_p": 1,
+          "discordant": 1,
+          "left_wins": 0,
+          "right_wins": 1
+        },
+        "workflow_vs_full_skill": null,
+        "workflow_vs_placebo": null,
+        "full_skill_vs_placebo": null
+      }
+    },
+    {
+      "skill": "thinking-pre-mortem",
+      "n": 30,
+      "source_file": "evals/datasets/authored/pre-mortem-risk.jsonl",
+      "source_sha256": "3a475710d3683212fb7037c18cb305c693f603f5d111bce6714eff9084c89903",
+      "skill_sha256": "f376fa4a44bf6b73a3542b7b003abb195fdbcb837848310109fe733eaafdaaae",
+      "workflow_sha256": "5c9be1b110a59ddcbcb0da6958e37a2381b1d22f9d595fb31733cf4f9215753e",
+      "by_arm": {
+        "workflow_validated": {
+          "n": 30,
+          "correct": 29,
+          "case_success": 29,
+          "acc": 0.967,
+          "case_success_rate": 0.967,
+          "acc_ci": [
+            0.833,
+            0.994
+          ],
+          "case_success_ci": [
+            0.833,
+            0.994
+          ],
+          "tp": 13,
+          "fp": 1,
+          "tn": 16,
+          "fn": 0,
+          "fpr": 0.059,
+          "fnr": 0,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        },
+        "full_skill_typed_verified": {
+          "n": 30,
+          "correct": 30,
+          "case_success": 30,
+          "acc": 1,
+          "case_success_rate": 1,
+          "acc_ci": [
+            0.886,
+            1
+          ],
+          "case_success_ci": [
+            0.886,
+            1
+          ],
+          "tp": 13,
+          "fp": 0,
+          "tn": 17,
+          "fn": 0,
+          "fpr": 0,
+          "fnr": 0,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        }
+      },
+      "contrasts": {
+        "primary_workflow_validated_vs_full_skill_typed_verified": {
+          "delta_pp": -3.3,
+          "mcnemar_p": 1,
+          "discordant": 1,
+          "left_wins": 0,
+          "right_wins": 1
+        },
+        "workflow_vs_full_skill": null,
+        "workflow_vs_placebo": null,
+        "full_skill_vs_placebo": null
+      }
+    },
+    {
+      "skill": "thinking-inversion",
+      "n": 30,
+      "source_file": "evals/datasets/authored/inversion-failure-paths.jsonl",
+      "source_sha256": "0727f530cd678e4d9972883d24aad3534b4a26036c9448bb315f3c8c38308bb7",
+      "skill_sha256": "f1b9f74cc7edee7553b696d65a56a289d02b3e9c970c399a93748e3ea5a5f441",
+      "workflow_sha256": "8a9771ceff19458048d56beda3a2d5a1f911cf0e2b479e415b97c1ac4cb86c23",
+      "by_arm": {
+        "workflow_validated": {
+          "n": 30,
+          "correct": 25,
+          "case_success": 25,
+          "acc": 0.833,
+          "case_success_rate": 0.833,
+          "acc_ci": [
+            0.664,
+            0.927
+          ],
+          "case_success_ci": [
+            0.664,
+            0.927
+          ],
+          "tp": 14,
+          "fp": 5,
+          "tn": 11,
+          "fn": 0,
+          "fpr": 0.313,
+          "fnr": 0,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        },
+        "full_skill_typed_verified": {
+          "n": 30,
+          "correct": 29,
+          "case_success": 29,
+          "acc": 0.967,
+          "case_success_rate": 0.967,
+          "acc_ci": [
+            0.833,
+            0.994
+          ],
+          "case_success_ci": [
+            0.833,
+            0.994
+          ],
+          "tp": 13,
+          "fp": 0,
+          "tn": 16,
+          "fn": 1,
+          "fpr": 0,
+          "fnr": 0.071,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        }
+      },
+      "contrasts": {
+        "primary_workflow_validated_vs_full_skill_typed_verified": {
+          "delta_pp": -13.3,
+          "mcnemar_p": 0.221,
+          "discordant": 6,
+          "left_wins": 1,
+          "right_wins": 5
+        },
+        "workflow_vs_full_skill": null,
+        "workflow_vs_placebo": null,
+        "full_skill_vs_placebo": null
+      }
+    },
+    {
+      "skill": "thinking-red-team",
+      "n": 30,
+      "source_file": "evals/datasets/authored/red-team-vulnerability.jsonl",
+      "source_sha256": "b02391738182a636e9de6fb883fab66b99570a46bbf4507371868715de4c4ede",
+      "skill_sha256": "f0cde6326de84b15567b9788efe4056bd12d4f8e3ac9e450862e463db0d3295d",
+      "workflow_sha256": "65f4ce134545ab6dfee274c238cf9f47f2e9866b6f949571de82a7bb76a5d610",
+      "by_arm": {
+        "workflow_validated": {
+          "n": 30,
+          "correct": 29,
+          "case_success": 29,
+          "acc": 0.967,
+          "case_success_rate": 0.967,
+          "acc_ci": [
+            0.833,
+            0.994
+          ],
+          "case_success_ci": [
+            0.833,
+            0.994
+          ],
+          "tp": 14,
+          "fp": 1,
+          "tn": 15,
+          "fn": 0,
+          "fpr": 0.063,
+          "fnr": 0,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        },
+        "full_skill_typed_verified": {
+          "n": 30,
+          "correct": 28,
+          "case_success": 28,
+          "acc": 0.933,
+          "case_success_rate": 0.933,
+          "acc_ci": [
+            0.787,
+            0.982
+          ],
+          "case_success_ci": [
+            0.787,
+            0.982
+          ],
+          "tp": 14,
+          "fp": 2,
+          "tn": 14,
+          "fn": 0,
+          "fpr": 0.125,
+          "fnr": 0,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        }
+      },
+      "contrasts": {
+        "primary_workflow_validated_vs_full_skill_typed_verified": {
+          "delta_pp": 3.3,
+          "mcnemar_p": 1,
+          "discordant": 3,
+          "left_wins": 2,
+          "right_wins": 1
+        },
+        "workflow_vs_full_skill": null,
+        "workflow_vs_placebo": null,
+        "full_skill_vs_placebo": null
+      }
+    },
+    {
+      "skill": "thinking-scientific-method",
+      "n": 30,
+      "source_file": "evals/datasets/authored/scientific-method-hypothesis.jsonl",
+      "source_sha256": "223a3f931aa6234f9336c36853728043ec1872851e45e4f39085edf51dda7e87",
+      "skill_sha256": "9a7a94d31c47d2e905eca47f4bd6185ca4edbb180369aad23e62ddd6e988671b",
+      "workflow_sha256": "6b814ff04273a8f3bf49c65ce8f836a9f62f800ff663a25fd2301bd28bfbb1fc",
+      "by_arm": {
+        "workflow_validated": {
+          "n": 30,
+          "correct": 30,
+          "case_success": 30,
+          "acc": 1,
+          "case_success_rate": 1,
+          "acc_ci": [
+            0.886,
+            1
+          ],
+          "case_success_ci": [
+            0.886,
+            1
+          ],
+          "tp": 14,
+          "fp": 0,
+          "tn": 16,
+          "fn": 0,
+          "fpr": 0,
+          "fnr": 0,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        },
+        "full_skill_typed_verified": {
+          "n": 30,
+          "correct": 30,
+          "case_success": 30,
+          "acc": 1,
+          "case_success_rate": 1,
+          "acc_ci": [
+            0.886,
+            1
+          ],
+          "case_success_ci": [
+            0.886,
+            1
+          ],
+          "tp": 14,
+          "fp": 0,
+          "tn": 16,
+          "fn": 0,
+          "fpr": 0,
+          "fnr": 0,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        }
+      },
+      "contrasts": {
+        "primary_workflow_validated_vs_full_skill_typed_verified": {
+          "delta_pp": 0,
+          "mcnemar_p": 1,
+          "discordant": 0,
+          "left_wins": 0,
+          "right_wins": 0
+        },
+        "workflow_vs_full_skill": null,
+        "workflow_vs_placebo": null,
+        "full_skill_vs_placebo": null
+      }
+    },
+    {
+      "skill": "thinking-kepner-tregoe",
+      "n": 30,
+      "source_file": "evals/datasets/authored/kepner-tregoe-selective-defect.jsonl",
+      "source_sha256": "e271d987d83b3369995909fa020deefec755a0f079edbe12c7141f418fac56e9",
+      "skill_sha256": "4027e104648a8078f5fc2ee5b1f134eb9b42c6c033a55afa0858065ce33cb77b",
+      "workflow_sha256": "9c17082adf5b5a23570d82556f867aa971785c437bf2a9163c4d3c6b185058d7",
+      "by_arm": {
+        "workflow_validated": {
+          "n": 30,
+          "correct": 30,
+          "case_success": 30,
+          "acc": 1,
+          "case_success_rate": 1,
+          "acc_ci": [
+            0.886,
+            1
+          ],
+          "case_success_ci": [
+            0.886,
+            1
+          ],
+          "tp": 14,
+          "fp": 0,
+          "tn": 16,
+          "fn": 0,
+          "fpr": 0,
+          "fnr": 0,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        },
+        "full_skill_typed_verified": {
+          "n": 30,
+          "correct": 27,
+          "case_success": 27,
+          "acc": 0.9,
+          "case_success_rate": 0.9,
+          "acc_ci": [
+            0.744,
+            0.965
+          ],
+          "case_success_ci": [
+            0.744,
+            0.965
+          ],
+          "tp": 11,
+          "fp": 0,
+          "tn": 16,
+          "fn": 3,
+          "fpr": 0,
+          "fnr": 0.214,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        }
+      },
+      "contrasts": {
+        "primary_workflow_validated_vs_full_skill_typed_verified": {
+          "delta_pp": 10,
+          "mcnemar_p": 0.248,
+          "discordant": 3,
+          "left_wins": 3,
+          "right_wins": 0
+        },
+        "workflow_vs_full_skill": null,
+        "workflow_vs_placebo": null,
+        "full_skill_vs_placebo": null
+      }
+    },
+    {
+      "skill": "thinking-five-whys-plus",
+      "n": 29,
+      "source_file": "evals/datasets/authored/five-whys-root-cause.jsonl",
+      "source_sha256": "eda4c7747ff3a3992f4e50566556285cc17986cc2f266bb0823874ed816cb4fb",
+      "skill_sha256": "eec1f6e940e133d78cb0a8f45f74a623da3d7238bac50b9de7ded5d891e91f21",
+      "workflow_sha256": "fd2e2eb6b71f7428bee6ee296324c690994afb9a8a4326ce1c80607c8f5aa637",
+      "by_arm": {
+        "workflow_validated": {
+          "n": 29,
+          "correct": 29,
+          "case_success": 29,
+          "acc": 1,
+          "case_success_rate": 1,
+          "acc_ci": [
+            0.883,
+            1
+          ],
+          "case_success_ci": [
+            0.883,
+            1
+          ],
+          "tp": 14,
+          "fp": 0,
+          "tn": 15,
+          "fn": 0,
+          "fpr": 0,
+          "fnr": 0,
+          "parse_ok": 29,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        },
+        "full_skill_typed_verified": {
+          "n": 29,
+          "correct": 29,
+          "case_success": 29,
+          "acc": 1,
+          "case_success_rate": 1,
+          "acc_ci": [
+            0.883,
+            1
+          ],
+          "case_success_ci": [
+            0.883,
+            1
+          ],
+          "tp": 14,
+          "fp": 0,
+          "tn": 15,
+          "fn": 0,
+          "fpr": 0,
+          "fnr": 0,
+          "parse_ok": 29,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        }
+      },
+      "contrasts": {
+        "primary_workflow_validated_vs_full_skill_typed_verified": {
+          "delta_pp": 0,
+          "mcnemar_p": 1,
+          "discordant": 0,
+          "left_wins": 0,
+          "right_wins": 0
+        },
+        "workflow_vs_full_skill": null,
+        "workflow_vs_placebo": null,
+        "full_skill_vs_placebo": null
+      }
+    },
+    {
+      "skill": "thinking-occams-razor",
+      "n": 30,
+      "source_file": "evals/datasets/authored/occams-razor-competing-causes.jsonl",
+      "source_sha256": "08f867b12f9ff52ed55ce03bb15e3cf3a573cf97a0af7d3141b80bd555d86fe5",
+      "skill_sha256": "42adf8e4274dd6d03f4cb24417a83f67c849f44bc0683af64a0978feec0db4f4",
+      "workflow_sha256": "c65a016a1d8749f21cbc392a3255bd64780bc70803f33b0fa6f21def0f81bdff",
+      "by_arm": {
+        "workflow_validated": {
+          "n": 30,
+          "correct": 24,
+          "case_success": 24,
+          "acc": 0.8,
+          "case_success_rate": 0.8,
+          "acc_ci": [
+            0.627,
+            0.905
+          ],
+          "case_success_ci": [
+            0.627,
+            0.905
+          ],
+          "tp": 14,
+          "fp": 6,
+          "tn": 10,
+          "fn": 0,
+          "fpr": 0.375,
+          "fnr": 0,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        },
+        "full_skill_typed_verified": {
+          "n": 30,
+          "correct": 24,
+          "case_success": 24,
+          "acc": 0.8,
+          "case_success_rate": 0.8,
+          "acc_ci": [
+            0.627,
+            0.905
+          ],
+          "case_success_ci": [
+            0.627,
+            0.905
+          ],
+          "tp": 14,
+          "fp": 6,
+          "tn": 10,
+          "fn": 0,
+          "fpr": 0.375,
+          "fnr": 0,
+          "parse_ok": 30,
+          "parse_ok_rate": 1,
+          "parse_fail": 0,
+          "solver_failures": 0
+        }
+      },
+      "contrasts": {
+        "primary_workflow_validated_vs_full_skill_typed_verified": {
+          "delta_pp": 0,
+          "mcnemar_p": 0.683,
+          "discordant": 6,
+          "left_wins": 3,
+          "right_wins": 3
+        },
+        "workflow_vs_full_skill": null,
+        "workflow_vs_placebo": null,
+        "full_skill_vs_placebo": null
+      }
+    }
+  ],
+  "measured_result": {
+    "metric": "case_success_accuracy",
+    "n": 364,
+    "clusters": 363,
+    "by_arm": {
+      "workflow_validated": {
+        "n": 364,
+        "correct": 342,
+        "case_success": 342,
+        "acc": 0.94,
+        "case_success_rate": 0.94,
+        "acc_ci": [
+          0.91,
+          0.96
+        ],
+        "case_success_ci": [
+          0.91,
+          0.96
+        ],
+        "tp": 161,
+        "fp": 16,
+        "tn": 181,
+        "fn": 6,
+        "fpr": 0.081,
+        "fnr": 0.036,
+        "parse_ok": 364,
+        "parse_ok_rate": 1,
+        "parse_fail": 0,
+        "solver_failures": 0
+      },
+      "full_skill_typed_verified": {
+        "n": 364,
+        "correct": 344,
+        "case_success": 344,
+        "acc": 0.945,
+        "case_success_rate": 0.945,
+        "acc_ci": [
+          0.917,
+          0.964
+        ],
+        "case_success_ci": [
+          0.917,
+          0.964
+        ],
+        "tp": 156,
+        "fp": 9,
+        "tn": 188,
+        "fn": 11,
+        "fpr": 0.046,
+        "fnr": 0.066,
+        "parse_ok": 364,
+        "parse_ok_rate": 1,
+        "parse_fail": 0,
+        "solver_failures": 0
+      }
+    },
+    "primary_contrast": {
+      "delta_pp": -0.5,
+      "mcnemar_p": 0.845,
+      "discordant": 26,
+      "left_wins": 12,
+      "right_wins": 14
+    },
+    "claim_status_source": "inconclusive"
+  },
+  "statistics": {
+    "primary_contrast": {
+      "delta_pp": -0.5,
+      "mcnemar_p": 0.845,
+      "discordant": 26,
+      "left_wins": 12,
+      "right_wins": 14
+    },
+    "claim_status_source": "inconclusive"
+  },
+  "health": {
+    "solver_calls": 728,
+    "solver_attempts": 729,
+    "solver_failures": 0,
+    "retried_calls": 1,
+    "failure_rate": 0,
+    "decision_eligible": true,
+    "token_usage": {
+      "input_tokens": 7280,
+      "output_tokens": 630376,
+      "cache_read_tokens": 9534856,
+      "cache_creation_tokens": 1601744,
+      "total_tokens": 11774256,
+      "est_cost_usd": 18.344432
+    },
+    "raw_responses_present_in_source": false,
+    "parsed_answers_present_in_source": true,
+    "usage_present_in_source": true
+  },
+  "usage": {
+    "input_tokens": 7280,
+    "output_tokens": 630376,
+    "cache_read_tokens": 9534856,
+    "cache_creation_tokens": 1601744,
+    "total_tokens": 11774256,
+    "estimated_cost_usd": 18.344432
+  },
+  "caveats": [
+    "Objective binary labels test decision preservation, not full reasoning quality.",
+    "Primary contrast is workflow_validated vs full_skill_typed_verified.",
+    "Replication rows present (357 total across selected skills)."
+  ],
+  "warnings": [],
+  "defects": [
+    "padded_workflow_arms_not_unpadded",
+    "self_checked_arms_misnamed_as_validated_or_verified",
+    "missing_no_skill_primary_control",
+    "missing_raw_response_archive",
+    "source_artifact_untracked_in_git",
+    "claim_status_not_eligible"
+  ],
+  "evidence_validity": "provisional",
+  "statistical_status": "inconclusive_null",
+  "replication_status": "not_replication_qualified",
+  "product_disposition": "manual_only_quarantine_workflow_gate_pending",
+  "notes": [
+    "Legacy July workflow-objective run imported without raw responses.",
+    "Arm names workflow_validated/full_skill_typed_verified are self-checked forms pending Phase 5 rename.",
+    "No no-skill primary control in this two-arm run.",
+    "Source claim_status is not an eligible confirmatory disposition under current gates."
+  ],
+  "source": {
+    "path": "evals/results/wf-confirm-haiku/workflow-objective.json",
+    "sha256": "9734cdc37a9751fc0d4e183f94bbbd400b817b698b938a367dc581b7caf19974",
+    "bytes": 633216,
+    "mtime_utc": "2026-07-02T10:23:13.129Z",
+    "git_tracked": false,
+    "disposition": "preserve_in_place",
+    "raw_response_archive": {
+      "status": "absent",
+      "uri": null,
+      "note": "No durable content-addressed raw-response archive exists; source artifact preserved in place; evidence remains provisional."
+    }
+  },
+  "preregistration": {
+    "path": "evals/preregistrations/workflow-vs-skill-proof.md",
+    "sha256": "8e6a82e630d4db593ff9d88511dcded8aade3f0d236511392847fb93adc43fe7",
+    "exists": true
+  },
+  "run": {
+    "command": "node /Users/tjboudreaux/Sandbox/cc-thinking-skills/evals/run-workflow-objective.js",
+    "env": {
+      "EVAL_RUN": "wf-confirm-haiku",
+      "SOLVER_MODEL": "claude-haiku-4-5-20251001",
+      "SOLVER_EFFORT": "medium",
+      "CONC": "6",
+      "ARMS": "workflow_validated,full_skill_typed_verified"
+    }
+  },
+  "items_file": {
+    "path": "evals/studies/legacy-july-wf-confirm-haiku/items.jsonl",
+    "sha256": "d2fb382f034a7013a59ce8067b4e47cf046289f9561847a854fc5208a27ef422",
+    "bytes": 438387,
+    "row_count": 364
+  }
+}

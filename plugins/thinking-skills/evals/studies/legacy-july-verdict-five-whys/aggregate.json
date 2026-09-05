@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "study_id": "legacy-july-verdict-five-whys",
+  "study_kind": "legacy_july_objective_swe",
+  "created_at": "2026-07-16T00:00:00.000Z",
+  "skill": "five-whys-plus",
+  "mode": "swe-localize",
+  "solver": {
+    "model": "claude-sonnet-4-6",
+    "effort": "high"
+  },
+  "arms": [
+    {
+      "id": "skill",
+      "role": "treatment",
+      "skill": "five-whys-plus"
+    },
+    {
+      "id": "placebo",
+      "role": "equal_budget_placebo",
+      "note": "length-matched placebo; advice-bearing filler possible"
+    }
+  ],
+  "dataset": {
+    "source_path": "evals/datasets/external/swebench-verified-slice-1-200.jsonl",
+    "source_sha256_preregistered": "7401434c83c34d11247b18ddb5bc6c9f382931e1f92e69ff2838fdda8b70a4c8",
+    "dataset_count": 200,
+    "split": "fresh_verified_pool"
+  },
+  "n_attempted": 200,
+  "n_items_recorded": 200,
+  "n_scored": 199,
+  "n_unscored": 1,
+  "unscored_ids": [
+    "django__django-15280"
+  ],
+  "measured_result": {
+    "metric": "fault_localization_accuracy",
+    "acc_skill": 0.899,
+    "acc_skill_ci": [
+      0.85,
+      0.934
+    ],
+    "acc_placebo": 0.884,
+    "acc_placebo_ci": [
+      0.833,
+      0.922
+    ],
+    "delta_pp": 1.5,
+    "discordant_total": 11,
+    "discordant": {
+      "skill_only": 7,
+      "placebo_only": 4,
+      "both_correct": 172,
+      "both_incorrect": 16
+    },
+    "mcnemar_p_artifact": 0.546,
+    "mcnemar_p_continuity_corrected_approx": 0.546494,
+    "significant_artifact": false
+  },
+  "statistics": {
+    "test": "mcnemar_continuity_corrected",
+    "p_value_artifact": 0.546,
+    "p_value_recomputed_approx": 0.546494,
+    "significant_artifact": false,
+    "delta_pp": 1.5
+  },
+  "health": {
+    "completeness": 0.995,
+    "unscored_count": 1,
+    "raw_responses_present_in_source": false,
+    "parsed_answers_present_in_source": false,
+    "usage_present_in_source": false
+  },
+  "usage": null,
+  "defects": [
+    "permissive_filename_matching",
+    "active_placebo_control",
+    "missing_raw_response_archive",
+    "missing_parsed_answer_fields",
+    "incomplete_usage_fields",
+    "source_artifact_untracked_in_git",
+    "incomplete_scoring_denominator"
+  ],
+  "evidence_validity": "provisional",
+  "statistical_status": "null_not_significant",
+  "replication_status": "historical_null_result_not_replication_qualified",
+  "product_disposition": "manual_only_quarantine_no_lift",
+  "notes": [
+    "Pre-registered July run on fresh Verified slice 1-200: +1.5pp, p=0.546 → measured NO-LIFT under source verdict rule.",
+    "Provisional only: missing raw archive/parsed paths; not replication-qualified under current gates.",
+    "1/200 unscored after retries."
+  ],
+  "source": {
+    "path": "evals/results/verdict-five-whys/swe-five-whys-plus.json",
+    "sha256": "6294dd990f8fd2d50ac97a23963cb1d14c60069b5cb0a8477e614fc04b31b697",
+    "bytes": 26957,
+    "mtime_utc": "2026-07-02T11:04:49.566Z",
+    "git_tracked": false,
+    "disposition": "preserve_in_place",
+    "raw_response_archive": {
+      "status": "absent",
+      "uri": null,
+      "note": "No durable content-addressed raw-response archive exists; source artifact preserved in place; evidence remains provisional."
+    }
+  },
+  "skill_sha256_preregistered": "eec1f6e940e133d78cb0a8f45f74a623da3d7238bac50b9de7ded5d891e91f21",
+  "preregistration": {
+    "path": "analysis/PRE-REGISTERED-VERDICT-STUDIES.md",
+    "sha256": "ae78d4ae9d6208754b64b4bffd94535b3154c3ac2f80c08c02628e36c8854898"
+  },
+  "items_file": {
+    "path": "evals/studies/legacy-july-verdict-five-whys/items.jsonl",
+    "sha256": "7842b779cf80a630da948ba74d542e4d3d4e54f1aeb9d3dc3038fcca895c76d0",
+    "bytes": 80838,
+    "row_count": 200
+  }
+}

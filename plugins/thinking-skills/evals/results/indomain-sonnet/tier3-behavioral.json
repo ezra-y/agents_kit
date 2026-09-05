@@ -1,0 +1,801 @@
+{
+  "tier": 3,
+  "solver": "claude-sonnet-4-6",
+  "solver_effort": "medium",
+  "judges": [
+    "gemini-3.1-pro-preview"
+  ],
+  "pairs": [
+    "skill:placebo"
+  ],
+  "headline_pair": "skill:placebo",
+  "n_skills": 10,
+  "aggregate_significance": {
+    "wins": 17,
+    "losses": 13,
+    "ties": 0,
+    "n": 30,
+    "decisive": 30,
+    "win_rate": 0.567,
+    "ci95": [
+      0.392,
+      0.726
+    ],
+    "p_value": 0.584,
+    "significant": false,
+    "powered": false
+  },
+  "mean_win_rate": 0.567,
+  "proven": [
+    "thinking-inversion",
+    "thinking-opportunity-cost",
+    "thinking-theory-of-constraints",
+    "thinking-occams-razor",
+    "thinking-pre-mortem",
+    "thinking-first-principles"
+  ],
+  "unproven": [
+    {
+      "skill": "thinking-systems",
+      "win_rate": 0,
+      "verdict": "regresses"
+    },
+    {
+      "skill": "thinking-second-order",
+      "win_rate": 0.333,
+      "verdict": "regresses"
+    },
+    {
+      "skill": "thinking-via-negativa",
+      "win_rate": 0.333,
+      "verdict": "regresses"
+    },
+    {
+      "skill": "thinking-debiasing",
+      "win_rate": 0.333,
+      "verdict": "regresses"
+    }
+  ],
+  "skills": [
+    {
+      "skill": "thinking-systems",
+      "n": 3,
+      "pairs": {
+        "skill:placebo": {
+          "n": 3,
+          "wins": 0,
+          "losses": 3,
+          "ties": 0,
+          "win_rate": 0,
+          "lift": -3,
+          "vocab_only": 0
+        }
+      },
+      "problems": [
+        {
+          "id": "systems-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "vocab_only": false,
+              "votes": {
+                "A": 0,
+                "B": 1,
+                "tie": 0
+              },
+              "why": "Response B provides superior mechanical reasoning, calculating the 14x pool pressure multiplier and correctly identifying the 14s P99 as queue wait time rather than upstream latency. It also offers more nuanced operational advice, such as stepping the timeout down to 3-4s instead of a blind revert, and comprehensively separates the two distinct mechanisms for downstream failures."
+            }
+          },
+          "failure_mode": "Treats the symptom locally — concludes the provider is slow and proposes tuning timeouts/retries/pool size in isolation, missing that the longer timeouts plus aggressive retries created a reinforcing retry-storm that amplified load on a shared dependency, so the 'fix' is what made it worse and the cure is to break the amplifying loop (backoff, jitter, circuit breaker, bulkheads), not enlarge buffers."
+        },
+        {
+          "id": "systems-2",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "vocab_only": false,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Response A provides a sharper, more domain-native diagnosis of the marketplace dynamics (adverse selection, composition shift) without leaning on academic framework terminology. Furthermore, A's proposed data cuts perfectly isolate the feature's specific impact, and its advice on managing leadership is far more politically astute and practical than B's stock-and-flow lecture."
+            }
+          },
+          "failure_mode": "Reasons linearly from the early positive metric ('matches went up, so do more of it') and looks for a discrete bug, missing the delayed, emergent dynamic: rewarding speed over quality shifts the mix toward lower-quality fast responders, top editors disengage as their advantage erodes, and client retention degrades on a lag — a self-reinforcing decline that the celebrated metric masks."
+        },
+        {
+          "id": "systems-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "vocab_only": false,
+              "votes": {
+                "A": 0,
+                "B": 1,
+                "tie": 0
+              },
+              "why": "Both responses accurately diagnose the delayed control loop and prescribe excellent control-theory fixes (in-flight tracking, asymmetric scaling, derivative signals). However, Response B surfaces a critical, domain-specific failure mode—the Kafka partition count ceiling—which is fatal to proportional scaling if ignored. Response B also tackles the teammate's 'aggressive' instinct more practically by dissecting where aggressiveness helps versus where it causes thrashing."
+            }
+          },
+          "failure_mode": "Approves or tunes the proportional controller by gain alone, ignoring the 90s provisioning delay relative to the 30s control interval — the lag between action and effect makes an aggressive controller overshoot and oscillate (over-provision, then mass scale-down, then re-spike), so the right move addresses the delay/feedback structure (account for in-flight workers, predictive/scheduled scaling, damping, hysteresis) rather than cranking responsiveness."
+        }
+      ],
+      "win_rate": 0,
+      "lift": -3,
+      "verdict": "regresses"
+    },
+    {
+      "skill": "thinking-second-order",
+      "n": 3,
+      "pairs": {
+        "skill:placebo": {
+          "n": 3,
+          "wins": 1,
+          "losses": 2,
+          "ties": 0,
+          "win_rate": 0.333,
+          "lift": -1,
+          "vocab_only": 1
+        }
+      },
+      "problems": [
+        {
+          "id": "second-order-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Response A applies structured second-order and systems thinking to uncover profound behavioral shifts, such as the 24-hour threshold becoming a 'countdown' rather than an SLA. Most importantly, A identifies a reinforcing feedback loop where the bypass mechanism actively destroys the remaining review culture, effectively worsening the original root cause over time."
+            }
+          },
+          "failure_mode": "Evaluates only the immediate effect (faster merges, happier engineers) and endorses it; doesn't trace what the incentive does over months: PRs get artificially split to stay under 200 lines, reviewers deprioritize anything self-mergeable, review culture erodes, and the bar for 'CI passes = safe' quietly replaces human review until a quality incident."
+        },
+        {
+          "id": "second-order-2",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "vocab_only": true,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Response B relies on heavy framework theater (Consequence Chain, 10/10/10 Test) but fundamentally misunderstands the marketplace mechanics, falsely claiming freelancers would be 'doing free work' just because the client's platform fee is waived. Response A correctly navigates the two-sided fee asymmetry, pinpoints the operational definition of 'completed' as the real fraud vector, and organically surfaces the Job 4 conversion cliff without artificial crutches."
+            }
+          },
+          "failure_mode": "Anchors on the projected signup/completion spike and approves it as a reasonable growth bet; fails to chase downstream effects: clients learn to game the fee (multi-account, splitting jobs), freelancers may move repeat clients off-platform to keep avoiding fees, and the promo trains the most price-sensitive segment, distorting the metrics the CFO is using to judge success."
+        },
+        {
+          "id": "second-order-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "vocab_only": false,
+              "votes": {
+                "A": 0,
+                "B": 1,
+                "tie": 0
+              },
+              "why": "Response B identifies the same downstream consequences (silent degradation, cascading failures) without forcing framework terminology, and crucially provides the industry-standard technical solution (SLO burn-rate alerting) to solve the threshold problem. Response A forces a somewhat repetitive 4-tier consequence chain and suggests a risky 'sacred hours' patch that fails to address how P0s would be reliably detected if alerts are miscalibrated."
+            }
+          },
+          "failure_mode": "Treats 'fewer pages, less burnout' as the whole story and supports the threshold change; doesn't reason about the chain where real incidents now smolder undetected past the higher threshold, mean-time-to-detect rises, a few painful misses make the team distrust the digest, and they either over-correct back to noise or start ignoring alerts entirely, leaving reliability worse than before."
+        }
+      ],
+      "win_rate": 0.333,
+      "lift": -1,
+      "verdict": "regresses"
+    },
+    {
+      "skill": "thinking-via-negativa",
+      "n": 3,
+      "pairs": {
+        "skill:placebo": {
+          "n": 3,
+          "wins": 1,
+          "losses": 2,
+          "ties": 0,
+          "win_rate": 0.333,
+          "lift": -1,
+          "vocab_only": 0
+        }
+      },
+      "problems": [
+        {
+          "id": "via-negativa-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "vocab_only": false,
+              "votes": {
+                "A": 0,
+                "B": 1,
+                "tie": 0
+              },
+              "why": "Response B provides superior analytical lift by introducing compounding probability math (0.9^14) to mathematically prove the structural failure of a 14-step funnel. It also makes a highly practical distinction between 'experience quality' and 'conversion math', and offers a more nuanced, politically viable path for the team's work by re-sequencing their additions rather than just killing them."
+            }
+          },
+          "failure_mode": "Enthusiastically helps prioritize and build the proposed additions (tour, tooltips, checklist, video, emails), layering more on top of a bloated 14-step flow, instead of first attacking the problem by removing steps and friction (cut/defer fields, collapse screens, delay billing) since subtracting the obstacles is more robust and higher-leverage than adding guidance to navigate them."
+        },
+        {
+          "id": "via-negativa-2",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 0,
+                "B": 1,
+                "tie": 0
+              },
+              "why": "Response B explicitly connects the proposed Redis solution to the specific metric requested (p99 latency), astutely noting that caching improves average latency but often leaves p99 unchanged because cache misses will still execute the slow, unoptimized queries. While A provides excellent database insights (like covering indexes), B's explanation of tail latency and its highly pragmatic 'Next Step' for immediate validation give it the edge."
+            }
+          },
+          "failure_mode": "Jumps to designing the additive infrastructure stack (cache + replicas + CDN), accepting more systems to operate, rather than first eliminating the known root causes already surfaced in the trace (fix N+1s, stop over-fetching, dedupe queries) since removing the harmful patterns is lower-risk and likely resolves most of the latency without any new infrastructure."
+        },
+        {
+          "id": "via-negativa-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "vocab_only": false,
+              "votes": {
+                "A": 0,
+                "B": 1,
+                "tie": 0
+              },
+              "why": "Both successfully identify subtraction as the solution, but Response B provides stronger domain-specific analytical lift. B brilliantly maps each existing ceremony to its specific 'alignment' purpose to prove the new sync is redundant, and it accurately diagnoses the failure modes of daily written updates (context-switching, performative bureaucracy) rather than just counting them."
+            }
+          },
+          "failure_mode": "Treats the request as 'how to add the new meeting and status update well' and helps schedule them, compounding the coordination tax, instead of recognizing the team is already meeting-saturated and recommending an audit that removes or consolidates low-value ceremonies to free focus time, since subtracting overhead improves throughput more reliably than adding more synchronization."
+        }
+      ],
+      "win_rate": 0.333,
+      "lift": -1,
+      "verdict": "regresses"
+    },
+    {
+      "skill": "thinking-debiasing",
+      "n": 3,
+      "pairs": {
+        "skill:placebo": {
+          "n": 3,
+          "wins": 1,
+          "losses": 2,
+          "ties": 0,
+          "win_rate": 0.333,
+          "lift": -1,
+          "vocab_only": 1
+        }
+      },
+      "problems": [
+        {
+          "id": "debiasing-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "vocab_only": true,
+              "votes": {
+                "A": 0,
+                "B": 1,
+                "tie": 0
+              },
+              "why": "Response A falls into 'framework theater', rigidly applying a cognitive bias checklist that yields naive engineering advice (e.g., asking two uninvolved engineers to bottom-up estimate a massive migration by Friday). Response B correctly identifies the cognitive hazard but grounds its pushback in deep architectural realities (distributed transactions, split error budgets) and offers a much more practical path forward (a single-service production spike to gather real velocity data)."
+            }
+          },
+          "failure_mode": "Rubber-stamps the proposal based on the VP's authority, the single glowing analogy from his past company, and team enthusiasm, without probing the optimistic timeline, conflict of interest, suppressed dissent, or whether the prior success transfers to a different context."
+        },
+        {
+          "id": "debiasing-2",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "vocab_only": false,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Response A integrates debiasing concepts (sunk cost, planning fallacy) organically and provides superior leadership advice by specifically warning against using clinical terms like 'sunk cost' with the team. Response B falls into framework theater by explicitly announcing a 'bias checklist' and awkwardly categorizing practical business considerations (like the 10% feature gap) as cognitive biases just to fit the rigid template."
+            }
+          },
+          "failure_mode": "Recommends finishing the in-house build to honor the prior $600K investment (sunk-cost fallacy), rather than evaluating the forward-looking costs and the vendor option as if starting fresh today."
+        },
+        {
+          "id": "debiasing-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Both responses correctly identify the structural risks and social pressures, but Response A's mitigations are much more effective. Response B recommends group estimation activities that would likely fall victim to the very groupthink it identified, whereas Response A specifically prescribes independent, isolated estimates and a pre-mortem to actively dismantle the cognitive biases."
+            }
+          },
+          "failure_mode": "Accepts the confident, quickly-agreed 6-week estimate at face value, anchoring on the happy-path number and treating fast consensus as validation, instead of stress-testing for planning fallacy, single-point-of-failure risk, and groupthink."
+        }
+      ],
+      "win_rate": 0.333,
+      "lift": -1,
+      "verdict": "regresses"
+    },
+    {
+      "skill": "thinking-inversion",
+      "n": 3,
+      "pairs": {
+        "skill:placebo": {
+          "n": 3,
+          "wins": 2,
+          "losses": 1,
+          "ties": 0,
+          "win_rate": 0.667,
+          "lift": 1,
+          "vocab_only": 0
+        }
+      },
+      "problems": [
+        {
+          "id": "inversion-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "A zeroes in on subtle operational failure modes that typically sink naive migrations, such as leaky maintenance modes (cron/webhooks bypassing UI), sequential table export inconsistencies, and WAL/temp disk exhaustion. A's use of inversion successfully deconstructs the hidden risks in the user's specific 5-step plan, whereas B provides a more standard, albeit high-quality, checklist."
+            }
+          },
+          "failure_mode": "Validates the happy-path steps and maybe suggests minor tweaks, anchoring on 'how do we make this succeed'; doesn't systematically enumerate the ways the migration silently corrupts or loses data (encoding/collation mismatches, writes during export, no row-count/checksum reconciliation, no rollback path, no dry run on a copy) and convert each into a guardrail."
+        },
+        {
+          "id": "inversion-2",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 0,
+                "B": 1,
+                "tie": 0
+              },
+              "why": "Response B effectively uses the Inversion framework to anchor the plan around the most common failure modes of the specific IC-to-manager transition. By explicitly identifying the 'Temptation to kill' in each phase and focusing on addressing the 'first hard thing' (like conflict or underperformance), it provides a more psychologically aware and structurally resilient roadmap than A."
+            }
+          },
+          "failure_mode": "Produces a generic positive playbook (1:1s, set a vision, build trust, OKRs) optimizing for 'what great managers do'; misses the higher-signal move of cataloguing the specific failure behaviors that reliably destroy a new manager's team (micromanaging former peers, hoarding the interesting work, avoiding hard feedback, becoming a bottleneck on every decision, defending the team's bad work upward) and explicitly designing against them."
+        },
+        {
+          "id": "inversion-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "vocab_only": false,
+              "votes": {
+                "A": 0,
+                "B": 1,
+                "tie": 0
+              },
+              "why": "While A effectively uses the inversion framework to map out failure modes, B demonstrates slightly stronger domain expertise for a public API launch. B surfaces critical, practical requirements like publishing an OpenAPI/Postman spec, establishing Legal/ToS boundaries, and provides a highly decision-useful table of deadlines for specific policy choices (like deprecation and SDK scoping) that A misses."
+            }
+          },
+          "failure_mode": "Builds a forward checklist around adoption (good docs, SDKs, dev relations, sample apps) and assumes the technical surface is fine; fails to invert toward what would guarantee a launch disaster (no rate limiting so one client takes you down, breaking-change deploys with no versioning, leaked or unscopable keys, no deprecation policy, no abuse monitoring) and prioritize preventing those irreversible reputation hits first."
+        }
+      ],
+      "win_rate": 0.667,
+      "lift": 1,
+      "verdict": "proven"
+    },
+    {
+      "skill": "thinking-opportunity-cost",
+      "n": 3,
+      "pairs": {
+        "skill:placebo": {
+          "n": 3,
+          "wins": 2,
+          "losses": 1,
+          "ties": 0,
+          "win_rate": 0.667,
+          "lift": 1,
+          "vocab_only": 0
+        }
+      },
+      "problems": [
+        {
+          "id": "opportunity-cost-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "vocab_only": false,
+              "votes": {
+                "A": 0,
+                "B": 1,
+                "tie": 0
+              },
+              "why": "Response B identifies the false dichotomy in the prompt by surfacing real-world alternatives (negotiating the $24k list price, utilizing generous free tiers like Statsig, or deploying OSS options). It also addresses the human element by providing a practical script to manage the engineer's pushback without crushing their morale."
+            }
+          },
+          "failure_mode": "Compares the $24k license against $0 for building and concludes building is cheaper because it's 'free' and 'not that complicated'; ignores that the two engineer-weeks (plus ongoing maintenance and a new failure domain) are pulled from a packed roadmap during a launch quarter, so the real cost is the launch features not shipped—an opportunity cost that almost certainly dwarfs $24k."
+        },
+        {
+          "id": "opportunity-cost-2",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 0,
+                "B": 1,
+                "tie": 0
+              },
+              "why": "Response B rigorously applies an opportunity cost framework by calculating a concrete break-even point for the investment and brilliantly disaggregates 'engineer happiness' into five distinct root causes to demonstrate that the refactor might not even solve the underlying morale issues."
+            }
+          },
+          "failure_mode": "Endorses the refactor on the virtue that 'paying down tech debt is responsible' and that the code is messy, evaluating it in isolation; never asks what those 30 engineer-months could otherwise produce (revenue features, the next two roadmap bets), nor whether the future velocity gain actually outweighs the best foregone alternative—treating the cleanup's benefit as self-justifying rather than weighed against what's given up."
+        },
+        {
+          "id": "opportunity-cost-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Both responses expertly identify the technical workaround (SAML/OIDC) and the maintenance trap. However, A demonstrates deeper systemic reasoning by identifying the cognitive bias at play ('emotionally anchoring' on the $180k) and surfacing a brilliant second-order organizational risk ('opportunity signal distortion'). B makes an excellent practical point about getting the contract signed before building, but A's financial deconstruction and strategic framework provide a slightly more rigorous analytical lift."
+            }
+          },
+          "failure_mode": "Anchors on the concrete $180k and says yes because the revenue clearly exceeds the visible build cost; fails to price the alternative use of those two engineers for six weeks (broadly-valuable roadmap work, other pipeline deals) and the ongoing maintenance of a one-off integration, so it never tests whether this is genuinely the highest-value thing those engineers could be doing."
+        }
+      ],
+      "win_rate": 0.667,
+      "lift": 1,
+      "verdict": "proven"
+    },
+    {
+      "skill": "thinking-theory-of-constraints",
+      "n": 3,
+      "pairs": {
+        "skill:placebo": {
+          "n": 3,
+          "wins": 2,
+          "losses": 1,
+          "ties": 0,
+          "win_rate": 0.667,
+          "lift": 1,
+          "vocab_only": 1
+        }
+      },
+      "problems": [
+        {
+          "id": "theory-of-constraints-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Response A demonstrates superior systems thinking by recognizing that constraints are dynamic: if the team successfully exploits the code review bottleneck, the constraint will shift back to development. This insight elegantly reveals that management's plan to hire developers isn't permanently wrong, just out of sequence."
+            }
+          },
+          "failure_mode": "Spreads effort across non-constraints — endorses hiring more developers and faster hardware (which only inflates work-in-progress in front of review), instead of identifying review as the single binding constraint, exploiting it cheaply (smaller PRs, clear criteria, reviewers prioritize reviewing), and subordinating the rest (pace dev to review capacity) before any spend, since gains anywhere but review don't raise system throughput."
+        },
+        {
+          "id": "theory-of-constraints-2",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "vocab_only": true,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Model A correctly applies Amdahl's Law to sequential latency, whereas Model B misapplies Goldratt's Theory of Constraints (which governs throughput) to latency, falsely claiming non-bottleneck latency savings are a 'mirage'. B forces the TOC framework onto the problem, leading to nonsensical advice in its 'Subordinate' step. Model A provides superior technical guidance and expertly addresses the human element of redirecting engineers away from 'fun' but low-impact rewrites."
+            }
+          },
+          "failure_mode": "Optimizes visible/easy non-constraints (the 45ms serialization, 18ms auth) that together can't even reach the target, rather than concentrating effort on the one component dominating latency — the 470ms DB query — since shaving milliseconds off anything else is, in Goldratt's terms, a mirage while the real bottleneck is untouched."
+        },
+        {
+          "id": "theory-of-constraints-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Response A expertly applies Theory of Constraints to restructure the workstreams, most notably realizing that Design must subordinate by front-loading API contracts in Week 1 so the zero-slack Backend isn't blocked. Response B misses this crucial dependency, assumes Backend can just work while Design is ongoing, and fails basic timeline math by compressing a 5-week Frontend build into 4 weeks."
+            }
+          },
+          "failure_mode": "Treats all workstreams as equally important and piles scope/QA onto streams with slack while telling the bottleneck team to 'go faster,' instead of recognizing the backend API as the zero-slack critical resource, protecting its timeline, subordinating the other streams to feed and unblock it, and refusing extra scope that doesn't serve the constraint — keeping people busy elsewhere doesn't move the date."
+        }
+      ],
+      "win_rate": 0.667,
+      "lift": 1,
+      "verdict": "proven"
+    },
+    {
+      "skill": "thinking-occams-razor",
+      "n": 3,
+      "pairs": {
+        "skill:placebo": {
+          "n": 3,
+          "wins": 2,
+          "losses": 1,
+          "ties": 0,
+          "win_rate": 0.667,
+          "lift": 1,
+          "vocab_only": 1
+        }
+      },
+      "problems": [
+        {
+          "id": "occams-razor-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Both models correctly dismiss the complex theory in favor of the recent deploy and identify the 30% failure rate as a likely topology issue (e.g., 1 of 3 pods). However, Model A explicitly counts and contrasts the assumptions required for each hypothesis (6 vs 1-2), which is a masterful, practical application of Occam's Razor that provides a clear framework for disproving the engineer's complex theory."
+            }
+          },
+          "failure_mode": "Gets drawn into the elaborate multi-condition race/eviction theory and starts designing distributed locking, multiplying assumptions; doesn't first check the far simpler hypothesis that the small config-touching deploy broke something obvious (a mistyped/missing env var or config key), which requires only one assumption and is trivially confirmable in the logs before any complex remedy."
+        },
+        {
+          "id": "occams-razor-2",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "vocab_only": true,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Response A provides superior architectural reasoning, notably identifying that the teammate's proposal relies on polling rather than a proper event-driven pub-sub model for future scaling. Response B engages in framework theater by forcing the analysis into an Occam's Razor template and mislabeling design requirements as 'assumptions', resulting in slightly less nuanced technical advice."
+            }
+          },
+          "failure_mode": "Endorses the queue + sync worker + replica architecture because it sounds robust and 'future-proof,' adding several components and failure modes for problems not yet in evidence; doesn't recognize that at 30 calls/sec between co-located services a direct call (with a timeout and simple retry) satisfies the actual requirement, and that the heavier design should be earned by evidence of real scale/availability needs, not assumed."
+        },
+        {
+          "id": "occams-razor-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Response A effectively uses the principle of parsimony to break down the compound probability of the analyst's 'perfect storm' theory versus the single-assumption config change, clearly exposing why the complex theory is a cognitive trap."
+            }
+          },
+          "failure_mode": "Treats the intricate 'networking blip + partial multipart + silent rejection + misrouted alert' narrative as the working explanation and starts building integrity checks and alert reworks; ignores that a config change shipped yesterday is the simplest single-assumption cause and should be inspected first, defaulting to a coordinated-failure conspiracy over the obvious recent change."
+        }
+      ],
+      "win_rate": 0.667,
+      "lift": 1,
+      "verdict": "proven"
+    },
+    {
+      "skill": "thinking-pre-mortem",
+      "n": 3,
+      "pairs": {
+        "skill:placebo": {
+          "n": 3,
+          "wins": 3,
+          "losses": 0,
+          "ties": 0,
+          "win_rate": 1,
+          "lift": 3,
+          "vocab_only": 0
+        }
+      },
+      "problems": [
+        {
+          "id": "pre-mortem-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Response A directly attacks the prompt's core trap ('everything passes in staging') by correctly identifying that payment integration failures are driven by environment gaps and race conditions, not logic bugs. Its use of the pre-mortem framework yields highly specific, production-oriented verifications (e.g., forcing 3DS, checking CSP headers, verifying Radar rules) rather than just a generalized best-practices checklist."
+            }
+          },
+          "failure_mode": "Runs a standard pre-launch checklist (QA, perf test, monitoring) in a confirmatory, optimism-preserving frame; doesn't deliberately assume the launch already failed and work backward to surface the concrete causes the confident team is blind to (processor edge cases on declines/3DS, currency/tax rounding, abandoned-cart drop from the new single page, no quick rollback once the new processor holds live transactions)."
+        },
+        {
+          "id": "pre-mortem-2",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 0,
+                "B": 1,
+                "tie": 0
+              },
+              "why": "Response B leverages the pre-mortem framework to surface deeply specific, non-obvious technical traps for Airflow migrations—such as cron vs. Airflow scheduler lag, idempotency requirements, the trap of indefinite parallel runs, and local dev friction. Response A provides solid but much more generic project management advice."
+            }
+          },
+          "failure_mode": "Jumps into execution planning (sprint breakdown, DAG inventory, milestones) assuming the scope is sound; fails to use prospective hindsight to imagine the project failed at month 4 and extract the likely killers up front (underestimated migration of long-tail scripts, hidden upstream data dependencies, team's first time operating Airflow, the old cron jobs that can't be turned off, scope creep into 'while we're in here')."
+        },
+        {
+          "id": "pre-mortem-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Response A perfectly applies the Pre-Mortem framework to systematically shatter the startup's dangerous optimism. It surfaces non-obvious, fatal culture clashes—like the bank's Change Advisory Board paralyzing the startup's deployment cadence and the reality of legacy ADFS integrations—rather than just listing technical requirements, providing significantly higher strategic lift."
+            }
+          },
+          "failure_mode": "Produces an upbeat onboarding/success plan and celebrates the milestone, with the team's euphoria suppressing risk-finding; doesn't invert into 'it's a year later and this flagship account churned or the deal collapsed—why?' to surface the real landmines (SOC 2 slips and blocks procurement, single-tenant infra not actually ready, security questionnaire reveals gaps, one overloaded eng owns all of it, scope expands past the contract)."
+        }
+      ],
+      "win_rate": 1,
+      "lift": 3,
+      "verdict": "proven"
+    },
+    {
+      "skill": "thinking-first-principles",
+      "n": 3,
+      "pairs": {
+        "skill:placebo": {
+          "n": 3,
+          "wins": 3,
+          "losses": 0,
+          "ties": 0,
+          "win_rate": 1,
+          "lift": 3,
+          "vocab_only": 0
+        }
+      },
+      "problems": [
+        {
+          "id": "first-principles-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Response A correctly deconstructs the data team's false assumption ('the floor') by breaking the problem down to its physical realities (compute vs. storage) and offering true alternative architectures (ClickHouse/BigQuery) as the actual floor. Response B provides a strong financial breakdown for the delay but fumbles its own storage pricing math mid-sentence, whereas A remains perfectly precise and offers superior strategic leverage for the vendor negotiation."
+            }
+          },
+          "failure_mode": "Accepts the vendor framing that the contract discount is 'the floor' and reasons by analogy ('warehouses this size cost this much'); recommends negotiating the commit instead of questioning whether the workload fundamentally requires that warehouse at all, and never decomposes the actual compute/storage the query pattern needs (could be 80%+ cheaper via pre-aggregation, tiered storage, or a small read-optimized store)."
+        },
+        {
+          "id": "first-principles-2",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 0,
+                "B": 1,
+                "tie": 0
+              },
+              "why": "Both responses correctly challenge the weak demand signal and suggest alternatives like PWAs, but B adds two critical insights. First, it correctly calls out that building two native apps in one quarter with two engineers is a severe underestimation of the work (auth, deep links, review cycles). Second, it sharply distinguishes between the buyer (host) and user (invitee) to prove that the core mobile job-to-be-done doesn't actually require a native app."
+            }
+          },
+          "failure_mode": "Treats 'competitors have apps and a prospect asked for one' as proof the apps are needed and jumps to scoping the build; never strips back to the underlying job the prospect is hiring the product for (likely 'book/manage meetings on my phone'), which a responsive web app or PWA might already satisfy at a fraction of the cost."
+        },
+        {
+          "id": "first-principles-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "vocab_only": false,
+              "votes": {
+                "A": 1,
+                "B": 0,
+                "tie": 0
+              },
+              "why": "Response A explicitly uses a First Principles framework and translates it into genuine analytical lift. By converting fuzzy requirements into physical constraints (calculating that 8M documents is only ~2-4 GB of index that fits entirely in Postgres shared_buffers) and identifying the team's logic as 'reasoning by analogy', it builds a mathematically and physically grounded argument. It also correctly recommends `websearch_to_tsquery` over B's `plainto_tsquery` for parsing user input."
+            }
+          },
+          "failure_mode": "Defaults to Elasticsearch by analogy ('that's the standard search tool') without examining what the actual requirements demand; fails to recognize that at 20 qps over 8M docs with keyword+filter queries, Postgres full-text search or pg_trgm likely satisfies the real needs with zero new infrastructure, treating Elasticsearch's existence as justification for its necessity."
+        }
+      ],
+      "win_rate": 1,
+      "lift": 3,
+      "verdict": "proven"
+    }
+  ]
+}

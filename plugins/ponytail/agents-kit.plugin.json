@@ -1,0 +1,111 @@
+{
+  "schema_version": 2,
+  "package_id": "ponytail",
+  "upstream_targets": [
+    "claude",
+    "codex"
+  ],
+  "targets": {
+    "claude": {
+      "support": "full",
+      "manifest": {
+        "path": ".claude-plugin/plugin.json",
+        "authority": "upstream"
+      },
+      "marketplace": {}
+    },
+    "codex": {
+      "support": "full",
+      "manifest": {
+        "path": ".codex-plugin/plugin.json",
+        "authority": "upstream"
+      },
+      "marketplace": {
+        "category": "Developer Tools",
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      }
+    }
+  },
+  "embedded_skills": {
+    "ponytail": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "ponytail-audit": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "ponytail-debt": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "ponytail-gain": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "ponytail-help": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "ponytail-review": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    }
+  },
+  "local_paths": []
+}

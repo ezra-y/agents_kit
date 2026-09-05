@@ -1,0 +1,27 @@
+{
+  "mode": "binary-decision",
+  "skill": "margin-of-safety",
+  "tags": [
+    "margin-of-safety-provision"
+  ],
+  "solver": "claude-sonnet-4-6",
+  "n": 30,
+  "n_yes_label": 16,
+  "n_no_label": 14,
+  "acc_with_skill": 0.767,
+  "acc_with_skill_ci": [
+    0.591,
+    0.882
+  ],
+  "acc_placebo": 0.867,
+  "acc_placebo_ci": [
+    0.703,
+    0.947
+  ],
+  "delta_pp": -10,
+  "balanced_acc_with_skill": 0.281,
+  "balanced_acc_placebo": 0.375,
+  "mcnemar_p": 0.248,
+  "significant": false,
+  "discordant": 3
+}

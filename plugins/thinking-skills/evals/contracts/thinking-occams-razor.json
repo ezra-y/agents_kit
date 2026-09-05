@@ -1,0 +1,24 @@
+{
+  "skill": "occams-razor",
+  "primary_value_surface": "paired reasoning quality",
+  "primary_metric": "explanation_selection_accuracy",
+  "secondary_metrics": ["assumption_count_awareness", "parsimony_justification", "overfitting_avoidance", "debugging_efficiency"],
+  "distractors": {
+    "off_target_set": "Problems requiring complex multi-factor explanations; situations where simple explanations are known to be wrong; meta-questions about Occam's Razor",
+    "description": "Items where the simplest explanation is demonstrably incorrect or where complexity is genuinely required"
+  },
+  "calibration_range": [0.40, 0.70],
+  "calibration_exception": null,
+  "min_sample_primary": 60,
+  "min_sample_replication": 60,
+  "planned_comparison": "trigger",
+  "decision_gate": {
+    "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND format_length_control_pass",
+    "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+    "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+    "quarantine_redirect": "primary_delta_pp < 0 OR overfitting_avoidance < 0.50",
+    "trigger_only": "trigger_card_delta_pp >= full_guide_delta_pp AND trigger_paired_test_p < 0.05",
+    "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+  },
+  "eval_family": "Debugging/fault-localization"
+}

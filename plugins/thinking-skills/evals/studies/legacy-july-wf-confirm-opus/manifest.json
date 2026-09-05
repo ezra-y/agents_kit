@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "study_id": "legacy-july-wf-confirm-opus",
+  "study_version": "legacy-july-2026-07-02",
+  "created_at": "2026-07-16T00:00:00.000Z",
+  "bundle_kind": "legacy_july_import",
+  "producer": {
+    "command": "node /Users/tjboudreaux/Sandbox/cc-thinking-skills/evals/run-workflow-objective.js",
+    "runner": "evals/run-workflow-objective.js",
+    "eval_run": "wf-confirm-opus",
+    "env": {
+      "EVAL_RUN": "wf-confirm-opus",
+      "SOLVER_MODEL": "claude-opus-4-8",
+      "SOLVER_EFFORT": "medium",
+      "CONC": "6",
+      "ARMS": "workflow_validated,full_skill_typed_verified"
+    }
+  },
+  "worktree": {
+    "branch": "main",
+    "head_at_bundle_time": "a59144cc28dedaf62e4547339561dbe9d585435e",
+    "note": "Source result artifacts were untracked; head recorded at Phase 0 bundle write time only."
+  },
+  "source_artifacts": [
+    {
+      "path": "evals/results/wf-confirm-opus/workflow-objective.json",
+      "sha256": "cfa637a3d7f7fe0129703d94957dc837ed7fa8b10b16781649376d37a6087528",
+      "bytes": 631095,
+      "mtime_utc": "2026-07-02T10:32:32.731Z",
+      "git_tracked": false,
+      "disposition": "preserve_in_place",
+      "raw_response_archive": {
+        "status": "absent",
+        "uri": null,
+        "note": "No durable content-addressed raw-response archive exists; source artifact preserved in place; evidence remains provisional."
+      }
+    }
+  ],
+  "solver": {
+    "model": "claude-opus-4-8",
+    "effort": "medium"
+  },
+  "arms": [
+    "workflow_validated",
+    "full_skill_typed_verified"
+  ],
+  "split": "heldout",
+  "preregistration": {
+    "path": "evals/preregistrations/workflow-vs-skill-proof.md",
+    "sha256": "8e6a82e630d4db593ff9d88511dcded8aade3f0d236511392847fb93adc43fe7",
+    "exists": true
+  },
+  "files": {
+    "manifest": "manifest.json",
+    "items": "items.jsonl",
+    "aggregate": "aggregate.json"
+  },
+  "counts": {
+    "source_items": 364,
+    "bundled_items": 364,
+    "n_skills": 12,
+    "skill_item_counts": {
+      "thinking-socratic": 35,
+      "thinking-cynefin": 30,
+      "thinking-reversibility": 30,
+      "thinking-margin-of-safety": 30,
+      "thinking-map-territory": 30,
+      "thinking-pre-mortem": 30,
+      "thinking-inversion": 30,
+      "thinking-red-team": 30,
+      "thinking-scientific-method": 30,
+      "thinking-kepner-tregoe": 30,
+      "thinking-five-whys-plus": 29,
+      "thinking-occams-razor": 30
+    }
+  },
+  "hash_reconciliation": {
+    "source_sha256": "cfa637a3d7f7fe0129703d94957dc837ed7fa8b10b16781649376d37a6087528",
+    "items_sha256": "3040f9c19f910a75129d66ee2d559c7e5271212c9516186bb297fd623df23bac",
+    "aggregate_sha256": "05d52e0663630a575f01a549b140a8068541ec42ddb907cb9a3dd1bbb9a2f77b"
+  },
+  "archive": {
+    "raw_responses": "absent",
+    "source_preservation": "preserve_in_place",
+    "evidence_validity": "provisional"
+  },
+  "defects": [
+    "padded_workflow_arms_not_unpadded",
+    "self_checked_arms_misnamed_as_validated_or_verified",
+    "missing_no_skill_primary_control",
+    "missing_raw_response_archive",
+    "source_artifact_untracked_in_git",
+    "claim_status_not_eligible"
+  ],
+  "measured_result_summary": {
+    "claim_status_source": "inconclusive",
+    "primary_contrast": {
+      "delta_pp": 0.3,
+      "mcnemar_p": 1,
+      "discordant": 3,
+      "left_wins": 2,
+      "right_wins": 1
+    },
+    "by_arm_acc": {
+      "workflow_validated": {
+        "acc": 0.989,
+        "case_success_rate": 0.989,
+        "n": 364
+      },
+      "full_skill_typed_verified": {
+        "acc": 0.986,
+        "case_success_rate": 0.986,
+        "n": 364
+      }
+    }
+  },
+  "statistical_status": "inconclusive_null",
+  "replication_status": "not_replication_qualified",
+  "evidence_validity": "provisional",
+  "product_disposition": "manual_only_quarantine_workflow_gate_pending",
+  "notes": [
+    "Legacy July workflow-objective run imported without raw responses.",
+    "Arm names workflow_validated/full_skill_typed_verified are self-checked forms pending Phase 5 rename.",
+    "No no-skill primary control in this two-arm run.",
+    "Source claim_status is not an eligible confirmatory disposition under current gates."
+  ]
+}

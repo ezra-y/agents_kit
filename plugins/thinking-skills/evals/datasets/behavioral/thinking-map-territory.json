@@ -1,0 +1,50 @@
+{
+  "skill": "thinking-map-territory",
+  "problems": [
+    {
+      "id": "map-territory-1",
+      "prompt": "Our dashboard shows daily active users are up 22% month-over-month and the team is celebrating, planning to tell the board we've turned a corner on engagement. As the head of product I want to make sure we're reading this right before we put it in the board deck. The growth came mostly after we added a daily login-streak reward. Is the DAU number good news, and what should we do before presenting it?",
+      "failure_mode": "Takes the DAU metric as direct proof of improved engagement and greenlights the board narrative, without questioning what the metric actually captures versus the underlying reality (a streak mechanic can inflate logins while retention, depth, and value stay flat)."
+    },
+    {
+      "id": "map-territory-2",
+      "prompt": "We're planning a major scaling effort for our payment service ahead of a big sale. Our capacity plan is built from an architecture diagram and a performance benchmark we ran in staging, and on paper we can handle 5x current load. The team wants to lock the plan and skip further testing to save time. The architecture diagram was last updated about six months ago and the benchmark ran on staging hardware. Should we trust the plan as-is?",
+      "failure_mode": "Trusts the on-paper 5x headroom from a stale diagram and a staging-environment benchmark as if it reflects production reality, rather than recognizing these representations may have drifted from the actual system and verifying against production before committing."
+    },
+    {
+      "id": "map-territory-3",
+      "prompt": "A developer reports a bug, but I can't reproduce it. Our integration tests all pass, the code clearly looks correct when I read it, and the API spec says the endpoint returns a user object. The developer insists they keep seeing intermittent 500s in their environment. I'm inclined to close the ticket as 'cannot reproduce / works on my machine' since everything on my end says it's fine. Is that the right call?",
+      "failure_mode": "Closes the ticket because the tests, code reading, and spec (the maps) all say it works, treating those representations as the reality and dismissing the user's actual observed behavior, instead of investigating where the maps fail to capture the real territory (env differences, error/edge paths)."
+    },
+    {
+      "id": "map-territory-4",
+      "prompt": "Our API gateway dashboard shows the /internal/legacy-export endpoint receiving essentially zero requests over the last 30 days, so I've scheduled it for deletion next sprint to reduce maintenance load. Before I greenlight the removal, is the dashboard enough to conclude nothing depends on it?",
+      "failure_mode": "Treats the gateway traffic dashboard as a complete picture of who calls the endpoint (the map), deleting based on it, rather than verifying real callers in code, cron/batch jobs, or clients that bypass or cache around the gateway (the territory) before removal."
+    },
+    {
+      "id": "map-territory-5",
+      "prompt": "Finance built our cloud cost projection from the vendor's pricing calculator and an internal usage spreadsheet, and it came out at about $18k/month. The actual invoice is $47k. Leadership wants to open a billing dispute with the vendor since our model says we should be paying far less. Should we dispute it based on our projection?",
+      "failure_mode": "Trusts the pricing-calculator and spreadsheet model (the map) as the source of truth and treats the invoice as the error, instead of reconciling the model against the actual billed line items and real usage (the territory) to find where the estimate diverges from reality."
+    },
+    {
+      "id": "map-territory-6",
+      "prompt": "We just passed our SOC 2 audit with every control marked satisfied, and a big enterprise prospect asked whether their data will be secure with us. I'd like to tell them yes, we're fully secure, and point to the audit report. Is the passed audit sufficient grounds to make that claim to the customer?",
+      "failure_mode": "Equates the compliance checklist and audit report (the map) with actual security in production (the territory), asserting security from the paperwork rather than verifying the controls are genuinely enforced day-to-day (e.g., MFA actually required, encryption actually applied, access actually revoked)."
+    },
+    {
+      "id": "map-territory-7",
+      "prompt": "A survey of 400 users found 80% say they want an offline mode and rate it as the feature they'd value most. Based on that, product wants to commit the next quarter to building it. Is the survey strong enough evidence to prioritize offline mode over everything else?",
+      "failure_mode": "Takes stated survey preferences (the map) as a reliable predictor of what users will actually use and pay for (the territory), committing a quarter to it without validating the demand against real behavior, a lightweight prototype, or observed usage patterns."
+    },
+    {
+      "id": "map-territory-8",
+      "prompt": "We finished migrating 12 million records to the new database. The migration job reported zero errors and all rows processed, and the row counts match exactly between the old and new tables. The team wants to cut over live traffic tomorrow and decommission the old system. Are the success report and matching counts enough to proceed with the cutover?",
+      "failure_mode": "Treats the job's success log and matching row counts (the maps) as proof the migrated data is correct, proceeding to cutover without spot-checking actual field values, relationships, and encodings in the new store (the territory), where counts can match while values are truncated, mis-mapped, or corrupted."
+    },
+    {
+      "id": "map-territory-9",
+      "prompt": "Our test suite reports 90% code coverage, and the engineering lead argues that with coverage that high we can safely skip the manual QA pass for this release and ship on schedule. Is 90% coverage a sound basis for skipping QA on this release?",
+      "failure_mode": "Reads the coverage percentage (the map) as a measure of real correctness and quality (the territory), deciding to skip QA, without recognizing that coverage counts lines executed rather than behaviors meaningfully asserted, so critical paths can be exercised yet effectively untested."
+    }
+  ]
+}

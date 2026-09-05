@@ -1,0 +1,86 @@
+{
+  "mode": "paired-head-to-head",
+  "metric": "modified beats original",
+  "solver": "claude-sonnet-4-6",
+  "skills": [
+    {
+      "skill": "regret-minimization",
+      "wins": 3,
+      "losses": 0,
+      "ties": 0,
+      "n": 3,
+      "decisive": 3,
+      "win_rate": 1,
+      "ci95": [
+        0.439,
+        1
+      ],
+      "p_value": 0.248,
+      "significant": false,
+      "powered": false
+    },
+    {
+      "skill": "debiasing",
+      "wins": 2,
+      "losses": 0,
+      "ties": 1,
+      "n": 3,
+      "decisive": 2,
+      "win_rate": 0.833,
+      "ci95": [
+        0.342,
+        1
+      ],
+      "p_value": 0.479,
+      "significant": false,
+      "powered": false
+    },
+    {
+      "skill": "bayesian",
+      "wins": 1,
+      "losses": 1,
+      "ties": 1,
+      "n": 3,
+      "decisive": 2,
+      "win_rate": 0.5,
+      "ci95": [
+        0.095,
+        0.905
+      ],
+      "p_value": 1,
+      "significant": false,
+      "powered": false
+    },
+    {
+      "skill": "circle-of-competence",
+      "wins": 0,
+      "losses": 1,
+      "ties": 2,
+      "n": 3,
+      "decisive": 1,
+      "win_rate": 0.333,
+      "ci95": [
+        0,
+        0.793
+      ],
+      "p_value": 1,
+      "significant": false,
+      "powered": false
+    }
+  ],
+  "aggregate": {
+    "wins": 6,
+    "losses": 2,
+    "ties": 4,
+    "n": 12,
+    "decisive": 8,
+    "win_rate": 0.667,
+    "ci95": [
+      0.409,
+      0.929
+    ],
+    "p_value": 0.289,
+    "significant": false,
+    "powered": false
+  }
+}

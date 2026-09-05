@@ -71,6 +71,323 @@
       ],
       "category": "ai-building"
     },
+    "skill:plugin/eli5/eli5": {
+      "recommendation": 3,
+      "description": "Explain a topic like I'm a 5 year old. Use when the user types /eli5 <topic> or asks for a dead-simple picture explainer of how something works.",
+      "trigger": "",
+      "tags": [
+        "role/builder",
+        "focus/interactive-tools",
+        "stack/html",
+        "output/app"
+      ],
+      "category": "research-office"
+    },
+    "skill:plugin/mattpocock-skills/ask-matt": {
+      "recommendation": 3,
+      "description": "Ask which skill or flow fits your situation. A router over the skills in this repo.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/code-quality",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/code-review": {
+      "recommendation": 3,
+      "description": "Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo's documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Runs both reviews in parallel sub-agents and reports them side by side. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to \"review since X\".",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/code-quality",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/codebase-design": {
+      "recommendation": 3,
+      "description": "代码库设计:怎么把模块划得更深、边界更清楚,让代码既好测试又好让 AI 导航。是 improve-codebase-architecture 的依赖。",
+      "trigger": "说「这块该怎么拆模块」。我建仓库时发现 improve-codebase-architecture 引用了它但本地没有,补上的。",
+      "tags": [
+        "role/guide",
+        "focus/modularity",
+        "focus/software-architecture",
+        "output/design-spec"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/diagnosing-bugs": {
+      "recommendation": 3,
+      "description": "诊断难缠的 bug 和性能回归,已更新到上游最新版(上游改名 diagnosing-bugs,134 行)。流程:建反馈回路 → 复现 → 提假设 → 埋点 → 修 → 回归测试。",
+      "trigger": "说「诊断一下这个 bug」。适合那种「偶发、找不到原因」的问题,普通报错不必动用。",
+      "tags": [
+        "role/workflow",
+        "focus/debugging",
+        "focus/performance",
+        "output/code",
+        "output/report"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/domain-modeling": {
+      "recommendation": 3,
+      "description": "领域建模:梳理业务概念、统一术语、产出领域词汇表,74 行。",
+      "trigger": "grill-with-docs 的依赖,也可单独说「梳理一下这块的领域模型」。这是我这次更新时补上的。",
+      "tags": [
+        "role/workflow",
+        "focus/domain-modeling",
+        "focus/requirements-discovery",
+        "output/domain-model"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/grill-me": {
+      "recommendation": 3,
+      "description": "拷问你的计划直到达成共识,现在是 7 行的入口,实际跑 grilling。已更新到上游最新。",
+      "trigger": "说「grill me」「拷问一下我这个方案」。",
+      "dependencies": [
+        "skill:plugin/mattpocock-skills/grilling"
+      ],
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/requirements-discovery",
+        "output/decision"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/grill-with-docs": {
+      "recommendation": 3,
+      "description": "拷问 + 落文档版本:边问边更新 CONTEXT.md 和 ADR,现在是 7 行入口,跑 grilling + domain-modeling。已更新到上游最新。",
+      "trigger": "说「拷问这个设计并把结论写进文档」。",
+      "dependencies": [
+        "skill:plugin/mattpocock-skills/grilling",
+        "skill:plugin/mattpocock-skills/domain-modeling"
+      ],
+      "tags": [
+        "role/workflow",
+        "focus/architecture-decisions",
+        "focus/requirements-discovery",
+        "output/design-spec"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/grilling": {
+      "recommendation": 3,
+      "description": "拷问式访谈的**引擎**,12 行。一次一个问题走完决策树,每问都给推荐答案。grill-me 和 grill-with-docs 都靠它。",
+      "trigger": "一般不直接调用,由下面两个带出来。这是我这次更新时补上的依赖。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/stakeholder-interview",
+        "output/decision"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/handoff": {
+      "recommendation": 2,
+      "description": "把当前对话压缩成交接文档给下一个 agent,要求不重复 PRD/计划/ADR/commit 里已有的内容,只给路径或 URL。已更新到上游最新。",
+      "trigger": "对话太长要换个会话继续时说「做个交接文档」。",
+      "tags": [
+        "role/workflow",
+        "focus/agent-handoff",
+        "focus/context-management",
+        "output/handoff"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/implement": {
+      "recommendation": 3,
+      "description": "Implement a piece of work based on a spec or set of tickets.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/code-quality",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/improve-codebase-architecture": {
+      "recommendation": 3,
+      "description": "找「深化机会」——把浅模块改造成深模块,目标是可测试性和 AI 可导航性。已更新到上游最新。强制使用固定术语表。",
+      "trigger": "说「看看这个项目架构能怎么改」。术语强制是它的特色,也可能碍事。",
+      "tags": [
+        "role/reviewer",
+        "focus/modularity",
+        "focus/software-architecture",
+        "output/report"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/prototype": {
+      "recommendation": 3,
+      "description": "做一次性原型回答一个具体问题。分两支:状态/业务逻辑问题走可运行的终端应用,UI 问题走一个路由下可切换的多套截然不同的方案。",
+      "trigger": "说「先做个原型试试」。分支设计很清晰。",
+      "tags": [
+        "role/builder",
+        "focus/product-validation",
+        "focus/prototyping",
+        "output/prototype"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/research": {
+      "recommendation": 3,
+      "description": "Investigate a question against high-trust primary sources and capture the findings as a Markdown file in the repo. Use when the user wants a topic researched, docs or API facts gathered, or reading legwork delegated to a background agent.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/code-quality",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/resolving-merge-conflicts": {
+      "recommendation": 3,
+      "description": "Use when you need to resolve an in-progress git merge/rebase conflict.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/code-quality",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/setup-matt-pocock-skills": {
+      "recommendation": 2,
+      "description": "给仓库搭脚手架:在 AGENTS.md / CLAUDE.md 写 ## Agent skills 块,建 docs/agents/,让上面几个技能知道本仓库的 issue tracker、triage 标签词表和领域文档布局。标了仅手动调用。",
+      "trigger": "**用 to-prd / to-issues / triage 之前必须先跑一次**,否则那几个不知道往哪发 issue。",
+      "tags": [
+        "role/workflow",
+        "focus/agent-setup",
+        "focus/repository-context",
+        "output/config"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/tdd": {
+      "recommendation": 3,
+      "description": "Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions \"red-green-refactor\", or wants integration tests.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/code-quality",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/teach": {
+      "recommendation": 3,
+      "description": "Teach the user a new skill or concept, within this workspace.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/code-quality",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/to-questionnaire": {
+      "recommendation": 3,
+      "description": "Turn a decision you can't fully answer into a questionnaire for someone else to fill in.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/code-quality",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/to-spec": {
+      "recommendation": 2,
+      "description": "把当前对话合成规格文档并发到 issue tracker。已更新到上游最新(上游改名 to-spec,75 行)。明确不访谈你,只综合已知信息。",
+      "trigger": "说「把刚才讨论的整理成 PRD」。依赖 setup-matt-pocock-skills 先配好 issue tracker。",
+      "dependencies": [
+        "skill:plugin/mattpocock-skills/setup-matt-pocock-skills"
+      ],
+      "tags": [
+        "role/builder",
+        "focus/product-specification",
+        "focus/requirements-synthesis",
+        "output/prd"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/to-tickets": {
+      "recommendation": 2,
+      "description": "把计划/规格拆成可独立认领的 issue,用 tracer bullet 纵向切片。已更新到上游最新(上游改名 to-tickets,105 行)。",
+      "trigger": "说「把这个计划拆成任务」。同样依赖脚手架。",
+      "dependencies": [
+        "skill:plugin/mattpocock-skills/setup-matt-pocock-skills"
+      ],
+      "tags": [
+        "role/builder",
+        "focus/delivery-planning",
+        "focus/work-breakdown",
+        "output/issues"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/triage": {
+      "recommendation": 2,
+      "description": "用状态机和五种 triage 角色流转 issue,要求每条评论带免责声明。",
+      "trigger": "说「过一遍待办 issue」。强依赖 issue tracker 脚手架。",
+      "dependencies": [
+        "skill:plugin/mattpocock-skills/setup-matt-pocock-skills"
+      ],
+      "tags": [
+        "role/workflow",
+        "focus/delivery-planning",
+        "focus/issue-triage",
+        "output/issues"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/wait-what": {
+      "recommendation": 3,
+      "description": "Stop. That last message did not land: re-pitch it.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/code-quality",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/wayfinder": {
+      "recommendation": 3,
+      "description": "Plan a huge chunk of work (more than one agent session can hold) as a shared map of decision tickets on your issue tracker, and resolve them one at a time until the way to the destination is clear.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/code-quality",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/wizard": {
+      "recommendation": 3,
+      "description": "Generate an interactive bash wizard that walks a human through steps only they can perform. Use when provisioning infrastructure, setting up credentials or CI secrets, walking an unfamiliar third-party dashboard, or running a one-off migration or cutover. Don't invoke this for steps the agent can perform itself.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/code-quality",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/mattpocock-skills/writing-for-agents": {
+      "recommendation": 3,
+      "description": "Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/code-quality",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
     "skill:plugin/mcp-server-dev/build-mcp-app": {
       "recommendation": 4,
       "description": "给 MCP 服务加交互式 UI / widget。什么时候 widget 胜过纯文本、widget 与 elicitation 怎么区分、两种部署形态、App 类运行时。Anthropic 官方。",
@@ -109,6 +426,1145 @@
       ],
       "category": "ai-building"
     },
+    "skill:plugin/ponytail/ponytail": {
+      "recommendation": 4,
+      "description": "以 YAGNI、标准库优先、复用现有代码和最小可行改动约束编码决策，减少不必要的抽象、依赖、样板代码与未来式设计；支持 lite、full、ultra 三档强度。",
+      "trigger": "用户点名 ponytail、lazy mode、最简单方案、YAGNI，抱怨过度工程或要求用最短路径编写、修复、重构、审查代码时使用；不用于非编程任务。",
+      "tags": [
+        "role/guide",
+        "focus/code-quality",
+        "focus/modularity",
+        "focus/software-architecture",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/ponytail/ponytail-audit": {
+      "recommendation": 4,
+      "description": "扫描整个代码仓库中的过度工程，按预计可删除规模排序，识别死代码、重复标准库实现、原生能力替代、单实现抽象、无效配置与多余依赖；输出审计清单，不直接修改。",
+      "trigger": "用户说「审计整个仓库的过度工程」「这个仓库能删什么」「找代码膨胀」、点名 ponytail-audit 或 /ponytail-audit 时使用。",
+      "tags": [
+        "role/reviewer",
+        "focus/code-quality",
+        "focus/modularity",
+        "focus/software-architecture",
+        "output/report"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/ponytail/ponytail-debt": {
+      "recommendation": 3,
+      "description": "扫描仓库中的 ponytail: 注释并汇总为技术债台账，提取每项简化的上限、升级路径和重访触发条件，标记缺少触发条件的条目；默认只读，不修改代码。",
+      "trigger": "用户询问 Ponytail 延期了什么、要求列出简化项或技术债、点名 ponytail-debt、ponytail ledger 或 /ponytail-debt 时使用。",
+      "tags": [
+        "role/researcher",
+        "focus/code-quality",
+        "focus/repository-context",
+        "output/report"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/ponytail/ponytail-gain": {
+      "recommendation": 2,
+      "description": "展示 Ponytail 作者发布的基准测试中代码量、成本与速度的中位收益看板；数据来自固定的五项任务和三个模型，不冒充当前仓库的真实节省量，也不修改任何状态。",
+      "trigger": "用户询问 Ponytail 能节省多少、要求查看影响看板、点名 ponytail-gain、ponytail scoreboard 或 /ponytail-gain 时使用。",
+      "tags": [
+        "role/reference",
+        "focus/code-quality",
+        "output/reference"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/ponytail/ponytail-help": {
+      "recommendation": 3,
+      "description": "提供 Ponytail 的 lite、full、ultra 模式、六个配套 Skill、启停方式、默认模式配置和多客户端调用方式的速查卡；一次性展示，不改变当前模式。",
+      "trigger": "用户询问如何使用 Ponytail、有哪些命令或模式，或点名 ponytail-help、ponytail help、/ponytail-help 时使用。",
+      "tags": [
+        "role/reference",
+        "focus/agent-instructions",
+        "focus/in-app-guidance",
+        "platform/multi-platform",
+        "output/reference"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/ponytail/ponytail-review": {
+      "recommendation": 4,
+      "description": "专门审查当前代码差异中的过度工程：识别可删除代码、标准库或平台原生替代、不必要依赖、单实现抽象与可压缩逻辑；只给精简建议，不检查正确性、安全或性能，也不直接修改。",
+      "trigger": "用户说「审查是否过度工程」「这个 diff 能删什么」「简化 review」、点名 ponytail-review 或 /ponytail-review 时使用。",
+      "tags": [
+        "role/reviewer",
+        "focus/code-quality",
+        "focus/modularity",
+        "focus/software-architecture",
+        "output/report"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/architect": {
+      "recommendation": 3,
+      "description": "Sketch types, signatures, and module structure before code, then stay in the loop while implementation fills in. Use for /architect, 'architect this', 'design this', or non-trivial work where jumping to code would lock in the wrong shape.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/arena": {
+      "recommendation": 3,
+      "description": "Spawn N parallel candidates at the same task, pick a base, graft the strongest parts of the losers into it. Use for /arena, 'arena this', 'throw it in the arena', or when one attempt at a non-trivial artifact would lock in the wrong shape.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/automate-me": {
+      "recommendation": 3,
+      "description": "Use for \"automate me\", \"create/update/refresh my -mode skill\", \"turn/capture my preferences or working style into a skill\", or wanting agents to follow how the user works. Drafts or revises a personal -mode skill via plugin-dev:skill-development + unslop, optionally pulling fresh evidence from recent transcripts.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/babysit": {
+      "recommendation": 3,
+      "description": "Watch an open PR — fix failing CI, handle the straightforward review comments, and drive it to a mergeable state. Claude Code analog of Cursor's built-in /babysit. Use after opening a PR when the user wants the agent to shepherd it without re-prompting.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/blast-radius": {
+      "recommendation": 3,
+      "description": "Find what a change could break somewhere else before it ships, beyond the diff, and prove the one fact it's safe because of by running real code instead of writing it up. Use for 'blast radius of X', 'what could this break', or reviewing a small diff you don't trust.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/bro": {
+      "recommendation": 3,
+      "description": "Restate the last message in plain human language, with no jargon.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/create-verification-skill": {
+      "recommendation": 3,
+      "description": "Generate a project-local verification skill that drives your app the way a user does — any language, framework, or platform. Use for /create-verification-skill, \"make a control skill for this repo\", or when a project has no scripted way to prove UI/CLI/service behavior.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/deslop": {
+      "recommendation": 3,
+      "description": "Remove AI-generated code slop and clean up code style",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/figure-it-out": {
+      "recommendation": 3,
+      "description": "Design an auditable playbook when no narrower one fits: a large migration, an ambitious multi-part change, or work a human reviews after stepping away. Scales rigor to the task, runs a hypothesis loop, and logs decisions via show-me-your-work. Use for /figure-it-out, 'figure it out', a large migration, or when no narrower playbook applies.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/fix-ci": {
+      "recommendation": 3,
+      "description": "Find failing PR checks, inspect logs or external check links, and apply focused fixes",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/fix-merge-conflicts": {
+      "recommendation": 3,
+      "description": "Resolve merge conflicts non-interactively, validate build and tests, and finalize conflict resolution",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/get-pr-comments": {
+      "recommendation": 3,
+      "description": "Fetch and summarize review comments from the active pull request",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/how": {
+      "recommendation": 3,
+      "description": "Use for \"how does X work\", code walkthroughs before changing something, and placement / ownership / layering questions (\"where should this live\", \"which package owns this\", \"is this the right layer\"). Explains subsystem architecture, runtime flow, onboarding mental models. Can critique architecture. Use why for motivation.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/interrogate": {
+      "recommendation": 3,
+      "description": "Use for \"interrogate\", \"adversarial review\", \"multi-model review\", \"challenge this\", \"stress test this code\", \"find blind spots\", or \"tear this apart\". Multiple LLM reviewers challenge changes from independent angles.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/maintain-verification-skill": {
+      "recommendation": 3,
+      "description": "Periodic pass that keeps a project's verification skill and feature map honest: parallel source readers per feature, one live session driving every feature, at most one PR of proven corrections. Use for /maintain-verification-skill or \"audit the verify skill\".",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/make-pr-easy-to-review": {
+      "recommendation": 3,
+      "description": "Prepare PRs for review by cleaning noisy history, improving PR descriptions, and adding reviewer guidance without changing code behavior. Use for \"make this easy to review\", \"tidy this PR\", \"clean up commits\", or \"annotate the diff\".",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/no-comments": {
+      "recommendation": 3,
+      "description": "Spawn the comment-sicko subagent, fix accepted findings, and offer encodings for claimed constraints.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/poteto-mode": {
+      "recommendation": 3,
+      "description": "poteto's agent style for concise, detailed responses, deliberate subagents, unslopped prose, simple code, and verified work. Use for poteto, /poteto-mode, or requests to work in this style.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-boundary-discipline": {
+      "recommendation": 3,
+      "description": "Apply when wiring validation, error handling, or framework adapters. Concentrate guards at system boundaries (CLI, config, network, external APIs); trust internal types and keep business logic in pure functions.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-build-the-lever": {
+      "recommendation": 3,
+      "description": "Apply to any non-trivial work, not just bulk work: edits, migrations, analyses, checks. Build the tool that does it or proves it (codemod, script, generator, or a skill your subagents follow) instead of working by hand. The tool is the artifact a reviewer can rerun.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-encode-lessons-in-structure": {
+      "recommendation": 3,
+      "description": "Apply when you catch yourself writing the same instruction a second time, or notice a recurring correction. Encode the rule as a lint, metadata flag, runtime check, or script instead of more text.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-exhaust-the-design-space": {
+      "recommendation": 3,
+      "description": "Apply when facing a novel UI interaction or architectural decision with no precedent in the codebase. Build 2-3 competing prototypes and compare side by side before committing.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-experience-first": {
+      "recommendation": 3,
+      "description": "Apply when product, UX, or feature-scope tradeoffs come up. Choose user delight over implementation convenience; ship fewer polished features over more rough ones.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-fix-root-causes": {
+      "recommendation": 3,
+      "description": "Apply when debugging. Trace each symptom to its root cause and fix it there; reproduce first, ask why until you reach it, resist nil-check guards that silence crashes.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-foundational-thinking": {
+      "recommendation": 3,
+      "description": "Apply before writing logic: choosing core types and data structures, sequencing scaffold-vs-feature work, asking what concurrent actors share. Get the data structures right so downstream code becomes obvious.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-guard-the-context-window": {
+      "recommendation": 3,
+      "description": "Apply when context is filling up: large outputs, long files, repeated reads, fan-out planning. Route bulk to subagents; keep summaries in the main thread, not raw payloads.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-laziness-protocol": {
+      "recommendation": 3,
+      "description": "Apply when refactoring, evaluating diff size, or tempted to add abstractions, layers, or signal threading. Bias toward deletion and the smallest change that solves the problem.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-make-operations-idempotent": {
+      "recommendation": 3,
+      "description": "Apply when designing commands, lifecycle steps, or processing loops that run amid crashes, restarts, and retries. Converge to the same end state regardless of partial prior runs.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-migrate-callers-then-delete-legacy-apis": {
+      "recommendation": 3,
+      "description": "Apply when introducing a new internal API while old callers still exist. Migrate callers and delete the old API in the same wave instead of preserving compatibility layers.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-minimize-reader-load": {
+      "recommendation": 3,
+      "description": "Apply when reviewing or shaping code that's hard to trace. Count layers between question and answer, and hidden state in the reader's head; collapse one-caller wrappers and shrink mutable scope.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-model-the-domain": {
+      "recommendation": 3,
+      "description": "Apply when writing stateful logic, or when code branches a lot or repeats a shape assumption across files. Encode the domain in a structure instead of scattered conditionals.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-never-block-on-the-human": {
+      "recommendation": 3,
+      "description": "Apply when tempted to ask 'should I do X?' on reversible work. Proceed, present the result, let the human course-correct after the fact; reserve confirmation for irreversible actions.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-outcome-oriented-execution": {
+      "recommendation": 3,
+      "description": "Apply during planned rewrites and migrations with explicit phase boundaries. Converge on the target architecture; don't preserve smooth intermediate states with throwaway compatibility code.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-prove-it-works": {
+      "recommendation": 3,
+      "description": "Apply after completing a task, before declaring done. Verify against the real artifact (run the feature, read the actual value, inspect the diff), not a proxy, self-report, or 'it compiles.'",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-redesign-from-first-principles": {
+      "recommendation": 3,
+      "description": "Apply when integrating a new requirement into an existing design. Redesign as if the requirement had been a foundational assumption from day one, instead of bolting it on.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-separate-before-serializing-shared-state": {
+      "recommendation": 3,
+      "description": "Apply when concurrent actors might write to the same file, branch, key, or state object. Eliminate the sharing first; serialize structurally only when one shared writer is a real invariant.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-sequence-verifiable-units": {
+      "recommendation": 3,
+      "description": "Apply to multi-step work (sweeps, migrations, runs of similar edits) and to how you stack commits and PRs. Break work into small units that each end in a verifiable state, check each before the next, and order delivery so the sequence proves itself to a reviewer.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-subtract-before-you-add": {
+      "recommendation": 3,
+      "description": "Apply when sequencing an addition, refactor, or rewrite. Remove dead weight, redundant validators, and stub references first, then build on the simpler base.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/principle-type-system-discipline": {
+      "recommendation": 3,
+      "description": "Apply when designing types, reviewing a function signature, or writing code in any statically-typed language. Make illegal states unrepresentable, brand semantic primitives, parse external data at boundaries, refuse to lie to the compiler, exhaust variants, derive from authoritative schemas.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/recall": {
+      "recommendation": 3,
+      "description": "Reconstruct your recent working context from your own chat history, live state, and the shared record (user reports, prior fixes, incidents), then hand back a tight current-state brief. Use for 'recall my work on X', 'catch me up', 'what have I been working on', 'where did I leave off', before starting or resuming work.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/reflect": {
+      "recommendation": 3,
+      "description": "Spawn three parallel review subagents over the active transcript, surface learnings, and route each to a concrete edit on an existing skill. Use when the user says reflect.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/setup-pstack": {
+      "recommendation": 3,
+      "description": "Configure pstack's provider-qualified models, per-family requested effort, and parent-owned routes per role. Verifies native and external Claude, Codex, and Grok lanes before writing the override sheet. Use for /setup-pstack, \"configure pstack models\", or changing pstack's model choices.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/show-me-your-work": {
+      "recommendation": 3,
+      "description": "Keep a reviewable decision trail for long-running or unattended work: a TSV log with one row per decision (what, why, evidence, result). Local by default; commit it when a reviewer needs the trail to trust the result. Use for /show-me-your-work, autonomous or multi-phase runs, or work a human reviews after stepping away.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/swarm": {
+      "recommendation": 3,
+      "description": "Fan out N parallel workers, drain them, and return one report. Use for /swarm, 'swarm this', or parallel coverage, races, gauntlets, and exploration.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/tdd": {
+      "recommendation": 3,
+      "description": "Use only when the user explicitly asks for TDD, a failing test, or a regression test, OR when the bug has an obvious cheap local test target. Skip when the test path is unclear, expensive, integration-heavy, or not requested.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/teach": {
+      "recommendation": 3,
+      "description": "Explain a body of work plainly so a person actually understands it. Runs the `how` and `why` skills and weaves what they find into one clear explanation. Use for 'teach me this', 'help me really understand X', 'explain this change or subsystem to me'.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/technical-writing": {
+      "recommendation": 3,
+      "description": "Layered technical-writing standard: Diátaxis structure, Google developer style sentences, STE instruction rules, Global English syntax. Use for /technical-writing or when writing or reviewing docs, RFCs, readmes, PR descriptions, or commit messages.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/thermo-nuclear-code-quality-review": {
+      "recommendation": 3,
+      "description": "Run an extremely strict maintainability review for abstraction quality, giant files, and spaghetti-condition growth. Use for a thermo-nuclear code quality review, thermonuclear review, deep code quality audit, or especially harsh maintainability review.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/typescript-best-practices": {
+      "recommendation": 3,
+      "description": "TypeScript best practices. Use when reading or editing any .ts or .tsx file.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/unslop": {
+      "recommendation": 3,
+      "description": "Cut AI tells from any writing. Must always apply.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/what-did-i-get-done": {
+      "recommendation": 3,
+      "description": "Summarize authored commits over a user-specified time period into a concise update",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/pstack/why": {
+      "recommendation": 3,
+      "description": "Use for 'why does X work this way', 'why we picked Y', design rationale, regressions, postmortems, or data-backed thresholds. Discovers available MCPs and queries each evidence category (source control, issue tracker, long-form docs, real-time chat, infrastructure observability, error tracking, product analytics warehouse) in parallel, then returns a cited read on decisions and tradeoffs. Use how for runtime behavior.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/agent-instructions",
+        "focus/codebase-navigation",
+        "focus/workflow-automation",
+        "platform/multi-platform",
+        "output/code"
+      ],
+      "category": "engineering"
+    },
+    "skill:plugin/thinking-skills/thinking-bounded-rationality": {
+      "recommendation": 3,
+      "description": "有限理性。搜索或调研可能无止境时，先定一个明确的“够用”阈值，遇到第一个达标的选项就收手，不追最优解。",
+      "trigger": "说「这个选型再查下去没完了，定个标准就停」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-circle-of-competence": {
+      "recommendation": 3,
+      "description": "能力圈。判断某个断言自己有没有依据时，先划出证据边界，再估错判的代价，然后选择回答、去查还是明说不知道，不硬编。",
+      "trigger": "说「这块我到底懂不懂，别瞎猜」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-cynefin": {
+      "recommendation": 3,
+      "description": "Cynefin 框架。不清楚该用哪种应对方式时，先把问题归到简单、繁杂、复杂或混乱域，混乱域先拆解再定策略。",
+      "trigger": "说「这事儿该怎么下手都没想清楚」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-effectuation": {
+      "recommendation": 3,
+      "description": "效果推理。真正无法预测时不做预测，盘点手里已有的资源，把下行风险压在可承受损失内，靠承诺推进，目标从可控行动里长出来。",
+      "trigger": "说「完全没法预测，先按手里有的干起来」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-first-principles": {
+      "recommendation": 3,
+      "description": "第一性原理。某个约束被当成铁律时，把物理限制和行业惯例分开，只保留能独立成立的基本事实，再重建满足真实约束的最简方案。",
+      "trigger": "说「这个限制是真的，还是大家一直这么干」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-five-whys-plus": {
+      "recommendation": 3,
+      "description": "五问法增强版。故障已定位、直接原因已知但系统性根因未明时，每一层 why 都挂上证据，用反事实判断何时停，最后必须落到对策。",
+      "trigger": "说「表面原因找到了，根因还没挖到」。",
+      "tags": [
+        "role/workflow",
+        "focus/debugging",
+        "focus/mental-models",
+        "output/report"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-jobs-to-be-done": {
+      "recommendation": 3,
+      "description": "JTBD。决定做什么功能或排查为什么没人用时，还原用户在特定情境下雇这个方案取得什么进展，再按结果和现有替代方案排序。",
+      "trigger": "说「这功能该不该做」「为什么用户不用」。",
+      "tags": [
+        "role/workflow",
+        "focus/mental-models",
+        "focus/product-validation",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-kepner-tregoe": {
+      "recommendation": 3,
+      "description": "KT 法。用 IS/IS-NOT 差异分析定位只在部分场景出现的缺陷，或用 must/want 加权加不利后果对比做重大选型。",
+      "trigger": "说「只有部分场景出问题」「几个方案要正式比一遍」。",
+      "tags": [
+        "role/workflow",
+        "focus/debugging",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-lindy-effect": {
+      "recommendation": 3,
+      "description": "林迪效应。非易逝事物的存续时长可当作剩余寿命的先验，但要先检查领域有没有漂移，再决定要不要押已被时间验证的一方。",
+      "trigger": "说「选老牌稳的还是选新的」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-map-territory": {
+      "recommendation": 3,
+      "description": "地图不是疆域。文档、测试、指标或假设和实际行为对不上时，停止从地图推理，去看活代码和真实数据，以实际观测为准。",
+      "trigger": "说「文档写的和跑出来的不一样」。",
+      "tags": [
+        "role/workflow",
+        "focus/debugging",
+        "focus/mental-models",
+        "output/report"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-margin-of-safety": {
+      "recommendation": 3,
+      "description": "安全边际。做容量规划、设限额或给估算承诺时，按残余误差和击穿代价来定缓冲，而不是贴着乐观值。",
+      "trigger": "说「这个容量/工期该留多少余量」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-model-combination": {
+      "recommendation": 3,
+      "description": "模型组合。单个思维模型在跨领域或高风险问题上留有实质盲区时，按分工顺序组合互补模型，并事先定好冲突时听谁的。",
+      "trigger": "说「一个角度不够，得多看几面」。先用 thinking-model-router 定主模型。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-model-router": {
+      "recommendation": 4,
+      "description": "思维模型路由。不确定该用哪个 thinking-* 框架时，按领域×问题类型匹配，默认只给一个主模型或直接返回 NONE，最多三个互补。整套 28 个技能的入口。",
+      "trigger": "说「这问题用哪个思维模型」。这套 thinking-* 的 START HERE，不确定时先叫它。",
+      "tags": [
+        "role/router",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-ooda": {
+      "recommendation": 3,
+      "description": "OODA 循环。时间压力下局势还在变、必须在确定之前行动时，按观察→定向→决策→行动在七成把握上转起来，然后立刻重新观察。",
+      "trigger": "说「等不到想清楚，得先动起来」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-opportunity-cost": {
+      "recommendation": 3,
+      "description": "机会成本。投入稀缺的时间、人力或钱之前，点名这些资源被放弃的最佳用途，并算出选中方案相对它的价值差。",
+      "trigger": "说「这事值不值得投人」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-pre-mortem": {
+      "recommendation": 3,
+      "description": "事前验尸。方案或上线定稿前先假设它已经失败，倒推具体死因，再把失败路径转成缓解措施、卡点和终止条件。",
+      "trigger": "说「上线前把风险过一遍」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/report"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-probabilistic": {
+      "recommendation": 3,
+      "description": "概率思维。预测、估算或量化风险时锚定基础率，给区间而不是点值，按先验→似然→后验随证据更新，未测量的量用数量级边界兜住。",
+      "trigger": "说「这个大概多大概率」「给个区间别给个数」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/report"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-red-team": {
+      "recommendation": 3,
+      "description": "红队视角。对自己有授权的代码、认证和 API 做安全审查，建攻击者模型、画攻击面，只报有可复现利用路径且验证过缓解措施的发现。",
+      "trigger": "说「按攻击者视角审一遍这段认证」。仅限自己有授权的系统。",
+      "tags": [
+        "role/workflow",
+        "focus/mental-models",
+        "focus/security-assessment",
+        "output/report"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-reversibility": {
+      "recommendation": 3,
+      "description": "可逆性分类。投入大量思考之前先分清这个决定撤回是便宜还是昂贵，双向门快速定，单向门分阶段走以保留选项。",
+      "trigger": "说「这个决定要不要慎重」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-scientific-method": {
+      "recommendation": 3,
+      "description": "科学方法。一个症状有多个可能原因时，把假设排成可证伪的序列，先跑最便宜的区分性观察，证据过关后才偏向假设最少的那个。",
+      "trigger": "说「几种原因都有可能，怎么排查」。",
+      "tags": [
+        "role/workflow",
+        "focus/debugging",
+        "focus/mental-models",
+        "output/report"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-second-order": {
+      "recommendation": 3,
+      "description": "二阶效应。改动会波及激励、规模和反馈回路时，带上时间和概率把后果链追一遍再拍板，不停在直接修复上。",
+      "trigger": "说「这么改了以后面会怎样」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-socratic": {
+      "recommendation": 3,
+      "description": "苏格拉底提问。需求含糊、预设很多或被说成“这还用问”时，先问出那几个真正承重的问题，暴露隐藏要求再动手。",
+      "trigger": "说「需求说得太模糊，先问清楚」。",
+      "tags": [
+        "role/workflow",
+        "focus/mental-models",
+        "focus/requirements-discovery",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-steel-manning": {
+      "recommendation": 3,
+      "description": "钢人论证。否掉一个提案或条件反射同意之前，先如实建出对立面最强的版本，写明什么条件下你会改变立场，再更新或维持。",
+      "trigger": "说「帮我把反方最强的说法建出来」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-systems": {
+      "recommendation": 3,
+      "description": "系统思考。行为跨组件涌现、改这里坏那里、回路和延迟起主导时，画出边界、存量流量、反馈和系统原型，再排杠杆点。",
+      "trigger": "说「改一处坏一处，整体到底怎么运转的」。",
+      "tags": [
+        "role/workflow",
+        "focus/mental-models",
+        "focus/software-architecture",
+        "output/report"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-theory-of-constraints": {
+      "recommendation": 3,
+      "description": "约束理论。吞吐或延迟受管道限制时，找出唯一的binding约束，按识别→挖尽→迁就→提升→重查走一遍，不去优化非约束环节。",
+      "trigger": "说「整条链路到底哪儿卡住了」。",
+      "tags": [
+        "role/workflow",
+        "focus/mental-models",
+        "focus/performance",
+        "output/report"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-thought-experiment": {
+      "recommendation": 3,
+      "description": "思想实验。真实验太罕见、太大或不可逆时，做受控反事实：隔离单个变量、固定其余条件、追机制链，并界定这个结果能推出什么、不能推出什么。",
+      "trigger": "说「没法真跑一遍，先推演一下」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/report"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-triz": {
+      "recommendation": 3,
+      "description": "TRIZ。两个设计要求看起来互斥时，先把矛盾本身说清楚，分离冲突的状态，再造一个不折中的具体解法。",
+      "trigger": "说「又要快又要稳，只能二选一吗」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
+    "skill:plugin/thinking-skills/thinking-via-negativa": {
+      "recommendation": 3,
+      "description": "减法思维。反射性想加功能、加层、加流程时，先删掉有害和非必要的部分，删之前过一道不可逆性检查。",
+      "trigger": "说「先别加，看看能删掉什么」。",
+      "tags": [
+        "role/workflow",
+        "focus/decision-making",
+        "focus/mental-models",
+        "output/decision"
+      ],
+      "category": "product"
+    },
     "skill:standalone/academic-pdf-translation": {
       "recommendation": 5,
       "description": "学术 PDF 全文翻译与版式重建工作流：保留证据强度、数字、引用和因果边界，支持复杂图表与截图文字本地化、自动完整性检查、源译逐页审查、可检索 PDF 交付及 Zotero 收尾。",
@@ -134,18 +1590,6 @@
         "focus/research-question-refinement",
         "output/article",
         "output/report"
-      ]
-    },
-    "skill:standalone/accessibility-wcag": {
-      "recommendation": 2,
-      "description": "Web 无障碍 WCAG 2.2:语义化 HTML、ARIA 模式、键盘导航与焦点管理、表单无障碍、色彩对比度,末尾附自查清单。",
-      "trigger": "说「检查一下无障碍」。",
-      "tags": [
-        "role/guide",
-        "focus/accessibility",
-        "platform/web",
-        "stack/html",
-        "output/code"
       ]
     },
     "skill:standalone/agent-reach": {
@@ -194,17 +1638,6 @@
         "platform/web",
         "output/reference",
         "collection/emilkowalski-skills"
-      ]
-    },
-    "skill:standalone/api-design-patterns": {
-      "recommendation": 2,
-      "description": "REST API 设计:资源命名规范、HTTP 方法与状态码的正确用法、统一错误响应格式、游标分页(优先)与偏移分页、过滤排序、版本化策略、OpenAPI 规格生成。",
-      "trigger": "设计新接口时说「按 REST 规范设计这组接口」。内容是通用知识,Opus 5 本身就会,留着主要图个统一口径。",
-      "tags": [
-        "role/guide",
-        "focus/api-design",
-        "stack/rest",
-        "output/api-spec"
       ]
     },
     "skill:standalone/appintents": {
@@ -339,6 +1772,17 @@
         "focus/brand-consistency",
         "focus/brand-strategy",
         "output/brand-system"
+      ]
+    },
+    "skill:standalone/bro": {
+      "recommendation": 4,
+      "description": "把上一条回答改成简单、自然、少术语的人话。",
+      "trigger": "bro、说简单点、用人话、不要术语、太复杂了",
+      "tags": [
+        "role/guide",
+        "focus/copy-editing",
+        "focus/voice-tone",
+        "output/text"
       ]
     },
     "skill:standalone/canvas-design": {
@@ -520,17 +1964,6 @@
         "output/paper-metadata"
       ]
     },
-    "skill:standalone/codebase-design": {
-      "recommendation": 3,
-      "description": "代码库设计:怎么把模块划得更深、边界更清楚,让代码既好测试又好让 AI 导航。是 improve-codebase-architecture 的依赖。",
-      "trigger": "说「这块该怎么拆模块」。我建仓库时发现 improve-codebase-architecture 引用了它但本地没有,补上的。",
-      "tags": [
-        "role/guide",
-        "focus/modularity",
-        "focus/software-architecture",
-        "output/design-spec"
-      ]
-    },
     "skill:standalone/combine": {
       "recommendation": 2,
       "description": "Combine API 离线镜像。Publisher / Subscriber、各类 operator、背压、与 async/await 互转。",
@@ -588,6 +2021,16 @@
         "focus/deep-research",
         "focus/evidence-synthesis",
         "output/report"
+      ]
+    },
+    "skill:standalone/deep-research-skill": {
+      "recommendation": 4,
+      "description": "论点驱动的深度调研工作流：优先一手源、交叉验证、反例分析，并输出带来源的判断型报告。",
+      "trigger": "深度调研、深度研究、判断型研究、需要可验证的研究报告",
+      "tags": [
+        "role/researcher",
+        "focus/web-research",
+        "output/research"
       ]
     },
     "skill:standalone/deploy-to-vercel": {
@@ -656,29 +2099,6 @@
         "focus/design-assets",
         "focus/design-tools",
         "output/reference"
-      ]
-    },
-    "skill:standalone/diagnose": {
-      "recommendation": 3,
-      "description": "诊断难缠的 bug 和性能回归,已更新到上游最新版(上游改名 diagnosing-bugs,134 行)。流程:建反馈回路 → 复现 → 提假设 → 埋点 → 修 → 回归测试。",
-      "trigger": "说「诊断一下这个 bug」。适合那种「偶发、找不到原因」的问题,普通报错不必动用。",
-      "tags": [
-        "role/workflow",
-        "focus/debugging",
-        "focus/performance",
-        "output/code",
-        "output/report"
-      ]
-    },
-    "skill:standalone/domain-modeling": {
-      "recommendation": 3,
-      "description": "领域建模:梳理业务概念、统一术语、产出领域词汇表,74 行。",
-      "trigger": "grill-with-docs 的依赖,也可单独说「梳理一下这块的领域模型」。这是我这次更新时补上的。",
-      "tags": [
-        "role/workflow",
-        "focus/domain-modeling",
-        "focus/requirements-discovery",
-        "output/domain-model"
       ]
     },
     "skill:standalone/emil-design-eng": {
@@ -767,44 +2187,28 @@
         "output/slides"
       ]
     },
-    "skill:standalone/grill-me": {
-      "recommendation": 3,
-      "description": "拷问你的计划直到达成共识,现在是 7 行的入口,实际跑 grilling。已更新到上游最新。",
-      "trigger": "说「grill me」「拷问一下我这个方案」。",
-      "dependencies": [
-        "skill:standalone/grilling"
-      ],
+    "skill:standalone/github-outside-sandbox": {
+      "recommendation": 4,
+      "description": "当沙盒阻止 Git 或 GitHub 命令时，在主机环境中安全执行并验证。",
+      "trigger": "Git 或 GitHub 命令被沙盒、Keychain、网络或 .git 权限阻止",
       "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/requirements-discovery",
-        "output/decision"
+        "role/integration",
+        "focus/permissions",
+        "focus/tool-integration",
+        "platform/multi-platform",
+        "output/config"
       ]
     },
-    "skill:standalone/grill-with-docs": {
-      "recommendation": 3,
-      "description": "拷问 + 落文档版本:边问边更新 CONTEXT.md 和 ADR,现在是 7 行入口,跑 grilling + domain-modeling。已更新到上游最新。",
-      "trigger": "说「拷问这个设计并把结论写进文档」。",
-      "dependencies": [
-        "skill:standalone/grilling",
-        "skill:standalone/domain-modeling"
-      ],
+    "skill:standalone/global-agent-guardrails": {
+      "recommendation": 4,
+      "description": "为多个 AI Agent 共用一套危险 shell 命令拦截规则和 PreToolUse 防护。",
+      "trigger": "配置、调整或排查 AI Agent 的危险命令拦截和全局 guardrails",
       "tags": [
-        "role/workflow",
-        "focus/architecture-decisions",
-        "focus/requirements-discovery",
-        "output/design-spec"
-      ]
-    },
-    "skill:standalone/grilling": {
-      "recommendation": 3,
-      "description": "拷问式访谈的**引擎**,12 行。一次一个问题走完决策树,每问都给推荐答案。grill-me 和 grill-with-docs 都靠它。",
-      "trigger": "一般不直接调用,由下面两个带出来。这是我这次更新时补上的依赖。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/stakeholder-interview",
-        "output/decision"
+        "role/builder",
+        "focus/hooks",
+        "focus/tool-guardrails",
+        "platform/multi-platform",
+        "output/config"
       ]
     },
     "skill:standalone/gsap-core": {
@@ -1014,17 +2418,6 @@
         "output/code"
       ]
     },
-    "skill:standalone/handoff": {
-      "recommendation": 2,
-      "description": "把当前对话压缩成交接文档给下一个 agent,要求不重复 PRD/计划/ADR/commit 里已有的内容,只给路径或 URL。已更新到上游最新。",
-      "trigger": "对话太长要换个会话继续时说「做个交接文档」。",
-      "tags": [
-        "role/workflow",
-        "focus/agent-handoff",
-        "focus/context-management",
-        "output/handoff"
-      ]
-    },
     "skill:standalone/healthkit": {
       "recommendation": 2,
       "description": "HealthKit API 离线镜像。HKHealthStore 授权、HKQuantitySample 样本读写、运动 workout、各类健康数据类型。",
@@ -1047,18 +2440,6 @@
         "focus/ui-design",
         "platform/apple",
         "output/reference"
-      ]
-    },
-    "skill:standalone/high-end-visual-design": {
-      "recommendation": 3,
-      "description": "教「像高端代理商那样设计」,具体到字体、间距、阴影、卡片结构。含 ABSOLUTE ZERO 反模式禁令,和一个「氛围档案 × 布局档案」的随机组合引擎防止千篇一律。",
-      "trigger": "说「做得高级一点」「像大厂官网那样」。",
-      "tags": [
-        "role/guide",
-        "focus/ui-design",
-        "focus/visual-polish",
-        "platform/web",
-        "output/design-spec"
       ]
     },
     "skill:standalone/hook-development": {
@@ -1085,18 +2466,6 @@
         "output/article"
       ]
     },
-    "skill:standalone/impeccable": {
-      "recommendation": 4,
-      "description": "前端界面设计与评审的总入口,92 个附件。含绝对禁令清单和一套「AI slop 测试」,用来判断产出是不是模板货。",
-      "trigger": "说「审一下这个界面」「这页面太平庸了」。",
-      "tags": [
-        "role/router",
-        "focus/ui-design",
-        "focus/ux-audit",
-        "platform/web",
-        "output/report"
-      ]
-    },
     "skill:standalone/improve-animations": {
       "recommendation": 3,
       "description": "以资深动效顾问视角审计整个代码库的动画，产出按优先级排列的发现和可独立执行的实施计划，不直接修改源码。",
@@ -1108,17 +2477,6 @@
         "platform/web",
         "output/report",
         "collection/emilkowalski-skills"
-      ]
-    },
-    "skill:standalone/improve-codebase-architecture": {
-      "recommendation": 3,
-      "description": "找「深化机会」——把浅模块改造成深模块,目标是可测试性和 AI 可导航性。已更新到上游最新。强制使用固定术语表。",
-      "trigger": "说「看看这个项目架构能怎么改」。术语强制是它的特色,也可能碍事。",
-      "tags": [
-        "role/reviewer",
-        "focus/modularity",
-        "focus/software-architecture",
-        "output/report"
       ]
     },
     "skill:standalone/ios-design-consultant": {
@@ -1181,19 +2539,6 @@
         "platform/apple",
         "stack/xcode",
         "output/test-code"
-      ]
-    },
-    "skill:standalone/ios-ui-craft": {
-      "recommendation": 4,
-      "description": "把 SwiftUI 界面做到 Apple Design Award 水准。设计思维、明确的反模式清单、三条核心原则、有性格的排版规范。",
-      "trigger": "说「把这个界面做得精致些」「这界面太平庸了」。",
-      "tags": [
-        "role/builder",
-        "focus/ui-design",
-        "focus/visual-polish",
-        "platform/apple",
-        "stack/swiftui",
-        "output/code"
       ]
     },
     "skill:standalone/khazix-writer": {
@@ -1532,6 +2877,17 @@
         "output/reference"
       ]
     },
+    "skill:standalone/marketing-agi": {
+      "recommendation": 3,
+      "description": "A complete marketing department in one skill. Website and landing-page audits with weighted 0-100 scores, copywriting with panel scoring and AI-slop removal, an 18-tactic ad hook engine, GEO/AEO for getting cited by ChatGPT/Perplexity/AI Overviews, paid-ads creative diagnosis and production briefs, email sequences, LinkedIn/X writing, launch playbooks, positioning and offer design, competitor teardowns, app store optimization, honest analytics and test design. Use for ANY marketing task — audit, write, rewrite, diagnose, score, plan, launch, position, price, analyze — whenever the user mentions marketing, growth, conversion, copy, ads, hooks, CPM, ROAS, SEO, GEO, email, social, landing pages, funnels, launches, competitors, brand, positioning, pricing, or app stores, or says \"my landing page sucks\", \"nobody's converting\", \"why are my CPMs up\", \"AI doesn't recommend us\", \"write me 20 hooks\". Route via the table inside; fan out subagents for multi-dimensional work. Not for pure engineering, legal, or finance.",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/aso",
+        "focus/brand-strategy",
+        "focus/copy-editing"
+      ]
+    },
     "skill:standalone/material-3": {
       "recommendation": 4,
       "description": "Google Material Design 3(Material You),656 行。主攻 Jetpack Compose Material3,也覆盖 Flutter 和 @material/web。含完整 token 体系、30+ 组件规格、M3 Expressive、无障碍。",
@@ -1748,75 +3104,6 @@
         "output/paper-metadata"
       ]
     },
-    "skill:standalone/ponytail": {
-      "recommendation": 4,
-      "description": "以 YAGNI、标准库优先、复用现有代码和最小可行改动约束编码决策，减少不必要的抽象、依赖、样板代码与未来式设计；支持 lite、full、ultra 三档强度。",
-      "trigger": "用户点名 ponytail、lazy mode、最简单方案、YAGNI，抱怨过度工程或要求用最短路径编写、修复、重构、审查代码时使用；不用于非编程任务。",
-      "tags": [
-        "role/guide",
-        "focus/code-quality",
-        "focus/modularity",
-        "focus/software-architecture",
-        "output/code"
-      ]
-    },
-    "skill:standalone/ponytail-audit": {
-      "recommendation": 4,
-      "description": "扫描整个代码仓库中的过度工程，按预计可删除规模排序，识别死代码、重复标准库实现、原生能力替代、单实现抽象、无效配置与多余依赖；输出审计清单，不直接修改。",
-      "trigger": "用户说「审计整个仓库的过度工程」「这个仓库能删什么」「找代码膨胀」、点名 ponytail-audit 或 /ponytail-audit 时使用。",
-      "tags": [
-        "role/reviewer",
-        "focus/code-quality",
-        "focus/modularity",
-        "focus/software-architecture",
-        "output/report"
-      ]
-    },
-    "skill:standalone/ponytail-debt": {
-      "recommendation": 3,
-      "description": "扫描仓库中的 ponytail: 注释并汇总为技术债台账，提取每项简化的上限、升级路径和重访触发条件，标记缺少触发条件的条目；默认只读，不修改代码。",
-      "trigger": "用户询问 Ponytail 延期了什么、要求列出简化项或技术债、点名 ponytail-debt、ponytail ledger 或 /ponytail-debt 时使用。",
-      "tags": [
-        "role/researcher",
-        "focus/code-quality",
-        "focus/repository-context",
-        "output/report"
-      ]
-    },
-    "skill:standalone/ponytail-gain": {
-      "recommendation": 2,
-      "description": "展示 Ponytail 作者发布的基准测试中代码量、成本与速度的中位收益看板；数据来自固定的五项任务和三个模型，不冒充当前仓库的真实节省量，也不修改任何状态。",
-      "trigger": "用户询问 Ponytail 能节省多少、要求查看影响看板、点名 ponytail-gain、ponytail scoreboard 或 /ponytail-gain 时使用。",
-      "tags": [
-        "role/reference",
-        "focus/code-quality",
-        "output/reference"
-      ]
-    },
-    "skill:standalone/ponytail-help": {
-      "recommendation": 3,
-      "description": "提供 Ponytail 的 lite、full、ultra 模式、六个配套 Skill、启停方式、默认模式配置和多客户端调用方式的速查卡；一次性展示，不改变当前模式。",
-      "trigger": "用户询问如何使用 Ponytail、有哪些命令或模式，或点名 ponytail-help、ponytail help、/ponytail-help 时使用。",
-      "tags": [
-        "role/reference",
-        "focus/agent-instructions",
-        "focus/in-app-guidance",
-        "platform/multi-platform",
-        "output/reference"
-      ]
-    },
-    "skill:standalone/ponytail-review": {
-      "recommendation": 4,
-      "description": "专门审查当前代码差异中的过度工程：识别可删除代码、标准库或平台原生替代、不必要依赖、单实现抽象与可压缩逻辑；只给精简建议，不检查正确性、安全或性能，也不直接修改。",
-      "trigger": "用户说「审查是否过度工程」「这个 diff 能删什么」「简化 review」、点名 ponytail-review 或 /ponytail-review 时使用。",
-      "tags": [
-        "role/reviewer",
-        "focus/code-quality",
-        "focus/modularity",
-        "focus/software-architecture",
-        "output/report"
-      ]
-    },
     "skill:standalone/pp-agent-capture": {
       "recommendation": 5,
       "description": "使用 macOS ScreenCaptureKit 精确定位窗口或显示器并录制、截图、生成 GIF 与视觉证据包；要求先等录制就绪，再触发界面动作并校验成片。",
@@ -1830,17 +3117,6 @@
         "output/screenshot"
       ]
     },
-    "skill:standalone/prototype": {
-      "recommendation": 3,
-      "description": "做一次性原型回答一个具体问题。分两支:状态/业务逻辑问题走可运行的终端应用,UI 问题走一个路由下可切换的多套截然不同的方案。",
-      "trigger": "说「先做个原型试试」。分支设计很清晰。",
-      "tags": [
-        "role/builder",
-        "focus/product-validation",
-        "focus/prototyping",
-        "output/prototype"
-      ]
-    },
     "skill:standalone/pubmed": {
       "recommendation": 4,
       "description": "单体 PubMed/PMC 学术检索工作流：直接调用 NCBI E-utilities、PMC 与 iCite，覆盖检索、摘要、相似论文、引用指标、开放全文和 MEDLINE/RIS 导出。",
@@ -1852,6 +3128,18 @@
         "focus/literature-search",
         "platform/pubmed",
         "output/paper-metadata"
+      ]
+    },
+    "skill:standalone/qiuzhao-feed": {
+      "recommendation": 3,
+      "description": "实时拉取 xixicc2027 的 2027 届秋招 jobs.json，按行业、关键词和截止时间筛选并生成可交互网页与简报。",
+      "trigger": "看看最新秋招、打开秋招页面、按行业或关键词筛选秋招、查看临期校招",
+      "tags": [
+        "role/researcher",
+        "focus/trend-research",
+        "focus/web-research",
+        "platform/web",
+        "output/report"
       ]
     },
     "skill:standalone/react-best-practices": {
@@ -1912,17 +3200,6 @@
         "focus/ui-design",
         "platform/web",
         "output/code"
-      ]
-    },
-    "skill:standalone/reference-interpreter": {
-      "recommendation": 3,
-      "description": "你丢来截图、图片、URL 或文字描述 → 分析 → 映射到设计系统 → 输出结构化设计简报(布局/排版/颜色)。标了仅手动调用。",
-      "trigger": "丢张参考图说「照这个风格做」。",
-      "tags": [
-        "role/workflow",
-        "focus/design-system",
-        "focus/reference-analysis",
-        "output/design-brief"
       ]
     },
     "skill:standalone/research-lit": {
@@ -2024,17 +3301,6 @@
         "focus/usage-analysis",
         "platform/claude",
         "output/report"
-      ]
-    },
-    "skill:standalone/setup-matt-pocock-skills": {
-      "recommendation": 2,
-      "description": "给仓库搭脚手架:在 AGENTS.md / CLAUDE.md 写 ## Agent skills 块,建 docs/agents/,让上面几个技能知道本仓库的 issue tracker、triage 标签词表和领域文档布局。标了仅手动调用。",
-      "trigger": "**用 to-prd / to-issues / triage 之前必须先跑一次**,否则那几个不知道往哪发 issue。",
-      "tags": [
-        "role/workflow",
-        "focus/agent-setup",
-        "focus/repository-context",
-        "output/config"
       ]
     },
     "skill:standalone/simulator-utils": {
@@ -2271,17 +3537,6 @@
         "output/design-brief"
       ]
     },
-    "skill:standalone/tdd": {
-      "recommendation": 3,
-      "description": "已更新到最新:从 110 行精简成 36 行 + tests.md / mocking.md 两个附件。核心不再是硬套红绿重构,而是讲清「什么算好测试」和**接缝(seam)**——测试该挂在哪个公共边界上,并要求**动手前先跟你确认接缝**,不许自作主张全覆盖。",
-      "trigger": "说「用 TDD 做这个功能」「先写测试」。",
-      "tags": [
-        "role/guide",
-        "focus/test-design",
-        "focus/testing",
-        "output/test-code"
-      ]
-    },
     "skill:standalone/theme-factory": {
       "recommendation": 3,
       "description": "10 套预设主题(配色 + 字体),可套到幻灯片、文档、报告、HTML 落地页上;也能现场生成新主题。",
@@ -2304,314 +3559,6 @@
         "output/diagram"
       ]
     },
-    "skill:standalone/thinking-bounded-rationality": {
-      "recommendation": 3,
-      "description": "有限理性。搜索或调研可能无止境时，先定一个明确的“够用”阈值，遇到第一个达标的选项就收手，不追最优解。",
-      "trigger": "说「这个选型再查下去没完了，定个标准就停」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-circle-of-competence": {
-      "recommendation": 3,
-      "description": "能力圈。判断某个断言自己有没有依据时，先划出证据边界，再估错判的代价，然后选择回答、去查还是明说不知道，不硬编。",
-      "trigger": "说「这块我到底懂不懂，别瞎猜」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-cynefin": {
-      "recommendation": 3,
-      "description": "Cynefin 框架。不清楚该用哪种应对方式时，先把问题归到简单、繁杂、复杂或混乱域，混乱域先拆解再定策略。",
-      "trigger": "说「这事儿该怎么下手都没想清楚」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-effectuation": {
-      "recommendation": 3,
-      "description": "效果推理。真正无法预测时不做预测，盘点手里已有的资源，把下行风险压在可承受损失内，靠承诺推进，目标从可控行动里长出来。",
-      "trigger": "说「完全没法预测，先按手里有的干起来」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-first-principles": {
-      "recommendation": 3,
-      "description": "第一性原理。某个约束被当成铁律时，把物理限制和行业惯例分开，只保留能独立成立的基本事实，再重建满足真实约束的最简方案。",
-      "trigger": "说「这个限制是真的，还是大家一直这么干」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-five-whys-plus": {
-      "recommendation": 3,
-      "description": "五问法增强版。故障已定位、直接原因已知但系统性根因未明时，每一层 why 都挂上证据，用反事实判断何时停，最后必须落到对策。",
-      "trigger": "说「表面原因找到了，根因还没挖到」。",
-      "tags": [
-        "role/workflow",
-        "focus/debugging",
-        "focus/mental-models",
-        "output/report"
-      ]
-    },
-    "skill:standalone/thinking-jobs-to-be-done": {
-      "recommendation": 3,
-      "description": "JTBD。决定做什么功能或排查为什么没人用时，还原用户在特定情境下雇这个方案取得什么进展，再按结果和现有替代方案排序。",
-      "trigger": "说「这功能该不该做」「为什么用户不用」。",
-      "tags": [
-        "role/workflow",
-        "focus/mental-models",
-        "focus/product-validation",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-kepner-tregoe": {
-      "recommendation": 3,
-      "description": "KT 法。用 IS/IS-NOT 差异分析定位只在部分场景出现的缺陷，或用 must/want 加权加不利后果对比做重大选型。",
-      "trigger": "说「只有部分场景出问题」「几个方案要正式比一遍」。",
-      "tags": [
-        "role/workflow",
-        "focus/debugging",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-lindy-effect": {
-      "recommendation": 3,
-      "description": "林迪效应。非易逝事物的存续时长可当作剩余寿命的先验，但要先检查领域有没有漂移，再决定要不要押已被时间验证的一方。",
-      "trigger": "说「选老牌稳的还是选新的」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-map-territory": {
-      "recommendation": 3,
-      "description": "地图不是疆域。文档、测试、指标或假设和实际行为对不上时，停止从地图推理，去看活代码和真实数据，以实际观测为准。",
-      "trigger": "说「文档写的和跑出来的不一样」。",
-      "tags": [
-        "role/workflow",
-        "focus/debugging",
-        "focus/mental-models",
-        "output/report"
-      ]
-    },
-    "skill:standalone/thinking-margin-of-safety": {
-      "recommendation": 3,
-      "description": "安全边际。做容量规划、设限额或给估算承诺时，按残余误差和击穿代价来定缓冲，而不是贴着乐观值。",
-      "trigger": "说「这个容量/工期该留多少余量」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-model-combination": {
-      "recommendation": 3,
-      "description": "模型组合。单个思维模型在跨领域或高风险问题上留有实质盲区时，按分工顺序组合互补模型，并事先定好冲突时听谁的。",
-      "trigger": "说「一个角度不够，得多看几面」。先用 thinking-model-router 定主模型。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-model-router": {
-      "recommendation": 4,
-      "description": "思维模型路由。不确定该用哪个 thinking-* 框架时，按领域×问题类型匹配，默认只给一个主模型或直接返回 NONE，最多三个互补。整套 28 个技能的入口。",
-      "trigger": "说「这问题用哪个思维模型」。这套 thinking-* 的 START HERE，不确定时先叫它。",
-      "tags": [
-        "role/router",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-ooda": {
-      "recommendation": 3,
-      "description": "OODA 循环。时间压力下局势还在变、必须在确定之前行动时，按观察→定向→决策→行动在七成把握上转起来，然后立刻重新观察。",
-      "trigger": "说「等不到想清楚，得先动起来」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-opportunity-cost": {
-      "recommendation": 3,
-      "description": "机会成本。投入稀缺的时间、人力或钱之前，点名这些资源被放弃的最佳用途，并算出选中方案相对它的价值差。",
-      "trigger": "说「这事值不值得投人」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-pre-mortem": {
-      "recommendation": 3,
-      "description": "事前验尸。方案或上线定稿前先假设它已经失败，倒推具体死因，再把失败路径转成缓解措施、卡点和终止条件。",
-      "trigger": "说「上线前把风险过一遍」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/report"
-      ]
-    },
-    "skill:standalone/thinking-probabilistic": {
-      "recommendation": 3,
-      "description": "概率思维。预测、估算或量化风险时锚定基础率，给区间而不是点值，按先验→似然→后验随证据更新，未测量的量用数量级边界兜住。",
-      "trigger": "说「这个大概多大概率」「给个区间别给个数」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/report"
-      ]
-    },
-    "skill:standalone/thinking-red-team": {
-      "recommendation": 3,
-      "description": "红队视角。对自己有授权的代码、认证和 API 做安全审查，建攻击者模型、画攻击面，只报有可复现利用路径且验证过缓解措施的发现。",
-      "trigger": "说「按攻击者视角审一遍这段认证」。仅限自己有授权的系统。",
-      "tags": [
-        "role/workflow",
-        "focus/mental-models",
-        "focus/security-assessment",
-        "output/report"
-      ]
-    },
-    "skill:standalone/thinking-reversibility": {
-      "recommendation": 3,
-      "description": "可逆性分类。投入大量思考之前先分清这个决定撤回是便宜还是昂贵，双向门快速定，单向门分阶段走以保留选项。",
-      "trigger": "说「这个决定要不要慎重」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-scientific-method": {
-      "recommendation": 3,
-      "description": "科学方法。一个症状有多个可能原因时，把假设排成可证伪的序列，先跑最便宜的区分性观察，证据过关后才偏向假设最少的那个。",
-      "trigger": "说「几种原因都有可能，怎么排查」。",
-      "tags": [
-        "role/workflow",
-        "focus/debugging",
-        "focus/mental-models",
-        "output/report"
-      ]
-    },
-    "skill:standalone/thinking-second-order": {
-      "recommendation": 3,
-      "description": "二阶效应。改动会波及激励、规模和反馈回路时，带上时间和概率把后果链追一遍再拍板，不停在直接修复上。",
-      "trigger": "说「这么改了以后面会怎样」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-socratic": {
-      "recommendation": 3,
-      "description": "苏格拉底提问。需求含糊、预设很多或被说成“这还用问”时，先问出那几个真正承重的问题，暴露隐藏要求再动手。",
-      "trigger": "说「需求说得太模糊，先问清楚」。",
-      "tags": [
-        "role/workflow",
-        "focus/mental-models",
-        "focus/requirements-discovery",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-steel-manning": {
-      "recommendation": 3,
-      "description": "钢人论证。否掉一个提案或条件反射同意之前，先如实建出对立面最强的版本，写明什么条件下你会改变立场，再更新或维持。",
-      "trigger": "说「帮我把反方最强的说法建出来」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-systems": {
-      "recommendation": 3,
-      "description": "系统思考。行为跨组件涌现、改这里坏那里、回路和延迟起主导时，画出边界、存量流量、反馈和系统原型，再排杠杆点。",
-      "trigger": "说「改一处坏一处，整体到底怎么运转的」。",
-      "tags": [
-        "role/workflow",
-        "focus/mental-models",
-        "focus/software-architecture",
-        "output/report"
-      ]
-    },
-    "skill:standalone/thinking-theory-of-constraints": {
-      "recommendation": 3,
-      "description": "约束理论。吞吐或延迟受管道限制时，找出唯一的binding约束，按识别→挖尽→迁就→提升→重查走一遍，不去优化非约束环节。",
-      "trigger": "说「整条链路到底哪儿卡住了」。",
-      "tags": [
-        "role/workflow",
-        "focus/mental-models",
-        "focus/performance",
-        "output/report"
-      ]
-    },
-    "skill:standalone/thinking-thought-experiment": {
-      "recommendation": 3,
-      "description": "思想实验。真实验太罕见、太大或不可逆时，做受控反事实：隔离单个变量、固定其余条件、追机制链，并界定这个结果能推出什么、不能推出什么。",
-      "trigger": "说「没法真跑一遍，先推演一下」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/report"
-      ]
-    },
-    "skill:standalone/thinking-triz": {
-      "recommendation": 3,
-      "description": "TRIZ。两个设计要求看起来互斥时，先把矛盾本身说清楚，分离冲突的状态，再造一个不折中的具体解法。",
-      "trigger": "说「又要快又要稳，只能二选一吗」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
-    "skill:standalone/thinking-via-negativa": {
-      "recommendation": 3,
-      "description": "减法思维。反射性想加功能、加层、加流程时，先删掉有害和非必要的部分，删之前过一道不可逆性检查。",
-      "trigger": "说「先别加，看看能删掉什么」。",
-      "tags": [
-        "role/workflow",
-        "focus/decision-making",
-        "focus/mental-models",
-        "output/decision"
-      ]
-    },
     "skill:standalone/tipkit": {
       "recommendation": 2,
       "description": "TipKit API 离线镜像。Tip 协议、内联提示 TipView 与浮层 PopoverTipView、显示规则与频率控制、Tips.configure 初始化。",
@@ -2622,48 +3569,6 @@
         "platform/apple",
         "stack/swiftui",
         "output/reference"
-      ]
-    },
-    "skill:standalone/to-issues": {
-      "recommendation": 2,
-      "description": "把计划/规格拆成可独立认领的 issue,用 tracer bullet 纵向切片。已更新到上游最新(上游改名 to-tickets,105 行)。",
-      "trigger": "说「把这个计划拆成任务」。同样依赖脚手架。",
-      "dependencies": [
-        "skill:standalone/setup-matt-pocock-skills"
-      ],
-      "tags": [
-        "role/builder",
-        "focus/delivery-planning",
-        "focus/work-breakdown",
-        "output/issues"
-      ]
-    },
-    "skill:standalone/to-prd": {
-      "recommendation": 2,
-      "description": "把当前对话合成规格文档并发到 issue tracker。已更新到上游最新(上游改名 to-spec,75 行)。明确不访谈你,只综合已知信息。",
-      "trigger": "说「把刚才讨论的整理成 PRD」。依赖 setup-matt-pocock-skills 先配好 issue tracker。",
-      "dependencies": [
-        "skill:standalone/setup-matt-pocock-skills"
-      ],
-      "tags": [
-        "role/builder",
-        "focus/product-specification",
-        "focus/requirements-synthesis",
-        "output/prd"
-      ]
-    },
-    "skill:standalone/triage": {
-      "recommendation": 2,
-      "description": "用状态机和五种 triage 角色流转 issue,要求每条评论带免责声明。",
-      "trigger": "说「过一遍待办 issue」。强依赖 issue tracker 脚手架。",
-      "dependencies": [
-        "skill:standalone/setup-matt-pocock-skills"
-      ],
-      "tags": [
-        "role/workflow",
-        "focus/delivery-planning",
-        "focus/issue-triage",
-        "output/issues"
       ]
     },
     "skill:standalone/ui-styling": {
@@ -2751,17 +3656,6 @@
         "output/video"
       ]
     },
-    "skill:standalone/watch": {
-      "recommendation": 4,
-      "description": "读取视频 URL 或本地视频:用 yt-dlp 下载、ffmpeg 抽帧,优先提取原生字幕,无字幕时可调用 Groq 或 OpenAI Whisper 转录,再按时间戳总结或回答问题。",
-      "trigger": "发一个 YouTube、X、TikTok 等视频链接或本地视频路径,说「看完并总结」「分析 2:30 附近发生了什么」。长视频最好指定片段以控制耗时和图像 token。",
-      "tags": [
-        "role/researcher",
-        "focus/video-analysis",
-        "output/summary",
-        "output/transcript"
-      ]
-    },
     "skill:standalone/web-design-guidelines": {
       "recommendation": 2,
       "description": "按 Vercel 的 Web Interface Guidelines 审查界面代码(无障碍、交互细节、常见 UX 缺陷)。",
@@ -2784,28 +3678,6 @@
         "platform/apple",
         "stack/swiftui",
         "output/reference"
-      ]
-    },
-    "skill:standalone/write-a-skill": {
-      "recommendation": 2,
-      "description": "建新技能:结构、渐进披露、附带资源,113 行。",
-      "trigger": "三个同类里最短最浅的,优先用 skill-creator。",
-      "tags": [
-        "role/builder",
-        "focus/progressive-disclosure",
-        "focus/skill-authoring",
-        "output/skill"
-      ]
-    },
-    "skill:standalone/writing-guidelines": {
-      "recommendation": 2,
-      "description": "按 Vercel 的 Writing Guidelines 审查文档与文案的语气、用词、结构。",
-      "trigger": "说「审一下这段文档的写法」。同样仅 31 行,本体是外链。",
-      "tags": [
-        "role/reviewer",
-        "focus/copy-editing",
-        "focus/voice-tone",
-        "output/report"
       ]
     },
     "skill:standalone/writing-rules": {

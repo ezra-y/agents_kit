@@ -1,0 +1,21 @@
+{
+  "mode": "swe-localize",
+  "skill": "five-whys-plus",
+  "solver": "claude-sonnet-4-6",
+  "n": 224,
+  "dataset_path": "/Users/tjboudreaux/Sandbox/cc-thinking-skills/evals/datasets/calibrated/debugging-fault-localization-decisive.jsonl",
+  "acc_with_skill": 0.594,
+  "acc_with_skill_ci": [
+    0.528,
+    0.656
+  ],
+  "acc_placebo": 0.585,
+  "acc_placebo_ci": [
+    0.519,
+    0.647
+  ],
+  "delta_pp": 0.9,
+  "mcnemar_p": 0.724,
+  "significant": false,
+  "discordant": 8
+}

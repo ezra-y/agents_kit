@@ -1,0 +1,130 @@
+{
+  "skill": "thinking-reversibility",
+  "problems": [
+    {
+      "id": "reversibility-1",
+      "prompt": "Two decisions landed on my plate this week and both teams are stuck debating. First: which feature-flag/experimentation vendor to adopt for our web app (LaunchDarkly vs. an open-source self-hosted option). Second: what primary datastore and data model to build our new core ledger service on, since it'll be the system of record for every financial transaction. Both have turned into multi-week analysis-paralysis arguments with everyone wanting more evaluation. How should we approach making these two decisions?",
+      "failure_mode": "Applies the same heavyweight 'gather everyone, evaluate exhaustively, build a big comparison matrix' process to both, treating them as equally weighty; doesn't distinguish that the flag vendor is cheap to swap later (decide fast, pick one, move on) while the financial system-of-record datastore is genuinely hard to undo and warrants deep deliberation—so it wastes weeks on the trivial one and may rush the irreversible one."
+    },
+    {
+      "id": "reversibility-2",
+      "prompt": "Our team wants to standardize the whole frontend on a brand-new state-management library that just hit 1.0. The plan is to rewrite all 60 of our React components to use it over the next quarter so everything's consistent. The lead's argument is 'if it doesn't work out, we can always migrate off it later, it's just frontend code.' They want to start the full rollout next sprint. What's your take on how to proceed?",
+      "failure_mode": "Accepts the 'we can always migrate off later' framing and either green-lights the full rewrite or debates the library's technical merits in the abstract; misses that a 60-component rewrite onto an unproven 1.0 dependency is far less reversible than it sounds (deep coupling, churn, retraining) and that the right move is to pilot it on a few components first to convert a costly one-way commitment into a cheap, reversible experiment."
+    },
+    {
+      "id": "reversibility-3",
+      "prompt": "Marketing wants to roll out a new usage-based pricing model to replace our flat $99/month plan for all existing and new customers at the start of next month. They've built the billing changes and are ready to flip it on globally. Some customers will pay more, some less. They're moving fast because the quarter is ending. Before we flip the switch for everyone, what would you advise?",
+      "failure_mode": "Focuses on whether the new pricing math/billing logic is correct and treats the global flip as a normal launch; doesn't recognize that changing pricing on the entire existing customer base at once is a high-blast-radius, reputation-laden, hard-to-walk-back move, and that the prudent path is to make it reversible first—grandfather or flag-gate it, roll out to a small cohort, and keep an instant rollback—before committing everyone."
+    },
+    {
+      "id": "reversibility-4",
+      "prompt": "Our company is evaluating whether to migrate all customer data from our self-hosted PostgreSQL cluster to a managed cloud database service. The migration would be executed over a long weekend, after which the old cluster would be decommissioned to save $4,000/month. The database team says the migration scripts are tested and they're confident in the new setup. Should we proceed with decommissioning the old cluster right after cutover to capture the savings immediately?",
+      "failure_mode": "Agrees to decommission immediately because the migration is well-tested and the savings are real; misses that decommissioning right after cutover eliminates any fallback path—if subtle data issues or performance problems surface in the days after cutover, there's no going back—and that the prudent approach is to keep the old cluster as a read-only backup for at least 2-4 weeks before pulling the plug."
+    },
+    {
+      "id": "reversibility-5",
+      "prompt": "We're a 40-person SaaS company and just spent three months building a new real-time collaboration feature. We're ready to ship it, but it requires every user to upgrade their local client to version 3.0—there's no backward compatibility with v2 clients in the same session. Our customer success team says about 15% of our customers are large enterprises that have strict IT change-management processes and can't update clients quickly. The product team wants to hard-deprecate v2 on launch day to keep the codebase simple. How should we handle the client versioning cutover?",
+      "failure_mode": "Supports the clean break because backward compatibility code is complex to maintain and the feature requires v3 anyway; fails to recognize that forcing a hard cutover locks out 15% of customers with no path back—a potentially irreversible revenue/relationship loss—and that running v2 compatibility or a longer migration window converts a one-way door into something far more recoverable."
+    },
+    {
+      "id": "reversibility-6",
+      "prompt": "Our DevOps team wants to consolidate our three separate AWS accounts (dev, staging, prod) into a single AWS Organization with shared VPCs to reduce overhead and simplify IAM management. The effort is scoped at about 6 weeks. The architect argues this is purely an infrastructure change with no customer-facing impact and 'we can always split them back if needed.' Is this a straightforward yes-or-no approval, or does it warrant more deliberation?",
+      "failure_mode": "Agrees that merging accounts is low-risk because it's 'infrastructure only' and reversing it is theoretically possible; ignores that shared-network account consolidation creates cascading IAM, VPC, and blast-radius entanglements that are extremely costly to unwind once DNS, security groups, and resource-sharing are intertwined—treating 'theoretically reversible' as 'practically reversible.'"
+    },
+    {
+      "id": "reversibility-7",
+      "prompt": "Two engineers on our team have been doing code review for all PRs for 18 months. We're now a 14-person engineering team and review is a bottleneck. An intern suggested we just document our style guide really well and trust people to self-review on PRs under 100 lines. A senior engineer is pushing for mandatory pairing sessions instead of async review. We need to fix this in the next sprint. How should we proceed?",
+      "failure_mode": "Launches a lengthy evaluation of self-review vs. pairing vs. other models, spending weeks gathering opinions before deciding; misses that review process changes for a specific team are highly reversible—you can try the intern's lightweight approach for two weeks and roll it back immediately if quality drops, and separately pilot pairing on a workstream—so both can be run cheaply as experiments rather than treated as major policy commitments."
+    },
+    {
+      "id": "reversibility-8",
+      "prompt": "We're debating whether to open-source our core SDK that customers use to integrate with our API. Legal and the CEO think it would help developer adoption. Engineering is worried about exposing internals and creating a support burden. The current plan on the table is to do a full public release on GitHub with an MIT license. Before committing, help me think through this decision.",
+      "failure_mode": "Focuses the analysis on the business case—developer adoption gains versus support burden—without flagging that releasing code under MIT is essentially irreversible: you can delete the repo but you can't un-release the code or reclaim the license grants, and competitive code exposure is permanent; this asymmetry should shape how much analysis the decision deserves and what protective steps (Apache with CLA, contributor agreement, limited initial scope) preserve optionality."
+    },
+    {
+      "id": "reversibility-9",
+      "prompt": "Our startup just hired its first VP of Engineering. On week two she wants to reorganize our seven-person eng team from a single flat team into two squads (platform and product) with distinct oncall rotations, separate backlogs, and different sprint cadences. She says it'll improve focus. The CEO is deferring to her judgment. As a senior IC on the team, I'm skeptical but not sure whether to push back. How do you evaluate this kind of org change?",
+      "failure_mode": "Either defers entirely to the new VP's judgment or digs into the pros/cons of squad models in the abstract; misses examining whether this specific structural change—split oncall, separate backlogs, different cadences at 7 people—is harder to reverse than it looks (teams develop separate identities, collaboration patterns change, backlogs diverge) and whether a lighter pilot (two-week squad experiment before full split) could test the hypothesis more cheaply."
+    },
+    {
+      "id": "reversibility-10",
+      "prompt": "Our mobile app currently requires users to create an account before doing anything. User research suggests a significant portion of potential users drop off at this mandatory signup wall. Product wants to implement a 'try before you sign up' guest mode where users can use core features for up to 3 sessions, with data persisted locally. Engineering estimates this is a 6-week project because local state management doesn't exist today. Should we build this?",
+      "failure_mode": "Evaluates guest mode on the basis of effort vs. projected conversion improvement, treating it as a normal build/don't-build tradeoff; misses the reversibility dimension—the decision to build guest mode is quite reversible (you can gate it behind a flag or remove it), which means the team should bias toward running a quick experiment (even a fake-door test or limited pilot) rather than spending weeks analyzing before any build decision."
+    },
+    {
+      "id": "reversibility-11",
+      "prompt": "Our team is considering adopting a hexagonal/ports-and-adapters architecture for a new microservice we're building from scratch. One engineer wants to implement it fully from day one to ensure future flexibility; another thinks it's over-engineering for a service that may only ever have one database and one consumer. The service will handle inventory management for about 200 business customers. How should we approach the architecture decision?",
+      "failure_mode": "Turns this into a lengthy architectural philosophy debate, gathering references and analogies for weeks; misses that starting with a simpler layered structure for a new service is highly reversible (you can introduce ports/adapters incrementally once the domain model stabilizes), whereas over-designing from day one is also low-cost to skip—the decision is a genuine two-way door and can be made quickly with a lightweight rationale."
+    },
+    {
+      "id": "reversibility-12",
+      "prompt": "A partner company is offering us an exclusive integration deal: they'll feature our product prominently in their marketplace if we commit to building their integration first and not integrating with their two main competitors for 12 months. They estimate this gives us access to about 50,000 potential users. The sales team is enthusiastic and wants to sign next week. How should we evaluate this offer?",
+      "failure_mode": "Analyzes the partner's reach and potential user numbers and gives a thumbs-up because the upside looks good; fails to call out that a 12-month exclusivity clause is a one-way door—it forecloses competitor integrations for a full year, and if the partner's marketplace underdelivers or the competitive integrations turn out to be strategically critical, there's no exit—which means this decision warrants far more deliberation than the excited sales team is giving it."
+    },
+    {
+      "id": "reversibility-13",
+      "prompt": "Our cloud infrastructure costs are high and an engineer proposes we move our entire production workload from on-demand EC2 instances to 1-year Reserved Instances, which would save roughly $130,000 annually. We'd need to commit upfront. The infra team is confident in their utilization forecasts. Should we make the reservation?",
+      "failure_mode": "Endorses the reservation based on the projected savings and the team's forecast confidence; doesn't weight the irreversibility asymmetry—1-year commitments can be resold on the AWS marketplace but at a significant discount, and if workload patterns shift (business pivot, traffic change, architectural evolution), the committed capacity becomes a stranded cost with no clean exit—which means the analysis should also explore Convertible RIs or a phased commitment strategy."
+    },
+    {
+      "id": "reversibility-14",
+      "prompt": "My team is three months into building a GraphQL API layer that federation-wraps five backend services. The original driver was developer productivity—a single schema vs. five REST APIs. Six months in, we've noticed the federation gateway is adding ~40ms of latency on complex queries, the schema stitching is fragile, and two of the five services rarely get queried together anyway. The team lead wants to double down and finish the remaining two services. Should we keep going or reconsider?",
+      "failure_mode": "Either commits to finishing because of sunk cost ('we've come so far') or recommends a full rollback immediately; misses that the federation decision is not fully irreversible—a strangler-fig approach can incrementally expose the underlying REST APIs again while keeping federation for the services that genuinely benefit—and that mapping out reversibility options changes the recommendation from binary to incremental."
+    },
+    {
+      "id": "reversibility-15",
+      "prompt": "We're launching a feature that lets business users invite unlimited team members on our $99/month plan, up from the current 5-seat cap. The growth team believes removing the seat cap will increase expansion revenue through higher engagement and reduce churn. But we'd be removing a significant upsell lever—customers who outgrew 5 seats currently upgrade to our $299 plan. The change would affect all tiers if we ship it globally. How should we approach this?",
+      "failure_mode": "Evaluates the business case (engagement vs. lost upsell) as a strategic decision requiring a big analysis; doesn't flag that launching globally to all customers on day one is a one-way door for existing-customer pricing expectations—you can't quietly re-add a seat cap after removing it—and that a properly reversible version (test on new signups only, or via a flag on a cohort) should be the default before any permanent change to existing plans."
+    },
+    {
+      "id": "reversibility-16",
+      "prompt": "Our startup has been building on a third-party AI model provider's API. The CEO has read about the cost savings of self-hosting open-source models and wants to migrate our entire inference stack to a self-hosted LLaMA cluster on our own GPU hardware—$200K capital expense, 2 engineers for a quarter to build and operate it. She frames it as 'we'll own it forever and never pay inference fees again.' What's your analysis of this decision?",
+      "failure_mode": "Focuses on the unit-economics math (self-hosting break-even analysis vs. API fees) and either approves or rejects based on that; misses the irreversibility dimension—$200K capex on GPU hardware plus a team committed to a custom inference stack is very hard to unwind if the model landscape shifts (better public models, cheaper APIs, changed product direction), while the current API approach remains fully reversible—so the analysis should weight the option value of staying flexible."
+    },
+    {
+      "id": "reversibility-17",
+      "prompt": "Our data team wants to delete 4 years of raw event data from S3 to save about $9,000/month in storage costs. The data is currently unqueried—no one has touched the 2020-2021 buckets in over a year. The team lead says 'we've never needed it and probably never will, and this is dead storage cost.' Finance is supportive. Before we execute the deletions, what would you recommend we consider?",
+      "failure_mode": "Agrees the deletion makes sense since the data is unqueried and storage costs are real; misses that deleting historical data is completely irreversible—once gone it's gone—and the apparent safety of 'nobody looked at it for a year' is weak evidence when regulatory requirements, customer requests, ML training data needs, or retrospective audits could make that data valuable; the analysis should check whether archival (Glacier, tape) could reduce costs without irreversible destruction."
+    },
+    {
+      "id": "reversibility-18",
+      "prompt": "We're building a new B2C consumer app. The design team wants to skip the usual user research and usability testing phase—they're confident in the concept from competitive analysis—and ship the v1 experience directly to get 'real data' as fast as possible. The argument is 'we'll just iterate based on what we learn from real users.' Engineering lead agrees, noting that the design can always be updated post-launch. Should we skip the research phase?",
+      "failure_mode": "Supports shipping fast for real user data and endorses the 'iterate quickly' philosophy without examining what can and cannot be easily changed post-launch; misses that some design decisions embedded in v1 (information architecture, core user flows, data model assumptions) are much harder to reverse once users are onboarded and have formed habits, while others (color, copy, minor UI) are trivially reversible—the recommendation should distinguish which elements of the design warrant upfront research before committing."
+    },
+    {
+      "id": "reversibility-19",
+      "prompt": "My company acquired a small startup six months ago and we're deciding whether to migrate their 8,000 customers onto our platform or maintain their product as a separate standalone offering with its own engineering team. The acquired product is profitable but uses a completely different tech stack. Running two separate codebases costs us roughly $600K/year in duplicated engineering. The migration would take 8 months and require customers to learn a new interface. How do you think about this decision?",
+      "failure_mode": "Frames this as a cost-savings vs. migration-risk tradeoff and leans toward migration because of the $600K overhead; misses that sunsetting a separate product and migrating customers is highly irreversible—you can't un-migrate 8,000 customers who have churned or adapted—while keeping the standalone product for now preserves the option to migrate later with better tools or a cleaner migration path, which is worth significant value in uncertain conditions."
+    },
+    {
+      "id": "reversibility-20",
+      "prompt": "Our team is evaluating three logging and observability vendors: Datadog, Grafana Cloud, and a newer player offering 50% lower cost but with a smaller ecosystem. We've been using Datadog for two years and our dashboards, alerts, and runbooks are all built around it. The newer vendor's sales rep says migration tooling makes switching easy. We spend $8,000/month on Datadog. Should we switch to save money?",
+      "failure_mode": "Compares the price difference and evaluates the migration tooling claim at face value; fails to assess the true reversibility cost—two years of embedded dashboards, alert tuning, runbook references, and institutional Datadog knowledge represent a much larger switching cost than the tooling migration, meaning this should be treated as a serious Type 1.5 decision requiring a proper pilot on a non-critical service, not a quick approval based on the vendor's migration-ease claims."
+    },
+    {
+      "id": "reversibility-21",
+      "prompt": "Our API has two versions: v1 (2 years old, used by about 40 external integrators) and v2 (current, launched 8 months ago). Maintaining v1 costs roughly 15% of backend engineering bandwidth due to bugs, security patches, and compatibility shims. The team wants to hard-deprecate v1 immediately—send deprecation notices today and kill it in 60 days. Some of the 40 integrators are small companies that respond slowly to notices. What process would you recommend for this deprecation?",
+      "failure_mode": "Approves the 60-day timeline and treats this as a standard deprecation process; underweights that once v1 is killed, the decision is irreversible for the integrators who didn't migrate—broken integrations damage business relationships and trust permanently—and that the reversibility of the deadline itself (extending it) should be built in as an explicit escape valve for the integrators with the largest footprint."
+    },
+    {
+      "id": "reversibility-22",
+      "prompt": "An engineering team is debating whether to use Kubernetes for a new internal tooling service that will be used by about 30 people. One engineer says 'everything in our org is on K8s, this should be too for consistency.' Another says K8s is overkill—a simple Docker Compose setup deployed to a VM would run this fine and takes a day to set up vs. a week for K8s. The service has no strict SLA and downtime of a few hours would be acceptable. How should they decide?",
+      "failure_mode": "Enters a lengthy K8s vs. Docker debate weighing consistency, scalability, and organizational standards; misses that for a low-stakes internal tool with acceptable downtime, Docker Compose on a VM is trivially reversible (migrate to K8s later if needed), while K8s is only marginally harder to reverse—so this is a clear Type 2 decision that should be made in minutes by the engineers based on what's faster to ship, not debated for days."
+    },
+    {
+      "id": "reversibility-23",
+      "prompt": "We're considering moving from a monorepo (single Git repo for all services) to a polyrepo structure (separate repos per service). The main driver is that CI times have grown to 25 minutes for any change, even tiny ones, because the full test suite runs every time. The tech lead says splitting the repos will fix CI times and give teams more autonomy. This would affect 18 engineers and 12 services. How should we evaluate and implement this change?",
+      "failure_mode": "Evaluates the technical merits of monorepo vs. polyrepo and either approves or rejects based on those arguments; misses that a full repo split is significantly harder to reverse than it appears—cross-service refactors, shared tooling, and CI cache coherence all degrade after the split, and the cultural/process changes are even harder to unwind—while the original problem (slow CI) might have highly reversible solutions (affected-service detection, test partitioning) worth exhausting first before the irreversible structural change."
+    },
+    {
+      "id": "reversibility-24",
+      "prompt": "Product wants to sunset our mobile app's offline mode, which lets users work without internet connectivity and syncs when back online. The feature is used by about 8% of sessions but accounts for roughly 30% of our sync-conflict bugs and a disproportionate share of support tickets. The argument is 'let's just require connectivity—it's 2025, most users have good coverage.' Before removing it, what should we think through?",
+      "failure_mode": "Focuses on the support ticket reduction and the 'most users have connectivity' reasoning and recommends removal; doesn't flag that removing a shipped feature that users depend on is very hard to reverse—the 8% of sessions represent a specific user segment (field workers, travelers, rural areas) who may churn permanently if connectivity is required, and the reputational cost of removing it is not recoverable just by restoring the feature later."
+    },
+    {
+      "id": "reversibility-25",
+      "prompt": "My team wants to migrate our deployment workflow from a custom in-house CI/CD pipeline to GitHub Actions. The in-house pipeline took 18 months to build and has custom steps for our compliance auditing and artifact signing. The migration is scoped at 10 weeks. Two engineers who built the current pipeline just gave notice—they're leaving in 6 weeks. Does the timeline pressure change how we should think about whether and how quickly to do this migration?",
+      "failure_mode": "Recommends accelerating the migration to beat the engineers' departure, reasoning that their knowledge transfer is the window of opportunity; doesn't examine whether rushing a 10-week migration into 6 weeks turns a manageable transition into a one-way door without an adequate fallback—if the GitHub Actions setup fails compliance or artifact signing, with the original builders gone there may be no path back—and whether a hybrid approach or detailed documentation-first preserves more reversibility."
+    }
+  ]
+}

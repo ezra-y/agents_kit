@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "study_id": "scientific-method-tool-v1",
+  "status": "frozen-before-formal-paid-stages",
+  "preregistration_file": "evals/studies/scientific-method-vnext/prereg-tool-v1.md",
+  "split_file": "evals/studies/scientific-method-vnext/splits-tool-v1.json",
+  "dataset_file": "evals/datasets/external/swebench-tool.jsonl",
+  "model": "claude-sonnet-4-6",
+  "effort": "high",
+  "max_observations": 4,
+  "repository_concurrency": 4,
+  "timeout_ms": 300000,
+  "stage_caps": {
+    "calibration": {
+      "items": 12,
+      "arms": 4,
+      "calls": 53,
+      "estimated_cost_usd": 4
+    },
+    "pilot": {
+      "items": 30,
+      "arms": 4,
+      "calls": 132,
+      "estimated_cost_usd": 10
+    },
+    "confirmation": {
+      "items": 100,
+      "arms": 3,
+      "calls": 330,
+      "estimated_cost_usd": 23
+    },
+    "replication": {
+      "items": 100,
+      "arms": 3,
+      "calls": 330,
+      "estimated_cost_usd": 23
+    }
+  },
+  "retry_policy": {
+    "max_attempts": 2,
+    "retryable": [
+      "transport",
+      "timeout"
+    ]
+  },
+  "parse_policy": "Malformed answers and observation-budget violations count ITT incorrect but do not invalidate stage health.",
+  "file_pins": {
+    "evals/datasets/external/swebench-tool.jsonl": "858c4404d4081946fb6d68bb1aaf0153d335f763f81d79dda30182b2a7def7be",
+    "evals/studies/scientific-method-vnext/prereg-tool-v1.md": "6b6212e3d3873c8d2d2317955dab5fddd246ca835789fbf2278611b1ccb2a325",
+    "evals/studies/scientific-method-vnext/splits-tool-v1.json": "be1272b4c0d47d0bf1d1381764344424cefa357249ac105f9f98c44d723739ca",
+    "skills/thinking-scientific-method/SKILL.md": "fc0440edac8f2fc4787d7fd1daa5d465de1115dac1e8e282741908ccaf28026d",
+    "evals/studies/scientific-method-vnext/variants/candidate-clue-first/CANDIDATE.md": "c664f13a97bb2834ca9ebe279d21acb349b5f816de71f1f2b546adf83b4b13fd",
+    "evals/studies/scientific-method-vnext/variants/candidate-module-role/CANDIDATE.md": "5cdec93aea4498c83b9c9430b290d0d2de324d8af8e98a84503a64d09c83b0c2",
+    "evals/run-tool-localization-experiment.js": "349cddc2239f36288781077b319b945caaa0870de250d5411f5a2f91bdf3155b",
+    "evals/lib/droid.js": "eb16312a9f6168082d63bc334f5763ff5a698fc263fa238cab762fd77b92706d",
+    "evals/lib/io.js": "d2b1e2bf8f8b9be9721f989a3f1a5e9ae48b79dbaf39af2667d3df6600f8543f",
+    "evals/lib/result.js": "c0d50b65630cc1707e34b15d94be9617fe0308d493d4d6c043b4b6beea19e1ed",
+    "evals/lib/stats.js": "da0ae8b6da6b5dfb6db5008f00259c05a9d8e521d565b9853e7b054ce1926fd2",
+    "evals/lib/scientific-method-experiment.js": "404cc0525a6fd4e536e5d2853ce14148b7ddf431f2221f17154f2c61415f2abf",
+    "evals/lib/tool-localization.js": "f72e26fe7b92f04d796b8ed462dc50f559a7ded9c012b93774d5d532bc134382",
+    "evals/lib/tool-localization-runner.js": "a83967127f3e64e22f76d179c56e7aa555ad34657b0713b9f174eaed5b98c903"
+  }
+}

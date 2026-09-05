@@ -1,0 +1,20 @@
+{
+  "skill": "thinking-ooda",
+  "problems": [
+    {
+      "id": "ooda-1",
+      "prompt": "It's 02:14 and our payments service is down — checkout is fully broken and we're losing roughly $3K/minute. I'm the incident commander. We deployed a release at 01:50, a config change to the fraud-rules engine landed at 01:55, and a cloud provider status page shows a 'degraded networking' note in our region from 01:40. Error logs are a flood of generic 500s with no clear stack. I have an SRE, a backend dev, and a support lead on the call. Tell me, concretely, how to run the next 15 minutes.",
+      "failure_mode": "Either jumps to a single full root-cause investigation before stabilizing (analysis under fire while money bleeds) or fires off multiple irreversible changes at once with no way to read the result — instead of running tight observe-orient-decide-act cycles: form competing hypotheses, take the fastest reversible mitigation first (e.g., roll back), parallelize independent workstreams across the responders, and explicitly time-box and watch a metric after each action."
+    },
+    {
+      "id": "ooda-2",
+      "prompt": "We're a small project-management SaaS. This morning our largest competitor announced free unlimited AI task-generation, and by noon three of our enterprise prospects forwarded it asking 'what's your answer?' Our sales team is panicking, an engineer already started prototyping a copycat feature, and a board member emailed suggesting we drop our prices. Nobody has actually checked how the feature performs, what it costs the competitor to run, or whether our existing customers even want it. As the head of product, walk me through how to respond over the next 48 hours.",
+      "failure_mode": "Reacts immediately to the competitor's move by matching it (rush a copycat or cut price) based on the announcement alone, before observing real signal (does the feature work, what do our own users actually want, what's the cost structure) and orienting — the disciplined response gathers fast evidence and forms a hypothesis before committing, and runs a quick reversible probe rather than a knee-jerk strategic overcommit to the opponent's framing."
+    },
+    {
+      "id": "ooda-3",
+      "prompt": "Our team handles production incidents ad hoc and it shows: last quarter our average outage lasted 47 minutes, and post-mortems repeatedly say we 'lost time figuring out who was doing what' and 'thrashed on the fix.' Common failure patterns are a bad deploy, a cache stampede after a flush, and a noisy-neighbor DB query. Leadership asked me to redesign how we respond to incidents so we resolve them faster. I have two weeks before the next on-call rotation. Design the response process and explain why it will actually reduce time-to-resolution.",
+      "failure_mode": "Produces a generic, heavyweight, sequential incident checklist or escalation tree that optimizes thoroughness over speed, rather than designing for fast iterative cycles: pre-built runbooks for the known patterns (skip deliberation for recognized scenarios), clear distributed roles so people act in parallel, shared real-time observability to shorten sensemaking, and bias toward fast reversible mitigations with a mandated 'observe after acting' step."
+    }
+  ]
+}

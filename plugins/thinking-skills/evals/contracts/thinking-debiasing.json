@@ -1,0 +1,23 @@
+{
+  "skill": "debiasing",
+  "primary_value_surface": "calibrated classification",
+  "primary_metric": "bias_detection_accuracy",
+  "secondary_metrics": ["calibration_improvement", "base_rate_adherence", "anchoring_resistance", "confirmation_bias_mitigation"],
+  "distractors": {
+    "off_target_set": "Decisions with no identifiable bias risk; situations where the bias is already corrected by process; meta-questions about debiasing techniques",
+    "description": "Items where cognitive biases are not a meaningful threat to decision quality, or where the decision process already neutralizes them"
+  },
+  "calibration_range": [0.40, 0.70],
+  "calibration_exception": null,
+  "min_sample_primary": 60,
+  "min_sample_replication": 60,
+  "planned_comparison": "placebo",
+  "decision_gate": {
+    "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND calibration_improvement >= 0.02",
+    "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+    "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+    "quarantine_redirect": "primary_delta_pp < 0 OR base_rate_adherence < 0.50",
+    "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+  },
+  "eval_family": "Quantitative/uncertainty"
+}

@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "study_id": "legacy-july-verdict-occams",
+  "study_kind": "legacy_july_objective_swe",
+  "created_at": "2026-07-16T00:00:00.000Z",
+  "skill": "occams-razor",
+  "mode": "swe-localize",
+  "solver": {
+    "model": "claude-sonnet-4-6",
+    "effort": "high"
+  },
+  "arms": [
+    {
+      "id": "skill",
+      "role": "treatment",
+      "skill": "occams-razor"
+    },
+    {
+      "id": "placebo",
+      "role": "equal_budget_placebo",
+      "note": "length-matched placebo; advice-bearing filler possible"
+    }
+  ],
+  "dataset": {
+    "source_path": "evals/datasets/external/swebench-verified-slice-201-400.jsonl",
+    "source_sha256_preregistered": "c3a9a36fcae07eccebc01c1ed3a7ddd85fa3885ff90dabced74e534072c3d0e0",
+    "dataset_count": 200,
+    "split": "fresh_verified_pool"
+  },
+  "n_attempted": 200,
+  "n_items_recorded": 200,
+  "n_scored": 199,
+  "n_unscored": 1,
+  "unscored_ids": [
+    "sympy__sympy-21379"
+  ],
+  "measured_result": {
+    "metric": "fault_localization_accuracy",
+    "acc_skill": 0.879,
+    "acc_skill_ci": [
+      0.827,
+      0.918
+    ],
+    "acc_placebo": 0.874,
+    "acc_placebo_ci": [
+      0.821,
+      0.913
+    ],
+    "delta_pp": 0.5,
+    "discordant_total": 13,
+    "discordant": {
+      "skill_only": 7,
+      "placebo_only": 6,
+      "both_correct": 168,
+      "both_incorrect": 18
+    },
+    "mcnemar_p_artifact": 1,
+    "mcnemar_p_continuity_corrected_approx": 1,
+    "significant_artifact": false
+  },
+  "statistics": {
+    "test": "mcnemar_continuity_corrected",
+    "p_value_artifact": 1,
+    "p_value_recomputed_approx": 1,
+    "significant_artifact": false,
+    "delta_pp": 0.5
+  },
+  "health": {
+    "completeness": 0.995,
+    "unscored_count": 1,
+    "raw_responses_present_in_source": false,
+    "parsed_answers_present_in_source": false,
+    "usage_present_in_source": false
+  },
+  "usage": null,
+  "defects": [
+    "permissive_filename_matching",
+    "active_placebo_control",
+    "missing_raw_response_archive",
+    "missing_parsed_answer_fields",
+    "incomplete_usage_fields",
+    "source_artifact_untracked_in_git",
+    "incomplete_scoring_denominator"
+  ],
+  "evidence_validity": "provisional",
+  "statistical_status": "null_not_significant",
+  "replication_status": "historical_null_result_not_replication_qualified",
+  "product_disposition": "manual_only_quarantine_no_lift",
+  "notes": [
+    "Pre-registered July run on fresh Verified slice 201-400: +0.5pp, p=1.0 → measured NO-LIFT under source verdict rule.",
+    "Provisional only: missing raw archive/parsed paths; not replication-qualified under current gates.",
+    "1/200 unscored after retries."
+  ],
+  "source": {
+    "path": "evals/results/verdict-occams/swe-occams-razor.json",
+    "sha256": "eab1b50a29ec59f25ffb9052c9dad69c20f6c54511d001d8425f73c0c0e91d6b",
+    "bytes": 26909,
+    "mtime_utc": "2026-07-02T10:39:23.471Z",
+    "git_tracked": false,
+    "disposition": "preserve_in_place",
+    "raw_response_archive": {
+      "status": "absent",
+      "uri": null,
+      "note": "No durable content-addressed raw-response archive exists; source artifact preserved in place; evidence remains provisional."
+    }
+  },
+  "skill_sha256_preregistered": "42adf8e4274dd6d03f4cb24417a83f67c849f44bc0683af64a0978feec0db4f4",
+  "preregistration": {
+    "path": "analysis/PRE-REGISTERED-VERDICT-STUDIES.md",
+    "sha256": "ae78d4ae9d6208754b64b4bffd94535b3154c3ac2f80c08c02628e36c8854898"
+  },
+  "items_file": {
+    "path": "evals/studies/legacy-july-verdict-occams/items.jsonl",
+    "sha256": "fb534c7fc3f332d24bebe7a5825ca0ebc5b64fd2fc86dd4c3b88e414da8ad6bf",
+    "bytes": 80201,
+    "row_count": 200
+  }
+}

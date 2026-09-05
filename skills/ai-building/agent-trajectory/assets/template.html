@@ -420,7 +420,8 @@ const state = {
   allExpanded: false,
   detailEventId: null,
 };
-const annByTurn = () => new Map(((ANN && ANN.turns) || []).map(t => [t.index, t]));
+let annCache = null;
+const annByTurn = () => annCache ?? (annCache = new Map(((ANN && ANN.turns) || []).map(t => [t.index, t])));
 
 /* ================= header / sidebar ================= */
 function renderHeader() {
@@ -521,6 +522,7 @@ function buildTurn(turn) {
       ev.stopPropagation();
       state.fullTurns.set(turn.index, !full);
       const fresh = buildTurn(turn);
+      if (turnObserver) turnObserver.unobserve(card);   // release before replace
       card.replaceWith(fresh);
       if (turnObserver) turnObserver.observe(fresh);
       applyFilters();
@@ -752,7 +754,9 @@ function glideScroll(el, left, ms = 260) {
 }
 let ovIndex = [], ovXOfTurn = new Map(), ovDraw = null, ovCursorX = null;
 let ovMarkById = new Map(), ovHoverId = null, ovFlashIds = [], ovNavHover = -1;
-const cssVar = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#888';
+let cssVarCache = Object.create(null);
+const cssVar = name => cssVarCache[name]
+  ?? (cssVarCache[name] = getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#888');
 const KIND_GLYPH_LEGEND = [
   ['think / reply', '--ink-3'], ['your message', '--accent'], ['compaction ⟲', '--warn'],
 ];
@@ -781,6 +785,7 @@ function renderOvLegend(counts) {
   box.append(nav);
 }
 function renderOverview() {
+  cssVarCache = Object.create(null);   // theme may have flipped since last build
   const wrap = $('#ov-scroll'); const keepScroll = wrap.scrollLeft;
   wrap.textContent = ''; ovIndex = []; ovXOfTurn = new Map(); ovDraw = null; ovMarkById = new Map();
   const events = [];
@@ -1157,7 +1162,7 @@ $('#ov-time').addEventListener('click', () => { state.ovMode = 'time'; state.ovZ
     fallback = setTimeout(ovDraw, 40);   // panes without rAF still redraw
   }, { passive:true });
   new ResizeObserver(() => { if (ovDraw) ovDraw(); }).observe(wrap);
-  if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (ovDraw) ovDraw(); });
+  if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { cssVarCache = Object.create(null); if (ovDraw) ovDraw(); });
 })();
 function syncOverviewCursor() {
   const tx = ovXOfTurn.get(state.activeTurn);
@@ -1403,7 +1408,7 @@ function patchUpdate(newData, newAnn) {
   const old = DATA;
   const annChanged = newAnn !== undefined && JSON.stringify(ANN) !== JSON.stringify(newAnn);
   DATA = newData;
-  if (newAnn !== undefined) ANN = newAnn;
+  if (newAnn !== undefined) { ANN = newAnn; annCache = null; }
   if (state.allExpanded) {
     DATA.turns.forEach((t, i) => {
       if (old.turns[i]) return;

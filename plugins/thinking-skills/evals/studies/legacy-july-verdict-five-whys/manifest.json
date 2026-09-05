@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "study_id": "legacy-july-verdict-five-whys",
+  "study_version": "legacy-july-2026-07-02",
+  "created_at": "2026-07-16T00:00:00.000Z",
+  "bundle_kind": "legacy_july_import",
+  "producer": {
+    "command": "EVAL_RUN=verdict-five-whys FORCE_SKILL=five-whys-plus SWE_DATASET_PATH=evals/datasets/external/swebench-verified-slice-1-200.jsonl SOLVER_MODEL=claude-sonnet-4-6 SOLVER_EFFORT=high CONC=4 node evals/run-swe.js",
+    "runner": "evals/run-swe.js",
+    "eval_run": "verdict-five-whys"
+  },
+  "worktree": {
+    "branch": "main",
+    "head_at_bundle_time": "a59144cc28dedaf62e4547339561dbe9d585435e",
+    "note": "Source result artifacts were untracked; head recorded at Phase 0 bundle write time only."
+  },
+  "source_artifacts": [
+    {
+      "path": "evals/results/verdict-five-whys/swe-five-whys-plus.json",
+      "sha256": "6294dd990f8fd2d50ac97a23963cb1d14c60069b5cb0a8477e614fc04b31b697",
+      "bytes": 26957,
+      "mtime_utc": "2026-07-02T11:04:49.566Z",
+      "git_tracked": false,
+      "disposition": "preserve_in_place",
+      "raw_response_archive": {
+        "status": "absent",
+        "uri": null,
+        "note": "No durable content-addressed raw-response archive exists; source artifact preserved in place; evidence remains provisional."
+      }
+    }
+  ],
+  "dataset": {
+    "path": "evals/datasets/external/swebench-verified-slice-1-200.jsonl",
+    "sha256_preregistered": "7401434c83c34d11247b18ddb5bc6c9f382931e1f92e69ff2838fdda8b70a4c8",
+    "count": 200
+  },
+  "skill": {
+    "id": "five-whys-plus",
+    "skill_md_sha256_preregistered": "eec1f6e940e133d78cb0a8f45f74a623da3d7238bac50b9de7ded5d891e91f21"
+  },
+  "solver": {
+    "model": "claude-sonnet-4-6",
+    "effort": "high"
+  },
+  "preregistration": {
+    "path": "analysis/PRE-REGISTERED-VERDICT-STUDIES.md",
+    "sha256": "ae78d4ae9d6208754b64b4bffd94535b3154c3ac2f80c08c02628e36c8854898"
+  },
+  "files": {
+    "manifest": "manifest.json",
+    "items": "items.jsonl",
+    "aggregate": "aggregate.json"
+  },
+  "counts": {
+    "source_items": 200,
+    "bundled_items": 200,
+    "scored": 199,
+    "unscored": 1
+  },
+  "hash_reconciliation": {
+    "source_sha256": "6294dd990f8fd2d50ac97a23963cb1d14c60069b5cb0a8477e614fc04b31b697",
+    "items_sha256": "7842b779cf80a630da948ba74d542e4d3d4e54f1aeb9d3dc3038fcca895c76d0",
+    "aggregate_sha256": "0aa7e3053e86aaefb3c45f78103d3884c741885a174b7c0ff24ff099df603f21"
+  },
+  "archive": {
+    "raw_responses": "absent",
+    "source_preservation": "preserve_in_place",
+    "evidence_validity": "provisional"
+  },
+  "defects": [
+    "permissive_filename_matching",
+    "active_placebo_control",
+    "missing_raw_response_archive",
+    "missing_parsed_answer_fields",
+    "incomplete_usage_fields",
+    "source_artifact_untracked_in_git",
+    "incomplete_scoring_denominator"
+  ],
+  "measured_result_summary": {
+    "delta_pp": 1.5,
+    "mcnemar_p_artifact": 0.546,
+    "mcnemar_p_recomputed_approx": 0.546494,
+    "significant_artifact": false,
+    "n_scored": 199
+  },
+  "statistical_status": "null_not_significant",
+  "replication_status": "historical_null_result_not_replication_qualified",
+  "evidence_validity": "provisional",
+  "product_disposition": "manual_only_quarantine_no_lift",
+  "notes": [
+    "Pre-registered July run on fresh Verified slice 1-200: +1.5pp, p=0.546 → measured NO-LIFT under source verdict rule.",
+    "Provisional only: missing raw archive/parsed paths; not replication-qualified under current gates.",
+    "1/200 unscored after retries."
+  ]
+}

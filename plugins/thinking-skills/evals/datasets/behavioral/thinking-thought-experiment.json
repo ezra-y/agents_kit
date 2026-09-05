@@ -1,0 +1,130 @@
+{
+  "skill": "thinking-thought-experiment",
+  "problems": [
+    {
+      "id": "thought-experiment-1",
+      "prompt": "We're about to commit to making our primary Postgres database the single source of truth for a new real-time collaborative editing feature (think shared docs). Multiple users editing the same document, changes broadcast over websockets, with optimistic UI updates on the client. We have ~40k concurrent users at peak. The plan looks clean on the whiteboard and the team is eager to start building. Before we write the migration and the websocket layer, can you pressure-test whether this design actually holds up? I want to feel confident this is the right architecture, not just that the happy path works.",
+      "failure_mode": "Validates the happy-path design and lists generic best practices, rather than systematically tracing concrete scenarios (two users editing the same field simultaneously, a client reconnecting after 30s offline with stale optimistic edits, the DB hitting write contention at peak) step by step to surface the conflict-resolution and consistency failures before code is written."
+    },
+    {
+      "id": "thought-experiment-2",
+      "prompt": "I'm choosing between two billing architectures for our SaaS and it's basically a one-way door once customers are live. Option A: store balances as a single mutable `account_balance` column we increment/decrement. Option B: store an append-only ledger of immutable transactions and derive the balance. Option A is faster to build and the team knows it well. We process refunds, proration, disputes, and the occasional manual finance correction. Help me decide. I keep hearing 'ledgers are best practice' but I want to actually understand why it matters for us specifically, not just follow dogma.",
+      "failure_mode": "Defaults to citing 'append-only ledgers are best practice' without grounding it, instead of running the decision through concrete future scenarios (a disputed charge six months later, a finance auditor asking 'why is this balance what it is', a bug that double-decremented) and an extreme/time-shift trace that reveals the mutable-column design destroys the history needed to answer those questions."
+    },
+    {
+      "id": "thought-experiment-3",
+      "prompt": "We're adding an AI agent to our customer support product that can take real actions on the user's account: issue refunds, change subscription tiers, cancel orders, update shipping addresses. It's gated behind the support rep clicking 'approve' on each suggested action. The team thinks the human-in-the-loop approval makes it safe enough to ship next sprint. I'm uneasy but can't articulate exactly what's wrong. Can you help me figure out where this could go badly before we launch, so we know what guardrails we actually need rather than just trusting the approve button?",
+      "failure_mode": "Accepts 'human approval makes it safe' at face value and offers a generic checklist, rather than adopting an adversarial/role-reversal lens and tracing what a careless rep clicking approve on autopilot, a confused agent, or a user manipulating the rep would actually cause (mass erroneous refunds, privilege misuse) to derive the specific guardrails needed."
+    },
+    {
+      "id": "thought-experiment-4",
+      "prompt": "We're planning to launch our SaaS product to enterprise customers with a 99.9% monthly uptime SLA. Our current architecture has a single-region deployment on one cloud provider. We haven't had a serious outage in six months. The team is confident we can meet the SLA. Before we commit this to a contract, help me think through what actually happens when we miss it.",
+      "failure_mode": "Evaluates whether 99.9% is achievable given recent history, rather than tracing the concrete consequence chain: what events could cause downtime (region outage, database failure, deployment bug), how long each would take to recover from in the current architecture, what the financial and contractual penalties look like for a 2-hour outage at the specific SLA level, and whether 'we haven't had an outage recently' is evidence of resilience or luck."
+    },
+    {
+      "id": "thought-experiment-5",
+      "prompt": "Our team is considering adopting a polyglot persistence strategy — using Postgres for transactional data, Redis for session/cache, Elasticsearch for search, and a time-series DB for metrics. Each team picks the best tool for their use case. We're 18 engineers today. Before we go ahead, I want to think through what our operations, hiring, and incident response look like in three years if we commit to this direction.",
+      "failure_mode": "Evaluates the technical merits of each database choice in isolation, rather than projecting forward in time: tracing what a 2am production incident looks like when a search index goes stale and requires understanding of three separate systems, what happens when a new hire needs to be productive across all four systems, what the accumulated debugging context cost looks like for an engineer who has to context-switch between query languages and failure modes daily."
+    },
+    {
+      "id": "thought-experiment-6",
+      "prompt": "We're designing a feature that lets users permanently delete their accounts, including all their data. The engineering team has a plan: set a 'deleted' flag in the user record, run a batch job nightly that wipes flagged users' data. This satisfies GDPR's right-to-erasure requirement and took about a day to design. Before we implement it, can you walk through the edge cases and failure modes I should understand?",
+      "failure_mode": "Reviews the design against a list of generic deletion best practices, rather than tracing specific concrete scenarios step by step: what happens if the nightly batch job fails halfway through (partial deletion, no retry), what happens to a deleted user's data that has already been replicated to a data warehouse or cold backup, what happens if a user deletes their account and then tries to re-register with the same email before the batch runs, and whether the flag-then-delete design creates a window of privacy exposure."
+    },
+    {
+      "id": "thought-experiment-7",
+      "prompt": "We're about to bet on a specific third-party AI provider for the core reasoning component of our product — their API powers 80% of our product's value. The API is fast, well-priced, and the best option we've evaluated. We're 8 engineers, 6 months from launch. Before signing the enterprise agreement, help me think through what our situation looks like if this provider disappears, degrades, or significantly changes their pricing in 24 months.",
+      "failure_mode": "Evaluates the provider's current merits and suggests generic vendor risk mitigations, rather than tracing the concrete scenarios step-by-step: what product features would break immediately in a provider outage at our current architecture, what the switching timeline would look like if we had to migrate to a competitor's API (re-evaluation, re-prompting, re-testing), and what 3x pricing would mean for our unit economics at the scale we project."
+    },
+    {
+      "id": "thought-experiment-8",
+      "prompt": "We have a background job system that processes financial transactions — ACH transfers, payouts, reconciliation. Right now, the job runner retries failed jobs up to 5 times with exponential backoff, but there's no idempotency check — if a job runs twice due to a race condition or retry race, it would execute the transaction twice. The engineering lead says 'retry races are extremely rare in our setup.' Before we go live with real money, help me understand what the worst-case scenario looks like.",
+      "failure_mode": "Assesses the probability that a retry race occurs and concludes it's low, rather than tracing what actually happens when it does: which specific scenarios cause double-execution (network partition at commit time, process restart during retry, two workers picking up the same job), what the user-visible outcome of a double-charge is, how long it would take to detect, and what the remediation path looks like for a double-executed payout."
+    },
+    {
+      "id": "thought-experiment-9",
+      "prompt": "Our startup's entire infrastructure is in a single AWS region (us-east-1). We're getting ready to close a Fortune 500 customer who has asked about our disaster recovery posture. We've never had a regional outage but haven't invested in multi-region. Before our next call with the customer, I want to honestly understand what a us-east-1 region failure would actually mean for us and how long recovery would realistically take.",
+      "failure_mode": "Provides a generic description of AWS regional outage risks and recommends multi-region setup, rather than tracing step-by-step what concretely happens to this company's specific stack: which services would be offline, what the RTO looks like for restoring from cross-region backups with no pre-provisioned standby, what a real 4-hour outage would cost in terms of revenue and customer commitments, and what the customer would actually experience during recovery."
+    },
+    {
+      "id": "thought-experiment-10",
+      "prompt": "We're designing a search index for a legal document repository with 50 million documents. Documents contain sensitive case information. The index must support full-text search, which traditionally requires indexing the document content. Our privacy team says we can't store plaintext document content in the search index because of confidentiality requirements. The engineering team's current plan is to just not index document content and only search metadata (titles, tags, dates). Before accepting this constraint, help me think through what that user experience actually looks like.",
+      "failure_mode": "Evaluates the metadata-only search plan against best practices, rather than tracing the user experience step by step: walk through a paralegal trying to find a case involving a specific clause phrasing across 50M documents, the number of false negatives they'd encounter, how they'd attempt to work around the limitation, and whether the product would actually be usable for its stated purpose — the thought experiment reveals whether the design is viable before building."
+    },
+    {
+      "id": "thought-experiment-11",
+      "prompt": "We're building an agent that can browse the web, write and execute code, and interact with our internal APIs on behalf of users. The agent has access to the user's API key. Right now there's no sandboxing — the code it writes runs in the same environment as our application server. The team says 'the agent only does what users ask it to do, so it's safe.' Help me think through where this assumption breaks down before we ship.",
+      "failure_mode": "Lists generic AI safety concerns rather than tracing specific concrete failure scenarios step by step: what happens when a user asks the agent to summarize a webpage that contains a prompt injection attack, what happens when generated code has an unintentional infinite loop, what happens if the agent interprets 'clean up my old files' too broadly in a shared environment, and what the blast radius of a compromised API key is in the current architecture."
+    },
+    {
+      "id": "thought-experiment-12",
+      "prompt": "Our team is considering making our internal Slack workspace the primary communication channel for all customer support inquiries — dedicated channels per enterprise customer, customers added as guests. This would give customers real-time access to engineers, eliminate the ticket system, and feel more premium. We have 40 enterprise customers and 15 engineers. Before we commit to this operational model, help me think through what it looks like in two years if it works and we have 200 enterprise customers.",
+      "failure_mode": "Evaluates the idea against current-state feasibility rather than projecting forward: tracing what 200 enterprise customers with Slack guest access looks like for an engineer's daily experience (channel count, notification volume, context switching cost), what happens when a customer sends an urgent message at 2am, how institutional knowledge about past customer issues is preserved when it lives in ephemeral Slack history, and what offboarding a customer looks like."
+    },
+    {
+      "id": "thought-experiment-13",
+      "prompt": "We're about to make our API free for the first 10,000 requests per month per user, with paid tiers above that. Our current infrastructure cost per API call is about $0.00008. Before we announce this, our CEO asked me to 'make sure we've stress-tested the economics.' Help me think through the failure scenarios before we launch.",
+      "failure_mode": "Calculates expected revenue and cost at anticipated adoption rates, rather than tracing the extreme scenarios: what happens if a single power user writes a scraper that makes 10 million 'free tier' calls across fake accounts, what happens if our infrastructure cost is understated by 3x at scale, what the unit economics look like when a cohort of free users never converts, and what contractual or reputational exposure we have if we need to change the pricing after users have built on it."
+    },
+    {
+      "id": "thought-experiment-14",
+      "prompt": "We're planning to migrate our user authentication from a home-grown system to a third-party identity provider. The migration plan is: run the third-party IdP in parallel for 2 weeks with all new signups, then batch-migrate existing users by resetting their passwords and forcing a re-login. We have 200,000 users. Before we run this migration, help me trace through what happens for the existing users on migration day.",
+      "failure_mode": "Reviews the migration plan against best practices rather than tracing the user experience step-by-step on migration day: what a user who logs in with a saved password on their phone experiences when it silently fails, what percentage of 200,000 users might not have a working email address to receive the password reset, what happens if the batch migration job partially fails and half the users are in the old system and half in the new, and what the support ticket volume spike looks like."
+    },
+    {
+      "id": "thought-experiment-15",
+      "prompt": "We're an 8-person startup considering open-sourcing our core infrastructure library, which we currently use internally. The theory is that open-sourcing will drive developer adoption, create a community around our tools, and help us recruit. We'd continue to sell a proprietary managed version on top. Before we do this, I want to think through what happens if it actually works — if the library gets widely adopted.",
+      "failure_mode": "Evaluates the open-source strategy on its marketing and community merits, rather than tracing the consequence chain if it succeeds: what happens when a large company with 50 engineers starts using the library and filing high-quality issues at scale, what happens when a well-resourced contributor submits a PR that goes in a different architectural direction, what the maintenance burden looks like at 10,000 GitHub stars when 8 people are also trying to build a company, and what happens when a competitor forks and ships a competing managed version."
+    },
+    {
+      "id": "thought-experiment-16",
+      "prompt": "We're designing a feature that automatically emails users a weekly digest of their activity in our project management tool. The emails will be personalized with their task counts, completed items, and a 'productivity score' we're computing. The team is excited about the personalization angle. Before we build the email infrastructure and score calculation, help me think through what happens when users receive these emails in practice.",
+      "failure_mode": "Reviews the feature design against email marketing best practices, rather than tracing specific user scenarios: what does a user who had a bad week (missed deadlines, low score) feel when they receive the email, what does a user who's on vacation and hasn't logged in experience, what happens when the productivity score calculation has a bug that gives a user a score of 0, and what the unsubscribe rate implications are for our deliverability if the emails feel judgmental."
+    },
+    {
+      "id": "thought-experiment-17",
+      "prompt": "We're considering implementing a feature that lets users export all their data from our platform as a JSON archive. The export job runs asynchronously and emails the user a download link when it's ready. We have 5 million users and some users have years of data. Before we build this, what scenarios should I trace through to make sure the design is sound?",
+      "failure_mode": "Lists export feature requirements and best practices rather than tracing the failure scenarios step-by-step: what happens when a user with 10GB of data triggers an export on a shared job runner, what happens if 50,000 users trigger an export on the same day (perhaps prompted by a privacy news cycle), what happens if the email fails to deliver and the user never gets their link, and what the storage cost and TTL policy implications are for the generated archive files."
+    },
+    {
+      "id": "thought-experiment-18",
+      "prompt": "We are planning to give our LLM-powered coding assistant access to read and write files in the user's local development environment, execute terminal commands, and install packages. The assistant would operate through a VS Code extension with a simple on/off toggle the user sets once during setup. Before we ship this capability, help me think through what could go wrong with this design.",
+      "failure_mode": "Lists generic concerns about LLM tool-use permissions rather than tracing concrete failure scenarios: what happens when a user asks the assistant to 'clean up unused files' and it deletes configuration files that looked unused, what happens when a malicious prompt is embedded in a code comment the assistant reads, what happens when the assistant installs a dependency that introduces a known vulnerability, and what the user's recourse is if the assistant executes a command that is irreversible."
+    },
+    {
+      "id": "thought-experiment-19",
+      "prompt": "Our team is evaluating whether to build our next product feature as a microservice (independent deployment, own database, own team ownership) versus adding it to our existing monolith. The microservice argument is autonomy and independent scaling. The monolith argument is simplicity. We're a 12-person team. I want to make the right call for a feature that will be central to our product in five years. Help me think through how each choice plays out over time.",
+      "failure_mode": "Evaluates microservices vs. monolith as a technical architecture question using current-state considerations, rather than running a time-shift experiment: trace what each option looks like concretely in 3 years when the feature has grown to 50,000 lines of code — what a 12-person team's daily workflow looks like when the microservice needs a shared data model change that requires coordinating three teams, versus what the monolith looks like when the feature team needs to deploy independently at 2x the company's cadence."
+    },
+    {
+      "id": "thought-experiment-20",
+      "prompt": "We're building a distributed job scheduling system that coordinates work across 200 worker nodes. The system uses a Postgres-backed job queue with optimistic locking for assignment. In our staging environment with 20 workers and 10,000 jobs per hour, it works perfectly. We're about to go live at 10x scale. Before we flip the switch, help me think through what happens at 200 workers and 100,000 jobs per hour.",
+      "failure_mode": "Assesses whether the architecture is sound based on its staging performance, rather than running the scale experiment step-by-step: trace what happens to Postgres write throughput when 200 workers poll every 100ms (lock contention math), what the locking failure mode looks like when 200 workers race on the same job row, at what throughput rate the optimistic locking starts causing retry storms, and whether the staging results are predictive of the 10x production scenario."
+    },
+    {
+      "id": "thought-experiment-21",
+      "prompt": "We're designing a feature where users can connect their GitHub repositories to our platform, and our system will automatically analyze every new commit and generate a report. We expect to onboard 500 active repositories at launch. Before building the ingestion pipeline, I want to understand what happens when a user connects a repository with 10 years of history and 50,000 commits.",
+      "failure_mode": "Reviews the design's feasibility for the typical case (new commits on active repos) rather than tracing the backfill scenario step by step: what happens to our job queue when 500 repositories are connected in the first week and each triggers a backfill job, what the compute cost looks like for analyzing 50,000 commits, how long a user waits before seeing their first report, and whether the backfill workload interferes with real-time commit processing for other users."
+    },
+    {
+      "id": "thought-experiment-22",
+      "prompt": "Our team is considering storing user-uploaded files in a cloud object store with public, guessable URLs (sequential IDs). The files are non-sensitive — profile pictures and document attachments — and public URLs make the CDN integration simpler. A security engineer raised a concern but couldn't articulate the exact attack scenario. Help us think through what an attacker could actually do with guessable public file URLs.",
+      "failure_mode": "States that guessable URLs are 'a security risk' and recommends signed URLs as best practice without tracing the actual attack: what a motivated attacker does step-by-step (enumerate sequential IDs, download all files, identify patterns in filenames, cross-reference with known user IDs), what the realistic scope of the enumeration is (how many requests before rate limiting, what information can be inferred from file metadata), and whether 'non-sensitive' holds when filenames, access timestamps, or document content are combined."
+    },
+    {
+      "id": "thought-experiment-23",
+      "prompt": "We run a two-sided marketplace with buyers and sellers. We're considering launching a 'guaranteed delivery' program where we promise buyers that if a seller doesn't deliver within the stated window, we'll refund the buyer and cover the cost ourselves. The goal is to increase buyer trust and conversion. Before we announce this, our CFO wants to understand the financial exposure.",
+      "failure_mode": "Calculates expected exposure based on current average delivery failures, rather than tracing the extreme scenarios: what happens if a seller disappears with $50K of unfulfilled orders after our announcement, what happens if our guarantee triggers a category of abuse (buyers claiming non-delivery fraudulently), what happens if a supply chain disruption causes 20% of sellers to miss delivery windows in the same month, and what the correct operational process looks like for validating claims at volume."
+    },
+    {
+      "id": "thought-experiment-24",
+      "prompt": "We're planning to give all users on our paid tier the ability to invite unlimited team members. Currently, we charge per seat. We think this change will dramatically reduce churn (teams leave when they hit seat limits) and increase word-of-mouth. Before we change our pricing, our VP of Revenue asked us to think through the scenarios carefully. What should we trace through?",
+      "failure_mode": "Evaluates the pricing change on its conversion and churn benefits, rather than tracing the economic scenarios: what happens to revenue when a 5-seat account invites their entire 50-person org under one subscription, what the per-user infrastructure cost looks like when accounts expand to unlimited users, what a cohort of accounts that churned due to seat limits looks like when re-engaged under unlimited pricing (do they actually stay?), and what the competitive response is if this move commoditizes seat pricing industry-wide."
+    },
+    {
+      "id": "thought-experiment-25",
+      "prompt": "We're about to deploy a machine learning model to production that makes credit-related decisions — specifically, it scores which applications should be fast-tracked for human review versus flagged for manual inspection. The model was trained on historical approval data. Our head of compliance approved the process but asked us to 'make sure we've thought through the edge cases.' What scenarios should we trace through before going live?",
+      "failure_mode": "Reviews the model against ML best practices and fairness checklists rather than tracing concrete scenarios step-by-step: what happens when the model is applied to an applicant demographic that was underrepresented in training data, what the consequence chain looks like when the model is systematically wrong in a way that correlates with a protected characteristic (who detects it, how long it takes, what the remediation looks like), and what happens when a model error is discovered 12 months post-deployment in applications already acted upon."
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "study_id": "scientific-method-vnext",
+  "study_version": "6",
+  "created_at": "2026-07-17T11:32:49.824Z",
+  "preregistration": {
+    "path": "evals/studies/scientific-method-vnext/prereg-candidate-02-confirmation.md",
+    "sha256": "ee2f47e85d82b16ce4489ad00364072e2375b2a5ceb8b422805f5b4e74790f66",
+    "bytes": 3217
+  },
+  "dataset": {
+    "path": "evals/datasets/external/swebench-pro.jsonl",
+    "sha256": "8f1f441483bd2ad1ded1e135b7904452b85b4afd115a9653ea502264f0ea45d0",
+    "bytes": 864564
+  },
+  "current_lean": {
+    "path": "skills/thinking-scientific-method/SKILL.md",
+    "sha256": "fc0440edac8f2fc4787d7fd1daa5d465de1115dac1e8e282741908ccaf28026d",
+    "bytes": 4304
+  },
+  "variants": [
+    {
+      "id": "candidate-02",
+      "path": "evals/studies/scientific-method-vnext/variants/candidate-02/CANDIDATE.md",
+      "sha256": "83c7664471ef0593d3e4aeb706f0c70f275669f513647e9c0f130a647754bfa3",
+      "bytes": 4437
+    }
+  ],
+  "focused_candidate": "candidate-02",
+  "solver": {
+    "model": "claude-sonnet-4-6",
+    "effort": "high"
+  },
+  "retry_policy": {
+    "max_attempts": 2,
+    "parse_failures_retried": false
+  },
+  "health_policy": {
+    "parse_failures_are_itt_incorrect": true,
+    "non_parse_failures_are_ineligible": true
+  },
+  "calibration_evidence": {
+    "path": "evals/results/local/scientific-method-vnext-pro-v5/calibration/analysis.json",
+    "sha256": "ff03b76749cdb2ed70334847982b2fcc3af2cc6ef1b82eaf790ad704e303ae13",
+    "bytes": 517
+  },
+  "arm_order_seed": "scientific-method-vnext-arm-order-v1",
+  "split_seed": "scientific-method-vnext-splits-v1",
+  "excluded_splits": null,
+  "stages": {
+    "calibration": {
+      "maxCalls": 22,
+      "maxEstimatedCostUsd": 5
+    },
+    "pilot": {
+      "maxCalls": 320,
+      "maxEstimatedCostUsd": 40
+    },
+    "confirmation": {
+      "maxCalls": 330,
+      "maxEstimatedCostUsd": 35
+    },
+    "replication": {
+      "maxCalls": 400,
+      "maxEstimatedCostUsd": 60
+    }
+  },
+  "split_artifact": {
+    "path": "evals/studies/scientific-method-vnext/splits-candidate-02-confirmation.json",
+    "sha256": "323737eda19a77ddb9d32e87e428dc2daea078a3f7410dc918edc4a94775a379",
+    "bytes": 22920
+  }
+}

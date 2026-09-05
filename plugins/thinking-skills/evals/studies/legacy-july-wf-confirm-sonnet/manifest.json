@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "study_id": "legacy-july-wf-confirm-sonnet",
+  "study_version": "legacy-july-2026-07-02",
+  "created_at": "2026-07-16T00:00:00.000Z",
+  "bundle_kind": "legacy_july_import",
+  "producer": {
+    "command": "node /Users/tjboudreaux/Sandbox/cc-thinking-skills/evals/run-workflow-objective.js",
+    "runner": "evals/run-workflow-objective.js",
+    "eval_run": "wf-confirm-sonnet",
+    "env": {
+      "EVAL_RUN": "wf-confirm-sonnet",
+      "SOLVER_MODEL": "claude-sonnet-4-6",
+      "SOLVER_EFFORT": "medium",
+      "CONC": "6",
+      "ARMS": "workflow_validated,full_skill_typed_verified"
+    }
+  },
+  "worktree": {
+    "branch": "main",
+    "head_at_bundle_time": "a59144cc28dedaf62e4547339561dbe9d585435e",
+    "note": "Source result artifacts were untracked; head recorded at Phase 0 bundle write time only."
+  },
+  "source_artifacts": [
+    {
+      "path": "evals/results/wf-confirm-sonnet/workflow-objective.json",
+      "sha256": "b33e52f9481f59024ae539a694c1d096decf46b50f684724c9f8f484ac90cf05",
+      "bytes": 630483,
+      "mtime_utc": "2026-07-02T11:04:26.704Z",
+      "git_tracked": false,
+      "disposition": "preserve_in_place",
+      "raw_response_archive": {
+        "status": "absent",
+        "uri": null,
+        "note": "No durable content-addressed raw-response archive exists; source artifact preserved in place; evidence remains provisional."
+      }
+    }
+  ],
+  "solver": {
+    "model": "claude-sonnet-4-6",
+    "effort": "medium"
+  },
+  "arms": [
+    "workflow_validated",
+    "full_skill_typed_verified"
+  ],
+  "split": "heldout",
+  "preregistration": {
+    "path": "evals/preregistrations/workflow-vs-skill-proof.md",
+    "sha256": "8e6a82e630d4db593ff9d88511dcded8aade3f0d236511392847fb93adc43fe7",
+    "exists": true
+  },
+  "files": {
+    "manifest": "manifest.json",
+    "items": "items.jsonl",
+    "aggregate": "aggregate.json"
+  },
+  "counts": {
+    "source_items": 364,
+    "bundled_items": 364,
+    "n_skills": 12,
+    "skill_item_counts": {
+      "thinking-socratic": 35,
+      "thinking-cynefin": 30,
+      "thinking-reversibility": 30,
+      "thinking-margin-of-safety": 30,
+      "thinking-map-territory": 30,
+      "thinking-pre-mortem": 30,
+      "thinking-inversion": 30,
+      "thinking-red-team": 30,
+      "thinking-scientific-method": 30,
+      "thinking-kepner-tregoe": 30,
+      "thinking-five-whys-plus": 29,
+      "thinking-occams-razor": 30
+    }
+  },
+  "hash_reconciliation": {
+    "source_sha256": "b33e52f9481f59024ae539a694c1d096decf46b50f684724c9f8f484ac90cf05",
+    "items_sha256": "39e26ae8782c1ad86670f16d30359930681d482bc63383df7704e2967ecdb141",
+    "aggregate_sha256": "46d46f5e373a89d7b8f6a6e20af4253d2f15e6608d9c54d00bb161e9b6f7cbc8"
+  },
+  "archive": {
+    "raw_responses": "absent",
+    "source_preservation": "preserve_in_place",
+    "evidence_validity": "provisional"
+  },
+  "defects": [
+    "padded_workflow_arms_not_unpadded",
+    "self_checked_arms_misnamed_as_validated_or_verified",
+    "missing_no_skill_primary_control",
+    "missing_raw_response_archive",
+    "source_artifact_untracked_in_git",
+    "claim_status_not_eligible"
+  ],
+  "measured_result_summary": {
+    "claim_status_source": "inconclusive",
+    "primary_contrast": {
+      "delta_pp": 0.3,
+      "mcnemar_p": 1,
+      "discordant": 3,
+      "left_wins": 2,
+      "right_wins": 1
+    },
+    "by_arm_acc": {
+      "workflow_validated": {
+        "acc": 0.995,
+        "case_success_rate": 0.995,
+        "n": 364
+      },
+      "full_skill_typed_verified": {
+        "acc": 0.992,
+        "case_success_rate": 0.992,
+        "n": 364
+      }
+    }
+  },
+  "statistical_status": "inconclusive_null",
+  "replication_status": "not_replication_qualified",
+  "evidence_validity": "provisional",
+  "product_disposition": "manual_only_quarantine_workflow_gate_pending",
+  "notes": [
+    "Legacy July workflow-objective run imported without raw responses.",
+    "Arm names workflow_validated/full_skill_typed_verified are self-checked forms pending Phase 5 rename.",
+    "No no-skill primary control in this two-arm run.",
+    "Source claim_status is not an eligible confirmatory disposition under current gates."
+  ]
+}

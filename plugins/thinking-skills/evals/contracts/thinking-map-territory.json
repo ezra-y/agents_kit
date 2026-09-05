@@ -1,0 +1,23 @@
+{
+  "skill": "map-territory",
+  "primary_value_surface": "routing/discoverability",
+  "primary_metric": "divergence_detection_accuracy",
+  "secondary_metrics": ["root_cause_localization_when_diverged", "false_divergence_rate", "model_quality_assessment"],
+  "distractors": {
+    "off_target_set": "Situations where metrics and reality align; problems with no observability gap; questions about the framework rather than its application",
+    "description": "Items where there is no map-territory gap to detect, or where the skill is applied to the framework itself"
+  },
+  "calibration_range": [0.40, 0.70],
+  "calibration_exception": null,
+  "min_sample_primary": 60,
+  "min_sample_replication": 60,
+  "planned_comparison": "placebo",
+  "decision_gate": {
+    "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND false_divergence_rate <= 0.15",
+    "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+    "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+    "quarantine_redirect": "primary_delta_pp < 0 OR false_divergence_rate > 0.20",
+    "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+  },
+  "eval_family": "Debugging/fault-localization"
+}

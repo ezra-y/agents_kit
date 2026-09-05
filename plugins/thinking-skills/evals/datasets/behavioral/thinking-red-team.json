@@ -1,0 +1,50 @@
+{
+  "skill": "thinking-red-team",
+  "problems": [
+    {
+      "id": "red-team-1",
+      "prompt": "Here's the password reset flow we're about to ship. User enters their email, we generate a 6-digit numeric code, email it to them, and they enter the code to set a new password. The code is valid for 30 minutes. We don't lock the account or limit how many codes you can request. We show 'If that email exists, we've sent a code' so we don't leak whether an account exists. We do rate-limit the login endpoint to 10 attempts/min per IP, but the reset-code verification endpoint isn't rate-limited. We think this is solid. Walk through what happens when this meets the real world.",
+      "failure_mode": "Reviews the flow approvingly and praises the good parts (generic response, code expiry), missing that from an attacker's seat a 6-digit code with no rate limit on the verification endpoint is brute-forceable (a million guesses, easily exhausted) and that unlimited code requests enable abuse, because it analyzes as a friendly defender rather than adopting the adversary mindset and attacking each defense."
+    },
+    {
+      "id": "red-team-2",
+      "prompt": "We're finalizing our go-live plan to migrate our checkout from the legacy monolith to the new microservices stack this Saturday at 2am. Plan: flip the load balancer to route 100% of checkout traffic to the new services, keep the old system warm for an hour, then decommission it Sunday. We've tested the new stack in staging and it passed. The on-call engineer who built it will be watching. Marketing scheduled a promo email blast for Saturday morning. Rollback is 'flip the load balancer back.' Tell me how this plan holds up and what we should be ready for.",
+      "failure_mode": "Affirms the plan and offers mild reassurance, instead of stress-testing it as if trying to make it fail: staging-passed-but-prod-differs, the 100% cutover with no canary, the Saturday-morning promo blast colliding with a fresh deploy, single-engineer bus factor at 2am, and whether 'flip the LB back' actually works once new-system data has diverged from the old."
+    },
+    {
+      "id": "red-team-3",
+      "prompt": "Our new public API lets third-party developers query our product catalog and place orders on behalf of their own end users. Auth is an API key per developer in the header. Orders reference our internal product IDs and the developer passes a `customer_id` they manage. There's a `/orders/{id}` endpoint to check status, and a `/refunds` endpoint a developer can call. We have generous default rate limits so we don't annoy good integrators. We're confident the API key check covers security. Before we open it up to external partners, what's your assessment of this design?",
+      "failure_mode": "Confirms that the API-key check is sufficient and signs off, failing to take the perspective of a malicious or compromised integrator: it overlooks that `/orders/{id}` and `customer_id` invite IDOR/enumeration across other developers' data, that generous rate limits enable abuse and scraping, and that the refunds endpoint is a financial attack surface, because it never enumerates the attack surface or attempts to bypass the single control."
+    },
+    {
+      "id": "red-team-4",
+      "prompt": "We're launching a referral program: existing users get $20 of account credit for each friend who signs up with their link and finishes onboarding, and the new friend gets $10 off their first month. Credit is applied the moment the referred account completes the onboarding checklist. There's no cap per referrer, credit is redeemable against any invoice, and any unused credit is refundable to the referrer's original card after 60 days. We want this to spread fast. How does it look before we turn it on?",
+      "failure_mode": "Endorses the growth mechanics and maybe tweaks the reward amounts, without modeling a motivated abuser: self-referral rings with disposable emails, instant credit granted before any real usage or payment, uncapped earning, and the sharpest one, refundable-to-card credit that turns free promotional dollars into a cash-out path, because it evaluates the program as a marketer optimizing conversion rather than an attacker optimizing extraction."
+    },
+    {
+      "id": "red-team-5",
+      "prompt": "Here's our account-recovery process for locked-out customers. They open support chat, the agent asks for the email on file plus any two of: last four digits of the card, billing zip, and the month they signed up. If two match, the agent resets the password and the customer is back in. Agents can also turn off the account's two-factor if the customer says they lost their device. We think requiring two identity factors is strong enough. Poke holes in this.",
+      "failure_mode": "Concludes that two matching data points is reasonable and signs off, instead of role-playing an attacker who already has the target's email and can buy or guess billing zip and last-four: it misses that all three 'secrets' are low-entropy or breach-available, that letting an agent unilaterally disable two-factor collapses the whole account-takeover defense, and that there is no callback, cooldown, or notification to the real owner, because it treats the checklist as a compliance box rather than a lock to be picked."
+    },
+    {
+      "id": "red-team-6",
+      "prompt": "Our deploy setup: any merge to main auto-builds and ships to production within minutes, and merging needs one approving review. The build installs dependencies from the public registry at build time using caret version ranges so we always pick up the latest patches, and the CI runner holds a long-lived production deploy token as a repo secret that any workflow in the repo can read. Contractors get write access to the repo during their engagement. This has run smoothly for a year. What are we not seeing?",
+      "failure_mode": "Praises the fast automation and the single-review gate, failing to think like someone who wants to ship malicious code to prod: floating dependency ranges plus build-time installs invite a compromised-package or typosquat hit, one review is trivially satisfiable by a colluding or compromised contributor, and a production deploy token readable by any workflow means one poisoned pull-request job can exfiltrate the keys to prod, because it reasons about reliability and developer velocity rather than treating the merge and build steps as an attacker's entry points."
+    },
+    {
+      "id": "red-team-7",
+      "prompt": "New gift-card feature: a customer buys a gift card, we generate a 10-character alphanumeric code, and the recipient enters it at checkout to load its value as store credit. Anyone can check a code's validity and remaining balance on a public 'check your balance' page. Partial redemptions are allowed and the leftover stays on the code. If a buyer requests a refund on the gift-card purchase, we return the money to their original card. Give us your read before launch.",
+      "failure_mode": "Reviews the redemption flow and maybe suggests a nicer balance page, missing the adversarial reads: a public balance-check endpoint over a 10-character space is an oracle for automated code guessing, buying a card and then refunding the purchase after the code has already been spent is a double-dip, and nothing rate-limits or locks out the check page, because it pictures the honest gift-giver's happy path instead of a scripted attacker harvesting live codes."
+    },
+    {
+      "id": "red-team-8",
+      "prompt": "Our disaster-recovery story: nightly encrypted database backups to cloud storage, kept 30 days. If prod dies we restore the latest backup onto a fresh instance. The restore runbook lives in our wiki. We've never actually performed a full restore, but the backup job reports success every night and we can watch the files land in the bucket. Leadership considers DR 'handled.' Is that confidence warranted?",
+      "failure_mode": "Accepts that successful backup jobs plus a runbook equal DR readiness, rather than attacking the assumption that an untested backup restores cleanly: it fails to probe whether anyone has verified a restore completes with consistent data, whether the decryption keys survive the same disaster, whether the runbook is followable under pressure by whoever is actually on call, and how stale the 'latest nightly' can be, because it trusts the green checkmarks instead of trying to prove the recovery would fail when it counts."
+    },
+    {
+      "id": "red-team-9",
+      "prompt": "We're adding a self-service 'export all my data' button for GDPR. On click we assemble a zip of the user's records and email them a download link. The link is a long random URL that needs no login so it opens easily from any device, and it stays live for 7 days. The export contains everything we hold on that account. Internally, admins can trigger the same export for any user from the support console. Anything to worry about before we ship?",
+      "failure_mode": "Frames this purely as a compliance win and checks that the export is complete, without adopting an abuser's or leak-scenario lens: an unauthenticated 7-day link to a bundle of everything is a single URL whose exposure through a forwarded email, a referer header, or a shared device dumps the whole account, admin-triggered exports of arbitrary users are a potent insider or compromised-support vector with no re-authentication or audit mentioned, and 'everything we hold' may include data that should not leave in one shot, because it optimizes for the regulator's checkbox rather than for what happens when the link or the console is misused."
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "skill": "five-whys-plus",
+  "primary_value_surface": "localization",
+  "primary_metric": "fault_localization_accuracy",
+  "secondary_metrics": ["root_cause_depth", "bias_guard_effectiveness", "counterfactual_test_quality", "stop_condition_appropriateness"],
+  "distractors": {
+    "off_target_set": "Incidents with single obvious cause; situations where the proximate cause IS the root cause; postmortems where bias guards are not needed; meta-questions about the 5 Whys method",
+    "description": "Items where iterative why-asking adds no value or where the skill's bias guards are irrelevant"
+  },
+  "calibration_range": [0.40, 0.70],
+  "calibration_exception": null,
+  "min_sample_primary": 80,
+  "min_sample_replication": 80,
+  "planned_comparison": "placebo",
+  "decision_gate": {
+    "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary",
+    "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+    "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+    "quarantine_redirect": "primary_delta_pp < 0 OR bias_guard_effectiveness < 0.50",
+    "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+  },
+  "eval_family": "Debugging/fault-localization"
+}

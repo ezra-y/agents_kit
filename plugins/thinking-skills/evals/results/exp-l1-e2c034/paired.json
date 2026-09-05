@@ -1,0 +1,86 @@
+{
+  "mode": "paired-head-to-head",
+  "metric": "modified beats original",
+  "solver": "claude-sonnet-4-6",
+  "skills": [
+    {
+      "skill": "occams-razor",
+      "wins": 2,
+      "losses": 1,
+      "ties": 0,
+      "n": 3,
+      "decisive": 3,
+      "win_rate": 0.667,
+      "ci95": [
+        0.208,
+        0.939
+      ],
+      "p_value": 1,
+      "significant": false,
+      "powered": false
+    },
+    {
+      "skill": "five-whys-plus",
+      "wins": 2,
+      "losses": 0,
+      "ties": 1,
+      "n": 3,
+      "decisive": 2,
+      "win_rate": 0.833,
+      "ci95": [
+        0.342,
+        1
+      ],
+      "p_value": 0.479,
+      "significant": false,
+      "powered": false
+    },
+    {
+      "skill": "inversion",
+      "wins": 1,
+      "losses": 0,
+      "ties": 2,
+      "n": 3,
+      "decisive": 1,
+      "win_rate": 0.667,
+      "ci95": [
+        0.207,
+        1
+      ],
+      "p_value": 1,
+      "significant": false,
+      "powered": false
+    },
+    {
+      "skill": "systems",
+      "wins": 3,
+      "losses": 0,
+      "ties": 0,
+      "n": 3,
+      "decisive": 3,
+      "win_rate": 1,
+      "ci95": [
+        0.439,
+        1
+      ],
+      "p_value": 0.248,
+      "significant": false,
+      "powered": false
+    }
+  ],
+  "aggregate": {
+    "wins": 8,
+    "losses": 1,
+    "ties": 3,
+    "n": 12,
+    "decisive": 9,
+    "win_rate": 0.792,
+    "ci95": [
+      0.565,
+      0.98
+    ],
+    "p_value": 0.046,
+    "significant": true,
+    "powered": true
+  }
+}

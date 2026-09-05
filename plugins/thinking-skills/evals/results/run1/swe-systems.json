@@ -1,0 +1,20 @@
+{
+  "mode": "swe-localize",
+  "skill": "systems",
+  "solver": "claude-sonnet-4-6",
+  "n": 45,
+  "acc_with_skill": 0.889,
+  "acc_with_skill_ci": [
+    0.765,
+    0.952
+  ],
+  "acc_placebo": 0.8,
+  "acc_placebo_ci": [
+    0.662,
+    0.891
+  ],
+  "delta_pp": 8.9,
+  "mcnemar_p": 0.221,
+  "significant": false,
+  "discordant": 6
+}

@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "study_id": "legacy-july-sci-method-larger-n",
+  "study_version": "legacy-july-2026-07-02",
+  "created_at": "2026-07-16T00:00:00.000Z",
+  "bundle_kind": "legacy_july_import",
+  "producer": {
+    "command": "EVAL_RUN=sci-method-larger-n FORCE_SKILL=scientific-method SWE_DATASET_PATH=evals/datasets/external/swebench-verified-500.jsonl SOLVER_MODEL=claude-sonnet-4-6 SOLVER_EFFORT=high CONC=4 node evals/run-swe.js",
+    "runner": "evals/run-swe.js",
+    "eval_run": "sci-method-larger-n"
+  },
+  "worktree": {
+    "branch": "main",
+    "head_at_bundle_time": "a59144cc28dedaf62e4547339561dbe9d585435e",
+    "note": "Source result artifacts were untracked; head recorded at Phase 0 bundle write time only."
+  },
+  "source_artifacts": [
+    {
+      "path": "evals/results/sci-method-larger-n/swe-scientific-method.json",
+      "sha256": "7ca6ebedc7594925e347a05403ad1adb1f2144f8810db4f0fc1a283f73267471",
+      "bytes": 56791,
+      "mtime_utc": "2026-07-02T11:45:25.043Z",
+      "git_tracked": false,
+      "disposition": "preserve_in_place",
+      "raw_response_archive": {
+        "status": "absent",
+        "uri": null,
+        "note": "No durable content-addressed raw-response archive exists; source artifact preserved in place; evidence remains provisional."
+      }
+    }
+  ],
+  "dataset": {
+    "path": "evals/datasets/external/swebench-verified-500.jsonl",
+    "sha256_preregistered": "1ad909071d9a2a08fd8408c3589edad3c94df2d8ad2062bc6faf9e0798a35012",
+    "count": 427
+  },
+  "skill": {
+    "id": "scientific-method",
+    "skill_md_sha256_preregistered": "9a7a94d31c47d2e905eca47f4bd6185ca4edbb180369aad23e62ddd6e988671b"
+  },
+  "solver": {
+    "model": "claude-sonnet-4-6",
+    "effort": "high"
+  },
+  "preregistration": {
+    "path": "analysis/PRE-REGISTERED-VERDICT-STUDIES.md",
+    "sha256": "ae78d4ae9d6208754b64b4bffd94535b3154c3ac2f80c08c02628e36c8854898"
+  },
+  "files": {
+    "manifest": "manifest.json",
+    "items": "items.jsonl",
+    "aggregate": "aggregate.json"
+  },
+  "counts": {
+    "source_items": 427,
+    "bundled_items": 427,
+    "scored": 426,
+    "unscored": 1
+  },
+  "hash_reconciliation": {
+    "source_sha256": "7ca6ebedc7594925e347a05403ad1adb1f2144f8810db4f0fc1a283f73267471",
+    "items_sha256": "27befafa510c3ab2697108d31880d23c83b7a2c3548cbd8b68acd51139e85f0e",
+    "aggregate_sha256": "7b07d0ea155c082ba020789f56e26da842463d98d644bcc90eb540ffadf1f262"
+  },
+  "archive": {
+    "raw_responses": "absent",
+    "source_preservation": "preserve_in_place",
+    "evidence_validity": "provisional"
+  },
+  "defects": [
+    "permissive_filename_matching",
+    "active_placebo_control",
+    "missing_raw_response_archive",
+    "missing_parsed_answer_fields",
+    "incomplete_usage_fields",
+    "source_artifact_untracked_in_git",
+    "mcnemar_p_rounded_to_zero_in_source_artifact",
+    "incomplete_scoring_denominator"
+  ],
+  "measured_result_summary": {
+    "delta_pp": 4,
+    "mcnemar_p_artifact": 0,
+    "mcnemar_p_recomputed_approx": 0.000480341,
+    "significant_artifact": true,
+    "n_scored": 426
+  },
+  "statistical_status": "significant_below_utility_margin",
+  "replication_status": "historical_directional_signal_not_replication_qualified",
+  "evidence_validity": "provisional",
+  "product_disposition": "manual_only_directional_not_elevate",
+  "notes": [
+    "Pre-registered larger-N study: delta_pp=4.0 < 5pp utility gate with significant McNemar → DIRECTIONAL-ONLY, not ELEVATE.",
+    "Source stores mcnemar_p as 0; continuity-corrected recomputation from 19/2 discordant split is ~5e-4.",
+    "Historical same-direction M5 signals are not treated as an untouched replication gate pass.",
+    "1/427 unscored after retries; raw responses and parsed paths absent from source artifact."
+  ]
+}

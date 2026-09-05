@@ -1,0 +1,130 @@
+{
+  "skill": "thinking-opportunity-cost",
+  "problems": [
+    {
+      "id": "opportunity-cost-1",
+      "prompt": "A vendor wants $24k/year for a feature-flag and experimentation platform. One of our engineers pushed back: 'That's expensive, I could build us a basic version in two weeks and we'd own it.' Building it ourselves means no license fee, full control, and it's not that complicated. We're a 6-engineer team with a packed product roadmap and a big customer launch this quarter. Should we build our own flag system or buy the platform?",
+      "failure_mode": "Compares the $24k license against $0 for building and concludes building is cheaper because it's 'free' and 'not that complicated'; ignores that the two engineer-weeks (plus ongoing maintenance and a new failure domain) are pulled from a packed roadmap during a launch quarter, so the real cost is the launch features not shipped—an opportunity cost that almost certainly dwarfs $24k."
+    },
+    {
+      "id": "opportunity-cost-2",
+      "prompt": "Our codebase has accumulated real technical debt and the team is excited to spend the next 3 months on a big refactor of the core service—10 engineers, basically all feature work paused. The pitch is that afterward we'll move faster and engineers will be happier. Everyone agrees the code is messy. Leadership is inclined to approve it since 'paying down debt is responsible.' Should we greenlight the 3-month refactor?",
+      "failure_mode": "Endorses the refactor on the virtue that 'paying down tech debt is responsible' and that the code is messy, evaluating it in isolation; never asks what those 30 engineer-months could otherwise produce (revenue features, the next two roadmap bets), nor whether the future velocity gain actually outweighs the best foregone alternative—treating the cleanup's benefit as self-justifying rather than weighed against what's given up."
+    },
+    {
+      "id": "opportunity-cost-3",
+      "prompt": "A major prospect says they'll sign a $180k/year contract if we build a custom SSO integration with their in-house identity provider. It's roughly 6 weeks of work for two engineers. $180k is real money and the sales team is pushing hard to commit. We have other prospects in the pipeline and a roadmap of features that benefit all customers. Should we agree to build the custom integration to land this deal?",
+      "failure_mode": "Anchors on the concrete $180k and says yes because the revenue clearly exceeds the visible build cost; fails to price the alternative use of those two engineers for six weeks (broadly-valuable roadmap work, other pipeline deals) and the ongoing maintenance of a one-off integration, so it never tests whether this is genuinely the highest-value thing those engineers could be doing."
+    },
+    {
+      "id": "opportunity-cost-4",
+      "prompt": "We have $500,000 in cash sitting in a business checking account at near-zero interest while our company is growing and has several open positions we've been slow to fill. The CFO argues that maintaining large cash reserves is prudent and 'costs nothing.' Meanwhile, our sales team says we're losing deals because we don't have two features competitors have. How should we think about the idle cash reserve strategy?",
+      "failure_mode": "Agrees that cash reserves are prudent and frames idle cash as free financial security; misses that idle cash at near-zero yield while the business has high-return uses for it (hiring that accelerates revenue, product that closes deals) has a real opportunity cost—the revenue and competitive position foregone by not deploying it into the highest-return alternative, which may be substantially higher than the security value of the reserve."
+    },
+    {
+      "id": "opportunity-cost-5",
+      "prompt": "Our team runs a weekly 90-minute roadmap planning meeting with 12 people—4 engineers, 3 product managers, 2 designers, the CTO, the VP of Product, and a data analyst. It's been the standard process for 2 years. Nobody loves it but it's 'how we stay aligned.' What's the actual cost of this meeting structure, and how should we evaluate whether it's worth it?",
+      "failure_mode": "Evaluates the meeting on its stated purpose (alignment) and recommends making it shorter or more structured; never computes the actual resource cost (18 person-hours per week, ~900 hours per year—equivalent to nearly half a full-time senior engineer) or asks what those 12 people would produce if that time were freed for focused work—treating the coordination benefit as self-justifying without pricing the best foregone alternative."
+    },
+    {
+      "id": "opportunity-cost-6",
+      "prompt": "We built a lightweight internal analytics dashboard a year ago that the product and growth teams use daily. It's become load-bearing but the codebase is messy and the data team wants to rebuild it properly—estimated 8 weeks of two data engineers. We could also just pay for Metabase or Hex at about $800/month. The team's instinct is 'we should own our tooling.' How should we decide?",
+      "failure_mode": "Endorses rebuilding to 'own the tooling' without pricing the 16 engineer-weeks of data engineering time; fails to ask what those two engineers could build instead (new data pipelines, ML features, deeper analytics) and whether the $800/month tool cost is actually higher or lower than the opportunity cost of their next-best work—letting 'ownership' sentiment substitute for actual cost accounting."
+    },
+    {
+      "id": "opportunity-cost-7",
+      "prompt": "Our company has three engineers who spend about 20% of their time each managing and troubleshooting our self-hosted Kubernetes cluster. We could migrate to a managed EKS or GKE cluster, which would take 6 weeks of migration work upfront but would cut ongoing infrastructure maintenance to roughly 5% per engineer. The managed service costs $2,000/month more than what we pay now. Should we migrate?",
+      "failure_mode": "Compares the $2,000/month cost increase against the migration effort and concludes that the ongoing premium isn't worth it; fails to price the current state's opportunity cost—0.6 FTE of engineering time per month tied up in infrastructure maintenance that could be spent on product—which at any reasonable engineer blended rate substantially exceeds $2,000/month, making the 'cost increase' actually a cost reduction."
+    },
+    {
+      "id": "opportunity-cost-8",
+      "prompt": "An investor introduced us to a potential strategic partnership where a larger company would distribute our product to their 500,000-user base in exchange for a 3-month exclusivity window during which we can't pursue other distribution partnerships. Our sales team is excited about the reach. We have two other partnership conversations at early stages. Should we take the exclusivity deal?",
+      "failure_mode": "Focuses on the 500,000-user reach and the attractiveness of the partnership; fails to price the exclusivity—3 months during which the two other partnership conversations must pause or be lost—as a real cost, treating the cost of the best foregone alternative (maintaining competitive partnership dynamics) as zero when it may significantly exceed the value of the preferred-partner access."
+    },
+    {
+      "id": "opportunity-cost-9",
+      "prompt": "We're a 15-person startup and our CEO is spending about 30% of her time on a potential series-A fundraise that's not going well. The process has stretched to 5 months, and we're not yet term-sheet-close. Revenue is growing, we have 8 months of runway without raising, and there are three inbound enterprise deals the sales team needs CEO involvement to close. What's the right analysis for how she should allocate her time?",
+      "failure_mode": "Advises continuing the fundraise because closing a Series A is critical and 5 months isn't unusually long; doesn't price the opportunity cost of 30% CEO time locked in a slow fundraise—the enterprise deals that need CEO attention to close are likely worth more in near-term runway than the marginal increase in fundraise probability from continued CEO time investment, and the best foregone alternative (closing deals, extending runway) may make the fundraise itself less urgent."
+    },
+    {
+      "id": "opportunity-cost-10",
+      "prompt": "Our engineering team is considering adopting TypeScript across our entire JavaScript codebase, which has about 200,000 lines of JS. A full migration would take roughly one quarter for four engineers. The benefits of TypeScript are well-established—fewer bugs, better tooling, improved developer experience. Everyone agrees TypeScript is better. Is this a straightforward yes?",
+      "failure_mode": "Approves the migration because TypeScript's benefits are well-established and the engineering team agrees it's better; never asks what four engineers working for one quarter could build instead—the features on the roadmap, the performance improvements, the security work—or whether the TypeScript quality gains actually exceed the value of the best alternative use of 12 engineer-months, treating consensus on TypeScript's quality as equivalent to consensus that it's the highest-value use of the time."
+    },
+    {
+      "id": "opportunity-cost-11",
+      "prompt": "Our startup just raised $3M and we're deciding whether to hire 6 more engineers immediately to accelerate product development, or stay lean at our current 8 engineers and invest more in sales and marketing to validate the business model before building more. The founders' instinct is to build. Investors are pushing for faster product velocity. How do you think about the capital allocation decision here?",
+      "failure_mode": "Recommends hiring engineers because investor alignment and product velocity are important and 'the money is there to spend'; fails to explicitly price the next-best alternative use of the same capital (sales and marketing to validate before building, runway extension, hiring a VP Sales) and ask whether engineering headcount is genuinely the highest-return deployment of the $3M, given that building faster on an unvalidated model can be a very expensive mistake."
+    },
+    {
+      "id": "opportunity-cost-12",
+      "prompt": "A senior engineer on our team spends roughly one day a week mentoring junior engineers—code reviews, 1:1 walkthroughs, pairing sessions. Some on the leadership team are questioning whether this is a good use of her time since her technical output has dropped and she's blocked on two high-priority projects. She says the mentoring is important for team growth. How should we think about this?",
+      "failure_mode": "Validates the mentoring as valuable for team growth and advises protecting the time; doesn't frame the tradeoff properly—the opportunity cost of one senior engineer day per week is the output she's not producing on the high-priority blocked projects, and the question is whether the mentoring ROI (junior upskilling rate, team capability growth) actually exceeds that foregone output, rather than treating mentoring's value as self-evident."
+    },
+    {
+      "id": "opportunity-cost-13",
+      "prompt": "Our product team has 40 tickets in the backlog. The sprint planning process currently scores each ticket on an 8-point effort scale. When I ask the team what they should prioritize this sprint, they point to the 10 smallest-effort tickets as the obvious choices because 'we'd ship the most things.' Is there a problem with this reasoning, and how should we approach prioritization?",
+      "failure_mode": "Validates the efficiency of clearing small tickets because it maximizes items shipped; doesn't apply opportunity cost—the relevant question is not 'what maximizes tickets shipped' but 'what maximizes value delivered,' and picking ten small tickets means four large-effort tickets that may represent 80% of the customer value sit undone; the cost of not doing them is the real measure, not the count of completed items."
+    },
+    {
+      "id": "opportunity-cost-14",
+      "prompt": "We spend $15,000/month on a data enrichment vendor that appends company size, industry, and technology stack info to leads before they hit our CRM. Sales says they don't actually use most of the enrichment fields—maybe 2 of the 15 fields get used regularly. Marketing uses enrichment for segmentation but could probably do with less. The contract renews in 45 days. Should we renew?",
+      "failure_mode": "Evaluates the vendor on the narrow question of whether the current usage justifies the cost; doesn't ask what else $15,000/month or $180,000/year could do—additional marketing spend, product investment, a partial engineering hire—and whether that best foregone alternative creates more value than the enrichment fields that are actually being used, treating the current spend as the only frame for the decision."
+    },
+    {
+      "id": "opportunity-cost-15",
+      "prompt": "We're a B2B SaaS company with a product-led growth motion. We get about 500 free signups per week and our freemium-to-paid conversion rate is 4%. One proposal is to invest one engineer for 2 months to build a better in-app upgrade flow, which we project would raise conversion to 5.5%. Another proposal is to use the same engineer-time to build an integration with Slack that two enterprise customers have requested, which we estimate would accelerate 3 deals worth $180K combined ARR. Which should the engineer work on?",
+      "failure_mode": "Calculates the conversion rate improvement in isolation and recommends the upgrade flow because '1.5 percentage points on 500 signups per week' sounds compelling; fails to explicitly compare the value of the next-best alternative (the $180K ARR from the Slack integration) against the conversion uplift value, so it never actually tests which option has the higher opportunity cost of not doing it."
+    },
+    {
+      "id": "opportunity-cost-16",
+      "prompt": "A non-profit foundation just offered our startup a $50,000 grant to develop an accessible version of our core product for users with visual impairments. The grant covers the build cost but not ongoing maintenance. Our team of 8 engineers would spend roughly 6 weeks on the accessibility work. We care about accessibility as a value, and the PR would be positive. Should we accept the grant?",
+      "failure_mode": "Recommends accepting because 'it's free money for good work you care about'; misses that 6 engineer-weeks is not free even if the grant covers the build budget—it's still 6 weeks those engineers are not building the next product milestone—and the opportunity cost is the roadmap work not done, plus ongoing maintenance the grant doesn't cover; the grant covers the direct cost but doesn't eliminate the opportunity cost."
+    },
+    {
+      "id": "opportunity-cost-17",
+      "prompt": "I'm a solo developer who has been consulting at $200/hour, working about 30 hours a week. I'm considering pausing consulting for 3 months to build a SaaS product I've been designing. If the product succeeds, the upside is significant. If it fails after 3 months, I'm out roughly $72,000 in foregone consulting income and 3 months of time. A business advisor says the downside is just the $72K if it fails. Is that analysis correct?",
+      "failure_mode": "Confirms the $72K as the cost of failure and frames the decision as a binary risk comparison; misses that the advisor's framing ignores the real opportunity cost structure—$72K is not just the downside of failure but the minimum cost of the experiment regardless of outcome, and the comparison should be against the best alternative use of those 3 months (more consulting, other product ideas, upskilling) rather than just the raw foregone revenue number."
+    },
+    {
+      "id": "opportunity-cost-18",
+      "prompt": "Our team is in the middle of a 4-month platform migration. We're 2 months in and have spent roughly $300,000 in engineering time. A competitor just shipped a feature that's hurting our sales pipeline—4 deals have stalled citing the gap. Pausing the migration now would waste the $300K spent. Finishing the migration means another 2 months before we can address the competitive feature. How do you think about whether to pause or continue?",
+      "failure_mode": "Recommends finishing the migration to avoid 'wasting' the $300K already spent; the sunk cost framing is the error—the $300K is gone regardless of what happens next, and the real question is whether the next 2 months of 4 engineers is better spent completing the migration or building the competitive feature; the opportunity cost of 4 engineer-months applied to the competitive gap (recovering 4 stalled deals) may substantially exceed the cost of pausing or abandoning the migration."
+    },
+    {
+      "id": "opportunity-cost-19",
+      "prompt": "Our company has been asked to sponsor a major industry conference for $45,000. The package includes a booth, speaking slot, and logo placement. The marketing team says it will increase brand awareness and the sponsorship 'basically pays for itself' in leads and visibility. We've never done a conference sponsorship before. How should we actually evaluate whether to do this?",
+      "failure_mode": "Accepts the marketing team's 'basically pays for itself' framing and evaluates the sponsorship on lead projections; doesn't ask what else $45,000 could do—targeted digital advertising, content marketing, two months of a sales hire, or product marketing work—and whether those alternatives would generate more measurable pipeline than conference brand awareness, treating 'pays for itself' as analysis when it's actually just an assertion."
+    },
+    {
+      "id": "opportunity-cost-20",
+      "prompt": "We run a machine learning platform and our ML engineers spend roughly 25% of their time on data labeling QA—reviewing labeled datasets to catch errors before training. We're evaluating a $60,000/year third-party labeling quality service that would take over QA. The ML team says 'we could spend that 25% on actual modeling work.' Finance says $60K is expensive for what sounds like a QA service. Who's right?",
+      "failure_mode": "Evaluates the $60K against the scope of a QA service and concludes it's too expensive for what it does; misses that the real cost comparison is $60K versus the value of 25% of multiple ML engineers' time spent on something a specialized service could do—if that 25% recaptured means faster model iterations and shipping, the opportunity cost of the engineers' time almost certainly exceeds $60K annually, and Finance is comparing the service cost to zero rather than to the best use of the freed time."
+    },
+    {
+      "id": "opportunity-cost-21",
+      "prompt": "We're a developer tools startup with $2M ARR. The growth team wants to spend 8 weeks building a fully automated email nurture sequence for our free-tier users—12 automated emails triggered by behavior, with personalized content. It's a standard growth tactic and will require two engineers and a growth marketer for the full 8 weeks. Our email list is 20,000 free users. Should we build this?",
+      "failure_mode": "Approves the nurture sequence because automated email is a proven growth tactic and the list size justifies it; doesn't ask what those two engineers and the growth marketer could produce in 8 weeks if applied to their next-best alternatives (a conversion funnel experiment, a new integration that drives expansion, direct sales outreach to the top 500 free accounts), nor whether the nurture sequence uplift exceeds those alternatives' projected value."
+    },
+    {
+      "id": "opportunity-cost-22",
+      "prompt": "My startup's two co-founders and I are spending 20% of our time each responding to inbound press requests, podcast invites, and conference speaking invitations. We're getting visible in the industry. A growth advisor says this kind of content and PR is critical at our stage and we should 'lean into it.' We're pre-product-market fit and iterating quickly. How should we think about time allocation here?",
+      "failure_mode": "Validates the visibility as important at an early stage and encourages leaning in; doesn't surface that 60% of a founding team's time is the most leveraged time in the company, that pre-PMF is exactly the stage where customer discovery and product iteration have the highest return on founder time, and that the opportunity cost of three founders each spending 20% on PR/visibility rather than on finding PMF is potentially the company's most consequential allocation error."
+    },
+    {
+      "id": "opportunity-cost-23",
+      "prompt": "A YC-backed startup just published an open-source alternative to part of our paid product. It's early, rough, and missing key features. Our CEO wants to immediately launch a counter-strategy: a free tier, open-core model, and community program. That would take our entire product team of 5 for a quarter. Our paying customers haven't raised concerns yet. How do you think about the resource allocation question here?",
+      "failure_mode": "Endorses the competitive response because acting early on open-source threats is strategically important; doesn't price the opportunity cost of redirecting five product engineers for a quarter away from the roadmap that paying customers are expecting—the question isn't whether to respond but whether a full quarter of product capacity is the right size of response versus a more targeted counter, and what is lost from the roadmap that was already committed."
+    },
+    {
+      "id": "opportunity-cost-24",
+      "prompt": "We run a SaaS product and our NPS is 32, which is below average for our category. Leadership wants to run a 6-week 'NPS improvement sprint'—4 engineers and a PM dedicated to shipping the top 10 NPS-driven improvements from customer feedback. Improving NPS should reduce churn and increase referrals. This sounds obviously good. Is it?",
+      "failure_mode": "Approves the NPS sprint because reducing churn is valuable and customer feedback is driving the scope; doesn't ask what the 4 engineers and PM would be working on otherwise (the roadmap bets, the competitive feature work, the growth experiments) or whether a 6-week focused NPS sprint produces more value than those alternatives—treating 'customer feedback said we should do X' as sufficient justification without comparing it to the best foregone alternative use of the team."
+    },
+    {
+      "id": "opportunity-cost-25",
+      "prompt": "I run engineering at a 50-person company and I'm personally doing about 15 hours a week of hands-on IC work—writing code, reviewing architecture, debugging production issues—alongside my management responsibilities. I genuinely enjoy the technical work and it keeps me sharp. My coach says I'm doing too much IC work for my level and should delegate more. Is my coach right, and how should I think about this?",
+      "failure_mode": "Evaluates the IC work on the dimension of whether it's 'appropriate for my level' and frames it as a personal management style question; misses the opportunity cost lens—15 hours a week of an engineering director's time spent as an IC is 15 hours not spent on recruiting, organizational design, stakeholder alignment, team development, and strategic technical decisions that only the director can do, and the foregone value of those high-leverage uses likely substantially exceeds the value of the IC output."
+    }
+  ]
+}

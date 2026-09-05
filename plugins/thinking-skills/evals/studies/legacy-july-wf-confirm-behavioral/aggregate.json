@@ -1,0 +1,365 @@
+{
+  "schema_version": 1,
+  "study_id": "legacy-july-wf-confirm-behavioral",
+  "study_kind": "legacy_july_workflow_behavioral",
+  "created_at": "2026-07-16T00:00:00.000Z",
+  "mode": "workflow-vs-skill",
+  "solver": {
+    "model": "claude-sonnet-4-6",
+    "effort": "medium"
+  },
+  "judges": [
+    "gemini-3.1-pro-preview",
+    "gpt-5.5-pro",
+    "deepseek-v4-pro"
+  ],
+  "arms": {
+    "left": "workflow_validated",
+    "right": "full_skill_typed_verified"
+  },
+  "n_skills": 12,
+  "n_problems": 140,
+  "skills": [
+    {
+      "skill": "thinking-map-territory",
+      "n": 9,
+      "left_arm": "workflow_validated",
+      "right_arm": "full_skill_typed_verified",
+      "left_wins": 4,
+      "right_wins": 4,
+      "ties": 1,
+      "left_win_rate": 0.5,
+      "lift": 0,
+      "ci95": [
+        0.215,
+        0.785
+      ],
+      "p_value": 1,
+      "significant": false,
+      "verdict": "inconclusive",
+      "objective_authored_coverage": true
+    },
+    {
+      "skill": "thinking-cynefin",
+      "n": 9,
+      "left_arm": "workflow_validated",
+      "right_arm": "full_skill_typed_verified",
+      "left_wins": 5,
+      "right_wins": 4,
+      "ties": 0,
+      "left_win_rate": 0.556,
+      "lift": 1,
+      "ci95": [
+        0.267,
+        0.811
+      ],
+      "p_value": 1,
+      "significant": false,
+      "verdict": "inconclusive",
+      "objective_authored_coverage": true
+    },
+    {
+      "skill": "thinking-margin-of-safety",
+      "n": 9,
+      "left_arm": "workflow_validated",
+      "right_arm": "full_skill_typed_verified",
+      "left_wins": 6,
+      "right_wins": 2,
+      "ties": 1,
+      "left_win_rate": 0.722,
+      "lift": 4,
+      "ci95": [
+        0.409,
+        0.929
+      ],
+      "p_value": 0.289,
+      "significant": false,
+      "verdict": "inconclusive",
+      "objective_authored_coverage": true
+    },
+    {
+      "skill": "thinking-socratic",
+      "n": 9,
+      "left_arm": "workflow_validated",
+      "right_arm": "full_skill_typed_verified",
+      "left_wins": 7,
+      "right_wins": 2,
+      "ties": 0,
+      "left_win_rate": 0.778,
+      "lift": 5,
+      "ci95": [
+        0.453,
+        0.937
+      ],
+      "p_value": 0.182,
+      "significant": false,
+      "verdict": "inconclusive",
+      "objective_authored_coverage": true
+    },
+    {
+      "skill": "thinking-inversion",
+      "n": 9,
+      "left_arm": "workflow_validated",
+      "right_arm": "full_skill_typed_verified",
+      "left_wins": 3,
+      "right_wins": 6,
+      "ties": 0,
+      "left_win_rate": 0.333,
+      "lift": -3,
+      "ci95": [
+        0.121,
+        0.646
+      ],
+      "p_value": 0.505,
+      "significant": false,
+      "verdict": "inconclusive",
+      "objective_authored_coverage": true
+    },
+    {
+      "skill": "thinking-kepner-tregoe",
+      "n": 9,
+      "left_arm": "workflow_validated",
+      "right_arm": "full_skill_typed_verified",
+      "left_wins": 4,
+      "right_wins": 4,
+      "ties": 1,
+      "left_win_rate": 0.5,
+      "lift": 0,
+      "ci95": [
+        0.215,
+        0.785
+      ],
+      "p_value": 1,
+      "significant": false,
+      "verdict": "inconclusive",
+      "objective_authored_coverage": true
+    },
+    {
+      "skill": "thinking-scientific-method",
+      "n": 9,
+      "left_arm": "workflow_validated",
+      "right_arm": "full_skill_typed_verified",
+      "left_wins": 2,
+      "right_wins": 7,
+      "ties": 0,
+      "left_win_rate": 0.222,
+      "lift": -5,
+      "ci95": [
+        0.063,
+        0.547
+      ],
+      "p_value": 0.182,
+      "significant": false,
+      "verdict": "inconclusive",
+      "objective_authored_coverage": true
+    },
+    {
+      "skill": "thinking-reversibility",
+      "n": 25,
+      "left_arm": "workflow_validated",
+      "right_arm": "full_skill_typed_verified",
+      "left_wins": 19,
+      "right_wins": 5,
+      "ties": 1,
+      "left_win_rate": 0.78,
+      "lift": 14,
+      "ci95": [
+        0.595,
+        0.908
+      ],
+      "p_value": 0.008,
+      "significant": true,
+      "verdict": "inconclusive",
+      "objective_authored_coverage": true
+    },
+    {
+      "skill": "thinking-five-whys-plus",
+      "n": 9,
+      "left_arm": "workflow_validated",
+      "right_arm": "full_skill_typed_verified",
+      "left_wins": 3,
+      "right_wins": 6,
+      "ties": 0,
+      "left_win_rate": 0.333,
+      "lift": -3,
+      "ci95": [
+        0.121,
+        0.646
+      ],
+      "p_value": 0.505,
+      "significant": false,
+      "verdict": "inconclusive",
+      "objective_authored_coverage": true
+    },
+    {
+      "skill": "thinking-occams-razor",
+      "n": 9,
+      "left_arm": "workflow_validated",
+      "right_arm": "full_skill_typed_verified",
+      "left_wins": 4,
+      "right_wins": 5,
+      "ties": 0,
+      "left_win_rate": 0.444,
+      "lift": -1,
+      "ci95": [
+        0.189,
+        0.733
+      ],
+      "p_value": 1,
+      "significant": false,
+      "verdict": "inconclusive",
+      "objective_authored_coverage": true
+    },
+    {
+      "skill": "thinking-red-team",
+      "n": 9,
+      "left_arm": "workflow_validated",
+      "right_arm": "full_skill_typed_verified",
+      "left_wins": 4,
+      "right_wins": 5,
+      "ties": 0,
+      "left_win_rate": 0.444,
+      "lift": -1,
+      "ci95": [
+        0.189,
+        0.733
+      ],
+      "p_value": 1,
+      "significant": false,
+      "verdict": "inconclusive",
+      "objective_authored_coverage": true
+    },
+    {
+      "skill": "thinking-pre-mortem",
+      "n": 25,
+      "left_arm": "workflow_validated",
+      "right_arm": "full_skill_typed_verified",
+      "left_wins": 5,
+      "right_wins": 20,
+      "ties": 0,
+      "left_win_rate": 0.2,
+      "lift": -15,
+      "ci95": [
+        0.089,
+        0.391
+      ],
+      "p_value": 0.005,
+      "significant": true,
+      "verdict": "inconclusive",
+      "objective_authored_coverage": true
+    }
+  ],
+  "measured_result": {
+    "metric": "blind_pairwise_left_win_rate",
+    "left_arm": "workflow_validated",
+    "right_arm": "full_skill_typed_verified",
+    "left_wins": 66,
+    "right_wins": 70,
+    "ties": 4,
+    "left_win_rate": 0.486,
+    "lift_pp": -4,
+    "ci95": [
+      0.403,
+      0.569
+    ],
+    "p_value": 0.797,
+    "significant": false,
+    "claim_status_source": "pilot_only"
+  },
+  "statistics": {
+    "left_win_rate": 0.486,
+    "lift_pp": -4,
+    "ci95": [
+      0.403,
+      0.569
+    ],
+    "p_value": 0.797,
+    "significant": false
+  },
+  "health": {
+    "solver_calls": 280,
+    "solver_attempts": 281,
+    "solver_failures": 0,
+    "retried_calls": 1,
+    "failed_problems": 0,
+    "failure_rate": 0,
+    "decision_eligible": true,
+    "token_usage": {
+      "input_tokens": 5859912,
+      "output_tokens": 1138888,
+      "cache_read_tokens": 3964361,
+      "cache_creation_tokens": 898982,
+      "total_tokens": 11862143,
+      "est_cost_usd": 25.121298
+    },
+    "raw_responses_present_in_source": true,
+    "note": "Source contains judge rationales and possibly solver outputs; committed bundle omits free-text and does not archive raw bytes.",
+    "parsed_answers_present_in_source": true,
+    "usage_present_in_source": true
+  },
+  "usage": {
+    "input_tokens": 5859912,
+    "output_tokens": 1138888,
+    "cache_read_tokens": 3964361,
+    "cache_creation_tokens": 898982,
+    "total_tokens": 11862143,
+    "estimated_cost_usd": 25.121298
+  },
+  "caveats": [
+    "This is a behavioral pairwise judged eval, not objective label scoring.",
+    "The primary judge prompt is blind to treatment identity and does not include authored failure_mode text.",
+    "Workflow prompts are concise deterministic checklists padded with neutral filler to the full SKILL.md word count.",
+    "Existing authored objective binary coverage in this repo covers: thinking-socratic, thinking-cynefin, thinking-reversibility, thinking-margin-of-safety, thinking-map-territory, thinking-pre-mortem, thinking-inversion, thinking-red-team, thinking-scientific-method, thinking-kepner-tregoe, thinking-five-whys-plus, thinking-occams-razor."
+  ],
+  "warnings": [],
+  "defects": [
+    "judged_pilot_not_objective",
+    "missing_raw_solver_and_judge_archive",
+    "source_artifact_untracked_in_git",
+    "small_per_skill_n",
+    "source_claim_status_pilot_only"
+  ],
+  "evidence_validity": "provisional",
+  "statistical_status": "pilot_null",
+  "replication_status": "pilot_not_replication_qualified",
+  "product_disposition": "manual_only_quarantine_workflow_gate_pending",
+  "notes": [
+    "Behavioral pairwise judged pilot imported without verbatim solver/judge text.",
+    "Source claim_status=pilot_only; not eligible for product elevation under current gates.",
+    "Per-skill n≈9 is below confirmatory thresholds."
+  ],
+  "source": {
+    "path": "evals/results/wf-confirm-behavioral/workflow-vs-skill.json",
+    "sha256": "b4fcc8a743c4ce6b3d8c8cb2624b1686020b5c86f24e3e5cba7b509b78e1d454",
+    "bytes": 405155,
+    "mtime_utc": "2026-07-02T12:23:34.521Z",
+    "git_tracked": false,
+    "disposition": "preserve_in_place",
+    "raw_response_archive": {
+      "status": "absent",
+      "uri": null,
+      "note": "No durable content-addressed raw-response archive exists; source artifact preserved in place; evidence remains provisional."
+    }
+  },
+  "preregistration": {
+    "path": "evals/preregistrations/workflow-vs-skill-proof.md",
+    "sha256": "8e6a82e630d4db593ff9d88511dcded8aade3f0d236511392847fb93adc43fe7",
+    "exists": true
+  },
+  "run": {
+    "command": "node /Users/tjboudreaux/Sandbox/cc-thinking-skills/evals/run-workflow-vs-skill.js",
+    "env": {
+      "EVAL_RUN": "wf-confirm-behavioral",
+      "SOLVER_MODEL": "claude-sonnet-4-6",
+      "SOLVER_EFFORT": "medium",
+      "JUDGES": "gemini-3.1-pro-preview,gpt-5.5-pro,deepseek-v4-pro",
+      "CONC": "6"
+    }
+  },
+  "items_file": {
+    "path": "evals/studies/legacy-july-wf-confirm-behavioral/items.jsonl",
+    "sha256": "32200fc543a9bc5fc54a1fd0eebe21a94c491eceb00a225050f2b443b78f330e",
+    "bytes": 203556,
+    "row_count": 140
+  }
+}

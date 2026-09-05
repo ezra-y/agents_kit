@@ -1,0 +1,27 @@
+{
+  "mode": "binary-decision",
+  "skill": "socratic",
+  "tags": [
+    "socratic-clarify"
+  ],
+  "solver": "claude-sonnet-4-6",
+  "n": 29,
+  "n_yes_label": 15,
+  "n_no_label": 14,
+  "acc_with_skill": 0.931,
+  "acc_with_skill_ci": [
+    0.78,
+    0.981
+  ],
+  "acc_placebo": 1,
+  "acc_placebo_ci": [
+    0.883,
+    1
+  ],
+  "delta_pp": -6.9,
+  "balanced_acc_with_skill": 0.571,
+  "balanced_acc_placebo": 0.5,
+  "mcnemar_p": 0.479,
+  "significant": false,
+  "discordant": 2
+}

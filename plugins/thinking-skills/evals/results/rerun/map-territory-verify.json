@@ -1,0 +1,27 @@
+{
+  "mode": "binary-decision",
+  "skill": "map-territory",
+  "tags": [
+    "map-territory-verify"
+  ],
+  "solver": "claude-sonnet-4-6",
+  "n": 30,
+  "n_yes_label": 16,
+  "n_no_label": 14,
+  "acc_with_skill": 1,
+  "acc_with_skill_ci": [
+    0.886,
+    1
+  ],
+  "acc_placebo": 0.967,
+  "acc_placebo_ci": [
+    0.833,
+    0.994
+  ],
+  "delta_pp": 3.3,
+  "balanced_acc_with_skill": 0.5,
+  "balanced_acc_placebo": 0.469,
+  "mcnemar_p": 1,
+  "significant": false,
+  "discordant": 1
+}

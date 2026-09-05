@@ -1,0 +1,30 @@
+{
+  "mode": "correctness",
+  "solver": "claude-haiku-4-5-20251001",
+  "n": 40,
+  "acc_with_skill": 1,
+  "acc_with_skill_ci": [
+    0.912,
+    1
+  ],
+  "acc_placebo": 1,
+  "acc_placebo_ci": [
+    0.912,
+    1
+  ],
+  "delta_pp": 0,
+  "mcnemar_p": 1,
+  "significant": false,
+  "discordant": 0,
+  "by_skill": [
+    {
+      "skill": "bayesian",
+      "n": 40,
+      "acc_with": 1,
+      "acc_placebo": 1,
+      "delta_pp": 0,
+      "discordant": 0,
+      "mcnemar_p": 1
+    }
+  ]
+}

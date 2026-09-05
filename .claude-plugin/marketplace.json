@@ -11,9 +11,34 @@
       "source": "./plugins/claude-md-management"
     },
     {
+      "name": "eli5",
+      "description": "Explain any topic like I'm 5: a dead-simple HTML picture explainer with big visuals and few words. Use /eli5 <topic>.",
+      "source": "./plugins/eli5"
+    },
+    {
+      "name": "mattpocock-skills",
+      "description": "Matt Pocock's agent skills for real engineering: grilling, spec/ticket flows, TDD, code review, domain modelling and more. Plug-and-play, not vibe coding.",
+      "source": "./plugins/mattpocock-skills"
+    },
+    {
       "name": "mcp-server-dev",
       "description": "Skills for designing and building MCP servers that work seamlessly with Claude — guides you through deployment models (remote HTTP, MCPB, local), tool design patterns, auth, and interactive MCP apps.",
       "source": "./plugins/mcp-server-dev"
+    },
+    {
+      "name": "ponytail",
+      "description": "Lazy senior dev mode. Forces the simplest, shortest solution that actually works: YAGNI, stdlib first, no unrequested abstractions.",
+      "source": "./plugins/ponytail"
+    },
+    {
+      "name": "pstack",
+      "description": "if you want to go fast, go deep first. pstack helps you write less, but higher quality code. rigorous agent workflows you can parallelize with confidence. Ported from cursor/plugins/pstack for Claude Code and Codex.",
+      "source": "./plugins/pstack"
+    },
+    {
+      "name": "thinking-skills",
+      "description": "28 eval-informed mental models and critical-thinking skills for Claude Code, GitHub Copilot, Codex, Cursor, and other Agent Skills-compatible tools",
+      "source": "./plugins/thinking-skills"
     }
   ]
 }

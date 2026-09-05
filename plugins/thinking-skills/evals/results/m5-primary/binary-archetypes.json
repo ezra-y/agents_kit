@@ -1,0 +1,30 @@
+{
+  "mode": "binary-decision",
+  "skill": "archetypes",
+  "solver": "claude-sonnet-4-6",
+  "n": 117,
+  "n_target": 42,
+  "n_distractor": 75,
+  "acc_with_skill": 0.726,
+  "acc_with_skill_ci": [
+    0.639,
+    0.799
+  ],
+  "acc_placebo": 0.718,
+  "acc_placebo_ci": [
+    0.63,
+    0.792
+  ],
+  "delta_pp": 0.9,
+  "mcnemar_p": 1,
+  "significant": false,
+  "discordant": 15,
+  "target_acc_with": 0.881,
+  "target_acc_placebo": 0.881,
+  "target_delta_pp": 0,
+  "target_mcnemar_p": 0.479,
+  "distractor_acc_with": 0.64,
+  "distractor_acc_placebo": 0.627,
+  "distractor_fpr_with": 0.36,
+  "distractor_fpr_placebo": 0.373
+}

@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "study_id": "legacy-july-sci-method-larger-n",
+  "study_kind": "legacy_july_objective_swe",
+  "created_at": "2026-07-16T00:00:00.000Z",
+  "skill": "scientific-method",
+  "mode": "swe-localize",
+  "solver": {
+    "model": "claude-sonnet-4-6",
+    "effort": "high"
+  },
+  "arms": [
+    {
+      "id": "skill",
+      "role": "treatment",
+      "skill": "scientific-method"
+    },
+    {
+      "id": "placebo",
+      "role": "equal_budget_placebo",
+      "note": "length-matched placebo; advice-bearing filler possible"
+    }
+  ],
+  "dataset": {
+    "source_path": "evals/datasets/external/swebench-verified-500.jsonl",
+    "source_sha256_preregistered": "1ad909071d9a2a08fd8408c3589edad3c94df2d8ad2062bc6faf9e0798a35012",
+    "dataset_count": 427,
+    "split": "fresh_verified_pool"
+  },
+  "n_attempted": 427,
+  "n_items_recorded": 427,
+  "n_scored": 426,
+  "n_unscored": 1,
+  "unscored_ids": [
+    "sympy__sympy-21379"
+  ],
+  "measured_result": {
+    "metric": "fault_localization_accuracy",
+    "acc_skill": 0.925,
+    "acc_skill_ci": [
+      0.896,
+      0.946
+    ],
+    "acc_placebo": 0.885,
+    "acc_placebo_ci": [
+      0.851,
+      0.912
+    ],
+    "delta_pp": 4,
+    "discordant_total": 21,
+    "discordant": {
+      "skill_only": 19,
+      "placebo_only": 2,
+      "both_correct": 375,
+      "both_incorrect": 30
+    },
+    "mcnemar_p_artifact": 0,
+    "mcnemar_p_continuity_corrected_approx": 0.000480341,
+    "significant_artifact": true
+  },
+  "statistics": {
+    "test": "mcnemar_continuity_corrected",
+    "p_value_artifact": 0,
+    "p_value_recomputed_approx": 0.000480341,
+    "significant_artifact": true,
+    "delta_pp": 4
+  },
+  "health": {
+    "completeness": 0.9976580796252927,
+    "unscored_count": 1,
+    "raw_responses_present_in_source": false,
+    "parsed_answers_present_in_source": false,
+    "usage_present_in_source": false
+  },
+  "usage": null,
+  "defects": [
+    "permissive_filename_matching",
+    "active_placebo_control",
+    "missing_raw_response_archive",
+    "missing_parsed_answer_fields",
+    "incomplete_usage_fields",
+    "source_artifact_untracked_in_git",
+    "mcnemar_p_rounded_to_zero_in_source_artifact",
+    "incomplete_scoring_denominator"
+  ],
+  "evidence_validity": "provisional",
+  "statistical_status": "significant_below_utility_margin",
+  "replication_status": "historical_directional_signal_not_replication_qualified",
+  "product_disposition": "manual_only_directional_not_elevate",
+  "notes": [
+    "Pre-registered larger-N study: delta_pp=4.0 < 5pp utility gate with significant McNemar → DIRECTIONAL-ONLY, not ELEVATE.",
+    "Source stores mcnemar_p as 0; continuity-corrected recomputation from 19/2 discordant split is ~5e-4.",
+    "Historical same-direction M5 signals are not treated as an untouched replication gate pass.",
+    "1/427 unscored after retries; raw responses and parsed paths absent from source artifact."
+  ],
+  "source": {
+    "path": "evals/results/sci-method-larger-n/swe-scientific-method.json",
+    "sha256": "7ca6ebedc7594925e347a05403ad1adb1f2144f8810db4f0fc1a283f73267471",
+    "bytes": 56791,
+    "mtime_utc": "2026-07-02T11:45:25.043Z",
+    "git_tracked": false,
+    "disposition": "preserve_in_place",
+    "raw_response_archive": {
+      "status": "absent",
+      "uri": null,
+      "note": "No durable content-addressed raw-response archive exists; source artifact preserved in place; evidence remains provisional."
+    }
+  },
+  "skill_sha256_preregistered": "9a7a94d31c47d2e905eca47f4bd6185ca4edbb180369aad23e62ddd6e988671b",
+  "preregistration": {
+    "path": "analysis/PRE-REGISTERED-VERDICT-STUDIES.md",
+    "sha256": "ae78d4ae9d6208754b64b4bffd94535b3154c3ac2f80c08c02628e36c8854898"
+  },
+  "items_file": {
+    "path": "evals/studies/legacy-july-sci-method-larger-n/items.jsonl",
+    "sha256": "27befafa510c3ab2697108d31880d23c83b7a2c3548cbd8b68acd51139e85f0e",
+    "bytes": 173321,
+    "row_count": 427
+  }
+}

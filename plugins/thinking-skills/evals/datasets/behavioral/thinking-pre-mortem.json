@@ -1,0 +1,130 @@
+{
+  "skill": "thinking-pre-mortem",
+  "problems": [
+    {
+      "id": "pre-mortem-1",
+      "prompt": "We're three weeks from launching a checkout rewrite for our e-commerce site that processes about $2M/month in orders. The new flow consolidates a 4-step checkout into a single page, integrates a new payment processor (Stripe replacing our old gateway), and adds Apple Pay. The team is confident; everything passes in staging and the demo looked great. I want to do one last planning session before we lock the launch. What should we cover?",
+      "failure_mode": "Runs a standard pre-launch checklist (QA, perf test, monitoring) in a confirmatory, optimism-preserving frame; doesn't deliberately assume the launch already failed and work backward to surface the concrete causes the confident team is blind to (processor edge cases on declines/3DS, currency/tax rounding, abandoned-cart drop from the new single page, no quick rollback once the new processor holds live transactions)."
+    },
+    {
+      "id": "pre-mortem-2",
+      "prompt": "I'm kicking off a 4-month project to replatform our internal data pipeline from cron-driven Python scripts to Airflow, with a team of 4. We've scoped the DAGs, picked managed Airflow, and everyone's excited because the current scripts are a mess. We start Monday. Before we dive in, help me think through how to run this project well.",
+      "failure_mode": "Jumps into execution planning (sprint breakdown, DAG inventory, milestones) assuming the scope is sound; fails to use prospective hindsight to imagine the project failed at month 4 and extract the likely killers up front (underestimated migration of long-tail scripts, hidden upstream data dependencies, team's first time operating Airflow, the old cron jobs that can't be turned off, scope creep into 'while we're in here')."
+    },
+    {
+      "id": "pre-mortem-3",
+      "prompt": "Our startup is signing its first enterprise customer, a Fortune 500 bank, with a $1.2M annual contract. They need SSO/SAML, audit logging, a dedicated tenant, and a SOC 2 report we're still finalizing. The deal closes in 8 weeks and onboarding starts immediately after. The whole company is thrilled and treating it as a done deal. How should we prepare to make this customer a success?",
+      "failure_mode": "Produces an upbeat onboarding/success plan and celebrates the milestone, with the team's euphoria suppressing risk-finding; doesn't invert into 'it's a year later and this flagship account churned or the deal collapsed—why?' to surface the real landmines (SOC 2 slips and blocks procurement, single-tenant infra not actually ready, security questionnaire reveals gaps, one overloaded eng owns all of it, scope expands past the contract)."
+    },
+    {
+      "id": "pre-mortem-4",
+      "prompt": "We're planning a zero-downtime migration of our primary PostgreSQL database from one cloud region to another. The database holds 2.4TB of customer data and serves 800 active connections at peak. We've tested the replication setup in staging and the plan is to use logical replication to sync the new instance, then do a brief write-pause for cutover during our lowest traffic window at 3am Sunday. The lead DBA says the plan looks solid. Before we execute, how should we prepare?",
+      "failure_mode": "Reviews the technical migration plan and confirms that logical replication and a low-traffic cutover window are sound practices; doesn't assume the migration failed and work backward to find the concrete failure modes the team's confidence is hiding (replication lag widens unexpectedly under load, 3am low-traffic window turns out to not be truly low, application connection pool doesn't drain cleanly, rollback requires re-replicating 2.4TB, a config difference between regions not tested in staging)."
+    },
+    {
+      "id": "pre-mortem-5",
+      "prompt": "We're launching a new AI-powered feature that uses an LLM to auto-draft customer support responses for our agents to review and send. We've tested it internally for 3 weeks, accuracy looks good on our sample set, and the product team is excited about the efficiency gains. We're planning to roll it to 100% of our agents next Monday. Our support team handles about 5,000 tickets per day. What should we think through before the rollout?",
+      "failure_mode": "Evaluates the rollout readiness based on the 3-week test and the accuracy metrics; doesn't assume the rollout failed and trace why—LLM responses on novel ticket types the sample set didn't cover, agents over-trusting drafts and sending incorrect information, the model hallucinating policy details, no mechanism to quickly disable the feature if draft quality degrades, and the support team's workload increasing rather than decreasing as they learn to review AI output."
+    },
+    {
+      "id": "pre-mortem-6",
+      "prompt": "We're a 25-person startup and we're about to run our first major product launch—a Product Hunt campaign and coordinated press push targeting our Series A announcement. We've prepared the blog post, coordinated with three journalists, lined up 50 upvote hunters, and pre-written social content. Launch day is next Tuesday. The marketing lead thinks everything is in place. Help us do a final planning review.",
+      "failure_mode": "Reviews the checklist of prepared assets and confirms the launch looks ready; doesn't assume the launch failed to generate meaningful traction and work backward (upvote count peaked at midday and dropped off, press coverage ran on a slow news day and got buried, the Series A news leaked early and killed the exclusives, website couldn't handle the traffic spike, the product demo crashed for visitors from the Product Hunt click-through)."
+    },
+    {
+      "id": "pre-mortem-7",
+      "prompt": "My engineering team is starting a 6-month project to rebuild our mobile app from a hybrid Cordova app to native React Native. The decision was made because the current app is slow and hard to maintain. We have a team of 3 mobile engineers, none of whom have shipped production React Native before. We've allocated 6 months based on competitor parity estimates. How should I set this project up for success?",
+      "failure_mode": "Produces a project setup guide covering team structure, sprint planning, and technical milestones; doesn't adopt the failure frame—'it's 6 months from now, the project is 4 months behind and we've shipped nothing'—to surface the specific killers: 3 engineers learning a new framework in production, React Native's native module bridging surprises not reflected in the estimate, platform parity being harder than scoped, and the old Cordova app not receiving updates during the entire rebuild window."
+    },
+    {
+      "id": "pre-mortem-8",
+      "prompt": "We're planning to move our company's entire customer-facing infrastructure from one cloud provider to another to reduce costs by an estimated $180,000/year. The migration scope includes 40 microservices, a primary database cluster, 3 data pipelines, and CDN configuration. The engineering team has mapped out a 4-month migration plan with parallel running of both environments during the transition. Leadership has approved the plan. Before we start, what else should we think through?",
+      "failure_mode": "Reviews the migration plan structure and approves the parallel-running approach as sound; doesn't invert into 'the migration took 10 months, cost $300K in unplanned engineering time, and three major incidents occurred during cutover' to extract the real risks the team's map may have missed (undiscovered service-to-service dependencies, load testing in the new environment revealed performance differences, parallel running costs doubled for longer than expected, a customer-facing incident during cutover damaged trust)."
+    },
+    {
+      "id": "pre-mortem-9",
+      "prompt": "We're implementing a new performance review process at our 80-person company, moving from annual reviews to quarterly check-ins with continuous feedback tools. HR has designed the process, bought a software tool, and trained managers. Rollout starts next month. The CEO thinks this will improve engagement and retention. The head of people ops is asking how to make the rollout successful. How would you advise?",
+      "failure_mode": "Offers rollout advice focused on change management communication and manager training; doesn't assume the new system failed 12 months from now and reason backward from that ('adoption collapsed, scores became meaningless, managers resented the quarterly cadence, top performers left citing unclear advancement criteria') to surface the specific failure modes the HR team's optimism is masking."
+    },
+    {
+      "id": "pre-mortem-10",
+      "prompt": "We're launching a new B2B SaaS pricing tier—an 'Enterprise Plus' plan at $2,500/month that includes dedicated support, custom SLAs, and advanced admin features. We've already had three customers express interest and sales is confident they can close them. We're planning to announce the tier at our customer conference in 3 weeks. The features aren't all built yet—we're planning to deliver them within 60 days of each customer signing. How do we prepare for a successful launch?",
+      "failure_mode": "Focuses on launch communication strategy and feature delivery planning; doesn't invert—'it's 6 months later, the Enterprise Plus launch was a failure or worse, damaged our reputation'—to surface the specific risks: the conference announcement creates public commitment before features are ready, one or more of the three interested customers closes and hits the 60-day deadline while features aren't done, and the delivered 'Enterprise Plus' is indistinguishable from the existing plan to customers who paid the premium."
+    },
+    {
+      "id": "pre-mortem-11",
+      "prompt": "We're about to publish a public technical blog post announcing that we've migrated entirely off MongoDB to PostgreSQL—a 14-month effort we're proud of. The post includes architecture details, performance comparisons, and our migration approach. Our marketing team sees this as a major credibility and hiring signal. A draft is ready and we're planning to publish next week. What should we check before publishing?",
+      "failure_mode": "Reviews the post for technical accuracy and marketing angle; doesn't assume the post went live and backfired—'it was picked up by Hacker News and the comments found technical errors in our benchmarks, a former employee posted that the post overstated the difficulty to make us look better, and a competitor used our documented migration steps to one-up us publicly'—and use that to identify what needs to be true before publishing."
+    },
+    {
+      "id": "pre-mortem-12",
+      "prompt": "We're starting a 3-month initiative to improve API response times across our platform by 50%. We've appointed a tech lead, allocated 4 engineers full-time, and set a deadline. The team has done an initial profiling pass and has a list of optimization targets. The CTO is confident the team can hit the goal. Before we commit to the timeline and scope, what planning should we do?",
+      "failure_mode": "Endorses the plan structure and offers sprint planning advice; doesn't assume the initiative ended at 3 months with minimal improvement or a project mid-abandonment and reason backward from that to the killers: the profiling pass identified targets but the root causes were deeper than the fixes, the 4 engineers' work caused a production incident that consumed 3 weeks, the 50% target was picked without a measurement baseline, and one of the 4 engineers rotated off mid-project."
+    },
+    {
+      "id": "pre-mortem-13",
+      "prompt": "Our team is planning to sunset a legacy API version (v1) that has been in use for 4 years. We'll give customers 6 months of deprecation notice, migrate our 12 largest customers manually, and then shut down the endpoint. The v1 API processes about 2% of current API traffic. Engineering is eager to kill it because it's costly to maintain. What should we think through before starting the deprecation process?",
+      "failure_mode": "Reviews the deprecation plan and approves the 6-month window as reasonable; doesn't invert—'the v1 sunset caused a major incident, a partnership was damaged, and three customers churned'—to surface: the 2% traffic figure hides a long tail of integration partners the team has no direct relationship with, the 12 'largest customers' aren't the only ones using v1, and the 6-month window is measured from announcement but some customers won't see the notice for months."
+    },
+    {
+      "id": "pre-mortem-14",
+      "prompt": "We're a Series A startup about to hire our first VP of Sales to build out a go-to-market function. We've found a strong candidate who has led sales at two B2B SaaS companies and closed deals in our price range. We're planning to make an offer next week. This hire will significantly change how the company operates. What should we be thinking through before we make the offer?",
+      "failure_mode": "Advises on offer structure and onboarding planning; doesn't assume the hire failed 12 months from now—'the VP of Sales left after 8 months, a third of the sales pipeline was built on relationships that left with them, and the sales process they installed was wrong for our ICP'—and work backward from those failure modes to find what the team needs to validate before extending the offer."
+    },
+    {
+      "id": "pre-mortem-15",
+      "prompt": "We're launching a self-serve onboarding flow that replaces a sales-assisted onboarding process. Currently, every new customer goes through a 2-week high-touch onboarding with a CSM. The new self-serve flow aims to get customers to 'first value' in 30 minutes. The product team has built it, tested it with 15 internal beta users, and is ready to launch to all new signups. This is a major strategic shift. What should we do before launch?",
+      "failure_mode": "Focuses on launch readiness and rollout planning; doesn't adopt the failure frame—'it's 6 months from now, the self-serve onboarding has driven higher churn in the 0-30 day cohort and three enterprise prospects refused to sign without high-touch onboarding'—and reason backward to the specific risks: 15 internal beta users aren't representative of the real ICP, customers who would have been saved by a CSM in the old flow now churn silently, and the first-value metric used in testing doesn't predict actual retention."
+    },
+    {
+      "id": "pre-mortem-16",
+      "prompt": "We're kicking off a company-wide shift to a 'shape up' product development methodology, replacing our current sprint-based Scrum process. The whole engineering and product org—22 people—will transition starting next month. The VP of Product has read the Basecamp book, run a 2-hour training, and leadership is bought in. Execution starts in 4 weeks. What should we address before we start?",
+      "failure_mode": "Reviews the transition plan and offers change management advice; doesn't assume the methodology change failed after 6 months—'sprints are back, teams never got comfortable with the betting table, a major project slipped badly during the first 'cooldown' period, and three engineers cited 'chaos' in their resignation letters'—and work backward from those outcomes to the load-bearing assumptions about org readiness that need to be tested before full rollout."
+    },
+    {
+      "id": "pre-mortem-17",
+      "prompt": "We're integrating a third-party identity verification service into our user registration flow. Once integrated, all new users will be required to verify their identity before accessing core features. The vendor has a 99.5% uptime SLA, we've tested the happy path in staging, and the integration is ready for production. We plan to make identity verification mandatory for all new signups starting next Monday. What should we be concerned about?",
+      "failure_mode": "Confirms the integration is technically ready and approves the go-live; doesn't invert—'the integration launched Monday, by Wednesday new user registration had dropped 60% and we had a customer complaint about a valid user being rejected'—to surface the failure modes: the vendor's edge-case rejection rates are higher than documented, the false rejection UX leaves users stranded with no alternative path, the vendor outage path isn't tested for what happens to users mid-verification, and international users' documents fail the OCR."
+    },
+    {
+      "id": "pre-mortem-18",
+      "prompt": "We're running a price increase for our existing customer base—a 20% increase for all customers on plans older than 2 years, effective 60 days from now. Finance has modeled that even with some churn the net revenue impact is positive. We've drafted the notification email and are ready to send it tomorrow. The CEO has approved the plan. Before we send the emails, what should we think through?",
+      "failure_mode": "Reviews the email for tone and completeness and confirms the 60-day notice is reasonable; doesn't assume the price increase damaged the business—'churn was 3x the modeled rate in the first 60 days, three of our top 10 customers escalated to the CEO directly, and the finance model didn't account for customers who signed multi-year renewals at the old price expecting rate protection'—and use that failure frame to find what the team needs to check before sending."
+    },
+    {
+      "id": "pre-mortem-19",
+      "prompt": "We're about to kick off a 2-month initiative to build a native mobile app (iOS first, Android later) for our web-based B2B productivity tool. We have two engineers who are new to mobile development, a tight deadline driven by a prospect's request, and a plan to use Expo to accelerate development. The CEO has committed the timeline to the prospect. What should we address before we start?",
+      "failure_mode": "Gives advice on mobile development best practices and Expo setup; doesn't assume the project failed—'the iOS app missed the deadline by 6 weeks, the prospect signed with a competitor, and the two engineers burned out'—and work backward to find the specific killers: Expo's abstraction breaks on the specific native features the prospect needs, two engineers learning mobile from zero requires more ramp time than the plan assumed, the CEO's promise to the prospect created a fixed deadline that can't flex, and Android is perpetually deferred but customers expect parity."
+    },
+    {
+      "id": "pre-mortem-20",
+      "prompt": "We're a 10-person team planning to migrate our monolith to microservices over the next 12 months, while continuing to ship new features. The architecture team has done a domain decomposition, identified 8 candidate services, and presented a phased plan. The CTO is excited about the long-term maintainability benefits. We're starting with the authentication service next month. What should we discuss before starting the migration?",
+      "failure_mode": "Reviews the migration plan and offers architectural advice; doesn't invert—'it's 18 months later, the monolith still exists, we now maintain both the monolith and 3 half-migrated services, velocity has dropped 40%, and two senior engineers left citing 'too much complexity''—and reason backward from that failure state to extract the load-bearing assumptions: 10 people operating both worlds while shipping features is unsustainable, the 12-month timeline assumes no surprises, and starting with auth (a high-coupling service) is among the highest-risk first migrations."
+    },
+    {
+      "id": "pre-mortem-21",
+      "prompt": "Our company is planning its first-ever engineering offsite—4 days, 30 engineers, in-person at a resort. The goal is team building, technical discussion, and setting engineering strategy for the next 12 months. We've booked the venue, flights, and lodging. The agenda has talks, workshops, and free time. Budget is $120,000. The VP of Engineering is excited. Help us plan for a successful offsite.",
+      "failure_mode": "Advises on agenda design and facilitation tactics; doesn't assume the offsite failed—'engineers returned feeling the 4 days were wasted, the strategy outputs never got implemented, three engineers were frustrated their travel plans were disrupted for sessions that could have been emails, and the budget was 40% over'—and work backward from those specific outcomes to find what needs to be true in the planning to prevent them."
+    },
+    {
+      "id": "pre-mortem-22",
+      "prompt": "We're planning to launch a public API for our previously closed-platform product, allowing third-party developers to build integrations. The API is in beta with 5 existing customers who helped us spec it. We're planning to launch it publicly at a developer conference in 6 weeks with a partner ecosystem program. What should we be thinking about before the public launch?",
+      "failure_mode": "Reviews the launch readiness and API documentation quality; doesn't invert—'it's 12 months after the public launch, we have 3 active developers out of 200 who signed up, the API has broken twice due to unannounced changes, and one developer's public blog post about the poor DX is ranking above our product page'—and trace backward to find the failure modes the conference-driven timeline is hiding: the 5 beta customers were hand-held in ways that won't scale, the API versioning strategy isn't defined, and the partner program has no success criteria."
+    },
+    {
+      "id": "pre-mortem-23",
+      "prompt": "Our company is planning to offshore a portion of our engineering work to a development agency in Eastern Europe to reduce costs. We've vetted the agency, they passed our technical interviews, and we have a 6-month contract starting next month. Two existing engineers will be the primary contacts and will handle code review. The cost savings are projected at $300,000 annually. Before we start, what should we think through carefully?",
+      "failure_mode": "Reviews the vendor selection process and communication logistics; doesn't assume the offshore engagement failed—'after 4 months we terminated the contract, the code produced was low quality, our two engineers spent more time reviewing than building, and the technical debt from the engagement took 2 months to clean up'—and work backward from that failure to find: the code review burden on two engineers wasn't modeled, the agency's interview performance doesn't predict production code quality, and the communication overhead wasn't priced into the cost savings calculation."
+    },
+    {
+      "id": "pre-mortem-24",
+      "prompt": "We're about to launch a major redesign of our SaaS application's core workflow—the one that existing customers use daily. Our design team has done extensive user research, the new interface tested well in usability sessions with 8 existing users, and engineering has built it over 4 months. We're planning a 'big bang' launch to all existing customers next Thursday. What do we need to do this week?",
+      "failure_mode": "Focuses on launch-week tasks and communication planning; doesn't assume the launch failed—'it's 3 months later, churn doubled in the month after the redesign, NPS dropped 18 points, and three enterprise customers filed formal complaints'—and reason backward to the specific failure modes the usability research didn't catch: 8 users in controlled sessions aren't representative of the power users with complex workflows, 'tested well' in a session doesn't predict behavior when users have real deadlines, and a 'big bang' gave no fallback path for users who can't adapt."
+    },
+    {
+      "id": "pre-mortem-25",
+      "prompt": "We're starting development on a new product line—an AI-powered analytics add-on to our core platform. We've done customer discovery with 12 customers, 9 of whom said they'd pay for it. Engineering has a 5-month build plan, and we've earmarked $600,000 for the initiative. The head of product is championing it and the board is supportive. Before we start building, what should we think through?",
+      "failure_mode": "Provides product development planning advice and milestone structuring; doesn't assume the initiative failed—'it's 9 months later, the analytics add-on is built but we've sold it to only 2 of the 9 customers who expressed interest, the 5-month build took 8 months, and the feature competes with a free competitor product that launched while we were building'—and reason backward from that to find the load-bearing assumptions that need to be tested: 9 of 12 expressing interest in discovery is not the same as willingness to pay, the 5-month plan was set before talking to engineering about integration complexity, and AI analytics is a rapidly commoditizing space."
+    }
+  ]
+}

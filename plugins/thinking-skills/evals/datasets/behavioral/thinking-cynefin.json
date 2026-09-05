@@ -1,0 +1,50 @@
+{
+  "skill": "thinking-cynefin",
+  "problems": [
+    {
+      "id": "cynefin-1",
+      "prompt": "Engagement on our consumer fitness app has been sliding for two months — DAU is down 18% and session length is shrinking. The growth team's plan is to do three months of detailed user research, produce a comprehensive spec for a redesigned home feed, and ship the whole thing in one big release at the end. Their reasoning is that if we just analyze the data thoroughly enough, we'll know exactly what to build. We have no single obvious cause; lots of small things changed (new competitors, a UI refresh, seasonality, an algorithm tweak). How should we actually approach reversing the decline?",
+      "failure_mode": "Treats an emergent, multi-causal engagement problem as if it were a knowable, analyzable one — endorses heavy upfront research, a big spec, and a single large release — when cause and effect here are only visible in retrospect, so the right approach is small safe-to-fail experiments run in parallel, sensing which move the metric, and amplifying what works rather than betting on one analyzed answer."
+    },
+    {
+      "id": "cynefin-2",
+      "prompt": "Production database is corrupting writes right now — customers are seeing wrong account balances, the cause is completely unclear, alerts are firing across half a dozen services, and it's getting worse by the minute. One engineer wants to set up an A/B test of two candidate fixes to 'learn which works,' another wants to spend 30 minutes building a thorough reproduction in staging before touching anything, and a third wants to start a detailed root-cause analysis doc. As incident commander, what do you do first and why?",
+      "failure_mode": "Applies a learning/analysis approach (A/B testing fixes, building a careful repro, starting an RCA) appropriate to calmer domains while the situation is turbulent and worsening — the domain demands acting decisively first to stabilize (cut writes / failover / put up maintenance mode to stop the bleeding) and only then investigating; experimenting or analyzing during the crisis prolongs the damage."
+    },
+    {
+      "id": "cynefin-3",
+      "prompt": "Leadership handed me a mandate to 'fix our engineering process, end to end' and wants one unified methodology rolled out across the whole org. Under that umbrella sit very different things: our deploy and rollback steps (well understood, just inconsistently followed), our approach to choosing a new event-streaming architecture (needs deep expertise, several viable options), our struggling team-collaboration and morale dynamics (murky, keeps shifting), and an active flaky-billing incident that's hurting customers today. The proposal on the table is to pick Scrum and apply it to all of it. How should I actually tackle this?",
+      "failure_mode": "Accepts the premise that one methodology fits the whole mandate and applies a uniform framework (Scrum) across fundamentally different problem types, instead of first decomposing the mandate and matching each piece to its nature — standardize/automate the well-understood deploy steps, use expert analysis for the architecture choice, run experiments for the messy team dynamics, and respond decisively to the live incident."
+    },
+    {
+      "id": "cynefin-4",
+      "prompt": "We're a B2B scheduling SaaS that has only ever sold to marketing agencies, and leadership wants to expand into healthcare clinics next quarter. The plan on the table is to spend eight weeks doing competitor teardowns and analyst reports, write a full 12-month product roadmap and feature spec for the healthcare edition, then build and launch it. We've never sold to a clinic, don't know how they buy, budget, or handle compliance, and the two clinics we cold-called gave us contradictory descriptions of their workflow. How should we actually approach the expansion?",
+      "failure_mode": "Treats entry into an unfamiliar market with unknown buyer behavior as a knowable, analyzable problem — endorsing months of upfront research, a locked roadmap, and a big build — when there is no expert answer to analyze toward yet; the right move is cheap probes (a handful of design-partner clinics, concierge or manual pilots, small reversible bets) to sense what actually matters and let the offering emerge before committing to a spec."
+    },
+    {
+      "id": "cynefin-5",
+      "prompt": "Our platform team has been stuck for weeks debating whether to standardize on cloud provider A or B for our next-gen data pipeline. Someone just proposed we settle it empirically by running the full pipeline on both providers in production for a full quarter and 'let the data decide.' The requirements are actually well documented, both providers publish detailed capability and pricing docs, and we have two senior infra architects who've shipped this kind of system before. How should we make this decision?",
+      "failure_mode": "Reaches for expensive experimentation on a problem whose cause and effect are knowable — a complicated decision that structured evaluation, expert analysis, and a documented trade-off matrix can resolve — burning a quarter of production effort on parallel probes when the honest answer is to bring the experts together, analyze the documented requirements against each option, and decide."
+    },
+    {
+      "id": "cynefin-6",
+      "prompt": "Support tickets tripled the week after our big release and the exec response is 'hire three more support agents and write more help docs.' When I skim the queue I see very different things mixed together: a cluster of tickets are clearly the same known crash we already have a fix staged for, another cluster is a specific enterprise SSO integration failing in an identifiable, reproducible way, and a large fuzzy group is users confused by the redesigned navigation — but the confusion shows up differently for power users, new users, and mobile users, and every wording tweak we push helps one group and annoys another. What's the right way to bring the ticket volume down?",
+      "failure_mode": "Applies one blanket remedy (more agents plus more docs) across tickets that are actually a mix of natures, instead of triaging the queue and matching each cluster to its type — ship the staged fix for the known crash, hand the reproducible SSO failure to an engineer to analyze and fix, and run small experiments on the navigation confusion whose effects are unpredictable across user segments rather than guessing at one rewrite."
+    },
+    {
+      "id": "cynefin-7",
+      "prompt": "A third-party API our checkout depends on announced it will be shut off in 90 days, replaced by a new API that is currently in public beta. My tech lead wants to write a complete migration spec now, estimate every endpoint change, and execute it as a fixed three-sprint plan. The problem is the new API's docs are thin, its behavior has changed noticeably in each of the last three beta releases, and some endpoints we rely on don't have a clear equivalent yet. How should we plan this migration?",
+      "failure_mode": "Treats a migration against an unstable, still-evolving dependency as a fully knowable engineering task to spec and schedule upfront, when the target keeps moving and cause-and-effect can't be pinned down yet — the sound approach is exploratory spikes against the beta, keeping the design flexible and options open, and letting the concrete migration plan emerge as the new API stabilizes, rather than committing to a fixed spec against a shifting surface."
+    },
+    {
+      "id": "cynefin-8",
+      "prompt": "Our growth PM wants to '10x referrals' and the proposal is to copy, almost feature-for-feature, the referral program from a famous consumer app's case study — the same double-sided reward, the same share prompts — expecting we'll see a similar viral coefficient. We sell niche compliance software to risk officers at mid-market banks, an audience that rarely shares tools publicly and buys through procurement. How should we approach growing referrals?",
+      "failure_mode": "Transplants an off-the-shelf best-practice playbook as if referral growth were a solved, clear problem, ignoring that adoption here is an emergent social dynamic specific to a cautious, non-sharing professional audience — the right approach is to run small experiments to discover what would actually motivate risk officers to refer, sensing and amplifying what works, rather than assuming another company's mechanics will reproduce their outcome."
+    },
+    {
+      "id": "cynefin-9",
+      "prompt": "One of our mature, heavily instrumented services has been showing a slow, steady latency creep — p95 up about 15% over two months. Leadership is calling it 'mysterious' and wants to stand up a cross-org reliability task force plus a standing experimentation program to hunt it down. The service is well understood, we have full distributed tracing, detailed metrics, and a senior SRE who owns it and can already point at two or three plausible, testable regression points in the trace data. How should we go about finding and fixing the regression?",
+      "failure_mode": "Over-escalates a complicated, expert-analyzable regression into a 'complex, needs a task force and open-ended experimentation' framing, spinning up heavy org machinery when the cause and effect are recoverable through disciplined analysis — the observable trace and metric data, worked by the SRE who owns the service, will localize the regression, so the answer is focused expert diagnosis, not a standing experiment program."
+    }
+  ]
+}

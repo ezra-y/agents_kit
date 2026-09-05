@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "study_id": "scientific-method-vnext",
+  "study_version": "5",
+  "created_at": "2026-07-17T09:45:52.630Z",
+  "preregistration": {
+    "path": "evals/studies/scientific-method-vnext/prereg.md",
+    "sha256": "b54862cfa313726df552f00a3ab29fcbed1abe793a4f2f3c45c0aade07bb3846",
+    "bytes": 7295
+  },
+  "dataset": {
+    "path": "evals/datasets/external/swebench-pro.jsonl",
+    "sha256": "8f1f441483bd2ad1ded1e135b7904452b85b4afd115a9653ea502264f0ea45d0",
+    "bytes": 864564
+  },
+  "current_lean": {
+    "path": "skills/thinking-scientific-method/SKILL.md",
+    "sha256": "fc0440edac8f2fc4787d7fd1daa5d465de1115dac1e8e282741908ccaf28026d",
+    "bytes": 4304
+  },
+  "variants": [
+    {
+      "id": "candidate-01",
+      "path": "evals/studies/scientific-method-vnext/variants/candidate-01/CANDIDATE.md",
+      "sha256": "6915b9685c05ce09d533e19f3f3e17b1ce56dffaca00140371bfb79b47b8df1e",
+      "bytes": 4614
+    },
+    {
+      "id": "candidate-02",
+      "path": "evals/studies/scientific-method-vnext/variants/candidate-02/CANDIDATE.md",
+      "sha256": "83c7664471ef0593d3e4aeb706f0c70f275669f513647e9c0f130a647754bfa3",
+      "bytes": 4437
+    },
+    {
+      "id": "candidate-03",
+      "path": "evals/studies/scientific-method-vnext/variants/candidate-03/CANDIDATE.md",
+      "sha256": "7605eed80466bc26d541d6e170b042042fde1a571b4943debba1cfb38b178eb5",
+      "bytes": 4517
+    },
+    {
+      "id": "candidate-04",
+      "path": "evals/studies/scientific-method-vnext/variants/candidate-04/CANDIDATE.md",
+      "sha256": "5eef9e4dd03af5c57f92796c16fd302534a06300435b18e69291444709f9e826",
+      "bytes": 4423
+    },
+    {
+      "id": "candidate-05",
+      "path": "evals/studies/scientific-method-vnext/variants/candidate-05/CANDIDATE.md",
+      "sha256": "c27814ef432a0db810800f8058e465c83da7019c6fde94301ab34b680761f23d",
+      "bytes": 4174
+    },
+    {
+      "id": "candidate-06",
+      "path": "evals/studies/scientific-method-vnext/variants/candidate-06/CANDIDATE.md",
+      "sha256": "b186065020e9d4c73e80145892c597c57ebad6ef890ffece5afb703299751c2b",
+      "bytes": 3813
+    }
+  ],
+  "solver": {
+    "model": "claude-sonnet-4-6",
+    "effort": "high"
+  },
+  "retry_policy": {
+    "max_attempts": 2,
+    "parse_failures_retried": false
+  },
+  "arm_order_seed": "scientific-method-vnext-arm-order-v1",
+  "split_seed": "scientific-method-vnext-splits-v5",
+  "excluded_splits": {
+    "path": "evals/studies/scientific-method-vnext/splits-v4.json",
+    "sha256": "bc4803bcbcefbfe5f86dfff3eaa027aca6bf9edadfde0163f656472a73d01034",
+    "stages": [
+      "calibration",
+      "pilot"
+    ],
+    "item_count": 60
+  },
+  "stages": {
+    "calibration": {
+      "maxCalls": 24,
+      "maxEstimatedCostUsd": 5
+    },
+    "pilot": {
+      "maxCalls": 340,
+      "maxEstimatedCostUsd": 40
+    },
+    "confirmation": {
+      "maxCalls": 400,
+      "maxEstimatedCostUsd": 60
+    },
+    "replication": {
+      "maxCalls": 400,
+      "maxEstimatedCostUsd": 60
+    }
+  },
+  "split_artifact": {
+    "path": "evals/studies/scientific-method-vnext/splits.json",
+    "sha256": "4c2f626cc407a776b8e1383a539af999b0d5ee50227fdeb628554e779d2396a0",
+    "bytes": 29695
+  }
+}

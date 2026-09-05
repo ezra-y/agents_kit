@@ -1,0 +1,130 @@
+{
+  "skill": "thinking-effectuation",
+  "problems": [
+    {
+      "id": "effectuation-1",
+      "prompt": "I'm a backend engineer with about $6k saved and roughly 8 hours a week of free time. I want to start something on the side but I don't have a validated idea yet. The advice I keep getting is to first pick a big target market, write a business plan and 18-month roadmap, project the TAM, and then go raise or save enough to build the full product before launching. That feels paralyzing and I keep stalling because I can't predict which market will pan out. Given my situation, how should I actually get moving on this?",
+      "failure_mode": "Doubles down on causal planning (pick the market, size the TAM, write the roadmap, fund the full build) which is unreliable under genuine uncertainty, instead of starting from the person's actual means (skills, network, savings, hours), defining an affordable loss, and recommending the smallest action that creates real information and invites early partners/customers to shape the direction."
+    },
+    {
+      "id": "effectuation-2",
+      "prompt": "Our internal platform team has spare capacity for a quarter and leadership said 'go build something useful with it,' but gave no specific mandate. Our instinct is to spend the first six weeks doing a formal planning exercise: survey every engineering team, score all possible internal-tool ideas against a rubric, pick the single highest-ROI project, then spend the rest of the quarter building it end to end before showing anyone. The trouble is we genuinely don't know which tooling pain is biggest or whether teams would adopt what we build. How should we run this quarter?",
+      "failure_mode": "Recommends the predictive, plan-then-execute approach (exhaustive survey, ROI rubric, pick one, build it all before reveal) for a situation where adoption and value are unknowable up front, rather than starting from what the team can already build cheaply, taking a small affordable-loss experiment with one or two teams who will co-create and commit, and letting the actual project emerge from which pilots get real pull."
+    },
+    {
+      "id": "effectuation-3",
+      "prompt": "We launched a niche scheduling tool aimed at yoga studios, but it's been slow. Then something unexpected happened: a cluster of tattoo parlors found us and started signing up, and one of them emailed asking for a deposit-and-waiver feature we never planned. Our roadmap and positioning are all built around yoga studios, and the team's reaction is 'that's a distraction, it's off-strategy, we should stay focused on our plan and tell them no.' I'm not so sure. We have limited runway. How should we think about this tattoo-parlor situation?",
+      "failure_mode": "Treats the unplanned tattoo-parlor traction as an off-strategy distraction to be filtered out in defense of the original plan, instead of treating the surprise as a contingency to leverage and a customer commitment that could reshape the venture, especially given limited runway where the emergent pull from a paying, requesting segment is more valuable than loyalty to an unvalidated yoga-studio plan."
+    },
+    {
+      "id": "effectuation-4",
+      "prompt": "I'm a data scientist at a large company. I've been wanting to launch an AI-powered analytics consulting business on the side. I've spent 6 months writing a detailed business plan covering market sizing, pricing strategy, service packages, and a 12-month go-to-market plan. But I haven't talked to any potential clients yet because I wanted the plan to be solid first. I'm now second-guessing myself because I still don't know if anyone would pay for this. What should my next 4 weeks look like?",
+      "failure_mode": "Validates the planning approach and suggests continuing to refine the plan or running a formal market research survey, rather than pointing out that 6 months of planning without a single customer conversation is causal reasoning applied to a genuinely uncertain market — the next 4 weeks should be 4-6 real conversations with people in the target network, treating their commitments (or lack thereof) as the real information."
+    },
+    {
+      "id": "effectuation-5",
+      "prompt": "I'm a designer with 10 years of UX experience. I want to build a product of my own. I've been stuck for a year because every time I think of an idea, I look at the market, find competitors, and conclude the opportunity isn't large enough or has too much competition to be worth pursuing. I have $15K saved and about 10 hours a week. What framework should I use to evaluate whether an idea is worth pursuing?",
+      "failure_mode": "Suggests a better market evaluation framework (TAM sizing, competitive analysis scoring, opportunity matrices) to help pick the 'right' idea, applying causal reasoning to a genuinely uncertain situation where market analysis can't reliably predict what will work for this specific person — the right reframe is to stop predicting and start acting from available means, running small experiments that reveal opportunities through action rather than analysis."
+    },
+    {
+      "id": "effectuation-6",
+      "prompt": "We're a 3-person startup with 4 months of runway. We haven't found product-market fit yet. We've been doing two-week sprints to build new features based on our hypothesis about what the market wants. With 4 months left, our investor is pushing us to write a detailed 90-day plan showing exactly what we'll build and what metrics we'll hit. I'm worried that kind of prediction is impossible given how much we're still learning. How should we think about the next 90 days?",
+      "failure_mode": "Recommends writing the detailed 90-day roadmap as the investor asked, treating prediction under uncertainty as the expected startup management posture, rather than helping the founders articulate why a commit-and-discover approach (identify what they can learn in 2-week experiments within an affordable loss budget) is more appropriate than a prediction-based plan when fundamental uncertainty about the market remains unresolved."
+    },
+    {
+      "id": "effectuation-7",
+      "prompt": "I'm a senior SRE at a tech company. I've built a suite of internal automation scripts that have saved my team hundreds of hours. Three colleagues at other companies have asked if they could use the scripts. I've been thinking about packaging them as a product, but I keep stopping because I don't know if enough people would pay for it, I don't know what price to charge, and I don't know how much time the maintenance would take. I'm waiting until I know the answers before doing anything. What would you tell me?",
+      "failure_mode": "Tries to help answer the prediction questions (market sizing for SRE tools, pricing research, maintenance estimation) rather than recognizing that these questions are unknowable without action — the three colleagues who already asked are warm prospects with a commitment signal, and the right move is to offer them the scripts under a simple arrangement that creates real information, not to continue predicting from the sidelines."
+    },
+    {
+      "id": "effectuation-8",
+      "prompt": "We're a 2-person developer tools company that has been building toward enterprise sales for 18 months. We've had conversations with 3 large companies but none have closed. A small startup with 12 engineers just signed up on our self-serve plan and their CTO emailed asking about custom integrations and dedicated support. We're hesitant to engage deeply with them because they're not the enterprise-scale customer we planned for and serving them well might distract from our enterprise pipeline. How should we think about this?",
+      "failure_mode": "Treats the small startup as off-plan and recommends staying focused on the enterprise pipeline, applying causal reasoning (we have a plan, this is not the plan) to a situation where 18 months without a closed enterprise deal suggests the plan hasn't been validated — the small startup's unsolicited commitment and specific requests are exactly the contingency signal that effectuation says to leverage, not filter."
+    },
+    {
+      "id": "effectuation-9",
+      "prompt": "I'm thinking about starting a technical writing consultancy. I have 8 years of experience writing docs, READMEs, and technical guides as a side function of my engineering role. My plan has been to: get certified in technical communication, build a portfolio website, define a service menu and pricing, create contract templates, and launch with a marketing push — all before reaching out to any potential clients. I've been doing this prep for 7 months. What am I missing?",
+      "failure_mode": "Validates the preparation checklist as reasonable prerequisites for launching a professional service, recommending perhaps a faster timeline, rather than recognizing that 7 months of building infrastructure with zero customer contact is a planning trap — the means (8 years of documented work, an existing professional network) are sufficient to begin with a direct conversation; the preparation is substituting for the action that would actually create the business."
+    },
+    {
+      "id": "effectuation-10",
+      "prompt": "We're a 5-person startup that makes tools for independent restaurant owners. We've been building toward a vision of a full restaurant management suite — reservations, inventory, staff scheduling, and POS integration. We've been heads-down building for 14 months with no revenue and we're running out of funding. An advisor told us to 'stop building and start selling.' But we feel like we need the full suite to compete. How should we think about our next move?",
+      "failure_mode": "Helps the team rationalize completing the full suite first before selling, or suggests a faster build timeline, rather than recognizing that 14 months without a paying customer is extreme uncertainty — the effectual response is to identify what portion of the current build is deployable today, find one restaurant owner willing to pay anything to use it now, and let the gaps they complain about shape what gets built next instead of building to a predicted complete vision."
+    },
+    {
+      "id": "effectuation-11",
+      "prompt": "I'm a machine learning engineer at a large tech company. I've been noodling on a startup idea around AI-powered document processing for legal firms. I've done research and I think there's a real opportunity. But I don't have connections in the legal industry and I don't want to quit my job until I've validated the idea thoroughly. My plan is to spend 6 months doing customer discovery interviews through cold outreach before deciding whether to commit. What's the most effective use of my time in the next 30 days?",
+      "failure_mode": "Recommends an efficient customer discovery interview process (scripted questions, screener criteria, sample size targets) which treats market validation as a research project, rather than suggesting the first question is 'who do I already know who knows a lawyer' and emphasizing that a commitment from one real potential customer inside the affordable-loss frame is worth more than 30 cold discovery interviews."
+    },
+    {
+      "id": "effectuation-12",
+      "prompt": "We're a 4-person startup that built a developer productivity tool. We launched 6 months ago and have 200 free users but 0 paying customers. We've been A/B testing pricing pages, tweaking our value proposition, and running Facebook ads to try to convert free users to paid. Nothing has moved. Our last $40K is in the bank. An investor offered $150K if we could show 20 paying customers in 90 days. How should we approach the next 90 days?",
+      "failure_mode": "Continues optimizing the existing conversion funnel (better pricing page copy, more ad variants, improved value proposition) applying causal reasoning to a conversion problem that may reflect a more fundamental job-fit issue — with $40K left, the effectual approach is to identify the 10 most engaged free users, call them directly, ask what it would take for them to pay, and let those conversations shape both the offer and the product before spending down on optimization experiments."
+    },
+    {
+      "id": "effectuation-13",
+      "prompt": "I'm a product manager who has been thinking about creating an online course about product management for engineers transitioning into PM roles. I've been waiting to start until I can: write all 12 modules, record professional-quality video, build a course platform, create a marketing funnel, and get testimonials. I've been in 'getting ready' mode for a year. How do I actually launch this?",
+      "failure_mode": "Helps the person complete the preparation checklist more efficiently (better recording setup, faster platform options) rather than recognizing this is a classic affordable-loss failure mode — a year of preparation without a single paying student is a risk-avoidance pattern masquerading as quality-building; the first action is teaching the content once, live, to 5-10 people who pay a small amount, using their engagement to discover what the course actually needs to be."
+    },
+    {
+      "id": "effectuation-14",
+      "prompt": "Our software agency has been successfully billing 20 clients at around $8K/month average for custom development work. We want to transition to building our own SaaS product instead of client work. Our plan is to spend 12 months building the product nights-and-weekends while maintaining client revenue, then launch and gradually reduce client work. But we keep deprioritizing product work when client demands pick up. We've been at this for two years. What's going wrong?",
+      "failure_mode": "Recommends better time management, stricter client-work boundaries, or a cleaner timeline for the transition, framing this as a prioritization problem, rather than recognizing that the causal plan (build the whole product before transitioning) creates an indefinitely deferred commitment — the effectual reframe is to find one client who would pay for an early version of the SaaS product, which both validates the direction and creates the forcing function that makes the transition real."
+    },
+    {
+      "id": "effectuation-15",
+      "prompt": "I've been working on an AI tool for clinical documentation — helping doctors write patient notes faster. I've done extensive research, read all the regulatory guidance, consulted with a healthcare attorney, and designed a detailed system. I've also met one doctor who said 'if you build this, I'd definitely use it.' I've been hesitating to start building because I'm worried about HIPAA liability, I'm not sure about the right business model, and I want to understand the sales cycle for healthcare products better. When should I start building?",
+      "failure_mode": "Helps the person research and resolve the HIPAA, business model, and sales cycle questions before building (the causal approach), rather than recognizing that the one doctor who said 'if you build this I'd use it' is exactly the partner who should be drawn into the co-creation process now — an informal commitment from that doctor to work through a prototype together defines the affordable loss, shapes what gets built first, and converts 'would definitely use' into actual commitment."
+    },
+    {
+      "id": "effectuation-16",
+      "prompt": "We're a bootstrapped developer tools company with 3 profitable product lines, each generating $15-30K MRR. We're evaluating launching a fourth product targeting a new market segment. Our process has been to spend 3 months on market research, competitive analysis, and financial modeling before building anything. This process has worked for our existing products. But this new market is one we've never sold into before and we have no network there. Should we use the same process?",
+      "failure_mode": "Applies the same market-research-then-build process that worked for known markets to a genuinely new and unknown market, recommending the familiar causal approach, rather than distinguishing between predictable (known market, existing network, proven playbook) and unpredictable (new market, no relationships, no comparable track record) contexts where effectual means-based action would outperform prediction."
+    },
+    {
+      "id": "effectuation-17",
+      "prompt": "I'm a founding engineer at a startup that just got acqui-hired. I have a 6-month garden leave and $80K in savings. I want to start something new but I'm paralyzed by the same mistake I made before: I spent 18 months building a product nobody wanted. I don't want to repeat that. My plan is to spend the garden leave doing intensive market research and customer discovery before writing a single line of code. What advice would you give me?",
+      "failure_mode": "Endorses the intensive market research plan as a corrective to building-without-validation, when the real lesson from the previous failure isn't 'research before building' but 'build with a paying customer from the start' — the garden leave is best used making direct contact with potential customers and turning their willingness to pay into the design brief, not converting the 18-month build cycle into an 18-month research cycle with the same lack of commitment."
+    },
+    {
+      "id": "effectuation-18",
+      "prompt": "We're a 2-person team that built a useful internal tool at our previous employer. We left to start a company around it, raised a $200K pre-seed, and now our investor is pushing us to raise a $2M seed round before we have any revenue, arguing that we need to scale the team to capture the market before competitors catch on. We're not sure we need that much capital and we're worried about burning fast. How should we think about our funding strategy?",
+      "failure_mode": "Evaluates the $2M seed raise on standard startup logic (first-mover advantage, team scaling, competitive timing) rather than applying an affordable-loss lens: with $200K and no revenue, the team doesn't yet know their acquisition cost, retention, or expansion dynamics — the effectual argument is to find the first 10-20 paying customers with the current means before optimizing scale, because the capital raises the stakes before the fundamental uncertainty is resolved."
+    },
+    {
+      "id": "effectuation-19",
+      "prompt": "I'm a senior engineer at a 10-person startup. My company just announced a hiring freeze and I'm worried about job security. I want to start building a consulting practice on the side as a hedge, but I keep waiting to start until I know if I'll need it. My thinking is: if I get laid off, I'll have time to build the practice then; if I stay employed, I won't need it. A friend told me this is exactly backwards. Is my friend right?",
+      "failure_mode": "Validates the conditional planning logic ('start if laid off, not needed if not laid off') as reasonable risk management, rather than recognizing the trap: the best time to start a consulting practice is when employed (credibility is high, stakes are low, network is warm, affordable loss is small) — waiting until laid off means starting from a lower-resource, higher-pressure position when the affordable loss has shrunk dramatically."
+    },
+    {
+      "id": "effectuation-20",
+      "prompt": "We're building a B2B SaaS product in the HR tech space. We've been accepted into a well-known startup accelerator that requires us to set a clear 'north star metric' and a 12-week roadmap to optimize it. Our investors and accelerator mentors all want a specific metric: MRR, DAU, or paid conversions. But we're pre-revenue and we genuinely don't know which metric will be meaningful for our model — HR tech has long sales cycles and we've never sold to HR. How do we handle the accelerator's requirement?",
+      "failure_mode": "Helps pick the most reasonable-sounding metric for the accelerator presentation, treating the goal-setting exercise as the primary task, rather than distinguishing between the format required by the accelerator and the actual strategic approach — under genuine uncertainty about the business model, a 'north star metric' is a prediction, and the honest position is to identify what commitments (not projections) from potential customers would constitute real progress in the next 12 weeks."
+    },
+    {
+      "id": "effectuation-21",
+      "prompt": "I run a small software consultancy with 6 contractors. I've been approached by a potential client who wants to pay a significant retainer for 6 months to build a custom internal tool. The catch: the work would require hiring 2 more contractors and committing fully to their project, which would mean turning down other work during that period. I've been hesitant because I don't know if the client will renew after 6 months, and I'm worried about being dependent on one client. How should I think about this?",
+      "failure_mode": "Evaluates the risk of client concentration using expected-value logic (probability of renewal × contract value vs. diversification value) rather than applying affordable-loss thinking: the question is whether the downside scenario — 6 months in, client doesn't renew, 2 contractors to release — is survivable, and if yes, the commitment from this real paying client is more valuable than protecting against a future that hasn't materialized yet."
+    },
+    {
+      "id": "effectuation-22",
+      "prompt": "I'm a developer relations engineer with deep connections in the Python open-source community. I want to build something new. I've been generating product ideas for months but can't decide which one to pursue because I can't figure out which market is biggest or which product has the most defensible moat. I've also been waiting to talk to people because I don't want to 'pollute' the customer discovery process with my own ideas before I've picked the right one. What should I do in the next two weeks?",
+      "failure_mode": "Helps structure the idea evaluation and market-sizing process (competitive analysis, TAM estimation, moat assessment) treating this as an information-gathering problem before deciding, rather than recognizing that the person's biggest asset is their existing community connections — 'don't pollute customer discovery' is a research-purity concern from an academic market research context, not the right posture when the real move is to share 2-3 rough concepts with 5 people in the community and see what generates a real 'I'd use that' response."
+    },
+    {
+      "id": "effectuation-23",
+      "prompt": "We're a 3-person software agency that has been mostly doing web development work. Unexpectedly, two of our clients in the construction industry have asked us to build similar-sounding internal tools for managing subcontractor compliance — tracking insurance, licenses, and safety certifications. We weren't planning to specialize in construction software. Should we build these tools for the two clients, or stay generalist?",
+      "failure_mode": "Frames this as a strategic specialization decision requiring market research into the construction software vertical (market size, competitors, growth rate) before committing, applying causal logic to what is actually a contingency signal — two paying clients in the same vertical asking for the same thing is a lemonade principle moment, and the effectual response is to take both projects and treat the work itself as the validation experiment, not to analyze before acting."
+    },
+    {
+      "id": "effectuation-24",
+      "prompt": "I'm a technical writer who also does freelance coding. Someone in my professional network asked if I'd help build a documentation automation tool for their company. The work would pay $12K and take about 6 weeks. The catch is: I've been thinking about building a similar product as a SaaS business. I'm wondering if doing this project for them would either validate my idea or be a distraction from building it properly. Should I take the paid project?",
+      "failure_mode": "Evaluates the project as either 'validation experiment' or 'distraction from the real plan' using causal logic (does this fit the roadmap?), rather than recognizing this as exactly the affordance effectuation is designed for: the $12K project is an affordable-loss experiment funded by a committed partner who is essentially paying to help build the first version — accepting it and co-creating with this client is the entrepreneurial action, not a detour from it."
+    },
+    {
+      "id": "effectuation-25",
+      "prompt": "Our team of 4 has been building a developer productivity tool for 10 months. We have 150 paying customers at $29/month. We have enough runway for about 14 months. Our biggest challenge is: we don't know whether to go deep on our current customer segment (solo developers) or try to expand into teams, which would require significant product and sales infrastructure changes. A VC told us we need to 'decide which market you're in and build a plan to dominate it.' How should we approach this decision?",
+      "failure_mode": "Constructs the market segmentation decision as a strategic planning exercise (size each market, model the economics, pick the higher-expected-value option, commit the roadmap) following the VC's framing, rather than recognizing that the team has real data — 150 paying customers — and the effectual approach is to have 10 direct conversations with current customers who have teams to see if they'd pay for a team version, treating those commitments as the real input rather than a modeled prediction."
+    }
+  ]
+}

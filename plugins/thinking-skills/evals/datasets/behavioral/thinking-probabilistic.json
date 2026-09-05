@@ -1,0 +1,20 @@
+{
+  "skill": "thinking-probabilistic",
+  "problems": [
+    {
+      "id": "probabilistic-1",
+      "prompt": "Leadership is asking me to commit to a delivery date for rewriting our payment-processing service. The team's first instinct is to promise 'six weeks' and put it on the roadmap. For context: our last three service rewrites of similar size took 7, 11, and 9 weeks; this one has a tricky third-party processor integration we haven't scoped, and one of our two engineers may go on leave partway through. What date should I actually commit to leadership, and how should I communicate the timeline?",
+      "failure_mode": "Commits to a single optimistic point estimate ('six weeks') that ignores the unfavorable history of similar rewrites (7-11 weeks) and known risks, instead of grounding the estimate in base rates and expressing it as a range with explicit confidence."
+    },
+    {
+      "id": "probabilistic-2",
+      "prompt": "We're deciding whether to spend $20K on extra load-testing and a blue-green setup before a database migration scheduled for next month. The migration touches our orders table. If the migration causes extended downtime, we estimate around 5 hours of outage at roughly $8K/hour in lost revenue plus reputational cost. Similar migrations in our org have hit serious problems maybe 1 in 5 times, though our prep here is above average and we have a tested rollback. Is the $20K mitigation worth it? Make the case.",
+      "failure_mode": "Decides yes/no on the mitigation by gut feel or worst-case fear, without quantifying the probability of downtime, the expected loss, and comparing it against the mitigation cost to reach a defensible expected-value decision."
+    },
+    {
+      "id": "probabilistic-3",
+      "prompt": "I'm writing the risk section for our launch readiness doc. My draft just says the new recommendation engine 'will probably perform well' and that a major incident in the first week is 'unlikely.' My director says that's too vague to act on. Help me rewrite this risk assessment so it's actually useful for deciding staffing and rollout pace, given we have a phased rollout option and an on-call rotation we could beef up.",
+      "failure_mode": "Leaves the assessment in vague verbal terms ('probably', 'unlikely') without converting to numeric probabilities, ranges, or base rates, so the risk statement can't be tied to concrete staffing/rollout decisions or later checked for calibration."
+    }
+  ]
+}

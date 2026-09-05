@@ -1,0 +1,30 @@
+{
+  "mode": "correctness",
+  "solver": "claude-sonnet-4-6",
+  "n": 80,
+  "acc_with_skill": 0.675,
+  "acc_with_skill_ci": [
+    0.566,
+    0.768
+  ],
+  "acc_placebo": 0.563,
+  "acc_placebo_ci": [
+    0.453,
+    0.666
+  ],
+  "delta_pp": 11.3,
+  "mcnemar_p": 0.052,
+  "significant": false,
+  "discordant": 17,
+  "by_skill": [
+    {
+      "skill": "red-team",
+      "n": 80,
+      "acc_with": 0.675,
+      "acc_placebo": 0.563,
+      "delta_pp": 11.3,
+      "discordant": 17,
+      "mcnemar_p": 0.052
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "live-p99-causes",
+      "expected": "thinking-scientific-method",
+      "prompt": "Our API p99 latency tripled last Tuesday. Several deploy, database, and gateway causes are still plausible, and I have traces and diffs available now. Help me localize the faulty component before changing anything."
+    },
+    {
+      "id": "live-export-corruption",
+      "expected": "thinking-scientific-method",
+      "prompt": "There are five competing theories for why large exports are corrupted. We can inspect code, logs, and fixtures now, and I need to determine which file or invariant is actually responsible."
+    },
+    {
+      "id": "live-metric-drop",
+      "expected": "thinking-scientific-method",
+      "prompt": "Daily active users suddenly dropped 15%. Marketing, product, and data engineering each have a different causal theory. The change is still unlocalized and we can query the pipelines now."
+    },
+    {
+      "id": "live-duplicate-charge",
+      "expected": "thinking-scientific-method",
+      "prompt": "Duplicate card charges began after an SDK bump, retry change, and idempotency-key change. Before any rollback, use the evidence we already have to localize which implementation path is at fault."
+    },
+    {
+      "id": "postmortem-bad-config",
+      "expected": "thinking-five-whys-plus",
+      "prompt": "Yesterday's outage is already localized to a bad config accepted by the deploy pipeline. I need the post-incident analysis to explain why our review and validation controls allowed it and how to prevent recurrence."
+    },
+    {
+      "id": "postmortem-leak",
+      "expected": "thinking-five-whys-plus",
+      "prompt": "We found the production memory leak in worker/cache.py and shipped the fix. Now help me trace the organizational and technical conditions that let it escape tests and monitoring."
+    },
+    {
+      "id": "postmortem-permission",
+      "expected": "thinking-five-whys-plus",
+      "prompt": "The faulty permission check has been identified and patched. The remaining question is why multiple safeguards failed and what systemic prevention belongs in the incident report."
+    },
+    {
+      "id": "postmortem-schema",
+      "expected": "thinking-five-whys-plus",
+      "prompt": "The incident was conclusively localized to a schema migration ordering bug. I am not asking where the bug is; I need to understand why the process produced and missed it so we can prevent a repeat."
+    }
+  ]
+}

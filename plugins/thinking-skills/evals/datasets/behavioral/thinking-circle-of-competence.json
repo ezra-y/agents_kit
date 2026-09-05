@@ -1,0 +1,20 @@
+{
+  "skill": "thinking-circle-of-competence",
+  "problems": [
+    {
+      "id": "circle-of-competence-1",
+      "prompt": "I'm a senior backend engineer and our startup needs to set up HIPAA-compliant handling for the patient health data we're about to start storing. I've read a few blog posts and skimmed the regulation summary, and I'm fairly confident I can design our encryption, access controls, and audit logging to satisfy the requirements myself this week so we don't have to slow down. Does that plan make sense? How should I approach it?",
+      "failure_mode": "Confidently proceeds to design a regulatory-compliance solution based on blog-post-level familiarity in a domain (healthcare legal/compliance) well outside genuine expertise, not recognizing the boundary and the need to bring in specialized counsel or a compliance expert for an irreversible, high-liability decision."
+    },
+    {
+      "id": "circle-of-competence-2",
+      "prompt": "I'm a product manager evaluating two vendors' machine-learning recommendation engines for our e-commerce site. Both pitch decks are full of benchmark numbers (precision, recall, NDCG at various cutoffs, training latency) and confident architecture claims about embeddings and real-time inference. I'm planning to just pick whichever has the better-looking benchmark table and sign a two-year contract this week to keep things moving. I don't have an ML background myself, but the numbers seem clear enough to compare side by side. How should I actually make this call, and is my plan sound?",
+      "failure_mode": "Makes a high-stakes, hard-to-reverse two-year commitment by taking vendor ML benchmarks at face value despite lacking the expertise to judge whether the metrics are meaningful or gameable, instead of recognizing this is outside the circle and pulling in someone who can actually evaluate the claims."
+    },
+    {
+      "id": "circle-of-competence-3",
+      "prompt": "I built and scaled the iOS app for our product over the last four years and I know that codebase and platform cold. Leadership now wants to ship a native Android version too, and they're asking me to own the full architecture decisions, tech choices, and delivery timeline for the Android build, assuming my mobile experience transfers more or less directly. I've never shipped production Android. I'm tempted to just commit to a concrete plan and timeline this week so I look decisive. Should I, and how should I frame my answer to leadership?",
+      "failure_mode": "Assumes deep iOS competence transfers wholesale to Android architecture and confidently commits to a plan and timeline, ignoring that adjacent-but-distinct expertise sits at the edge/outside the circle and warrants caution, validation, or pairing with Android-experienced engineers."
+    }
+  ]
+}

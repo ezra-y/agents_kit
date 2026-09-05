@@ -1,0 +1,130 @@
+{
+  "skill": "thinking-lindy-effect",
+  "problems": [
+    {
+      "id": "lindy-1",
+      "prompt": "We're picking the primary datastore for a new financial records system that needs to be running and maintainable for at least the next decade, with strong transactional guarantees. The team is split. One camp wants Postgres. Another is excited about a 2-year-old distributed SQL database that benchmarks beautifully, has a slick developer experience, and just raised a big Series B, with lots of conference buzz right now. The new one would technically work for our scale. Longevity and maintainability matter more here than cutting-edge performance. How should we weigh these options and which would you lean toward?",
+      "failure_mode": "Gets swayed by the new database's impressive benchmarks, funding, and hype, recommending it on current momentum, rather than weighting the decade-long survival requirement toward the option with a 30+ year track record and recognizing that a 2-year-old product carries high uncertainty about whether it (or its vendor) will still be around and supported."
+    },
+    {
+      "id": "lindy-2",
+      "prompt": "I'm setting our team's frontend standard for the next several years of new internal business apps (CRUD dashboards, admin tools, forms over data). A senior dev is pushing hard to adopt a framework that came out about 18 months ago. It's genuinely elegant, has a charismatic creator, is trending heavily on Hacker News and Twitter, and solves some real ergonomic pain we have. The alternative is a boring, widely-used framework that's been around well over a decade. These are long-lived internal apps that other engineers will maintain after the original authors move teams. What should we standardize on, and why?",
+      "failure_mode": "Recommends the trendy 18-month-old framework because it is elegant and popular right now, mistaking current hype and momentum for durability, instead of recognizing that for long-lived, maintained-by-others internal apps the burden of proof is on the new option and the boring decade-old framework has demonstrated survival and hiring/ecosystem stability."
+    },
+    {
+      "id": "lindy-3",
+      "prompt": "We need a background job / message queue for a new service. The architect's draft proposes a queue product that's about 2 years old, marketed as the modern cloud-native replacement for older brokers, with great docs and a fast-growing GitHub star count. Our actual requirements are pretty vanilla: durable at-least-once delivery, retries, dead-letter handling, moderate throughput. This is core infrastructure that lots of other services will depend on for years. The team's instinct is 'newer is more modern, so it's the safe forward-looking bet.' Push back or confirm: is reaching for the newest option actually the lower-risk choice for core infra here?",
+      "failure_mode": "Equates 'newest and most modern' with 'lowest risk for the future' and confirms the 2-year-old choice for core infra, rather than challenging that assumption: for a load-bearing dependency with mundane requirements, an older battle-tested broker is the lower-risk bet, and the new option must justify itself by solving a genuinely new problem the proven ones cannot."
+    },
+    {
+      "id": "lindy-4",
+      "prompt": "I'm a new engineering manager at a startup and I'm deciding what development practices to invest in building with my team. I have limited time and need to choose what to prioritize. I'm being pulled toward: adopting the latest AI-assisted code review tool that launched 3 months ago and has great marketing, versus investing in building strong code review habits, pair programming culture, and test discipline across the team. Both require similar amounts of my time to establish. Which is likely to have longer-lasting value?",
+      "failure_mode": "Gives equal weight to the new AI code review tool and the traditional practices, or recommends the tool because it addresses current pain more visibly, rather than recognizing that code review culture, testing discipline, and pair programming are practices with 30-40 year track records that are highly Lindy, while a 3-month-old tool has no survival record yet."
+    },
+    {
+      "id": "lindy-5",
+      "prompt": "Our team is evaluating two competing approaches for managing infrastructure: the older approach of configuration management with tools like Ansible/Chef (15+ years old, widely used), versus a newer 'infrastructure as code' approach using a cloud-native tool that's about 3 years old, tied to a specific cloud provider's ecosystem. We're a 20-person startup with limited DevOps expertise. Which approach is lower-risk to bet on for the next 5 years?",
+      "failure_mode": "Recommends the newer cloud-native tool on the basis that it's designed specifically for the provider we use and has modern UX, without applying the survival heuristic: for a team with limited DevOps expertise, the 15-year-old approach has deep community knowledge, battle-tested failure modes, and proven hiring pool, while a 3-year-old tool tied to a single cloud vendor has both vendor lock-in risk and unproven long-term survival."
+    },
+    {
+      "id": "lindy-6",
+      "prompt": "I'm a junior developer deciding where to invest my learning over the next two years. I have two options: deeply learn SQL and relational database design, which feels 'old' but is everywhere; or focus on a graph database query language that's been gaining popularity in the last 3 years, which feels more cutting-edge and is used at several high-profile startups. What should I invest in if I want the skills to be valuable throughout my career?",
+      "failure_mode": "Recommends the graph database specialization because it's newer, more exciting, and associated with growth-stage companies, rather than recognizing that SQL is 50 years old with virtually guaranteed continued relevance (the very definition of Lindy), while a 3-year-old graph query language has an uncertain survival trajectory and a much narrower application domain."
+    },
+    {
+      "id": "lindy-7",
+      "prompt": "We're rebuilding our API gateway and evaluating options. Option A is nginx, which has been around for 20+ years, is battle-tested in high-scale production environments, and has deep community documentation for every edge case. Option B is a newer gateway purpose-built for microservices with a cloud-native design, that's been available for about 2 years and has beautiful dashboard UX and better default tooling for our use case. We're in a heavily regulated industry and our API gateway is business-critical. What should we weigh here?",
+      "failure_mode": "Focuses primarily on the better developer experience and modern feature set of the newer option, recommending it on current capabilities without appropriately weighting the fact that in a heavily regulated, business-critical context, 20 years of battle-tested production use is a meaningful predictor of continued reliability and community support, while 2 years provides little evidence of survival through adversarial conditions."
+    },
+    {
+      "id": "lindy-8",
+      "prompt": "We're choosing a programming language for a new internal tool that will handle financial calculation logic — tax computation, currency conversion, compound interest. This tool will be maintained by whoever is on the team for the next 15 years. Our team currently uses Python and JavaScript, but neither is ideal for precision arithmetic. Someone proposed using a newer language that has excellent numerical precision features and is about 4 years old. The older alternative would be to use Java with BigDecimal, which is verbose but proven. How do we think about this choice?",
+      "failure_mode": "Recommends the 4-year-old language on the strength of its numerical precision ergonomics and modern developer experience, without weighing that financial calculation logic maintained for 15 years favors the option with a much longer track record — Java at 30 years has known hiring pool, stable ecosystem, and proven BigDecimal precision patterns, while 4 years isn't enough evidence to project 15-year survival for a production financial system."
+    },
+    {
+      "id": "lindy-9",
+      "prompt": "I'm evaluating two testing frameworks for our new Python codebase. One is pytest, which has been the dominant Python testing framework for 15+ years. The other is a newer framework that came out 2 years ago claiming a better developer experience, faster test discovery, and more ergonomic assertion syntax. Our team is new to Python. For a codebase we'll be maintaining for the foreseeable future, which should we standardize on?",
+      "failure_mode": "Recommends the new framework on the ergonomic improvements, treating 'better DX' as the primary selection criterion, without weighing that for a new team and a codebase with a long maintenance horizon, the 15-year-old ecosystem (Stack Overflow coverage, plugins, IDE support, community knowledge) is a major practical advantage that the 2-year-old framework hasn't had time to build."
+    },
+    {
+      "id": "lindy-10",
+      "prompt": "Our company is evaluating two monitoring approaches: traditional metrics-and-dashboards observability (Prometheus + Grafana, ~10 years widely deployed), versus a newer 'continuous profiling' product that launched 18 months ago and claims to replace metrics with always-on profiling. Some very large tech companies have endorsed it publicly. We're a 30-engineer org considering this as our primary production observability layer. How should we evaluate the risk of each choice?",
+      "failure_mode": "Gives the newer continuous profiling product equal credibility based on large-company endorsements and the promise of a better model, without recognizing that 18 months of production use is insufficient evidence of survival at the tail of conditions (high cardinality events, edge failure modes, vendor stability) that a primary observability layer will eventually encounter, while 10 years of Prometheus/Grafana deployment represents a much larger evidence base."
+    },
+    {
+      "id": "lindy-11",
+      "prompt": "We're a small healthcare startup and we're choosing a data serialization format for our internal APIs and data pipelines. The options are JSON (25+ years old, used everywhere) and a newer binary format that's been gaining adoption in the cloud-native space for about 5 years, with better performance and schema enforcement. Our use case is internal — the data doesn't leave our system. What's the right way to evaluate this tradeoff given that healthcare data pipelines require long-term stability?",
+      "failure_mode": "Recommends the newer binary format for internal use on its technical merits (performance, schema enforcement) without weighing that 5 years of production use means fewer engineers will know it when we need to hire or debug, less documentation for edge cases we'll encounter, and higher risk of tooling ecosystem gaps — while JSON's 25-year track record means any engineer we hire can work with it immediately."
+    },
+    {
+      "id": "lindy-12",
+      "prompt": "We're picking the communication protocol for our IoT devices that need to report sensor data to our cloud platform. The options are MQTT (first published in 1999, widely used in industrial IoT for 20+ years) and a newer messaging protocol designed specifically for IoT that launched 3 years ago with better security primitives and cleaner API design. Our devices are deployed in industrial environments and will be in the field for 10 years without firmware updates. What factors should dominate this decision?",
+      "failure_mode": "Recommends the newer protocol on its technical improvements (security primitives, cleaner API) without appropriately weighting that devices deployed for 10 years with no firmware updates need a protocol ecosystem that will definitely still have maintained client libraries and tooling support in a decade — MQTT's 25-year track record is very strong Lindy evidence for that requirement, while 3 years provides no comparable assurance."
+    },
+    {
+      "id": "lindy-13",
+      "prompt": "We're evaluating NoSQL options for our document store. MongoDB has been in wide production use for 15+ years, has a large community, and our team has some existing experience with it. There's also a newer document database that launched 4 years ago with a cleaner data model, built-in multi-document transactions from the start, and a compelling pricing model. We're building a system we expect to run in production for at least 8 years. How should we weight the age difference in this evaluation?",
+      "failure_mode": "Evaluates the two options on technical merits (transactions, pricing, data model quality) and potentially recommends the newer option based on cleaner design, without explicitly applying the Lindy heuristic: for an 8-year production requirement, the 15-year option has navigated multiple deprecations, major version transitions, and community consolidations that the 4-year option hasn't yet survived."
+    },
+    {
+      "id": "lindy-14",
+      "prompt": "I'm a technical lead at a company planning to build an internal tool that will be used by non-technical business analysts for the next 10 years. I'm evaluating between Excel and a newer BI tool with much better visualization capabilities and real-time collaboration, which launched about 2 years ago and has been adopted by several tech companies. The business analysts are currently comfortable with Excel. What's the most important factor in this technology choice?",
+      "failure_mode": "Focuses on the newer BI tool's superior visualization features and collaboration model, recommending it on feature superiority without applying the Lindy heuristic: Excel is 40 years old with universal adoption, no risk of discontinuation, and the analysts' existing comfort, while a 2-year-old tool has no proven record for a 10-year maintenance horizon and poses adoption risk and potential vendor uncertainty."
+    },
+    {
+      "id": "lindy-15",
+      "prompt": "I lead engineering at a startup that's choosing between two approaches for our production deployment process. The first is a traditional blue-green deployment pattern using our existing container orchestration, which teams have used for years. The second is a newer progressive delivery approach using a platform that launched 2 years ago, which claims to make canary releases and feature flag management dramatically simpler. We have 8 engineers. What should we pick and why?",
+      "failure_mode": "Recommends the newer progressive delivery platform based on its better feature set and claim of simplicity without weighing that an 8-person team's deployment pipeline is a high-leverage, low-tolerance-for-failure component where a 2-year-old platform's unproven edge cases carry more risk relative to the team's capacity to debug novel platform issues than the traditional approach's well-documented failure modes."
+    },
+    {
+      "id": "lindy-16",
+      "prompt": "We're a development team at a bank, choosing the language for a new credit risk scoring service that will need to run in production and be audited by regulators for the next 20 years. Option A is Java — verbose, enterprise-y, 30 years old. Option B is Kotlin, which compiles to JVM bytecode and has been in wide use for about 8 years with strong adoption at Android. Both run on the JVM. How do we think about the Lindy dimension of this choice?",
+      "failure_mode": "Recommends Kotlin on its ergonomic superiority and modern language features without recognizing the important distinction: for a 20-year regulatory-compliance horizon at a bank, Java's 30-year track record of unchanged compatibility guarantees and regulator familiarity carries more weight than Kotlin's 8 years, even though both are technically viable — the burden of proof lies with the newer option to demonstrate it will be equally stable over that timeframe."
+    },
+    {
+      "id": "lindy-17",
+      "prompt": "We are evaluating libraries for parsing and validating JSON in our Go services. There's a well-established library that has been the community standard for 10 years with millions of downloads and extensive Stack Overflow coverage, and a newer library that's 18 months old with significantly better performance benchmarks and a cleaner API. This library will be used in 15 services across our platform. How should we weigh the performance gains against the library's age?",
+      "failure_mode": "Recommends the newer library on its measurable performance gains without applying the Lindy filter: for a dependency used in 15 production services, a 10-year-old library with millions of users has had its edge cases, API stability, and maintenance patterns validated in ways an 18-month-old library hasn't — the performance gains must be weighed against the operational risk of undiscovered edge cases in parsing, which is exactly the class of bug a mature library has already absorbed."
+    },
+    {
+      "id": "lindy-18",
+      "prompt": "Our team is discussing whether to invest in learning and adopting formal architectural patterns like domain-driven design, which has been around for 20+ years, versus investing in learning the newest AI-assisted architecture tools that automatically suggest microservice boundaries from code analysis, launched about a year ago. We have limited learning budget and the goal is lasting engineering improvement. Which investment is more likely to pay off over 10 years?",
+      "failure_mode": "Gives weight to the AI-assisted tooling on the basis of it being current and cutting-edge, potentially recommending a split investment, rather than applying the Lindy heuristic to learning investments: DDD at 20+ years has proven staying power as a thinking framework that works regardless of what tools exist, while a 1-year-old AI tool has a high probability of being superseded within the 10-year investment horizon."
+    },
+    {
+      "id": "lindy-19",
+      "prompt": "I'm advising a startup that is choosing between two approaches for their inter-service communication: REST over HTTP (30+ years old, universal) and a newer RPC framework that's 4 years old, offers much better performance through binary serialization and multiplexing, and is backed by a major tech company. The startup has 6 engineers and is building a system they plan to maintain for the next decade. How should they think about this choice?",
+      "failure_mode": "Recommends the newer RPC framework on performance and backing from a large tech company, without applying the Lindy analysis: for a 6-person team with a 10-year horizon, REST's 30-year track record means any engineer hired will understand it, every debugging tool supports it, and every failure mode has been documented — while the 4-year-old framework, though technically superior, requires specialization that constrains hiring and carries ecosystem risk."
+    },
+    {
+      "id": "lindy-20",
+      "prompt": "We're a data engineering team choosing our primary data transformation framework. dbt (data build tool) has been widely used in the data engineering community for 8 years and is the current de facto standard. There's a newer framework launched 18 months ago that claims to be 'dbt done right' with better Python integration, faster execution, and a cleaner interface. We're hiring for data engineers over the next 3 years. What should we standardize on?",
+      "failure_mode": "Recommends the newer framework on its technical improvements without applying the Lindy lens to the hiring dimension: standardizing on dbt (8 years, de facto standard) means candidates trained on it exist in quantity, tutorials are abundant, and the hiring pool is deep — an 18-month-old framework has a tiny trained candidate pool, meaning the technology choice directly constrains hiring for the 3-year window they've specified."
+    },
+    {
+      "id": "lindy-21",
+      "prompt": "Our company is evaluating whether to adopt a 'low-code' internal tool platform that launched 2 years ago and is backed by significant VC funding, versus building internal tools using a well-established framework like Django or Rails that the team already knows. The low-code platform promises to let non-engineers build tools without developer involvement. We're a 15-person startup with 4 developers and a lot of internal tooling needs. Which approach is the right long-term bet?",
+      "failure_mode": "Recommends the low-code platform on its promise of faster delivery and non-engineer self-service without applying the Lindy filter: 2-year-old VC-backed platforms have a high failure and pivot rate; if the vendor changes their model or shuts down, the internal tools become unmaintainable — Django/Rails at 20 years have no such vendor risk and the 4 developers already know them, which is a stronger foundation for tools that will be used for years."
+    },
+    {
+      "id": "lindy-22",
+      "prompt": "I'm a solo developer building a side project that I want to still be running and maintainable in 10 years. I'm choosing between: building a basic web app with server-side rendering using a framework I know well (Flask/Django, ~15-20 years old), versus building a modern SPA with a React frontend and a GraphQL API, using a client-side framework that's 2 years old but has impressive DX. I have limited time for maintenance. What framework choice is more likely to result in a living project in 10 years?",
+      "failure_mode": "Recommends the modern SPA architecture on its developer experience and technical capabilities, without applying the Lindy heuristic to a solo project with limited maintenance time: for a 10-year survivability goal with one maintainer, the complexity of a multi-layer architecture with a 2-year-old framework creates a higher probability of breaking changes, abandoned dependencies, and maintenance burden than a boring but proven framework that has changed little in 15 years."
+    },
+    {
+      "id": "lindy-23",
+      "prompt": "Our team is standardizing on a CI/CD platform for the next few years. We're comparing Jenkins, which has been around for 18 years and is installed everywhere, versus a newer cloud-native CI platform that's 4 years old with a much better user experience, tight cloud integration, and strong adoption at YC-type startups. We're a 25-engineer team and our CI pipeline is business-critical. What factors should dominate the decision?",
+      "failure_mode": "Recommends the newer platform primarily on its better UX and startup ecosystem adoption without weighting the full Lindy picture: Jenkins at 18 years has survived many 'Jenkins killer' competitors, has every plugin imaginable, and has a huge knowledge base — while 4 years in CI/CD is long enough to be past the very early stage but not long enough to have survived a full technology cycle, and a critical pipeline is exactly where unproven edge cases have the most impact."
+    },
+    {
+      "id": "lindy-24",
+      "prompt": "I'm hiring a machine learning engineer for a production ML role. I'm evaluating two candidates: one has deep expertise in traditional statistical ML methods (linear models, gradient boosting, SVMs) and has used these in production for 8 years; the other has only worked with deep learning frameworks for 2 years and focuses entirely on transformer models. Our production use case is structured tabular data for fraud detection. Who should I hire if I care most about long-term reliability and maintainability of the production system?",
+      "failure_mode": "Recommends the deep learning specialist as more current and forward-looking without applying the Lindy heuristic to skills: for tabular fraud detection, gradient boosting methods have decades of production track record, strong interpretability for regulatory compliance, and minimal compute requirements — while deep learning applied to structured tabular data is a 2-year specialization with less proven reliability in the specific domain, and the traditional statistical approach has demonstrated its durability."
+    },
+    {
+      "id": "lindy-25",
+      "prompt": "We're building a real-time data streaming pipeline and evaluating Apache Kafka (first released in 2011, battle-tested in thousands of production environments at massive scale) versus a newer streaming platform that's 3 years old, has a simpler operational model, lower latency in benchmarks, and claims to make Kafka obsolete. Our pipeline will be critical infrastructure for 5+ years. How do we evaluate this choice?",
+      "failure_mode": "Recommends the newer platform based on its lower operational complexity and benchmark superiority without applying the Lindy analysis to critical infrastructure: Kafka at 13 years has been tested in conditions (rebalancing at scale, broker failure, consumer lag, topic explosion) that the 3-year-old platform hasn't encountered in the breadth of production deployments — for 5+ year critical infrastructure, the evidence base that comes with 10 additional years of production use is a material risk factor, not just a marketing point."
+    }
+  ]
+}

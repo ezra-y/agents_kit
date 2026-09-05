@@ -1,0 +1,399 @@
+{
+  "tier": 3,
+  "solver": "claude-haiku-4-5-20251001",
+  "solver_effort": "high",
+  "judge": "gemini-3.1-pro-preview",
+  "pairs": [
+    "skill:placebo"
+  ],
+  "headline_pair": "skill:placebo",
+  "n_skills": 6,
+  "mean_win_rate": 0.611,
+  "proven": [
+    "thinking-second-order",
+    "thinking-pre-mortem",
+    "thinking-occams-razor"
+  ],
+  "unproven": [
+    {
+      "skill": "thinking-first-principles",
+      "win_rate": 0.333,
+      "verdict": "regresses"
+    },
+    {
+      "skill": "thinking-debiasing",
+      "win_rate": 0.333,
+      "verdict": "regresses"
+    },
+    {
+      "skill": "thinking-systems",
+      "win_rate": 0.333,
+      "verdict": "regresses"
+    }
+  ],
+  "skills": [
+    {
+      "skill": "thinking-first-principles",
+      "n": 3,
+      "pairs": {
+        "skill:placebo": {
+          "n": 3,
+          "wins": 1,
+          "losses": 2,
+          "ties": 0,
+          "win_rate": 0.333,
+          "lift": -1,
+          "vocab_only": 0
+        }
+      },
+      "problems": [
+        {
+          "id": "first-principles-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "margin": "large",
+              "vocab_only": false,
+              "why": "Response A provides a deep, first-principles breakdown of the problem, challenging the vendor's framing and offering concrete architectural and query-level optimizations based on the specific data access patterns provided. Response B completely failed to answer the prompt."
+            }
+          },
+          "failure_mode": "Accepts the vendor framing that the contract discount is 'the floor' and reasons by analogy ('warehouses this size cost this much'); recommends negotiating the commit instead of questioning whether the workload fundamentally requires that warehouse at all, and never decomposes the actual compute/storage the query pattern needs (could be 80%+ cheaper via pre-aggregation, tiered storage, or a small read-optimized store)."
+        },
+        {
+          "id": "first-principles-2",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "margin": "slight",
+              "vocab_only": false,
+              "why": "Response A demonstrates a deeper understanding of startup realities, particularly by highlighting the permanent maintenance tax of native apps (permanently losing 10-15% of engineering capacity) and the nuances of B2B sales objections. While B applies its framework well, its explicit naming of 'first principles' and 'reasoning by analogy' borders on framework theater, whereas A's insights are more organically integrated into a decision-useful format."
+            }
+          },
+          "failure_mode": "Treats 'competitors have apps and a prospect asked for one' as proof the apps are needed and jumps to scoping the build; never strips back to the underlying job the prospect is hiring the product for (likely 'book/manage meetings on my phone'), which a responsive web app or PWA might already satisfy at a fraction of the cost."
+        },
+        {
+          "id": "first-principles-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "margin": "moderate",
+              "vocab_only": false,
+              "why": "Response B delivers a highly persuasive engineering argument without relying on framework theater. It directly dismantles the team's bias by explaining exactly what problems Elasticsearch actually solves (ML ranking, dedicated teams) that the current team doesn't have, whereas Response A relies on overly rigid 'First Principles' formatting and suggests a questionable Redis search cache."
+            }
+          },
+          "failure_mode": "Defaults to Elasticsearch by analogy ('that's the standard search tool') without examining what the actual requirements demand; fails to recognize that at 20 qps over 8M docs with keyword+filter queries, Postgres full-text search or pg_trgm likely satisfies the real needs with zero new infrastructure, treating Elasticsearch's existence as justification for its necessity."
+        }
+      ],
+      "win_rate": 0.333,
+      "lift": -1,
+      "verdict": "regresses"
+    },
+    {
+      "skill": "thinking-debiasing",
+      "n": 3,
+      "pairs": {
+        "skill:placebo": {
+          "n": 3,
+          "wins": 1,
+          "losses": 2,
+          "ties": 0,
+          "win_rate": 0.333,
+          "lift": -1,
+          "vocab_only": 1
+        }
+      },
+      "problems": [
+        {
+          "id": "debiasing-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "margin": "large",
+              "vocab_only": false,
+              "why": "Response A applies a structured debiasing framework to brilliantly deconstruct the scenario, identifying the exact cognitive traps (halo effect of the VP, anchoring on a 4-month timeline, affect heuristic of 'sexy' tech). It provides highly actionable, decision-useful paths and specific questions to challenge the proposal. Response B defaults to an interactive 'grilling' mode, asking a question and stopping, which fails to provide the immediate rigorous evaluation the prompt asked for."
+            }
+          },
+          "failure_mode": "Rubber-stamps the proposal based on the VP's authority, the single glowing analogy from his past company, and team enthusiasm, without probing the optimistic timeline, conflict of interest, suppressed dissent, or whether the prior success transfers to a different context."
+        },
+        {
+          "id": "debiasing-2",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "margin": "large",
+              "vocab_only": true,
+              "why": "Response B relies heavily on framework theater, explicitly naming cognitive biases, 'System 2 thinking', and a '12-point checklist' rather than organically applying the concepts. Response A internalizes the framework to provide genuine software-specific insights—such as the reality of being '70% done' and the difficulty of hiring for an abandoned codebase—along with a highly practical, empathetic communication strategy."
+            }
+          },
+          "failure_mode": "Recommends finishing the in-house build to honor the prior $600K investment (sunk-cost fallacy), rather than evaluating the forward-looking costs and the vendor option as if starting fresh today."
+        },
+        {
+          "id": "debiasing-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "margin": "large",
+              "vocab_only": false,
+              "why": "Response B anchors its reasoning in the specific realities of software engineering and payment systems (idempotency, refunds, retries) to concretely prove why the estimate is flawed. Crucially, B recognizes that de-risking a third-party integration requires a technical spike and task-level decomposition, exposing A's suggestion of a '1-2 hour' documentation review as dangerously naive."
+            }
+          },
+          "failure_mode": "Accepts the confident, quickly-agreed 6-week estimate at face value, anchoring on the happy-path number and treating fast consensus as validation, instead of stress-testing for planning fallacy, single-point-of-failure risk, and groupthink."
+        }
+      ],
+      "win_rate": 0.333,
+      "lift": -1,
+      "verdict": "regresses"
+    },
+    {
+      "skill": "thinking-systems",
+      "n": 3,
+      "pairs": {
+        "skill:placebo": {
+          "n": 3,
+          "wins": 1,
+          "losses": 2,
+          "ties": 0,
+          "win_rate": 0.333,
+          "lift": -1,
+          "vocab_only": 1
+        }
+      },
+      "problems": [
+        {
+          "id": "systems-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "margin": "moderate",
+              "vocab_only": false,
+              "why": "Response A correctly models the queueing dynamics that explain the 14s P99 (pool wait time + 8s timeout) and accurately identifies the resource starvation mechanism for the downstream services. Response B makes a technical error regarding sequential retries ('fire while the original request is still holding its slot'). While A leans heavily on framework vocabulary, it actively applies those concepts to explain the specific system mechanics rather than just namedropping."
+            }
+          },
+          "failure_mode": "Treats the symptom locally — concludes the provider is slow and proposes tuning timeouts/retries/pool size in isolation, missing that the longer timeouts plus aggressive retries created a reinforcing retry-storm that amplified load on a shared dependency, so the 'fix' is what made it worse and the cure is to break the amplifying loop (backoff, jitter, circuit breaker, bulkheads), not enlarge buffers."
+        },
+        {
+          "id": "systems-2",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "margin": "moderate",
+              "vocab_only": true,
+              "why": "Response A surfaces the crucial behavioral insight that high-quality editors take time to evaluate job fit before committing, explaining exactly why speed negatively correlates with quality. Response B relies heavily on framework theater (explicitly naming 'systems thinking', 'Donella Meadows', and mapping redundant loops) without achieving any deeper analytical lift than A's direct, business-focused reasoning."
+            }
+          },
+          "failure_mode": "Reasons linearly from the early positive metric ('matches went up, so do more of it') and looks for a discrete bug, missing the delayed, emergent dynamic: rewarding speed over quality shifts the mix toward lower-quality fast responders, top editors disengage as their advantage erodes, and client retention degrades on a lag — a self-reinforcing decline that the celebrated metric masks."
+        },
+        {
+          "id": "systems-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "margin": "large",
+              "vocab_only": false,
+              "why": "Response B correctly identifies that slowing the decision loop to 90 seconds (Response A's top recommendation) would be catastrophic given the spike only lasts 120 seconds. Instead, B elegantly solves the delay problem by shifting from feedback (lag) to feedforward (incoming rate) while maintaining a fast decision loop and tracking in-flight provisioning, which is the mathematically correct control theory approach for this specific queueing dynamic."
+            }
+          },
+          "failure_mode": "Approves or tunes the proportional controller by gain alone, ignoring the 90s provisioning delay relative to the 30s control interval — the lag between action and effect makes an aggressive controller overshoot and oscillate (over-provision, then mass scale-down, then re-spike), so the right move addresses the delay/feedback structure (account for in-flight workers, predictive/scheduled scaling, damping, hysteresis) rather than cranking responsiveness."
+        }
+      ],
+      "win_rate": 0.333,
+      "lift": -1,
+      "verdict": "regresses"
+    },
+    {
+      "skill": "thinking-second-order",
+      "n": 3,
+      "pairs": {
+        "skill:placebo": {
+          "n": 3,
+          "wins": 2,
+          "losses": 1,
+          "ties": 0,
+          "win_rate": 0.667,
+          "lift": 1,
+          "vocab_only": 1
+        }
+      },
+      "problems": [
+        {
+          "id": "second-order-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "placebo",
+              "margin": "moderate",
+              "vocab_only": true,
+              "why": "Response B provides sharper, engineering-specific insights (like 'Size ≠ Safety' and the realization that reviewers will just wait 24 hours to let PRs auto-merge) rather than stretching a mental model into repetitive 'third and fourth-order' effects. A's rigid adherence to the framework leads to generic tech-debt doom spirals, whereas B offers practical alternatives and nuanced guardrails."
+            }
+          },
+          "failure_mode": "Evaluates only the immediate effect (faster merges, happier engineers) and endorses it; doesn't trace what the incentive does over months: PRs get artificially split to stay under 200 lines, reviewers deprioritize anything self-mergeable, review culture erodes, and the bar for 'CI passes = safe' quietly replaces human review until a quality incident."
+        },
+        {
+          "id": "second-order-2",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "margin": "moderate",
+              "vocab_only": false,
+              "why": "Response B effectively maps out the causal chains and feedback loops across both sides of the marketplace, uncovering the non-obvious insight that the supply side might actively avoid subsidized new clients. It structurally dismantles the blind spots in the prompt's modeling rather than just defaulting to 'run an A/B test' like Response A."
+            }
+          },
+          "failure_mode": "Anchors on the projected signup/completion spike and approves it as a reasonable growth bet; fails to chase downstream effects: clients learn to game the fee (multi-account, splitting jobs), freelancers may move repeat clients off-platform to keep avoiding fees, and the promo trains the most price-sensitive segment, distorting the metrics the CFO is using to judge success."
+        },
+        {
+          "id": "second-order-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "margin": "slight",
+              "vocab_only": false,
+              "why": "Response A uses a second-order thinking framework to simulate the organizational decay over time, surfacing brilliant non-obvious insights like the 'morale paradox' (worst nights get worse) and the trap of team resistance when trying to lower thresholds later. While Response B offers excellent standard SRE advice, A's temporal mapping of how the failure compounds provides superior analytical lift."
+            }
+          },
+          "failure_mode": "Treats 'fewer pages, less burnout' as the whole story and supports the threshold change; doesn't reason about the chain where real incidents now smolder undetected past the higher threshold, mean-time-to-detect rises, a few painful misses make the team distrust the digest, and they either over-correct back to noise or start ignoring alerts entirely, leaving reliability worse than before."
+        }
+      ],
+      "win_rate": 0.667,
+      "lift": 1,
+      "verdict": "proven"
+    },
+    {
+      "skill": "thinking-pre-mortem",
+      "n": 2,
+      "pairs": {
+        "skill:placebo": {
+          "n": 2,
+          "wins": 2,
+          "losses": 0,
+          "ties": 0,
+          "win_rate": 1,
+          "lift": 2,
+          "vocab_only": 0
+        }
+      },
+      "problems": [
+        {
+          "id": "pre-mortem-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "margin": "large",
+              "vocab_only": false,
+              "why": "Response A actively performs the pre-mortem analysis, surfacing highly specific integration failure modes (e.g., webhook race conditions, Apple Pay production domain mismatches) that directly challenge the team's overconfidence. Response B simply uses the term 'pre-mortem' to introduce a generic, albeit exhaustive, standard launch checklist, failing to demonstrate the adversarial thinking the mental model requires."
+            }
+          },
+          "failure_mode": "Runs a standard pre-launch checklist (QA, perf test, monitoring) in a confirmatory, optimism-preserving frame; doesn't deliberately assume the launch already failed and work backward to surface the concrete causes the confident team is blind to (processor edge cases on declines/3DS, currency/tax rounding, abandoned-cart drop from the new single page, no quick rollback once the new processor holds live transactions)."
+        },
+        {
+          "id": "pre-mortem-2",
+          "ok": false,
+          "error": "solver fail: placebo (Exec ended early: insufficient permission to proceed. Re-run with --auto medium or --auto high. For destructive commands, use --skip-permissions-unsafe.)"
+        },
+        {
+          "id": "pre-mortem-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "margin": "large",
+              "vocab_only": false,
+              "why": "Response A perfectly applies the Pre-Mortem framework to directly counteract the specific organizational bias described in the prompt ('the whole company is thrilled and treating it as a done deal'). By explicitly projecting into the future and assuming failure, A systematically breaks down the overconfidence and surfaces specific, actionable risks across technical, scope, and process domains. Response B offers standard project management advice and merely mentions the framework in passing without actually performing the mental exercise."
+            }
+          },
+          "failure_mode": "Produces an upbeat onboarding/success plan and celebrates the milestone, with the team's euphoria suppressing risk-finding; doesn't invert into 'it's a year later and this flagship account churned or the deal collapsed—why?' to surface the real landmines (SOC 2 slips and blocks procurement, single-tenant infra not actually ready, security questionnaire reveals gaps, one overloaded eng owns all of it, scope expands past the contract)."
+        }
+      ],
+      "win_rate": 1,
+      "lift": 2,
+      "verdict": "proven"
+    },
+    {
+      "skill": "thinking-occams-razor",
+      "n": 3,
+      "pairs": {
+        "skill:placebo": {
+          "n": 3,
+          "wins": 3,
+          "losses": 0,
+          "ties": 0,
+          "win_rate": 1,
+          "lift": 3,
+          "vocab_only": 0
+        }
+      },
+      "problems": [
+        {
+          "id": "occams-razor-1",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "margin": "moderate",
+              "vocab_only": false,
+              "why": "Response A expertly applies Occam's Razor by explicitly counting the assumptions required for each hypothesis, demonstrating why the engineer's complex theory is highly improbable. It also surfaces a crucial behavioral insight—that the engineer is being nerdsniped by an 'intellectually satisfying problem'—and correctly uses the 30% failure rate as a heuristic to disprove a sporadic race condition."
+            }
+          },
+          "failure_mode": "Gets drawn into the elaborate multi-condition race/eviction theory and starts designing distributed locking, multiplying assumptions; doesn't first check the far simpler hypothesis that the small config-touching deploy broke something obvious (a mistyped/missing env var or config key), which requires only one assumption and is trivially confirmable in the logs before any complex remedy."
+        },
+        {
+          "id": "occams-razor-2",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "margin": "slight",
+              "vocab_only": false,
+              "why": "B provides sharper architectural reasoning by identifying that the queue proposal introduces eventual consistency, which is a dangerous hidden assumption for authorization/entitlements. While A's technical implementation details (timeouts + retries) are slightly more complete, B's escalation criteria are much more rigorous, correctly noting that authz rarely tolerates eventual consistency, whereas A too readily entertains building a 5-minute batch sync if the cache fails."
+            }
+          },
+          "failure_mode": "Endorses the queue + sync worker + replica architecture because it sounds robust and 'future-proof,' adding several components and failure modes for problems not yet in evidence; doesn't recognize that at 30 calls/sec between co-located services a direct call (with a timeout and simple retry) satisfies the actual requirement, and that the heavier design should be earned by evidence of real scale/availability needs, not assumed."
+        },
+        {
+          "id": "occams-razor-3",
+          "ok": true,
+          "pairs": {
+            "skill:placebo": {
+              "ok": true,
+              "winner": "skill",
+              "margin": "moderate",
+              "vocab_only": false,
+              "why": "Response A expertly applies Occam's Razor by explicitly counting the assumptions required for each hypothesis, clearly demonstrating why the analyst's complex theory is less probable. It also provides a sharp, highly practical distinction between diagnostic investigation (testing the config) and defensive engineering (adding checksums), preventing premature solutioning."
+            }
+          },
+          "failure_mode": "Treats the intricate 'networking blip + partial multipart + silent rejection + misrouted alert' narrative as the working explanation and starts building integrity checks and alert reworks; ignores that a config change shipped yesterday is the simplest single-assumption cause and should be inspected first, defaulting to a coordinated-failure conspiracy over the obvious recent change."
+        }
+      ],
+      "win_rate": 1,
+      "lift": 3,
+      "verdict": "proven"
+    }
+  ]
+}

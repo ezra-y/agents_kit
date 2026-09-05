@@ -1,0 +1,130 @@
+{
+  "skill": "thinking-steel-manning",
+  "problems": [
+    {
+      "id": "steel-manning-1",
+      "prompt": "A teammate is pushing hard to introduce a GraphQL layer in front of our existing REST API. Honestly, I think they mostly want an excuse to play with shiny new tech, and our REST endpoints work fine today. Our mobile and web clients consume the API and there's been some grumbling about over-fetching, but nothing I'd call urgent. I'm the tech lead and I'm planning to reject the proposal in tomorrow's design review. Before I do, help me write up my reasoning so the rejection is solid, fair, and defensible to the team.",
+      "failure_mode": "Builds the rejection by attacking the weak 'they want shiny tech' caricature and asserting REST 'works fine,' rather than first constructing the strongest legitimate case for GraphQL (over-fetching, client coordination, multiple consumers) and engaging that, which would produce a far more credible decision."
+    },
+    {
+      "id": "steel-manning-2",
+      "prompt": "Two of my engineers are deadlocked and it's stalling the whole sprint. One insists we must enforce a hard 90% unit-test coverage gate before anything merges; the other says coverage targets are a vanity metric that just pads numbers, and that we should pour our limited testing time into integration tests instead. Each thinks the other is being unreasonable and a little dogmatic, and they've escalated to me, the engineering manager, to settle it once and for all. How should I work through this and arrive at a resolution the team will actually respect?",
+      "failure_mode": "Picks a side or splits the difference based on the surface positions, without first articulating the strongest version of each engineer's underlying concern (refactoring safety and edge-case discipline vs. false confidence and wasted effort), which is what enables a genuine synthesis."
+    },
+    {
+      "id": "steel-manning-3",
+      "prompt": "I'm convinced we should move our background job processing off the managed cloud queue we use now and onto self-hosted Kafka, because we'll get much better throughput and far more control over partitioning and retention. We process a few million jobs a day with a small platform team. I'm drafting the proposal to send to my director and I'm confident this is the right call. Can you help me sharpen and strengthen the argument so it gets approved and so I'm ready for any pushback in the review?",
+      "failure_mode": "Simply reinforces the author's existing pro-Kafka position as requested, instead of stress-testing it by constructing the strongest opposing case (operational burden, on-call cost, whether throughput is actually the bottleneck) to see whether the decision survives its best counterargument."
+    },
+    {
+      "id": "steel-manning-4",
+      "prompt": "Our VP of Engineering is insisting that we adopt a company-wide monorepo for all our services. We currently have 18 separate repos across 6 teams, and I run one of those teams. My gut reaction is that this is an unnecessary disruption — the teams work fine independently, and forcing us into one repo will cause merge conflicts, slow our CI, and hurt team autonomy. I need to present my concerns in the all-hands next week. Help me frame why this is a bad idea and why we should maintain our current multi-repo setup.",
+      "failure_mode": "Takes the author's multi-repo preference at face value and constructs a one-sided rejection of the monorepo proposal, instead of first articulating the strongest case for the monorepo (atomic cross-service changes, shared tooling, eliminating dependency hell) so the pushback engages the real argument rather than a weakened caricature."
+    },
+    {
+      "id": "steel-manning-5",
+      "prompt": "My team wants to deprecate our legacy Python 2.7 batch processing pipeline and rewrite it in Go. I think this is mostly resume-driven development — Python works, the pipeline has run reliably for four years, and we've got customers who depend on its exact output format. I'm going to push back hard in the architecture review. What are the best arguments I can make for keeping the Python system?",
+      "failure_mode": "Builds arguments for the Python system while dismissing the rewrite as 'resume-driven development,' without constructing the strongest legitimate case for the Go rewrite (Python 2.7 is EOL, maintenance is becoming brittle, performance headroom is needed) and engaging that honestly."
+    },
+    {
+      "id": "steel-manning-6",
+      "prompt": "A product manager is arguing that we should sunset our public REST API entirely and force all external developers to use our new SDK, which wraps a private API. The PM says this will simplify our surface area and let us iterate faster. I'm the API team lead and I think this is terrible — we have 400+ integrations depending on the public API, and forcing everyone to use our SDK would break a principle we've held since the beginning. I want to make the case against this at the roadmap review. Can you help me build that case?",
+      "failure_mode": "Constructs the case against SDK-forced migration by amplifying the author's concerns, without first articulating the PM's strongest underlying arguments (semantic versioning burden, undocumented internal coupling, acceleration of innovation), which would produce a more honest and persuasive counterpoint."
+    },
+    {
+      "id": "steel-manning-7",
+      "prompt": "One of our senior engineers proposes we adopt event sourcing for the entire order management domain. I've worked with event sourcing before and I know it adds a huge amount of complexity — eventual consistency headaches, event schema migration nightmares, a steep learning curve for junior engineers. My initial instinct is to reject this outright. Before I write up my review, help me clearly articulate why event sourcing would be a mistake here.",
+      "failure_mode": "Constructs a rejection built on the author's past negative experiences without first presenting the strongest reasons event sourcing might be genuinely superior for an order management domain (audit trail, temporal queries, replay capability for data recovery), so the decision is based on the weakest version of the proposal rather than its merits."
+    },
+    {
+      "id": "steel-manning-8",
+      "prompt": "Our data science team wants a 2-week 'no-deploy freeze' while they migrate our ML model serving infrastructure. They say the risk of simultaneous changes to the serving layer is too high. I run a product team that has three high-priority features queued for this sprint, and a key client is expecting delivery. My plan is to argue at the planning meeting that the freeze is unnecessary and overly cautious. What points should I make?",
+      "failure_mode": "Helps argue against the freeze by framing it as overly cautious, without articulating the strongest version of the data science team's position (ML infrastructure changes have historically caused silent regressions, rollbacks are complex, and concurrent deploys make root-cause analysis nearly impossible), which would lead to a more honest negotiation."
+    },
+    {
+      "id": "steel-manning-9",
+      "prompt": "We're debating whether to build our own internal design system from scratch versus adopting an existing open-source component library like Material UI or Ant Design. A staff engineer says building our own is over-engineering and that we should just use an existing library. I think our product has enough unique visual requirements that an off-the-shelf library will constantly fight us. Help me prepare for the design review — I need to clearly win this argument in favor of building our own.",
+      "failure_mode": "Builds the strongest case for a custom design system without first steelmanning the off-the-shelf position (immediate productivity, community support, accessibility baked in, avoided maintenance burden), which is needed to actually determine whether 'winning' this argument produces the right outcome."
+    },
+    {
+      "id": "steel-manning-10",
+      "prompt": "My CTO believes that all our microservices should eventually be consolidated back into a modular monolith. This feels like going backward to me — we spent two years decomposing the monolith, and now we'd spend another year reconsolidating? I want to push back at the next architecture council. What's the clearest argument that the microservices architecture should stay as-is?",
+      "failure_mode": "Assembles arguments defending microservices based on sunk-cost reasoning ('we spent two years on this') without seriously engaging the strongest case for the consolidation (network latency, distributed tracing overhead, deployment coordination cost, team size that no longer justifies distribution), which is the version worth actually arguing against."
+    },
+    {
+      "id": "steel-manning-11",
+      "prompt": "My PM is proposing we offer a 'free tier' for our developer tool, which currently has a single paid plan starting at $49/month. Her reasoning is that a free tier will grow our top-of-funnel. I'm worried it will cannibalize our revenue, attract low-quality users who never convert, and increase support load. I want to bring a strong counter-proposal to our strategy session. Can you help me build the argument against adding a free tier?",
+      "failure_mode": "Reinforces the author's concerns without first constructing the most compelling version of the PM's case (free tiers can have viral growth flywheel effects, developer-led growth is measurable, and 'low-quality users' may drive word-of-mouth), which a rigorous analysis requires engaging before rejecting."
+    },
+    {
+      "id": "steel-manning-12",
+      "prompt": "A junior engineer opened a PR to replace all of our custom date-handling utility functions with a popular third-party library. The PR description says it's more maintainable and battle-tested. I'm skeptical — we have edge cases in our time-zone handling that I'm not sure the library covers, and I prefer not to add dependencies for things we already have working. How do I write a constructive code review comment that clearly explains why I'm declining this change?",
+      "failure_mode": "Drafts a comment that primarily defends the status quo by citing edge cases and dependency aversion, without first articulating the strongest case for the change (accumulating maintenance debt, hidden bugs in custom code, library's proven handling of DST edge cases) and engaging it honestly in the review."
+    },
+    {
+      "id": "steel-manning-13",
+      "prompt": "Our infrastructure team wants to mandate that every new service must be deployed on Kubernetes, even small internal tools. I run a small team building lightweight operational scripts and admin dashboards, and forcing Kubernetes on everything seems like massive overkill. I'm planning to request an exemption and argue that smaller services should be allowed to run on plain EC2 or ECS. Help me make the strongest case for this exemption.",
+      "failure_mode": "Builds the exemption case around the author's practical concerns without engaging the infrastructure team's strongest arguments (standardized observability, consistent deployment pipeline, reduced cognitive overhead for operators), which are needed to determine whether the exemption is genuinely justified."
+    },
+    {
+      "id": "steel-manning-14",
+      "prompt": "Our head of security is pushing to require mandatory MFA for all internal engineering tools, including our local development environments and internal wikis. I think this is security theater for low-risk tools and will create significant friction for developers. Dozens of engineers already complain about auth friction. I need to push back thoughtfully in the security review. What's the most effective argument against extending MFA requirements to low-risk internal tools?",
+      "failure_mode": "Dismisses the security proposal as theater without constructing its best form (insider threats are the largest attack vector; credentials from 'low-risk' tools are the first step in lateral movement; the friction cost is real but bounded), which is required to make the pushback credible rather than merely convenient."
+    },
+    {
+      "id": "steel-manning-15",
+      "prompt": "A colleague is proposing we adopt trunk-based development and get rid of our current long-lived feature branches that sometimes run for 2-4 weeks. My team is against this — we have a complex staging process and our QA team needs time to test features before they hit main. I'd like to respond to this proposal at the engineering all-hands with a clear case for why feature branches work for us. Help me frame that argument.",
+      "failure_mode": "Constructs a defense of long-lived feature branches without first engaging the strongest case for trunk-based development (feature branches create integration hell, delay feedback loops, and encourage big-bang merges) to produce a more credible and self-aware position."
+    },
+    {
+      "id": "steel-manning-16",
+      "prompt": "Our analytics platform team is proposing to introduce a data mesh architecture, where each product team owns and publishes their own data products. Currently, a central data team manages all our pipelines. I'm the central data team lead and I think data mesh is an over-engineered solution that will fragment ownership, create data quality inconsistencies, and require capabilities most product teams don't have. Help me prepare my rebuttal for the architecture summit.",
+      "failure_mode": "Builds the rebuttal by amplifying the operational risks of data mesh without honestly constructing its strongest case (central data team as a bottleneck, domain expertise lost in translation, data products improving quality because owners have context), which undermines the credibility of the pushback."
+    },
+    {
+      "id": "steel-manning-17",
+      "prompt": "One of our product squads wants to use a large language model to power their new document summarization feature. I'm worried about cost (inference is expensive at scale), latency, and the unpredictability of LLM outputs. This is a B2B product where our customers expect deterministic, auditable results. I plan to recommend against using an LLM here and propose a traditional extractive summarization approach instead. Help me make that case.",
+      "failure_mode": "Recommends against LLMs by emphasizing the author's valid concerns, without first articulating the strongest reasons the LLM approach might genuinely outperform extractive methods (abstractive quality, domain generalization, zero-shot adaptation), which is needed for the recommendation to be credible."
+    },
+    {
+      "id": "steel-manning-18",
+      "prompt": "I'm the founding engineer of a 20-person startup. Our CTO wants to hire a dedicated DevOps/platform engineer next quarter. I think it's premature — our two backend engineers have been managing infra just fine with Heroku and GitHub Actions, and hiring a platform engineer would cost us $180K a year at a time when we're watching burn carefully. I want to make a persuasive case to our CTO that we should delay this hire. What's my best argument?",
+      "failure_mode": "Builds the delay argument around cost sensitivity without first constructing the strongest case for the hire (infra toil is taxing senior engineers invisibly, reliability events have opportunity cost, and dedicated platform work tends to pay back quickly), which is what the decision actually rests on."
+    },
+    {
+      "id": "steel-manning-19",
+      "prompt": "Our mobile team is insisting we adopt a cross-platform framework like React Native for all future native app development, instead of maintaining separate iOS and Android codebases. Our current native teams have deep platform expertise and our app has features — real-time audio and custom animations — that they say are painful in React Native. I'm the mobile lead and I want to defend platform-native development in next week's tech strategy meeting. Help me articulate why native is the right approach for us.",
+      "failure_mode": "Defends native development by leaning on the team's platform expertise and specific feature concerns, without engaging the strongest version of the cross-platform argument (code sharing, iteration speed, one team instead of two, the tooling gap narrowing), which is what a genuine technical decision requires."
+    },
+    {
+      "id": "steel-manning-20",
+      "prompt": "A VP at our company wants to outsource the development of our internal billing reconciliation tool to a third-party dev shop rather than having our internal team build it. My team could build this in about three months, and I believe we'll need to customize it heavily over time. The VP thinks we should focus internal engineering capacity on product features. I need to argue for keeping this in-house. What's the strongest argument I can make?",
+      "failure_mode": "Produces an in-house advocacy argument without seriously constructing the outsource side (freed capacity for differentiated product work, faster time to a working system, vendor accountability), which is what a rigorous decision review requires engaging."
+    },
+    {
+      "id": "steel-manning-21",
+      "prompt": "Our backend team is proposing we switch from synchronous REST calls to an event-driven architecture using an internal message bus for inter-service communication. My concern is that this adds operational complexity and makes debugging harder — distributed systems tracing with async events is painful compared to a synchronous call chain. I want to make my case for keeping our synchronous REST approach at the next architecture review. Can you help me frame this argument clearly?",
+      "failure_mode": "Constructs the synchronous REST defense around debugging familiarity without engaging the strongest case for event-driven architecture (decoupling, backpressure, reduced cascading failure), leading to a superficial position rather than one that survives challenge."
+    },
+    {
+      "id": "steel-manning-22",
+      "prompt": "My team lead is proposing we migrate our internal admin dashboard from a React SPA to a server-rendered architecture using a framework like Rails or Django with HTMX. The argument is simplicity and reduced frontend complexity. I've spent two years building out our React component library for this dashboard, and I think this is throwing away real investment. Help me build the case for keeping the React SPA.",
+      "failure_mode": "Defends the SPA investment on sunk-cost grounds ('two years of work') without engaging the strongest version of the SSR/HTMX proposal (reduced JS bundle overhead for an admin tool, simpler state management, faster initial render for data-heavy pages), which is what would make the defense credible."
+    },
+    {
+      "id": "steel-manning-23",
+      "prompt": "We're having a heated debate about whether to adopt stricter TypeScript — enabling `strict: true` and moving to `noImplicitAny` across our 200k LOC codebase. A senior engineer says the migration cost is too high and TypeScript is already useful enough with our looser settings. I'm the one pushing for strict mode. My manager asked me to present both sides fairly before we make a call. Can you help me articulate the strongest case against the strict migration?",
+      "failure_mode": "Produces a weakened version of the 'stay loose' argument to validate the author's position, instead of genuinely constructing the most compelling case against strict migration (migration cost on a 200k LOC codebase, team discipline required to avoid `any` casts, marginal safety gain in already-typed code), which a fair presentation requires."
+    },
+    {
+      "id": "steel-manning-24",
+      "prompt": "Our growth team is proposing we send a 're-engagement' email campaign to users who have been inactive for 90+ days. The email would highlight new features and offer a discount. I'm the head of product and I think this kind of bulk re-engagement email is annoying, likely to increase unsubscribes, and misses the root cause of why users went inactive. I want to push back at the next growth review with a clear argument against running this campaign. Help me make that case.",
+      "failure_mode": "Supports the pushback by amplifying the author's objections without first articulating the strongest version of the re-engagement campaign's rationale (dormant users who haven't been shown new capabilities are a high-value audience, discount offers have measurable conversion rates), so the argument doesn't engage the best form of what it's rejecting."
+    },
+    {
+      "id": "steel-manning-25",
+      "prompt": "My team is split on whether our new payment processing module should be built as part of the existing Rails monolith or extracted into a standalone Python microservice. One camp says extraction is premature; another says payment logic is security-sensitive and should be isolated. I'm the tech lead. My instinct is that extraction is over-engineering at our current scale (50k transactions/month). Help me think through this so I arrive at a decision I can defend to both sides.",
+      "failure_mode": "Validates the monolith preference by citing scale without engaging the strongest case for extraction (blast radius isolation, PCI compliance scope reduction, independent deployability), which a defensible decision requires honestly addressing."
+    }
+  ]
+}

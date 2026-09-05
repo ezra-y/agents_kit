@@ -1,0 +1,1223 @@
+{
+  "mode": "swe-localize",
+  "skill": "kepner-tregoe",
+  "solver": "claude-sonnet-4-6",
+  "n": 224,
+  "dataset_path": "/Users/tjboudreaux/Sandbox/cc-thinking-skills/evals/datasets/calibrated/debugging-fault-localization-decisive.jsonl",
+  "dataset_count": 224,
+  "acc_with_skill": 0.545,
+  "acc_with_skill_ci": [
+    0.479,
+    0.609
+  ],
+  "acc_placebo": 0.563,
+  "acc_placebo_ci": [
+    0.497,
+    0.626
+  ],
+  "delta_pp": -1.8,
+  "mcnemar_p": 0.289,
+  "significant": false,
+  "discordant": 8,
+  "items": [
+    {
+      "id": "swebench-0",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-1",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-2",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-3",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-4",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-5",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-6",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-7",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-8",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-9",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-10",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-11",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-12",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-13",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-14",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-15",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-16",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-17",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-18",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-19",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-20",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-21",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-22",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-23",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-24",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-25",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-26",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-27",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-28",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-29",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-30",
+      "skill_correct": false,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-31",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-32",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-33",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-34",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-35",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-36",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-37",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-38",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-39",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-40",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-41",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-42",
+      "skill_correct": false,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-43",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-44",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-45",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-46",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-47",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-48",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-49",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-50",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-51",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-52",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-53",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-54",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-55",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-56",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-57",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-58",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-59",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-60",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-61",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-62",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-63",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-64",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-65",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-66",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-67",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-68",
+      "skill_correct": false,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-69",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-70",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-71",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-72",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-73",
+      "skill_correct": false,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-74",
+      "skill_correct": true,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-75",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-76",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-77",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-78",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-79",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-80",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-81",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-82",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-83",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-84",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-85",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-86",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-87",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-88",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-89",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-90",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-91",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-92",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-93",
+      "skill_correct": false,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-94",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-95",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-96",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-97",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-98",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-99",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-200",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-201",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-202",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-203",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-204",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-205",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-206",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-207",
+      "skill_correct": false,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-208",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-209",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-210",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-211",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-212",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-213",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-214",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-215",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-216",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-217",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-218",
+      "skill_correct": true,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-219",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-220",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-221",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-222",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-223",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-224",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-225",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-226",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-227",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-228",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-229",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-230",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-231",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-232",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-233",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-234",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-235",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-236",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-237",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-238",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-239",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-240",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-241",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-242",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-243",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "swebench-244",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-245",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-246",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-247",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-248",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "swebench-249",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "map-territory-01",
+      "scored": true
+    },
+    {
+      "id": "map-territory-02",
+      "scored": true
+    },
+    {
+      "id": "map-territory-03",
+      "scored": true
+    },
+    {
+      "id": "map-territory-04",
+      "scored": true
+    },
+    {
+      "id": "map-territory-05",
+      "scored": true
+    },
+    {
+      "id": "map-territory-06",
+      "scored": true
+    },
+    {
+      "id": "map-territory-07",
+      "scored": true
+    },
+    {
+      "id": "map-territory-08",
+      "scored": true
+    },
+    {
+      "id": "map-territory-09",
+      "scored": true
+    },
+    {
+      "id": "map-territory-10",
+      "scored": true
+    },
+    {
+      "id": "map-territory-11",
+      "scored": true
+    },
+    {
+      "id": "map-territory-12",
+      "scored": true
+    },
+    {
+      "id": "map-territory-13",
+      "scored": true
+    },
+    {
+      "id": "map-territory-14",
+      "scored": true
+    },
+    {
+      "id": "map-territory-15",
+      "scored": true
+    },
+    {
+      "id": "map-territory-16",
+      "scored": true
+    },
+    {
+      "id": "map-territory-17",
+      "scored": true
+    },
+    {
+      "id": "map-territory-18",
+      "scored": true
+    },
+    {
+      "id": "map-territory-19",
+      "scored": true
+    },
+    {
+      "id": "map-territory-20",
+      "scored": true
+    },
+    {
+      "id": "map-territory-21",
+      "scored": true
+    },
+    {
+      "id": "map-territory-22",
+      "scored": true
+    },
+    {
+      "id": "map-territory-23",
+      "scored": true
+    },
+    {
+      "id": "map-territory-24",
+      "scored": true
+    },
+    {
+      "id": "map-territory-25",
+      "scored": true
+    },
+    {
+      "id": "map-territory-26",
+      "scored": true
+    },
+    {
+      "id": "map-territory-27",
+      "scored": true
+    },
+    {
+      "id": "map-territory-28",
+      "scored": true
+    },
+    {
+      "id": "map-territory-29",
+      "scored": true
+    },
+    {
+      "id": "map-territory-30",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-8",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-11",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-12",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-13",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-16",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-17",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-18",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-19",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-21",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-22",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-23",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-42",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-46",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-48",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-50",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-51",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-69",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-74",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-81",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-83",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-84",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-196",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-199",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-200",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-201",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-203",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-214",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-216",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-224",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-225",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-227",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-236",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-241",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-249",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-261",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-262",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-264",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-267",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-268",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-269",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-270",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-271",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-274",
+      "scored": true
+    },
+    {
+      "id": "glm-distractor-275",
+      "scored": true
+    }
+  ],
+  "scored_count": 224,
+  "unscored_count": 0,
+  "provenance": "exploratory: surface-mismatch (powered on fault-localization, not native surface)"
+}

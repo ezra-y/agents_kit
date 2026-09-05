@@ -1,0 +1,23 @@
+{
+  "skill": "cynefin",
+  "primary_value_surface": "routing/discoverability",
+  "primary_metric": "domain_classification_accuracy",
+  "secondary_metrics": ["approach_match_quality", "confidence_calibration", "boundary_case_handling"],
+  "distractors": {
+    "off_target_set": "Problems with obvious domain classification; situations where Cynefin adds no actionable distinction; meta-questions about Cynefin framework itself",
+    "description": "Items where domain is unambiguous or where the framework provides no decision leverage"
+  },
+  "calibration_range": [0.40, 0.70],
+  "calibration_exception": null,
+  "min_sample_primary": 80,
+  "min_sample_replication": 80,
+  "planned_comparison": "placebo",
+  "decision_gate": {
+    "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary",
+    "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+    "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+    "quarantine_redirect": "primary_delta_pp < 0 OR approach_match_quality < 0.60",
+    "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+  },
+  "eval_family": "Routing/abstention"
+}

@@ -1,0 +1,30 @@
+{
+  "mode": "correctness",
+  "solver": "claude-sonnet-4-6",
+  "n": 40,
+  "acc_with_skill": 0.45,
+  "acc_with_skill_ci": [
+    0.307,
+    0.602
+  ],
+  "acc_placebo": 0.4,
+  "acc_placebo_ci": [
+    0.263,
+    0.554
+  ],
+  "delta_pp": 5,
+  "mcnemar_p": 0.617,
+  "significant": false,
+  "discordant": 4,
+  "by_skill": [
+    {
+      "skill": "occams-razor",
+      "n": 40,
+      "acc_with": 0.45,
+      "acc_placebo": 0.4,
+      "delta_pp": 5,
+      "discordant": 4,
+      "mcnemar_p": 0.617
+    }
+  ]
+}

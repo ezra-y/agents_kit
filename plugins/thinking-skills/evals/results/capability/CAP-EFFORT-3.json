@@ -1,0 +1,30 @@
+{
+  "mode": "correctness",
+  "solver": "claude-opus-4-8",
+  "n": 20,
+  "acc_with_skill": 0.55,
+  "acc_with_skill_ci": [
+    0.342,
+    0.742
+  ],
+  "acc_placebo": 0.55,
+  "acc_placebo_ci": [
+    0.342,
+    0.742
+  ],
+  "delta_pp": 0,
+  "mcnemar_p": 1,
+  "significant": false,
+  "discordant": 0,
+  "by_skill": [
+    {
+      "skill": "bayesian",
+      "n": 20,
+      "acc_with": 0.55,
+      "acc_placebo": 0.55,
+      "delta_pp": 0,
+      "discordant": 0,
+      "mcnemar_p": 1
+    }
+  ]
+}

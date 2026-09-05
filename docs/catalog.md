@@ -1,6 +1,6 @@
 # 收藏技能总目录
 
-全部收藏 **245** 个：未收录索引 **9** · 已收录 **236**（其中常驻 **107**）
+全部收藏 **308** 个：未收录索引 **11** · 已收录 **297**（其中常驻 **148**）
 
 匹配优先级：配置启用（实际加载用 `check --runtime` 核验）→ 已收录未常驻（启用即可，零下载）→
 未收录索引（从上游安装）。按描述匹配即可；描述拿不准、候选难取舍或任务
@@ -36,6 +36,26 @@ Emil Kowalski 的动效与 UI 设计技能合集
 | [pick-ui-library](https://raw.githubusercontent.com/emilkowalski/skills/HEAD/skills/pick-ui-library/SKILL.md) | Pick the right library for a given frontend task from a curated, opinionated list — numbers, OTP inputs, charts, command menus, virtualization, drag and drop, toasts, state, styling, and more. Only runs when explicitly invoked; it does not trigger on its own. | `skills/pick-ui-library` | ● |
 | [prototype](https://raw.githubusercontent.com/emilkowalski/skills/HEAD/skills/prototype/SKILL.md) | Build multiple genuinely different versions of a UI piece you describe, rendered behind a visual picker so you can flip through them live and promote the one that feels right. Only runs when explicitly invoked; it does not trigger on its own. | `skills/prototype` | ● |
 | [review-animations](https://raw.githubusercontent.com/emilkowalski/skills/HEAD/skills/review-animations/SKILL.md) | Reviews animation and motion code against a high craft bar derived from Emil Kowalski's design engineering philosophy. Default to flagging; approval is earned. | `skills/review-animations` | ● |
+
+### victorzhang016-code-victor-design（1 个 · 扫描版本 `8ff6b367d`）
+
+- 来源：https://github.com/victorzhang016-code/victor-design.git
+- 安装：`agents-kit skill import https://github.com/victorzhang016-code/victor-design.git --candidate <候选路径> --category <分类> --scope <global|project> --description "<中文说明>" --tag <标签>…`
+
+| 技能 | 用途 | 候选路径 | 已装 |
+|---|---|---|:--:|
+| [victor-design](https://raw.githubusercontent.com/victorzhang016-code/victor-design/HEAD/SKILL.md) | 视觉设计与 Figma 交付工作流：从任务分析、字体与版式，到材质处理、HTML 海报和可编辑 UI 迁移。 | `.` |  |
+
+### xixicc2027（1 个 · 扫描版本 `5573a7ef1`）
+
+2027届秋招信息聚合，包含 qiuzhao-feed Skill
+
+- 来源：https://github.com/xixicc186/xixicc2027.git
+- 安装：`agents-kit skill import https://github.com/xixicc186/xixicc2027.git --candidate <候选路径> --category <分类> --scope <global|project> --description "<中文说明>" --tag <标签>…`
+
+| 技能 | 用途 | 候选路径 | 已装 |
+|---|---|---|:--:|
+| [qiuzhao-feed](https://raw.githubusercontent.com/xixicc186/xixicc2027/HEAD/skill/qiuzhao-feed/SKILL.md) | 从 GitHub 仓库 xixicc186/xixicc2027 抓取最新的 2027 届秋招信息，并用喜茶风格前端页面 在本地浏览器展示。当用户说"看看最新秋招"、"秋招信息"、"有什么新的校招/网申"、"哪些公司 快截止了"、"看看互联网/央国企的秋招"、"打开秋招页面"、"qiuzhao"、"xixicc2027" 等任何 查询秋招/校招/网申信息的场景时使用。支持按行业、关键词、截止日期过滤。数据每日更新在 GitHub 上，本 skill 总是拉取远端最新数据，不要用本地 pipeline 的旧产出替代。 | `skill/qiuzhao-feed` | ● |
 
 ## 二、已收录、未常驻（仓库现成，启用即可用）
 
@@ -80,18 +100,16 @@ Emil Kowalski 的动效与 UI 设计技能合集
 | `build-mcpb` | AI Building | 把本地 MCP 服务打包成可安装的 .mcpb，覆盖 Node/Python 运行时打包、manifest、跨平台路径、本地权限和发布检查。Anthropic 官方。 |
 | `caveman` | AI Building | 超压缩沟通模式,砍掉虚词和客套,据称省约 75% token。 |
 | `claude-md-improver` | AI Building | 扫描仓库里所有 CLAUDE.md,做质量评估出报告,再做定向修改。 |
-| `handoff` | AI Building | 把当前对话压缩成交接文档给下一个 agent,要求不重复 PRD/计划/ADR/commit 里已有的内容,只给路径或 URL。已更新到上游最新。 |
 | `hook-development` | AI Building | 写 hook,707 行。PreToolUse / PostToolUse / Stop 各类钩子、prompt 型(推荐)与命令型的取舍、插件 hooks.json 格式、工具调用校验。 |
 | `lark-skill-maker` | AI Building | 把飞书 API 操作封装成可复用的自定义 Skill(包装原子 API 或编排多步流程)。 |
 | `session-report` | AI Building | 从 ~/.claude/projects 的会话记录生成可探索的 HTML 用量报告:token、缓存命中、子代理、技能调用、最贵的 prompt。 |
 | `skill-development` | AI Building | 往插件里加技能、渐进披露设计原则、技能创建流程、description 怎么写才能被正确触发,632 行。 |
 | `skill-publisher` | AI Building | 将 Agent Skill 发布、更新并核验到 GitHub、ClawHub、AgentSkill.sh、skills.sh、Claude 社区目录和 OpenAI Plugins，保留可恢复的跨平台回执。 |
-| `speaking-head-teacher` | AI Building | Head teacher "狗蛋" for the AI speaking school. Use for learner onboarding, importing or building speaking curriculum, creating or revising a course plan, preparing today's lesson, or when T-30/T14 explicitly asks the head teacher to act. Do not use for live voice teaching or post-class evidence extraction. |
-| `speaking-learning-analyst` | AI Building | Learning analyst "小菜" for the AI speaking school. Use after first planning to create or update T-30/T0/T14 scheduled tasks, every 14 days for cycle assessment, or when the learner asks to inspect long-term progress. Decide KEEP, ADJUST, REPLAN, or DEFER and hand plan changes to the head teacher. Do not perform item-level class review or directly rewrite the course plan. |
-| `speaking-live-teacher` | AI Building | GPT Live speaking teacher "小King". Use in a voice session when the learner says phrases such as "小King，上课", "开始今天的口语课", "打开今天的教案", "继续今天的口语练习", or explicitly invokes this skill. Read the ready lesson, register the current Voice session ID, and teach. Do not create the long-term plan or perform the post-class review. |
-| `speaking-teaching-assistant` | AI Building | Post-class teaching assistant "小禾". Use only when T-30 or the user explicitly requests a class review, backfill, or learning-record update. Read the pending Voice session by ID, compare it with the lesson and curriculum, extract item-level evidence, apply memory scheduling, and hand the result to the head teacher. Do not teach the live class or rewrite the course plan. |
 | `writing-rules` | AI Building | 写 hookify 规则:规则文件格式、frontmatter、多条件高级写法,369 行。 |
-| `codebase-design` | 通用工程 | 代码库设计:怎么把模块划得更深、边界更清楚,让代码既好测试又好让 AI 导航。是 improve-codebase-architecture 的依赖。 |
+| `authentication-patterns` | 后端 | 认证授权:JWT 访问令牌与刷新令牌的配对设计、鉴权中间件、OAuth2 授权码 + PKCE 完整流程、RBAC 角色模型,以及各自的反模式。 |
+| `rust-systems` | 后端 | Rust 系统编程:所有权与借用、错误处理(thiserror/anyhow)、trait 与泛型设计、async 运行时、builder 模式、unsafe 使用准则。 |
+| `security-hardening` | 后端 | 应用安全加固:输入校验、输出编码、SQL 注入防护、CSRF、内容安全策略 CSP、安全响应头、密钥管理、依赖漏洞审计。 |
+| `guide-macos-spm-packaging` | 通用工程 | 不用 Xcode 工程、纯 SwiftPM 搭建构建打包 macOS app 的完整流程,15 个模板附件。含目录结构、资源处理、签名、公证,以及常见公证失败的排查表。 |
 | `opencli-adapter-author` | 通用工程 | 给新站点写 opencli 适配器,或给已有站点加命令,15 个附件。从初次侦察、字段解码、写适配器到验证,含决策树、逐步 runbook 和卡住时的降级路径。中文写的。 |
 | `zoom-out` | 通用工程 | 让 agent 抬升一个抽象层,给出相关模块和调用方的地图。正文只有 2 行,标了仅手动调用。 |
 | `animate` | 前端与 UI/UX | 从零实现高质量 Web 动效：依次判断是否该动、动效目的、工具、属性、缓动、时长、中断和退出，并直接写实现。 |
@@ -101,6 +119,8 @@ Emil Kowalski 的动效与 UI 设计技能合集
 | `deploy-to-vercel` | 前端与 UI/UX | 部署到 Vercel。按你项目的实际状态分支处理:已 link 且有 git remote 走 git push;已 link 无 remote 走 vercel deploy;未 link 先 link;未认证走安装认证流程;还有无认证时的沙箱兜底。 |
 | `design` | 前端与 UI/UX | 设计总入口：品牌识别、设计 token、UI 样式、Logo 生成（55 风格，通过 Codex Imagegen 使用 GPT Image 2，无需单独 API key）、CIP 企业识别（50 项交付物 + mockup）、HTML 演示（Chart.js）、banner（22 风格）、图标（15 风格 SVG，走 Gemini 3.1 Pro）、社交配图（HTML 转截图，多平台）。 |
 | `design-assets-index` | 前端与 UI/UX | 现成素材的外链索引:图库、图标集、字体、配色、mockup、UI kit、模板。来自 awesome-design 等合集。 |
+| `design-system` | 前端与 UI/UX | 三层 token 架构(primitive → semantic → component)、CSS 变量落地、间距与排版比例、组件规格文档,25 个附件。 |
+| `design-systems-index` | 前端与 UI/UX | 各大公司设计系统的外链索引(Material、Fluent、Carbon、Polaris、Atlassian、Lightning)+ token 工具与规范 + React / RN 设计系统组件库。 |
 | `design-tools-index` | 前端与 UI/UX | 按用途分类的设计工具索引:动画、配色、原型、设计交付、design-to-code、图标、字体、渐变、插画、mockup、线框图等 20+ 类。 |
 | `emil-design-eng` | 前端与 UI/UX | Emil Kowalski 的设计工程规范，覆盖 UI 打磨、组件细节、动画取舍、缓动时长与严格评审格式。 |
 | `emil-ui-prototype` | 前端与 UI/UX | 围绕一个 UI 组件构建三到五个真正不同、可交互的方案，通过固定选择器逐个比较，并在用户选择后晋升胜出方案。 |
@@ -112,11 +132,13 @@ Emil Kowalski 的动效与 UI 设计技能合集
 | `gsap-utils` | 前端与 UI/UX | GSAP 官方:gsap.utils 工具集。clamp 夹取、mapRange 区间映射、normalize 归一化、interpolate 插值、random、snap 吸附、toArray、wrap 循环、pipe 组合。 |
 | `improve-animations` | 前端与 UI/UX | 以资深动效顾问视角审计整个代码库的动画，产出按优先级排列的发现和可独立执行的实施计划，不直接修改源码。 |
 | `material-3` | 前端与 UI/UX | Google Material Design 3(Material You),656 行。主攻 Jetpack Compose Material3,也覆盖 Flutter 和 @material/web。含完整 token 体系、30+ 组件规格、M3 Expressive、无障碍。 |
+| `nextjs-mastery` | 前端与 UI/UX | Next.js App Router:目录结构约定、RSC 服务端组件取数、ISR 增量再生与缓存、中间件、并行路由、Server Actions。 |
 | `pick-ui-library` | 前端与 UI/UX | 从一份有明确偏好的清单中为前端任务选择 UI、动效、图表、状态和性能库，并优先复用项目已安装方案。 |
 | `react-best-practices` | 前端与 UI/UX | Vercel 工程团队的 React / Next.js 性能准则,75 个附件。按严重度分级:消灭请求瀑布(CRITICAL)、打包体积(CRITICAL)、服务端性能(HIGH)。刚更新到上游最新。 |
 | `react-native-skills` | 前端与 UI/UX | React Native / Expo 最佳实践,41 个附件。列表性能(CRITICAL)、动画、导航、原生模块对接。刚更新到上游最新。 |
 | `react-patterns` | 前端与 UI/UX | React 19 新特性:use() 钩子、Server Components、Server Actions、useActionState、useOptimistic 乐观更新、Suspense 边界。 |
 | `react-view-transitions` | 前端与 UI/UX | React View Transition API:<ViewTransition> 组件、addTransitionType 转场类型、CSS 伪元素定制、方向性(前进/后退)导航动画、列表重排动画、Next.js 集成。刚更新到上游最新。 |
+| `redesign-existing-projects` | 前端与 UI/UX | 给**已有**站点做升级:先审计现状、识别出通用 AI 套路,再套高端标准,且不破坏现有功能。兼容任何 CSS 框架。 |
 | `review-animations` | 前端与 UI/UX | 按严格动效标准审查现有动画代码，检查必要性、频率、缓动、时长、物理来源、中断性、性能、无障碍和一致性。 |
 | `taste-skill` | 前端与 UI/UX | 给一个 URL,用真实浏览器抓 DOM + 截图,跑 4 步分析,产出 taste.md 和 taste.json:既有可直接用的设计 token(颜色/排版/间距/圆角/阴影/栅格),也有「taste DNA」——用 触发→决策→理由→证据 的形式解释这个设计**为什么**成立。明确拒绝 clean、modern 这类空话,只给 px 和 hex。 |
 | `theme-factory` | 前端与 UI/UX | 10 套预设主题(配色 + 字体),可套到幻灯片、文档、报告、HTML 落地页上;也能现场生成新主题。 |
@@ -125,22 +147,38 @@ Emil Kowalski 的动效与 UI 设计技能合集
 | `vercel-optimize` | 前端与 UI/UX | Vercel 成本与性能优化,155 个附件。抓取线上指标、扫描代码、合并信号后给优化建议。支持 Next.js / SvelteKit / Nuxt,Astro 部分支持。 |
 | `web-design-guidelines` | 前端与 UI/UX | 按 Vercel 的 Web Interface Guidelines 审查界面代码(无障碍、交互细节、常见 UX 缺陷)。 |
 | `appintents` | iOS | App Intents API 离线镜像。把 app 功能暴露给 Siri、快捷指令、Spotlight,以及 iOS 18+ 的 Apple Intelligence 调用。 |
+| `apple-docs-index` | iOS | Apple 开发者文档的**索引**,不含正文。用来回答「某个框架里到底有哪些 API」「这个东西的文档路径是什么」,再决定要不要去拉详细文档。 |
 | `backgroundtasks` | iOS | BackgroundTasks API 离线镜像。BGTaskScheduler 注册与调度、后台 app 刷新、后台长任务处理、系统的执行时机限制。 |
 | `combine` | iOS | Combine API 离线镜像。Publisher / Subscriber、各类 operator、背压、与 async/await 互转。 |
+| `core-animation` | iOS | Core Animation(QuartzCore)API 离线镜像,21 个附件。CALayer 图层树、CABasicAnimation / CAKeyframeAnimation / CASpringAnimation、CATransaction 事务、CAShapeLayer 与 CAGradientLayer。 |
 | `corehaptics` | iOS | Core Haptics API 离线镜像。CHHapticEngine 引擎、触感事件与参数曲线、自定义振动模式。 |
 | `eventkit` | iOS | EventKit API 离线镜像。EKEventStore 授权、EKEvent 日历事件、EKReminder 提醒事项、日历读写权限模型。 |
 | `guide-swift-concurrency` | iOS | Swift 并发实践指南,12 个附件。actor 隔离、结构化并发、任务取消、AsyncStream、从 GCD 迁移,以及**Swift 6 严格并发模式下的常见报错与修法**。来自 Paul Hudson。 |
+| `guide-swift-testing` | iOS | Swift Testing 实践指南。为什么用 struct 而非 class、异步测试用 confirmation、参数化测试、exit test、附件,以及**AI 写测试时常犯的错**。 |
+| `guide-swiftdata` | iOS | SwiftData 避坑指南。autosave 的时机陷阱、关系定义、**会导致崩溃的危险谓词写法**、CloudKit 同步的硬性约束、索引、类继承支持。 |
+| `guide-swiftui-animations` | iOS | SwiftUI 动画模式指南。隐式与显式动画的取舍、transition 转场、phase 与 keyframe 动画、Animatable 协议、iOS 18+ 的 @Animatable 宏。 |
 | `guide-swiftui-charts` | iOS | Swift Charts 图表指南。各类 mark、坐标轴定制、交互选择、样式与组合、Chart3D、图表无障碍与 Audio Graph。 |
+| `guide-swiftui-performance-audit` | iOS | SwiftUI 运行时性能审计流程:先做代码审查找出重绘源,再引导你用 Instruments 实际采样,最后结合数据定位。 |
+| `guide-swiftui-ui-patterns` | iOS | SwiftUI 组件与界面构建的最佳实践,37 个示例附件。导航层级怎么搭、自定义 view modifier 怎么写、响应式布局、以及**状态归属**(哪个状态该放哪一层)的完整对照表。来自 Thomas Ricouard(Dimillian)。 |
+| `guide-swiftui-view-refactor` | iOS | SwiftUI 视图重构准则,观点鲜明:视图内部按固定顺序排列、**默认用 MV 而不是 MVVM**、强烈优先拆成独立子视图类型而非 computed `some View`、把副作用移出 body、保持视图树稳定。 |
 | `healthkit` | iOS | HealthKit API 离线镜像。HKHealthStore 授权、HKQuantitySample 样本读写、运动 workout、各类健康数据类型。 |
 | `ios-design-consultant` | iOS | iOS 界面的 UX 与视觉顾问,面向 iOS 26 Liquid Glass 时代。回答元素该放哪、布局怎么定、什么时候该用玻璃材质。 |
+| `ios-dev` | iOS | iOS/SwiftUI 任务的**总入口与路由器**。刚更新到上游最新。负责判断你的需求该走哪个 guide、哪份 API 镜像、哪个评审技能,并做正确性检查。 |
 | `ios-simulator-skill` | iOS | 29 个生产级 shell 脚本:语义化 UI 导航(按可访问性标签点元素,而不是硬编码坐标)、构建自动化、无障碍测试、设备状态管理。 |
 | `mapkit` | iOS | MapKit for SwiftUI API 离线镜像。Map 视图、Marker / Annotation 标注、相机位置控制、地图要素与样式。 |
 | `photosui` | iOS | PhotosUI API 离线镜像。PhotosPicker 相册选择器、PHLivePhotoView 实况照片、选择结果的加载与转换。 |
+| `simulator-utils` | iOS | 模拟器日常命令:截图并自动缩放到合适尺寸(强制)、设备增删启停、app 安装卸载与启动。 |
 | `storekit` | iOS | StoreKit 2 API 离线镜像。Product 查询、Transaction 校验与监听、订阅状态、开箱即用的 StoreView / SubscriptionStoreView 界面组件。 |
 | `swift-concurrency` | iOS | Swift 并发 API 离线镜像。async/await、Task 与 TaskGroup、actor 与 @MainActor、AsyncSequence / AsyncStream、跟旧回调式 API 桥接用的 continuation。 |
+| `swift-concurrency-pro` | iOS | 审查已有 Swift 并发代码的正确性:数据竞争、actor 跨界、错误的 @MainActor 标注、async/await 常见误用。 |
+| `swift-development` | iOS | Swift 全流程命令行操作:构建 SPM 包与 Xcode 工程、跑 XCTest 与 Swift Testing、simctl 管模拟器、代码签名与分发、SwiftFormat/SwiftLint、Swift 6 并发、Core Data/SwiftData。 |
 | `swift-testing` | iOS | Swift Testing(取代 XCTest 的新框架)API 离线镜像。@Test / @Suite 宏、#expect 与 #require 断言、trait、参数化测试、从 XCTest 迁移的对照表。 |
+| `swift-testing-pro` | iOS | 审查并改进已有的 Swift Testing 测试代码,推动用现代 API 重写。 |
 | `swiftdata` | iOS | SwiftData API 离线镜像。@Model 宏、ModelContainer / ModelContext、@Query 查询、关系定义、schema 版本迁移。 |
+| `swiftdata-agent-skill` | iOS | 审查并改进已有 SwiftData 代码,用现代 API 与最佳实践重写。 |
 | `swiftui` | iOS | SwiftUI 全量 API 离线镜像,50 个文档附件。涵盖各类 View、布局容器、导航(NavigationStack/NavigationSplitView)、状态管理(@State/@Binding/@Observable/@Environment)、view modifier、以及 iOS 26+ 新增能力。 |
+| `swiftui-design-skill` | iOS | SwiftUI 视觉设计,专门针对「一眼就看出是 AI 生成」的通用感。含设计方向选择、布局体系、排版、色彩、间距、品牌整合与设计评审。有中文 README。 |
+| `swiftui-pro` | iOS | 审查已有 SwiftUI 代码:现代 API 用法是否过时、可维护性、性能问题。输出按文件组织的结构化评审意见。 |
 | `tipkit` | iOS | TipKit API 离线镜像。Tip 协议、内联提示 TipView 与浮层 PopoverTipView、显示规则与频率控制、Tips.configure 初始化。 |
 | `uikit` | iOS | UIKit 全量 API 离线镜像,29 个附件。UIView / UIViewController 生命周期、各类控件、UITableView / UICollectionView、导航控制器、Scene、Auto Layout、图片与绘制。 |
 | `usernotifications` | iOS | UserNotifications API 离线镜像。本地通知与远程推送、各类触发器(时间/日历/位置)、通知内容与附件、通知分类与操作按钮。 |
@@ -150,9 +188,9 @@ Emil Kowalski 的动效与 UI 设计技能合集
 | `brand` | 运营与内容 | 品牌声音、视觉识别、信息框架、资产管理、品牌一致性检查,16 个附件含参考、脚本、模板。 |
 | `canvas-design` | 运营与内容 | 用设计哲学做 .png / .pdf 视觉作品(海报、艺术品),82 个附件。核心主张是先生成一套视觉哲学再落地,并明确要求原创、不抄在世艺术家。Anthropic 官方。 |
 | `frontend-slides` | 运营与内容 | 动画丰富的 HTML 演示文稿,376 行 + 161 个附件。可从零做,也能把 PPTX 转成网页。含固定舞台规则、内容密度模式、三种工作模式检测。 |
+| `marketing-agi` | 运营与内容 | A complete marketing department in one skill. Website and landing-page audits with weighted 0-100 scores, copywriting with panel scoring and AI-slop removal, an 18-tactic ad hook engine, GEO/AEO for getting cited by ChatGPT/Perplexity/AI Overviews, paid-ads creative diagnosis and production briefs, email sequences, LinkedIn/X writing, launch playbooks, positioning and offer design, competitor teardowns, app store optimization, honest analytics and test design. Use for ANY marketing task — audit, write, rewrite, diagnose, score, plan, launch, position, price, analyze — whenever the user mentions marketing, growth, conversion, copy, ads, hooks, CPM, ROAS, SEO, GEO, email, social, landing pages, funnels, launches, competitors, brand, positioning, pricing, or app stores, or says "my landing page sucks", "nobody's converting", "why are my CPMs up", "AI doesn't recommend us", "write me 20 hooks". Route via the table inside; fan out subagents for multi-dimensional work. Not for pure engineering, legal, or finance. |
 | `slides` | 运营与内容 | 策略性 HTML 演示:Chart.js 图表、design token、响应式布局、文案公式、按场景选幻灯片策略。 |
-| `to-issues` | 产品 | 把计划/规格拆成可独立认领的 issue,用 tracer bullet 纵向切片。已更新到上游最新(上游改名 to-tickets,105 行)。 |
-| `triage` | 产品 | 用状态机和五种 triage 角色流转 issue,要求每条评论带免责声明。 |
+| `deep-dive` | 研究与办公 | 不依赖外部 API 的深度研究:把问题拆成 DAG、按依赖顺序并行跑子代理、按缺口迭代一轮。 |
 | `lark-approval` | 研究与办公 | 审批:查处理待办已办实例、搜可发起的审批定义、看详情并发起原生审批实例。 |
 | `lark-attendance` | 研究与办公 | 考勤打卡:只能查自己的打卡记录。 |
 | `lark-base` | 研究与办公 | 多维表格:建表、字段、记录、视图、统计、公式与 lookup、表单、仪表盘、workflow、角色权限。25 个附件。 |
@@ -172,8 +210,10 @@ Emil Kowalski 的动效与 UI 设计技能合集
 | `lark-wiki` | 研究与办公 | 知识库:建查知识空间、管空间成员、管节点层级、组织文档与快捷方式。 |
 | `lark-workflow-meeting-summary` | 研究与办公 | 工作流:汇总指定时间范围内的会议纪要,生成结构化报告(会议周报)。 |
 | `lark-workflow-standup-report` | 研究与办公 | 工作流:编排日历日程和任务,生成指定日期的日程与未完成任务摘要。 |
+| `qiuzhao-feed` | 研究与办公 | 实时拉取 xixicc2027 的 2027 届秋招 jobs.json，按行业、关键词和截止时间筛选并生成可交互网页与简报。 |
+| `reverse-skill-router` | 安全与逆向 | 逆向工程与网络安全任务总路由：根据目标类型、用户意图和工具链选择 APK、二进制、前端 JS、恶意软件、固件、取证、渗透测试或安全报告工作流。 |
 | `video-shotcraft` | 视频制作 | 基于 Remotion、真实页面截图、2.5D 运镜、节奏卡点与声音设计制作电影感产品视频；提供镜头配方卡、动态示例源码、完整模板和分阶段验收流程。 |
 
 ## 三、常驻（会话里天然可见，此处仅备查）
 
-`accessibility-wcag` · `agent-reach` · `agent-trajectory` · `api-design-patterns` · `apple-docs-index` · `authentication-patterns` · `banner-design` · `core-animation` · `deep-dive` · `design-system` · `design-systems-index` · `diagnose` · `domain-modeling` · `frontend-design` · `grill-me` · `grill-with-docs` · `grilling` · `gsap-core` · `gsap-performance` · `gsap-plugins` · `gsap-timeline` · `guide-macos-spm-packaging` · `guide-swift-testing` · `guide-swiftdata` · `guide-swiftui-animations` · `guide-swiftui-performance-audit` · `guide-swiftui-ui-patterns` · `guide-swiftui-view-refactor` · `hig` · `high-end-visual-design` · `human-writing` · `impeccable` · `improve-codebase-architecture` · `ios-dev` · `ios-liquid-glass` · `ios-motion-patterns-index` · `ios-ui-craft` · `khazix-writer` · `lark-apps` · `lark-doc` · `lark-drive` · `lark-event` · `lark-im` · `lark-markdown` · `lark-shared` · `last30days` · `minimalist-ui` · `nextjs-mastery` · `opencli-autofix` · `playground` · `ponytail` · `ponytail-audit` · `ponytail-debt` · `ponytail-gain` · `ponytail-help` · `ponytail-review` · `pp-agent-capture` · `prototype` · `redesign-existing-projects` · `reference-interpreter` · `reverse-skill-router` · `rust-systems` · `security-hardening` · `setup-matt-pocock-skills` · `simulator-utils` · `skill-creator` · `smart-search` · `swift-concurrency-pro` · `swift-development` · `swift-testing-pro` · `swiftdata-agent-skill` · `swiftui-design-skill` · `swiftui-pro` · `tdd` · `thinking-bounded-rationality` · `thinking-circle-of-competence` · `thinking-cynefin` · `thinking-effectuation` · `thinking-first-principles` · `thinking-five-whys-plus` · `thinking-jobs-to-be-done` · `thinking-kepner-tregoe` · `thinking-lindy-effect` · `thinking-map-territory` · `thinking-margin-of-safety` · `thinking-model-combination` · `thinking-model-router` · `thinking-ooda` · `thinking-opportunity-cost` · `thinking-pre-mortem` · `thinking-probabilistic` · `thinking-red-team` · `thinking-reversibility` · `thinking-scientific-method` · `thinking-second-order` · `thinking-socratic` · `thinking-steel-manning` · `thinking-systems` · `thinking-theory-of-constraints` · `thinking-thought-experiment` · `thinking-triz` · `thinking-via-negativa` · `to-prd` · `ui-ux-pro-max` · `watch` · `write-a-skill` · `writing-guidelines`
+`agent-reach` · `agent-trajectory` · `architect` · `arena` · `ask-matt` · `automate-me` · `babysit` · `banner-design` · `blast-radius` · `bro` · `code-review` · `codebase-design` · `create-verification-skill` · `deep-research-skill` · `deslop` · `diagnosing-bugs` · `domain-modeling` · `eli5` · `figure-it-out` · `fix-ci` · `fix-merge-conflicts` · `frontend-design` · `get-pr-comments` · `github-outside-sandbox` · `global-agent-guardrails` · `grill-me` · `grill-with-docs` · `grilling` · `gsap-core` · `gsap-performance` · `gsap-plugins` · `gsap-timeline` · `handoff` · `hig` · `how` · `human-writing` · `implement` · `improve-codebase-architecture` · `interrogate` · `ios-liquid-glass` · `ios-motion-patterns-index` · `khazix-writer` · `lark-apps` · `lark-doc` · `lark-drive` · `lark-event` · `lark-im` · `lark-markdown` · `lark-shared` · `last30days` · `maintain-verification-skill` · `make-pr-easy-to-review` · `minimalist-ui` · `no-comments` · `opencli-autofix` · `playground` · `ponytail` · `ponytail-audit` · `ponytail-debt` · `ponytail-gain` · `ponytail-help` · `ponytail-review` · `poteto-mode` · `pp-agent-capture` · `principle-boundary-discipline` · `principle-build-the-lever` · `principle-encode-lessons-in-structure` · `principle-exhaust-the-design-space` · `principle-experience-first` · `principle-fix-root-causes` · `principle-foundational-thinking` · `principle-guard-the-context-window` · `principle-laziness-protocol` · `principle-make-operations-idempotent` · `principle-migrate-callers-then-delete-legacy-apis` · `principle-minimize-reader-load` · `principle-model-the-domain` · `principle-never-block-on-the-human` · `principle-outcome-oriented-execution` · `principle-prove-it-works` · `principle-redesign-from-first-principles` · `principle-separate-before-serializing-shared-state` · `principle-sequence-verifiable-units` · `principle-subtract-before-you-add` · `principle-type-system-discipline` · `prototype` · `recall` · `reflect` · `research` · `resolving-merge-conflicts` · `setup-matt-pocock-skills` · `setup-pstack` · `show-me-your-work` · `skill-creator` · `smart-search` · `speaking-head-teacher` · `speaking-learning-analyst` · `speaking-live-teacher` · `speaking-teaching-assistant` · `swarm` · `tdd` · `teach` · `technical-writing` · `thermo-nuclear-code-quality-review` · `thinking-bounded-rationality` · `thinking-circle-of-competence` · `thinking-cynefin` · `thinking-effectuation` · `thinking-first-principles` · `thinking-five-whys-plus` · `thinking-jobs-to-be-done` · `thinking-kepner-tregoe` · `thinking-lindy-effect` · `thinking-map-territory` · `thinking-margin-of-safety` · `thinking-model-combination` · `thinking-model-router` · `thinking-ooda` · `thinking-opportunity-cost` · `thinking-pre-mortem` · `thinking-probabilistic` · `thinking-red-team` · `thinking-reversibility` · `thinking-scientific-method` · `thinking-second-order` · `thinking-socratic` · `thinking-steel-manning` · `thinking-systems` · `thinking-theory-of-constraints` · `thinking-thought-experiment` · `thinking-triz` · `thinking-via-negativa` · `to-questionnaire` · `to-spec` · `to-tickets` · `triage` · `typescript-best-practices` · `ui-ux-pro-max` · `unslop` · `wait-what` · `wayfinder` · `what-did-i-get-done` · `why` · `wizard` · `writing-for-agents`

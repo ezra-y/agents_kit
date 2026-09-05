@@ -1,0 +1,23 @@
+{
+  "skill": "red-team",
+  "primary_value_surface": "false-positive reduction",
+  "primary_metric": "vulnerability_detection_f1",
+  "secondary_metrics": ["false_positive_rate", "false_negative_rate", "attack_path_reproducibility", "severity_calibration", "net_utility"],
+  "distractors": {
+    "off_target_set": "Systems with no security surface; theoretical vulnerabilities without reproducible attack paths; non-security plan stress-testing; meta-questions about red teaming",
+    "description": "Items where there is no attack surface to probe, or where findings are speculative without concrete attack paths"
+  },
+  "calibration_range": [0.40, 0.70],
+  "calibration_exception": null,
+  "min_sample_primary": 80,
+  "min_sample_replication": 80,
+  "planned_comparison": "placebo",
+  "decision_gate": {
+    "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND false_positive_rate <= 0.20",
+    "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+    "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+    "quarantine_redirect": "primary_delta_pp < 0 OR false_positive_rate > 0.30 OR attack_path_reproducibility < 0.70",
+    "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+  },
+  "eval_family": "Security/adversarial"
+}

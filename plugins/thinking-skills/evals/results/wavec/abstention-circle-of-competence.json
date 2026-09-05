@@ -1,0 +1,28 @@
+{
+  "mode": "abstention",
+  "skill": "circle-of-competence",
+  "solver": "claude-sonnet-4-6",
+  "n": 70,
+  "acc_with_skill": 0.7,
+  "acc_with_skill_ci": [
+    0.585,
+    0.795
+  ],
+  "acc_placebo": 0.7,
+  "acc_placebo_ci": [
+    0.585,
+    0.795
+  ],
+  "delta_pp": 0,
+  "mcnemar_p": 0.773,
+  "significant": false,
+  "discordant": 12,
+  "calibration": {
+    "n_unanswerable": 35,
+    "abstain_on_unanswerable_skill": 0.543,
+    "abstain_on_unanswerable_placebo": 0.6,
+    "n_answerable": 35,
+    "abstain_on_answerable_skill": 0.143,
+    "abstain_on_answerable_placebo": 0.2
+  }
+}

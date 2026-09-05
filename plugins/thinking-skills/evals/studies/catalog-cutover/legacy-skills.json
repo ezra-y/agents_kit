@@ -1,0 +1,763 @@
+{
+  "schema_version": 1,
+  "study_id": "catalog-cutover",
+  "artifact": "legacy_skill_body_snapshot_metadata",
+  "generated_at": "2026-07-16T00:00:00.000Z",
+  "repository": {
+    "commit": "a59144cc28dedaf62e4547339561dbe9d585435e",
+    "branch": "main",
+    "worktree_dirty": true
+  },
+  "policy": {
+    "includes_body_text": false,
+    "includes_third_party_prompts": false,
+    "purpose": "Phase 0 baseline body hashes/word counts/frontmatter for 39 current SKILL.md bodies before cutover",
+    "body_definition": "UTF-8 content after YAML frontmatter closing fence line (---). Leading newline after closer is not part of body start offset accounting beyond standard slice after the closing line including its newline. Full-file sha256/bytes are recorded only on manifest.json skill rows."
+  },
+  "skill_count": 39,
+  "total_body_bytes": 383324,
+  "total_body_words": 58021,
+  "skills": [
+    {
+      "skill_id": "thinking-archetypes",
+      "name": "thinking-archetypes",
+      "source_path": "skills/thinking-archetypes/SKILL.md",
+      "bytes": 6780,
+      "sha256": "ed9a46985000f0f83e307cbcd27ca8e070b566878b97ec290488294d896cbccb",
+      "word_count": 1050,
+      "approximate_word_tokens": 1050,
+      "frontmatter_description": "Use when the same problem keeps recurring despite fixes, growth stalled with no obvious cause, or a quick fix made things worse—match it to a known structural pattern instead of re-diagnosing.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 240,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-bayesian",
+      "name": "thinking-bayesian",
+      "source_path": "skills/thinking-bayesian/SKILL.md",
+      "bytes": 9235,
+      "sha256": "5c0b2dc50172cf13dffaac0d2988910a0d731e31c479f323148eb18f64613f84",
+      "word_count": 1453,
+      "approximate_word_tokens": 1453,
+      "frontmatter_description": "Use when interpreting a test result, metric, or new evidence and you risk over-reacting to it. State the base rate first, then update belief by the likelihood ratio.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 211,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-bounded-rationality",
+      "name": "thinking-bounded-rationality",
+      "source_path": "skills/thinking-bounded-rationality/SKILL.md",
+      "bytes": 13226,
+      "sha256": "6e981c18b3187ded482cc374fbddc672fc6e97708b0d87a2fed2a9a71fbea4c0",
+      "word_count": 2032,
+      "approximate_word_tokens": 2032,
+      "frontmatter_description": "Use when a search or investigation could run indefinitely and you need a stopping rule. Set an explicit \"good enough\" threshold and stop at the first option that clears it.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 229,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-circle-of-competence",
+      "name": "thinking-circle-of-competence",
+      "source_path": "skills/thinking-circle-of-competence/SKILL.md",
+      "bytes": 9781,
+      "sha256": "7334bb141ef9ee085236caf5592b36409be758d14e24f4390e7c31e631fb3c77",
+      "word_count": 1650,
+      "approximate_word_tokens": 1650,
+      "frontmatter_description": "Use when you're unsure whether you actually know the answer. If you lack the evidence or context to answer reliably, abstain, ask, or fetch it — don't confabulate a confident reply.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 239,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-cynefin",
+      "name": "thinking-cynefin",
+      "source_path": "skills/thinking-cynefin/SKILL.md",
+      "bytes": 4146,
+      "sha256": "3dc558f3c43686555da8b172f0e2e4e49286f9811869c95c7482ab77889611d2",
+      "word_count": 633,
+      "approximate_word_tokens": 633,
+      "frontmatter_description": "Use when unsure how to approach a problem—plan, analyze, experiment, or stabilize first. Classify it by cause-effect (clear/complicated/complex/chaotic) and match the approach to the domain.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 235,
+      "git_state": "modified_uncommitted",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-debiasing",
+      "name": "thinking-debiasing",
+      "source_path": "skills/thinking-debiasing/SKILL.md",
+      "bytes": 7925,
+      "sha256": "84607d9614f09f1ebcb141c5d65cdf6fc239f90a81b7c07c8dd7b3e75c476a94",
+      "word_count": 1270,
+      "approximate_word_tokens": 1270,
+      "frontmatter_description": "In a long trajectory where you're defending a path you committed to early, run a quick self-check for sunk-cost and confirmation bias before continuing — only when evidence is being explained away.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 244,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-dual-process",
+      "name": "thinking-dual-process",
+      "source_path": "skills/thinking-dual-process/SKILL.md",
+      "bytes": 13556,
+      "sha256": "dc06a6ae8668665b9df5788b82cf9d1ba40d607e02492feb1521a914a5878a94",
+      "word_count": 2213,
+      "approximate_word_tokens": 2213,
+      "frontmatter_description": "Use when an answer arrives too fast on a high-stakes or unfamiliar task. Force one explicit verification pass before committing instead of shipping the first plausible answer.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 225,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-effectuation",
+      "name": "thinking-effectuation",
+      "source_path": "skills/thinking-effectuation/SKILL.md",
+      "bytes": 10675,
+      "sha256": "e86e6a019cc850c8247cad682177665d444fefac4bd765bad292eba2deb6b86a",
+      "word_count": 1696,
+      "approximate_word_tokens": 1696,
+      "frontmatter_description": "Start with means, not goals; co-create with partners; leverage contingencies. Use for startup strategy, innovation projects, and uncertain/novel domains where planning is unreliable.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 232,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-feedback-loops",
+      "name": "thinking-feedback-loops",
+      "source_path": "skills/thinking-feedback-loops/SKILL.md",
+      "bytes": 18216,
+      "sha256": "0b81f4e15a000223fa37419f03e743bb9dee6e7411c9e7aabda501efd1a9d55d",
+      "word_count": 1953,
+      "approximate_word_tokens": 1953,
+      "frontmatter_description": "Use when a system shows runaway growth/collapse, oscillates around a target, or resists change, and you need to find the loop driving it. Identifies reinforcing/balancing loops and delays.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 240,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-fermi-estimation",
+      "name": "thinking-fermi-estimation",
+      "source_path": "skills/thinking-fermi-estimation/SKILL.md",
+      "bytes": 12157,
+      "sha256": "849378ec9c917dc920f244180046653cadc6683441e7d1963215c3b41a226563",
+      "word_count": 1951,
+      "approximate_word_tokens": 1951,
+      "frontmatter_description": "Use when you need a number you can't measure and can't look up. Decompose the unknown into estimable factors and multiply for an order-of-magnitude answer. Don't Fermi a lookup-able value.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 242,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-first-principles",
+      "name": "thinking-first-principles",
+      "source_path": "skills/thinking-first-principles/SKILL.md",
+      "bytes": 6749,
+      "sha256": "29eb0ab9a77e369ade72531d781a83fca5eb36b85dbace11c6d5e02809712834",
+      "word_count": 1031,
+      "approximate_word_tokens": 1031,
+      "frontmatter_description": "When a constraint is treated as fixed (\"too expensive\", \"impossible\", \"always done this way\"), ask whether it's physics or just convention, then rebuild from what's actually true.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 233,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-five-whys-plus",
+      "name": "thinking-five-whys-plus",
+      "source_path": "skills/thinking-five-whys-plus/SKILL.md",
+      "bytes": 7220,
+      "sha256": "af69cc93c62371f49243fa9c170085ad9a180b2643bbc4ce1f6be183b5965fa6",
+      "word_count": 1116,
+      "approximate_word_tokens": 1116,
+      "frontmatter_description": "Use when a fault is localized to a component and the proximate cause is known but the systemic root is not — chain 'why' with evidence, a counterfactual cause test, and an explicit stop condition.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 248,
+      "git_state": "modified_uncommitted",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-inversion",
+      "name": "thinking-inversion",
+      "source_path": "skills/thinking-inversion/SKILL.md",
+      "bytes": 7965,
+      "sha256": "f29676fea370c15f484796438f4c865e980a04b5c95cc7074acd53f4e4786f66",
+      "word_count": 1253,
+      "approximate_word_tokens": 1253,
+      "frontmatter_description": "When planning work where optimism may be hiding risks, ask \"how would I guarantee this fails?\" — enumerate failure paths, then turn the top ones into explicit requirements to avoid.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 228,
+      "git_state": "modified_uncommitted",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-jobs-to-be-done",
+      "name": "thinking-jobs-to-be-done",
+      "source_path": "skills/thinking-jobs-to-be-done/SKILL.md",
+      "bytes": 10940,
+      "sha256": "a994a20a9575e28ad2b40e9b4425f525ee2c4a231bcccc3f3d191a468a6e29fc",
+      "word_count": 1693,
+      "approximate_word_tokens": 1693,
+      "frontmatter_description": "Deciding what to build or why a feature isn't adopted. Reframe from features to the \"job\" users hire the product for — the progress they seek — to prioritize and position.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 224,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-kepner-tregoe",
+      "name": "thinking-kepner-tregoe",
+      "source_path": "skills/thinking-kepner-tregoe/SKILL.md",
+      "bytes": 8521,
+      "sha256": "6adc37a1827d32b092b85e9aa19b5d76def6e9d34d3ea9ba9b0b31fd84843ca7",
+      "word_count": 1339,
+      "approximate_word_tokens": 1339,
+      "frontmatter_description": "Use when a defect is selective (some endpoints/regions/users/times affected, not all) and the cause is unclear — map what IS vs IS-NOT affected; the boundary contrast points at the root cause.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 243,
+      "git_state": "modified_uncommitted",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-leverage-points",
+      "name": "thinking-leverage-points",
+      "source_path": "skills/thinking-leverage-points/SKILL.md",
+      "bytes": 13651,
+      "sha256": "c457b0439533dd7684a0b40123dbf9f6951bc0a23b312cb33dc2a89fc49d36b8",
+      "word_count": 2007,
+      "approximate_word_tokens": 2007,
+      "frontmatter_description": "Use when picking where to intervene in a system and tuning parameters keeps not sticking—rank candidate interventions by Meadows' hierarchy and choose the highest-leverage point you can move.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 244,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-lindy-effect",
+      "name": "thinking-lindy-effect",
+      "source_path": "skills/thinking-lindy-effect/SKILL.md",
+      "bytes": 11121,
+      "sha256": "ef694f54a684ac8a878441ff2b887a0dd478177ddfe4e9c4994e81cea2e69296",
+      "word_count": 1792,
+      "approximate_word_tokens": 1792,
+      "frontmatter_description": "Choosing a technology/framework/dependency and longevity matters. Use the heuristic that for non-perishable things, expected remaining life is proportional to current age — favor the proven.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 240,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-map-territory",
+      "name": "thinking-map-territory",
+      "source_path": "skills/thinking-map-territory/SKILL.md",
+      "bytes": 6382,
+      "sha256": "92345c853def639c4bf1600cef2e66bac4e26b08e395b2e09f1732864245393a",
+      "word_count": 1039,
+      "approximate_word_tokens": 1039,
+      "frontmatter_description": "Use when behavior contradicts the docs, tests, diagram, or your assumption — stop reasoning from the description, go verify the running code or data directly, and let the territory overrule the map.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 249,
+      "git_state": "modified_uncommitted",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-margin-of-safety",
+      "name": "thinking-margin-of-safety",
+      "source_path": "skills/thinking-margin-of-safety/SKILL.md",
+      "bytes": 10026,
+      "sha256": "98641e7dba4025d00f02f218713a98e4ebfedd94b0b9861de0fe9ab4958c9134",
+      "word_count": 1591,
+      "approximate_word_tokens": 1591,
+      "frontmatter_description": "Use when provisioning capacity, setting a timeout/limit, or committing to an estimate under uncertainty. Size a buffer to the cost of being wrong instead of optimizing to the edge.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 234,
+      "git_state": "modified_uncommitted",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-model-combination",
+      "name": "thinking-model-combination",
+      "source_path": "skills/thinking-model-combination/SKILL.md",
+      "bytes": 12580,
+      "sha256": "bc6ad2c55c739ee8e5ec7c220cc390b76cb4d971e45b9851322991e069bd7ba2",
+      "word_count": 1827,
+      "approximate_word_tokens": 1827,
+      "frontmatter_description": "Combine multiple mental models for richer analysis. Use for complex problems requiring multiple lenses, high-stakes decisions, or when single models leave blind spots.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 222,
+      "git_state": "modified_uncommitted",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-model-router",
+      "name": "thinking-model-router",
+      "source_path": "skills/thinking-model-router/SKILL.md",
+      "bytes": 15782,
+      "sha256": "ec47627655583443a5750aa9ddf53fe5fa0fe9046c031fa5086c2898c237dc0b",
+      "word_count": 1734,
+      "approximate_word_tokens": 1734,
+      "frontmatter_description": "Route to the right mental model based on your domain and problem type. The single entry point for all thinking skills.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 168,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-model-selection",
+      "name": "thinking-model-selection",
+      "source_path": "skills/thinking-model-selection/SKILL.md",
+      "bytes": 12225,
+      "sha256": "a4e3c772dc953adcc806232acd06c38d534b08c4b53d08382d3b993a51df0000",
+      "word_count": 1875,
+      "approximate_word_tokens": 1875,
+      "frontmatter_description": "Choose the right mental model for the problem at hand. Use when facing new problems, when current approaches fail, or when you need to match tool to context.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 210,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-occams-razor",
+      "name": "thinking-occams-razor",
+      "source_path": "skills/thinking-occams-razor/SKILL.md",
+      "bytes": 7124,
+      "sha256": "e63545562b0a8aa0de92cc198bd3dc423a97083ad9b18c30be6e44be31d9f121",
+      "word_count": 1080,
+      "approximate_word_tokens": 1080,
+      "frontmatter_description": "Use when multiple causes could explain a bug — test the fewest-assumption hypothesis first; escalate to complex only when evidence forces it. Skip the full procedure when one step resolves it.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 242,
+      "git_state": "modified_uncommitted",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-ooda",
+      "name": "thinking-ooda",
+      "source_path": "skills/thinking-ooda/SKILL.md",
+      "bytes": 5585,
+      "sha256": "1d998a77ca12d550506c0d698872bf448a9957014d93b7abe533208e2028a908",
+      "word_count": 867,
+      "approximate_word_tokens": 867,
+      "frontmatter_description": "Use under time pressure (incident, outage, debugging a moving target) when you must act before you have certainty—cycle Observe→Orient→Decide→Act on ~70% confidence, then re-observe.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 224,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-opportunity-cost",
+      "name": "thinking-opportunity-cost",
+      "source_path": "skills/thinking-opportunity-cost/SKILL.md",
+      "bytes": 10833,
+      "sha256": "25f1f8d594f60ad623441584dcf61a362f9c8a1c52f8387e96b223d9d277dbd8",
+      "word_count": 1782,
+      "approximate_word_tokens": 1782,
+      "frontmatter_description": "Before committing scarce time/people/money to one thing, ask \"what's the next-best use of these resources, and what does doing nothing cost?\" — the real cost is the best option you skip.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 240,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-pre-mortem",
+      "name": "thinking-pre-mortem",
+      "source_path": "skills/thinking-pre-mortem/SKILL.md",
+      "bytes": 7569,
+      "sha256": "b454db4a61f3f2b22f9eff7dee0911497d013f8a375f9b35d4b563e9f4b64fb1",
+      "word_count": 1183,
+      "approximate_word_tokens": 1183,
+      "frontmatter_description": "Before committing to a plan or launch, assume it has already failed and reason backward through why — prospective hindsight surfaces risks that \"what could go wrong?\" misses.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 222,
+      "git_state": "modified_uncommitted",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-probabilistic",
+      "name": "thinking-probabilistic",
+      "source_path": "skills/thinking-probabilistic/SKILL.md",
+      "bytes": 9979,
+      "sha256": "106e3d2229b9c21a13aed5b1ae41fd98668a38eb59c95f4ce1123b065b5c5b8a",
+      "word_count": 1593,
+      "approximate_word_tokens": 1593,
+      "frontmatter_description": "Use when stating a forecast, estimate, or risk. Anchor on the base rate, give a confidence range instead of a point, and update the number when new evidence arrives.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 216,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-red-team",
+      "name": "thinking-red-team",
+      "source_path": "skills/thinking-red-team/SKILL.md",
+      "bytes": 7721,
+      "sha256": "c906b81375ac4ab2e52bac6891a71672bb1057fed8778d9eb6a9d14fb06699d3",
+      "word_count": 1158,
+      "approximate_word_tokens": 1158,
+      "frontmatter_description": "Use when reviewing code, auth, or APIs for security vulnerabilities — adopt an attacker mindset, enumerate the attack surface, report only findings with a concrete reproducible attack path.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 235,
+      "git_state": "modified_uncommitted",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-regret-minimization",
+      "name": "thinking-regret-minimization",
+      "source_path": "skills/thinking-regret-minimization/SKILL.md",
+      "bytes": 11309,
+      "sha256": "26007e3a6becf4bac4e6626addab05b6b256a707b1341d16cc80c91e263ce24a",
+      "word_count": 1810,
+      "approximate_word_tokens": 1810,
+      "frontmatter_description": "When advising a human on a high-stakes, hard-to-undo life/career choice, weigh the asymmetry between a recoverable downside and a permanent missed opportunity, not just the short-term cost.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 246,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-reversibility",
+      "name": "thinking-reversibility",
+      "source_path": "skills/thinking-reversibility/SKILL.md",
+      "bytes": 11142,
+      "sha256": "9417512600b2a47ed05181452904212533cc333923cf7c47ad0e75a782620706",
+      "word_count": 1735,
+      "approximate_word_tokens": 1735,
+      "frontmatter_description": "Before deliberating over a decision, ask if it's a one-way door (costly to undo) or two-way (cheap to undo) — decide two-way doors fast, and look for moves that make one-way doors reversible.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 242,
+      "git_state": "modified_uncommitted",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-scientific-method",
+      "name": "thinking-scientific-method",
+      "source_path": "skills/thinking-scientific-method/SKILL.md",
+      "bytes": 6919,
+      "sha256": "d7950c72267e4c3646be9ec60df2af3460b10a3d4bd5b24cf3f8430fbb386814",
+      "word_count": 1061,
+      "approximate_word_tokens": 1061,
+      "frontmatter_description": "Use when a symptom could have several causes and you must find the faulty code by ranking falsifiable hypotheses and checking the cheapest discriminating observation first.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 227,
+      "git_state": "modified_uncommitted",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-second-order",
+      "name": "thinking-second-order",
+      "source_path": "skills/thinking-second-order/SKILL.md",
+      "bytes": 6839,
+      "sha256": "98b30532d5ee8d615b9067b3b269b0d0e539fa0e6f97817e6eeab416dfbaae2d",
+      "word_count": 977,
+      "approximate_word_tokens": 977,
+      "frontmatter_description": "When a change has effects past the immediate fix (incentives, scale, feedback loops), ask \"and then what?\" across horizons before committing — the obvious fix often backfires downstream.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 236,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-socratic",
+      "name": "thinking-socratic",
+      "source_path": "skills/thinking-socratic/SKILL.md",
+      "bytes": 9309,
+      "sha256": "15c997877fd223bf0ce0ff448f12d27006df5f1f1ecd429b1ce4693b2370f75e",
+      "word_count": 1536,
+      "approximate_word_tokens": 1536,
+      "frontmatter_description": "Use before building when a request is vague, assumption-laden, or \"obvious.\" Ask the clarifying questions that surface hidden requirements and false premises instead of guessing.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 224,
+      "git_state": "modified_uncommitted",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-steel-manning",
+      "name": "thinking-steel-manning",
+      "source_path": "skills/thinking-steel-manning/SKILL.md",
+      "bytes": 10529,
+      "sha256": "983f0bfd3744293145b7e481a037e56adcef8283e8ff95bc148060786211fe09",
+      "word_count": 1638,
+      "approximate_word_tokens": 1638,
+      "frontmatter_description": "Use before rejecting a proposal or when you're inclined to just agree with the user. Build the strongest version of the opposing case first, then engage that — not a weak version.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 230,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-systems",
+      "name": "thinking-systems",
+      "source_path": "skills/thinking-systems/SKILL.md",
+      "bytes": 10051,
+      "sha256": "e757a501c4260c2b80a1e5f0ebf140aca0054a0414641c8cd344e330d2aa7984",
+      "word_count": 1185,
+      "approximate_word_tokens": 1185,
+      "frontmatter_description": "Use when debugging across services/an incident where a fix in one place breaks another, or behavior is emergent and no single component explains it. Maps the system and traces causes.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 228,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-theory-of-constraints",
+      "name": "thinking-theory-of-constraints",
+      "source_path": "skills/thinking-theory-of-constraints/SKILL.md",
+      "bytes": 10422,
+      "sha256": "2932f146656bf348ef71a5f9b69ed6bc985a317a9d0fdc5078f02a82a3baba4c",
+      "word_count": 1615,
+      "approximate_word_tokens": 1615,
+      "frontmatter_description": "Use when optimizing latency or throughput in a pipeline and one stage dominates—focus all effort on that single bottleneck, since speeding up the others changes nothing until it's fixed.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 245,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-thought-experiment",
+      "name": "thinking-thought-experiment",
+      "source_path": "skills/thinking-thought-experiment/SKILL.md",
+      "bytes": 10488,
+      "sha256": "9b9b92cef7629890c16e5808c7f36a76da0bfc488d9ceaa419773513e49ed94c",
+      "word_count": 1658,
+      "approximate_word_tokens": 1658,
+      "frontmatter_description": "You need to trace how a system would fail or behave at a scale you can't cheaply test or measure. Use to imagine the scenario and walk the consequence chain step by step.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 226,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-triz",
+      "name": "thinking-triz",
+      "source_path": "skills/thinking-triz/SKILL.md",
+      "bytes": 8282,
+      "sha256": "9b525d9397142fa8d7daed024c3b70c33d61cbe6131944fe783b5aa658c7b1d2",
+      "word_count": 1248,
+      "approximate_word_tokens": 1248,
+      "frontmatter_description": "Use when stuck between two architecture or API requirements that seem mutually exclusive — name the contradiction precisely, then separate the conflicting states in time, space, or condition.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 233,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    },
+    {
+      "skill_id": "thinking-via-negativa",
+      "name": "thinking-via-negativa",
+      "source_path": "skills/thinking-via-negativa/SKILL.md",
+      "bytes": 10364,
+      "sha256": "d4c913639847f56c42857567ecea13b5614b03c39c9c710484c1e3e9254d04dc",
+      "word_count": 1697,
+      "approximate_word_tokens": 1697,
+      "frontmatter_description": "About to add a feature/layer/process to fix a problem. First ask what to remove instead — subtraction is often more robust than addition. Use for simplification and complexity reduction.",
+      "frontmatter_keys": [
+        "name",
+        "description"
+      ],
+      "frontmatter_present": true,
+      "body_start_char_offset": 236,
+      "git_state": "tracked_clean",
+      "body_text_included": false,
+      "full_file_metrics_in_manifest": true
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "skill": "thinking-second-order",
+  "problems": [
+    {
+      "id": "second-order-1",
+      "prompt": "Our PRs are sitting in review for 2-3 days on average and engineers are frustrated. A senior dev proposed a policy: any PR under 200 lines that's been open more than 24 hours can be self-merged by the author without waiting for a reviewer, as long as CI passes. It would obviously unblock people fast and our CI suite is decent. Leadership likes it. Should we adopt this policy? Give me your recommendation.",
+      "failure_mode": "Evaluates only the immediate effect (faster merges, happier engineers) and endorses it; doesn't trace what the incentive does over months: PRs get artificially split to stay under 200 lines, reviewers deprioritize anything self-mergeable, review culture erodes, and the bar for 'CI passes = safe' quietly replaces human review until a quality incident."
+    },
+    {
+      "id": "second-order-2",
+      "prompt": "We run a freelance marketplace. To boost activity, product wants to remove the platform fee on a client's first 3 completed jobs and heavily promote it as 'first 3 jobs free.' Modeling says it'll spike new-client signups and first-job completion meaningfully. The CFO is fine with the short-term revenue hit as a growth investment. Should we launch the 'first 3 jobs free' promo? Tell me how you'd advise on it.",
+      "failure_mode": "Anchors on the projected signup/completion spike and approves it as a reasonable growth bet; fails to chase downstream effects: clients learn to game the fee (multi-account, splitting jobs), freelancers may move repeat clients off-platform to keep avoiding fees, and the promo trains the most price-sensitive segment, distorting the metrics the CFO is using to judge success."
+    },
+    {
+      "id": "second-order-3",
+      "prompt": "Our on-call engineers are burning out from alert fatigue, so the infra lead wants to raise alerting thresholds across the board (e.g. only page if error rate is sustained above 5% for 10 minutes instead of 1% for 2 minutes) and route everything below that to a daily digest. It will dramatically cut pages overnight and let people sleep. The team is enthusiastic. Should we make this change?",
+      "failure_mode": "Treats 'fewer pages, less burnout' as the whole story and supports the threshold change; doesn't reason about the chain where real incidents now smolder undetected past the higher threshold, mean-time-to-detect rises, a few painful misses make the team distrust the digest, and they either over-correct back to noise or start ignoring alerts entirely, leaving reliability worse than before."
+    },
+    {
+      "id": "second-order-4",
+      "prompt": "Our support team is overwhelmed with inbound tickets, so engineering is building an AI chatbot to handle first-line support. The bot will be trained on our documentation and will resolve the easy questions automatically. The first-order effect is clear: fewer tickets reaching human agents. Leadership wants to measure success purely by 'tickets deflected.' What should we think through before shipping this?",
+      "failure_mode": "Approves the chatbot and endorses 'tickets deflected' as the success metric; misses the downstream chain: customers who hit a bot for frustrating issues and get generic answers may not escalate to human support—they just churn quietly, the deflection metric looks great while satisfaction declines, the support team atrophies in skills (fewer complex tickets = less growth), and product gets less real user feedback because the frustration signal is absorbed by the bot."
+    },
+    {
+      "id": "second-order-5",
+      "prompt": "We're a B2B SaaS company and we've decided to add a generous free tier—up to 5 users, core features, no time limit—to drive bottom-up adoption. Competitors offer free tiers and we've been losing early-stage prospects to them. The logic is: free users become paying customers when they grow. Leadership is excited. Before we launch the free tier, what's your analysis of what this change will set in motion?",
+      "failure_mode": "Endorses the free tier based on the PLG playbook and competitor parity; doesn't trace what happens next: small businesses and teams that would have bought a small paid plan now stay free indefinitely, existing paying customers on small plans churn to free, the sales team deprioritizes small accounts since they 'should convert on their own,' and support costs scale with a large free user base that generates noise but no revenue."
+    },
+    {
+      "id": "second-order-6",
+      "prompt": "Our engineering team of 20 is growing fast. To scale hiring, HR wants to introduce standardized interview loops with fixed question banks and scoring rubrics across all teams. The argument is fairness and consistency—everyone gets the same interview. Currently, different teams run their own interviews with more judgment calls. The head of engineering supports it. What are the full consequences of this change?",
+      "failure_mode": "Evaluates the first-order benefits (consistency, fairness, less bias) and approves the standardized bank; doesn't follow the chain where fixed question banks get leaked and memorized by candidates in prep communities, hiring managers lose trust in scores they didn't author, teams start adding ad-hoc supplements that recreate inconsistency, and the people who prepared the specific questions get selected-for over the people who can actually do the work."
+    },
+    {
+      "id": "second-order-7",
+      "prompt": "We run an online learning platform. Engagement metrics are our primary growth lever. Our data team shows that sending push notifications every time a user's peer completes a lesson increases daily active users by 12%. The product team wants to ship 'peer progress alerts' broadly. How should we think about rolling this out?",
+      "failure_mode": "Approves peer progress alerts based on the 12% DAU lift; doesn't trace what happens over time: users who feel nagged opt out of notifications entirely (losing the channel), others feel competitive pressure and engage compulsively rather than for learning, notification fatigue develops faster than the model expects, and the DAU lift masks declining completion rates as people open the app to dismiss rather than to learn."
+    },
+    {
+      "id": "second-order-8",
+      "prompt": "We have a sprawling microservices architecture with 40+ services. To tame the complexity, platform engineering wants to enforce that all inter-service communication goes through a central API gateway, rather than direct service-to-service calls. This will improve observability and let us add centralized auth. Teams will need to update their service clients. What should we anticipate before rolling this out?",
+      "failure_mode": "Endorses the gateway for its observability and security benefits; doesn't trace that routing all traffic through a central gateway creates a critical single point of failure that didn't exist before, latency increases on every call, the gateway team becomes a bottleneck for configuration changes, and teams start routing around it for latency-sensitive paths—recreating the direct-call mesh informally while the official policy says otherwise."
+    },
+    {
+      "id": "second-order-9",
+      "prompt": "Our startup is doing well at $2M ARR and we're debating whether to raise a Series A now or stay bootstrapped. An investor is offering a $10M round at a $50M valuation. Taking the money would accelerate hiring and let us attack a larger market. The immediate effect of raising is obvious: more resources. But the CEO is asking me to think through what fundraising really means for the company beyond the wire landing. What's your analysis?",
+      "failure_mode": "Analyzes the dilution math and the growth opportunity at face value; doesn't trace the chain: investor expectations for growth rate change the hiring bar and the types of bets that are acceptable, a $50M valuation sets the bar for the next round, founders' risk tolerance shifts once they're responsible for investor capital, and the product direction that got them to $2M—deliberate, profitable, customer-driven—may be replaced by growth-at-all-costs priorities that serve the exit narrative rather than the business."
+    },
+    {
+      "id": "second-order-10",
+      "prompt": "A large enterprise customer is asking for a feature that's not on our roadmap—a detailed audit log of every user action, exportable as CSV. Building it would take 3 weeks and the customer says they'll churn if we don't. We've confirmed they're telling the truth—it's a compliance requirement for them. The product team is hesitant to add it because 'it's just for one customer.' Should we build it?",
+      "failure_mode": "Recommends building it to avoid churn with a quick cost/benefit framing; doesn't trace what happens next: building a customer-specific compliance feature sets a precedent that other enterprise prospects invoke ('we heard you have audit logs'), the feature gets under-resourced since it's 'just for one customer,' it never gets generalized, and the team now owns a high-complexity compliance surface maintained at low priority—while the original customer's needs eventually evolve beyond the v1 they locked you into building."
+    },
+    {
+      "id": "second-order-11",
+      "prompt": "We're considering offering engineers a 'no questions asked' context-switching budget—any engineer can pause their current sprint ticket and pick up anything they want for up to 2 days per sprint, no manager approval needed. The intent is to increase autonomy and let people work on tech debt and experiments they care about. The head of engineering thinks this will improve retention. Walk me through the likely effects of this policy.",
+      "failure_mode": "Approves it as an autonomy-respecting, retention-positive policy; doesn't trace that 2 uncoordinated days per engineer per sprint means ~20% of sprint capacity becomes unplanned and unpredictable, sprint commitments to stakeholders erode, the engineers who use the budget most visibly are perceived as the highest contributors (since they ship the most visible things), creating a hidden incentive to pick up flashy experiments over grinding through unglamorous-but-important work."
+    },
+    {
+      "id": "second-order-12",
+      "prompt": "Our growth team wants to add a referral program: existing users who invite a colleague get 30 days free, and the invited colleague also gets 30 days free. The team expects this to accelerate word-of-mouth adoption and cut CAC. Similar programs have worked well for consumer apps. We're a B2B productivity tool at $29/user/month. What should we think through before launching?",
+      "failure_mode": "Recommends launching based on the consumer playbook and the cost-reduction logic; doesn't trace that B2B referrals in the same company (the most likely invite target) reduce per-seat revenue from people who would have paid full price anyway, the '30 days free' expectation gets baked into the sales conversation ('why don't I just get a referral link?'), and the users most motivated to refer are the ones with the most free time—often not the senior decision-makers whose advocacy actually moves enterprise deals."
+    },
+    {
+      "id": "second-order-13",
+      "prompt": "We run a developer API and our rate limits are causing friction. Users hit limits and complain loudly. A product manager proposes tripling the rate limit across all plans. The argument is that the current limits are too conservative, most users don't hit them, and relaxing them will reduce support tickets and make developers happier. Infrastructure says they can handle the extra load. Should we raise the limits?",
+      "failure_mode": "Agrees that relaxed limits will reduce friction and approves the increase; doesn't trace what happens when the practical limit rises: power users and automated workflows scale to fill the new ceiling, a new cohort of users starts hitting the tripled limits, support complaints return to baseline or higher, and pricing leverage for a 'higher-rate' premium plan is permanently eroded—the generous free tier has been established and is hard to take back."
+    },
+    {
+      "id": "second-order-14",
+      "prompt": "Our frontend is slow. An engineer proposes we move all data fetching from server-rendered pages to client-side fetching via REST API, using React Query to handle loading states. The benefit is that pages will load instantly (empty shell) and data fills in fast, making the app feel snappier. Most competitors work this way. The migration would affect 40 pages. How should we evaluate this architectural shift?",
+      "failure_mode": "Approves the migration based on the snappiness argument and competitor parity; doesn't trace that moving to client-side fetching means every page now makes multiple sequential round trips (waterfall), SEO degrades for the pages that are indexed, the initial 'loading skeleton' experience trains users to wait rather than perceive speed, and the 40-page migration accumulates into a large REST API surface that then constrains how data can be evolved—the apparent speed improvement often disappears at scale when the API waterfall is fully realized."
+    },
+    {
+      "id": "second-order-15",
+      "prompt": "We're adding a public leaderboard to our developer tools product showing the top 100 most active users. The logic is that recognition drives engagement—power users will compete for status, increasing usage. Marketing thinks it will also generate social proof. A PM is championing it and says it will take one sprint to build. What should we consider before shipping this?",
+      "failure_mode": "Approves the leaderboard for its engagement and social proof benefits; doesn't trace the chain: users optimize for the leaderboard metric (activity count) rather than valuable usage, people create automated bots or shallow interactions to rank, the users who most want to be seen on a leaderboard may not be representative of your ideal customer persona, and users who see a large gap from rank #1 become discouraged rather than competitive—leading to net disengagement among the majority."
+    },
+    {
+      "id": "second-order-16",
+      "prompt": "Our B2B sales team closes deals faster when we offer a 3-month free pilot before any commitment. The conversion rate from pilot to paid is 65%, which feels strong. A new sales leader wants to formalize this as our standard sales motion—every prospect gets a free pilot as the default. Currently about 40% of deals skip the pilot and sign directly. What are the downstream consequences of making the pilot universal?",
+      "failure_mode": "Approves the formalized pilot policy based on the 65% conversion rate; doesn't trace that making pilots universal means the 40% who would have paid immediately now also get a free pilot they wouldn't have asked for (pure revenue delay), the 65% conversion rate will decline as the motivated self-selectors are replaced with prospects who need more convincing, and 'pilot first' becomes the default anchor in every negotiation rather than a premium accommodation—permanently shifting the sales dynamic."
+    },
+    {
+      "id": "second-order-17",
+      "prompt": "Engineering is considering adding a mandatory 'impact justification' comment to every PR, explaining why the change is needed and how it was tested. The goal is to improve documentation culture and make future code archaeology easier. Reviewers would use these comments in their review. The proposal comes from a retrospective after a confusing bug. What will likely happen if this policy is rolled out?",
+      "failure_mode": "Endorses the policy for its documentation and accountability benefits; doesn't trace that mandatory justification fields are quickly treated as bureaucratic checkboxes—engineers write boilerplate ('fixed the bug,' 'tested locally')—the signal-to-noise ratio in PR descriptions collapses, reviewers stop reading the field meaningfully, and the actual behavior the policy was meant to create (thoughtful explanation) is replaced by compliance theater that costs time without producing the information."
+    },
+    {
+      "id": "second-order-18",
+      "prompt": "Our product uses AI model inference heavily and costs are rising. The infrastructure team proposes implementing aggressive response caching: cache the last 10,000 unique prompts and return cached results directly without calling the model. This would reduce inference costs by an estimated 35%. The cache would be keyed on exact prompt text. What are the second-order effects of this caching strategy?",
+      "failure_mode": "Approves the caching strategy based on the cost savings; doesn't trace what happens downstream: users whose prompts hit the cache get stale or context-free responses without knowing it, the cache keyed on exact text will miss slight variations (creating inconsistent behavior for semantically identical queries), model improvements and updates stop reaching cached users until cache expiry, and if users discover that some queries are 'cached' and some are 'live,' trust in result freshness erodes."
+    },
+    {
+      "id": "second-order-19",
+      "prompt": "We run a subscription platform with monthly and annual plans. To improve cash flow, finance wants to add a 20% discount for annual prepayment and increase monthly pricing by 15%. The immediate effect is more annual sign-ups and higher monthly ARPU. The CFO is confident the changes make sense financially. Before we reprice, what downstream effects should we map out?",
+      "failure_mode": "Validates the cash-flow logic and approves the repricing; doesn't trace the chain where the 15% monthly increase triggers churn among price-sensitive monthly users, the annual discount trains new users to anchor to the discounted price as normal, the monthly plan becomes a premium 'flexible' option that feels punitive rather than convenient, and retention for annual subscribers who expected a different value exchange at renewal becomes harder to sustain."
+    },
+    {
+      "id": "second-order-20",
+      "prompt": "We're a platform for creators and we want to improve content quality. Policy team proposes an automated moderation system that removes any content with below a certain quality score within 24 hours of posting. The model has 85% precision. The first-order effect is cleaner content and less manual moderation work. What should we think carefully about before deploying automated removal?",
+      "failure_mode": "Approves automated removal based on the quality and efficiency argument; doesn't trace that 15% false positive rate removes legitimate content from creators who lose trust in the platform, the creators most likely to hit false positives are edge-case voices (niche topics, non-standard formats, minority languages) which homogenizes the content pool, and the appeal/dispute process gets overwhelmed because creators fight automated removals more vigorously than human ones—generating more moderation work, not less."
+    },
+    {
+      "id": "second-order-21",
+      "prompt": "Our development team is using AI code generation tools and productivity is up measurably. To capture this further, engineering leadership wants to raise sprint velocity targets by 20% to match the perceived productivity gain. The logic: if the tools make us faster, our estimates should reflect that. What are the likely consequences of raising targets based on AI tooling gains?",
+      "failure_mode": "Approves the velocity increase as a reasonable reflection of productivity gains; doesn't trace the chain where raising targets based on tool-assisted velocity means any period where the tools underperform (API outages, wrong suggestions, complex problems where AI is less helpful) creates immediate sprint failure, engineers rush to use AI on tasks where it's not appropriate to hit velocity targets, and quality degrades as the review burden on AI-generated code increases without corresponding investment in review capacity."
+    },
+    {
+      "id": "second-order-22",
+      "prompt": "Our mobile app has a heavy onboarding flow that takes users 10 minutes to complete. We're testing a 'fast path' that skips most setup and gets users to a feature in 90 seconds, with setup deferred to later prompts. Early tests show 40% higher day-1 retention with the fast path. The product team wants to ship it to 100% of users based on those results. What should we think through before doing so?",
+      "failure_mode": "Approves the fast path based on the D1 retention lift; doesn't trace what happens downstream: users who skip setup encounter a product that doesn't work correctly for their context (wrong defaults, missing integrations), the deferred prompts arrive at wrong moments and feel intrusive, D7 and D30 retention may diverge negatively from D1 retention as incompletely set-up users stall, and the 40% D1 lift may mask that users are active but not actually using the product effectively."
+    },
+    {
+      "id": "second-order-23",
+      "prompt": "We're planning to give all engineers unrestricted access to production read replicas for debugging—currently they have to request access through a ticketing system that takes 4-6 hours. The argument is that faster debugging access will reduce mean time to resolution on incidents. The security team is hesitant but the engineering lead says it's fine if we audit the queries. What are the second-order effects of this access change?",
+      "failure_mode": "Approves broad read access with audit logging as a reasonable trade-off; doesn't trace that production data access normalizes prod-as-a-dev-environment, engineers start using replicas for ad-hoc analysis (not just debugging), sensitive data gets viewed casually without proper handling, audit logs become so voluminous they're never reviewed meaningfully, and when a data incident occurs it's impossible to distinguish legitimate debugging access from unauthorized data exfiltration—the audit trail that was supposed to provide accountability provides none."
+    },
+    {
+      "id": "second-order-24",
+      "prompt": "Engineering wants to move from weekly deploys to continuous deployment—shipping to production on every merged PR that passes CI. The immediate benefits are clear: faster feedback, smaller changesets, less deploy ceremony. The team is excited about eliminating deploy windows. The CTO has asked us to think through the organizational and process implications before we make the switch. What do we need to anticipate?",
+      "failure_mode": "Approves continuous deployment and lists the well-known benefits; doesn't trace the organizational chain: with every merged PR shipping to prod, engineers become individually responsible for every change's production health in real time, review quality pressure increases (since there's no staging window to catch things), on-call burden shifts from 'deploy day' spikes to constant background monitoring, product and customer success teams lose predictable release windows for communication, and the team's discipline with feature flags and observability must improve dramatically or production incidents increase—none of which are addressed by just enabling the pipeline."
+    },
+    {
+      "id": "second-order-25",
+      "prompt": "We want to improve code quality so the tech lead proposes requiring a minimum 80% unit test coverage on all new code merged to main. The current average is about 45%. The rule would be enforced by CI—PRs below threshold can't merge. This seems like a straightforward quality gate. What are the downstream consequences of this policy?",
+      "failure_mode": "Endorses the coverage gate as a quality improvement; doesn't trace that coverage requirements incentivize writing tests optimized for coverage count rather than correctness (trivial happy-path tests, mocked-everything tests with no assertions), engineers spend time arguing about what counts toward the threshold, the 80% floor becomes the ceiling (teams stop at 80%), and the valuable work of writing meaningful tests is replaced by the mechanical work of satisfying a metric—while actual defect rates may not improve."
+    }
+  ]
+}

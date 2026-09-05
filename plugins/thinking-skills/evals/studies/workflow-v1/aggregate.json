@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "study_id": "workflow-v1",
+  "study_version": "2026-07-16-freeze",
+  "created_at": "2026-07-16T00:00:00.000Z",
+  "run_status": "no_run",
+  "measured_result": null,
+  "statistical_status": "unmeasured_preregistered_power_blocked",
+  "replication_status": "not_run",
+  "evidence_validity": "preregistered_blocked",
+  "product_disposition": "delete_workflow_machinery",
+  "health": {
+    "attempted": 0,
+    "completed": 0,
+    "parsed": 0,
+    "scored": 0,
+    "failures": 0,
+    "decision_eligible": false
+  },
+  "usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cached_tokens": 0,
+    "calls": 0,
+    "latency_ms": 0,
+    "estimated_cost_usd": 0
+  },
+  "frozen_design": {
+    "candidate": "workflow_typed",
+    "comparators": [
+      "dynamic_typed",
+      "workflow_none_typed"
+    ],
+    "models": [
+      "claude-haiku-4-5-20251001",
+      "claude-sonnet-4-6",
+      "claude-opus-4-6"
+    ],
+    "available_independent_cases_per_model": 24,
+    "target_power": 0.9,
+    "powered": false
+  },
+  "retention_gates": {
+    "quality": "not_eligible",
+    "efficiency": "not_eligible"
+  },
+  "reasons": [
+    "available_replication_case_clusters_below_power_requirement",
+    "quality_gate_not_estimable_at_declared_precision",
+    "efficiency_noninferiority_gate_not_estimable_at_declared_precision",
+    "no_solver_calls_permitted_after_pre_run_power_failure",
+    "neither_retention_gate_passed"
+  ],
+  "cleanup_contract": {
+    "delete_old_runner_name": "evals/run-agentic-workflow.js",
+    "delete_new_runner_name": "evals/run-agentic.js",
+    "delete_pure_agentic_evaluator": "evals/lib/agentic.js",
+    "delete_workflow_prompt_registry": "evals/lib/workflow-prompts.js",
+    "delete_workflow_only_datasets_and_tests": true,
+    "preserve_this_null_record": true
+  }
+}

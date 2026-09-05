@@ -1,0 +1,20 @@
+{
+  "skill": "thinking-bounded-rationality",
+  "problems": [
+    {
+      "id": "bounded-rationality-1",
+      "prompt": "I need to pick a charting library for an internal admin dashboard that maybe 15 employees will use. I've already spent three days comparing Chart.js, Recharts, ECharts, Victory, Nivo, and Visx across bundle size, theming, accessibility, animation smoothness, and community size, and I keep finding new tradeoffs. The dashboard is due next week and I haven't written any code yet. Recharts already does everything I need and the team knows React well. How should I make this decision and move forward?",
+      "failure_mode": "Continues the exhaustive head-to-head comparison across many criteria for a low-stakes, reversible, internal tool, feeding analysis paralysis instead of recognizing that the first option clearing a 'good enough' bar should be chosen so work can start."
+    },
+    {
+      "id": "bounded-rationality-2",
+      "prompt": "We have a production bug: about 0.5% of users see a duplicated line item on their order confirmation page (display only, the actual order and billing are correct). I've found that disabling client-side optimistic rendering fixes it and is verified in staging, with a clean rollback. But I'm tempted to keep digging to find the exact root cause in our state-management layer because it bugs me not to fully understand it. We have a customer demo tomorrow and three higher-priority tickets waiting. What should I do?",
+      "failure_mode": "Keeps exhaustively tracing the root cause for a low-impact display-only bug despite having a verified, reversible fix and competing higher-priority work, failing to set a sensible stopping point given the real time and attention constraints."
+    },
+    {
+      "id": "bounded-rationality-3",
+      "prompt": "We're scoping the MVP for a new scheduling feature to validate whether customers will even use it. The PM keeps adding to the spec: recurring events, timezone edge cases, calendar sync with Google and Outlook, conflict resolution, and an undo system. We have one sprint before a planned customer pilot. The core question we need answered is just 'will users book and keep appointments through this?' How should we decide what goes into this first version?",
+      "failure_mode": "Tries to build toward the comprehensive, fully-featured scheduling spec within one sprint, rather than defining a minimum 'enough to learn' threshold tied to the actual validation question and cutting everything beyond it for a throwaway-able pilot."
+    }
+  ]
+}

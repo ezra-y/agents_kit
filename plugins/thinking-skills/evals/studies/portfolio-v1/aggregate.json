@@ -1,0 +1,502 @@
+{
+  "schema_version": 1,
+  "study_id": "portfolio-v1",
+  "study_version": "2026-07-16-freeze",
+  "created_at": "2026-07-16T00:00:00.000Z",
+  "run_status": "no_run",
+  "measured_result": null,
+  "statistical_status": "unmeasured_preregistered_no_run",
+  "replication_status": "not_run",
+  "evidence_validity": "preregistered_blocked",
+  "product_disposition": "manual_only_quarantine",
+  "health": {
+    "attempted": 0,
+    "completed": 0,
+    "parsed": 0,
+    "scored": 0,
+    "failures": 0,
+    "decision_eligible": false
+  },
+  "usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cached_tokens": 0,
+    "calls": 0,
+    "latency_ms": 0,
+    "estimated_cost_usd": 0
+  },
+  "summary": {
+    "skill_count": 28,
+    "elevate_count": 0,
+    "auto_retain_count": 0,
+    "delete_count": 0,
+    "manual_only_quarantine_count": 28,
+    "no_run_count": 28,
+    "full_legacy_body_available_count": 16,
+    "full_legacy_body_missing_count": 12,
+    "judge_blocked": true,
+    "power_feasible_count": 0,
+    "product_disposition_global": "manual_only_quarantine",
+    "measured_result": null,
+    "statistical_status": "unmeasured_preregistered_no_run",
+    "replication_status": "not_run",
+    "evidence_validity": "preregistered_blocked",
+    "power_diagnostic_n_per_arm": 4078,
+    "power_diagnostic_full_replication_calls": 5138280
+  },
+  "skills": [
+    {
+      "skill_id": "bounded-rationality",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "missing_native_dataset",
+        "power_infeasible_under_frozen_design",
+        "missing_full_legacy_body",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "circle-of-competence",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "missing_native_dataset",
+        "power_infeasible_under_frozen_design",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "cynefin",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "non_native_applicability_labels",
+        "power_infeasible_under_frozen_design"
+      ]
+    },
+    {
+      "skill_id": "effectuation",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "missing_native_dataset",
+        "power_infeasible_under_frozen_design",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "first-principles",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "inadequate_splits",
+        "non_native_applicability_labels",
+        "power_infeasible_under_frozen_design",
+        "missing_full_legacy_body",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "five-whys-plus",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "non_native_applicability_labels",
+        "power_infeasible_under_frozen_design"
+      ]
+    },
+    {
+      "skill_id": "jobs-to-be-done",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "missing_native_dataset",
+        "power_infeasible_under_frozen_design",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "kepner-tregoe",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "non_native_applicability_labels",
+        "power_infeasible_under_frozen_design",
+        "missing_full_legacy_body"
+      ]
+    },
+    {
+      "skill_id": "lindy-effect",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "missing_native_dataset",
+        "power_infeasible_under_frozen_design",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "map-territory",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "non_native_applicability_labels",
+        "power_infeasible_under_frozen_design"
+      ]
+    },
+    {
+      "skill_id": "margin-of-safety",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "non_native_applicability_labels",
+        "power_infeasible_under_frozen_design"
+      ]
+    },
+    {
+      "skill_id": "model-combination",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "missing_native_dataset",
+        "power_infeasible_under_frozen_design",
+        "missing_full_legacy_body",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "model-router",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "missing_native_dataset",
+        "power_infeasible_under_frozen_design",
+        "missing_full_legacy_body",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "ooda",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "missing_native_dataset",
+        "power_infeasible_under_frozen_design",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "opportunity-cost",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "missing_native_dataset",
+        "power_infeasible_under_frozen_design",
+        "missing_full_legacy_body",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "pre-mortem",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "non_native_applicability_labels",
+        "power_infeasible_under_frozen_design",
+        "missing_full_legacy_body"
+      ]
+    },
+    {
+      "skill_id": "probabilistic",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "missing_native_dataset",
+        "power_infeasible_under_frozen_design",
+        "missing_full_legacy_body",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "red-team",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "non_native_applicability_labels",
+        "power_infeasible_under_frozen_design"
+      ]
+    },
+    {
+      "skill_id": "reversibility",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "non_native_applicability_labels",
+        "power_infeasible_under_frozen_design",
+        "missing_full_legacy_body"
+      ]
+    },
+    {
+      "skill_id": "scientific-method",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "non_native_applicability_labels",
+        "power_infeasible_under_frozen_design",
+        "missing_full_legacy_body"
+      ]
+    },
+    {
+      "skill_id": "second-order",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "inadequate_splits",
+        "non_native_applicability_labels",
+        "power_infeasible_under_frozen_design",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "socratic",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "non_native_applicability_labels",
+        "power_infeasible_under_frozen_design"
+      ]
+    },
+    {
+      "skill_id": "steel-manning",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "missing_native_dataset",
+        "power_infeasible_under_frozen_design",
+        "missing_full_legacy_body",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "systems",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "missing_native_dataset",
+        "power_infeasible_under_frozen_design",
+        "missing_full_legacy_body",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "theory-of-constraints",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "inadequate_splits",
+        "non_native_applicability_labels",
+        "power_infeasible_under_frozen_design",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "thought-experiment",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "missing_native_dataset",
+        "power_infeasible_under_frozen_design",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "triz",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "missing_native_dataset",
+        "power_infeasible_under_frozen_design",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    },
+    {
+      "skill_id": "via-negativa",
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "blockers": [
+        "judge_panel_blocked",
+        "missing_native_dataset",
+        "power_infeasible_under_frozen_design",
+        "heldout_below_minimum",
+        "replication_below_minimum",
+        "hard_negatives_below_minimum"
+      ]
+    }
+  ],
+  "notes": [
+    "No solver or judge calls were made because every skill failed one or more pre-run eligibility gates.",
+    "A zero-call no-run is not evidence of no effect; it preserves manual-only quarantine."
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "skill": "thinking-margin-of-safety",
+  "problems": [
+    {
+      "id": "margin-of-safety-1",
+      "prompt": "We're provisioning capacity for a product launch in three weeks. Our load tests show a single app instance comfortably handles 800 requests/sec, and marketing's best estimate is we'll see about 5,000 req/sec at peak on launch day. So the plan on the table is to run 7 instances (7 x 800 = 5,600, which covers the 5,000 estimate) and call it done. Autoscaling exists but takes a few minutes to add nodes. This is a high-visibility launch with press lined up. Does 7 instances sound right to you, and how should we decide the final number?",
+      "failure_mode": "Accepts the marketing point estimate as ground truth and sizes capacity to barely exceed it (7 instances), ignoring that the traffic forecast is uncertain, launches spike unpredictably, and autoscaling lags, so it provisions to the edge of a guess rather than building in a buffer sized to the stakes and uncertainty."
+    },
+    {
+      "id": "margin-of-safety-2",
+      "prompt": "I'm committing a delivery date to the exec team for a payments integration. I summed up the engineer estimates: API client 1 week, webhook handling 1 week, reconciliation logic 1.5 weeks, testing 1 week = 4.5 weeks of work. We've never integrated with this particular payment provider before and their docs are reportedly thin. Two of the three engineers are also on call rotation during this window. The exec asked me to give a date I'm confident in, and reschedule a board demo around it. What date should I commit to?",
+      "failure_mode": "Commits to the raw 4.5-week sum (or rounds to ~5 weeks), treating engineer estimates as the realistic case and ignoring optimism bias, the unfamiliar provider, thin docs, and on-call interruptions, instead of inflating the estimate by a margin appropriate to the high uncertainty and the reputational cost of missing a board-facing date."
+    },
+    {
+      "id": "margin-of-safety-3",
+      "prompt": "We're setting the connection pool size and statement timeout for a new service that talks to our primary Postgres. Under normal load profiling we see about 25 concurrent DB connections in use and queries finish well under 200ms at p99. The proposed config is: pool max = 30 connections (a little above the observed 25), and statement timeout = 250ms (just above the observed p99). The thinking is 'tight config keeps us efficient and fails fast.' This service sits on a critical checkout path. Sanity check these numbers for me before we ship the config.",
+      "failure_mode": "Endorses the tight, edge-hugging config because it matches observed normals, failing to account for traffic bursts, slow-query tail events, GC pauses, and connection contention under stress, rather than recommending headroom on the pool and timeout sized to the criticality of the checkout path so a small deviation from normal doesn't cause pool exhaustion or premature timeouts."
+    },
+    {
+      "id": "margin-of-safety-4",
+      "prompt": "We need to pick a backup cadence for our primary transactional database. Snapshots are cheap, so cost isn't really the constraint — the current proposal is to snapshot every 6 hours because that's what our old system did and nobody has complained. The catch is that whatever's in the last snapshot before an incident is all we can recover; anything written after it is gone. This database holds customer payment records, and we've had two storage-corruption incidents in the last year. Ops says 6 hours is fine. How should I think about picking the interval, and is 6 hours actually the right call here?",
+      "failure_mode": "Anchors on the inherited 6-hour cadence because it is familiar and cheap, treating the recovery point as a convention to preserve rather than deriving it from the maximum acceptable data loss for irreplaceable payment records and the observed incident rate, so it sizes the interval to habit instead of leaving a recovery-point margin proportional to the severity and likelihood of loss."
+    },
+    {
+      "id": "margin-of-safety-5",
+      "prompt": "Finance wants a single number to approve for our data-center-to-cloud migration budget. I added up the vendor quotes and our own estimates: managed-service fees $180K, data-egress charges $90K, professional-services engagement $150K, and about $60K of internal time = $480K. This is the first migration our team has ever done, we'll be running both environments in parallel for an unknown stretch during cutover, and a few of the target services are ones we've never operated. Finance treats the approved number as a hard ceiling and going back for more is politically painful. What number should I submit?",
+      "failure_mode": "Submits the raw $480K sum as the budget, treating a bottoms-up estimate built on first-time, partially-unknown work as the realistic cost, and ignoring parallel-running overlap, scope discovery, and estimate optimism, rather than padding the request with a contingency margin sized to the high uncertainty and the asymmetric pain of blowing a hard ceiling."
+    },
+    {
+      "id": "margin-of-safety-6",
+      "prompt": "I'm setting the alert threshold that tells us to go provision more storage on our main database volume. The volume fills at a growth rate of roughly 3% of total capacity per week right now, and when it hits 100% the database stops accepting writes and we're down hard. Getting approval, ordering, and attaching new storage realistically takes us one to two weeks, and it always seems to come up over a weekend. The proposal is to fire the 'add storage' alert at 90% utilization to keep alert noise low. Does 90% work as the trigger point?",
+      "failure_mode": "Endorses the 90%-utilization trigger to minimize alert noise, reasoning only about the headroom that looks large in percentage terms, while failing to convert the remaining capacity into lead time against the growth rate — where 90% leaves only about three weeks and the one-to-two-week provisioning delay plus weekend response lag can consume it — so it sets the threshold without a lead-time margin ahead of a hard write-stopping cliff."
+    },
+    {
+      "id": "margin-of-safety-7",
+      "prompt": "Sales is trying to close a large enterprise deal and the prospect wants a 99.99% monthly uptime SLA written into the contract, with service credits that get expensive fast if we miss it. Our actual measured availability over the past year has bounced between 99.9% and 99.95%, month to month. Sales argues we've hit 99.95% a couple of times so 99.99% is 'basically within reach' and worth committing to in order to win. What uptime number should we actually put in the contract?",
+      "failure_mode": "Treats the best months we happened to hit as evidence that a higher SLA is safe to promise, committing to a number at or above demonstrated peak performance, and ignores month-to-month variance and the asymmetric penalty structure, rather than committing to a level set a deliberate margin below our reliable, repeatable performance so ordinary fluctuation does not trigger costly credits."
+    },
+    {
+      "id": "margin-of-safety-8",
+      "prompt": "We're shipping an AI-powered feature and I have to set the monthly spend cap on the model-provider account before launch. Our usage model — expected active users times expected calls per user times cost per call — lands almost exactly at $20K/month, so the plan is to set the cap at $20K. The wrinkle: this is a brand-new feature so the usage inputs are guesses, retries on failures can multiply calls, and if anything goes viral or gets abused, cost scales fast. Hitting the cap hard-disables the feature for every user until someone manually raises it. What should I set the cap at, and how do I reason about it?",
+      "failure_mode": "Sets the cap at the $20K point estimate, treating a speculative usage projection for an untested feature as a firm ceiling to enforce, and fails to account for input uncertainty, retry amplification, and viral or abusive spikes, rather than choosing a cap with enough margin above expected spend to absorb realistic overshoot without disabling the feature — while still capping true runaway cost."
+    },
+    {
+      "id": "margin-of-safety-9",
+      "prompt": "We're manufacturing units for a hardware launch and I need to commit a production quantity to the factory now, because lead times mean we can't reorder for the launch window. Our demand forecast centers on 10,000 units for the first three months. If we underbuild and sell out, we lose sales, lose launch-day momentum, and hand attention to a competitor; if we overbuild, leftover units sit in a warehouse and eventually get discounted. The forecast is a single number from marketing with no range attached. The current plan is to build exactly 10,000. How many should we build?",
+      "failure_mode": "Builds exactly to the 10,000-unit point forecast, accepting a single marketing number as certain and ignoring both the demand uncertainty around it and the asymmetry between a stockout at launch and carrying surplus, rather than adding a build margin weighted toward the more costly failure of running out during the one launch window we cannot re-supply."
+    }
+  ]
+}

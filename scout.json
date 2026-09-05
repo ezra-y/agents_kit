@@ -57,6 +57,39 @@
         }
       ],
       "note": "Emil Kowalski 的动效与 UI 设计技能合集"
+    },
+    "victorzhang016-code-victor-design": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/victorzhang016-code/victor-design.git",
+        "ref": "",
+        "path": ""
+      },
+      "revision": "8ff6b367dc5c31bcf8bca943a8b09375a30356a5",
+      "skills": [
+        {
+          "path": ".",
+          "name": "victor-design",
+          "description": "视觉设计与 Figma 交付工作流：从任务分析、字体与版式，到材质处理、HTML 海报和可编辑 UI 迁移。"
+        }
+      ]
+    },
+    "xixicc2027": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/xixicc186/xixicc2027.git",
+        "ref": "",
+        "path": ""
+      },
+      "revision": "5573a7ef1dc91b06dac81e421a1d85d0fa34a7b6",
+      "skills": [
+        {
+          "path": "skill/qiuzhao-feed",
+          "name": "qiuzhao-feed",
+          "description": "从 GitHub 仓库 xixicc186/xixicc2027 抓取最新的 2027 届秋招信息，并用喜茶风格前端页面 在本地浏览器展示。当用户说\"看看最新秋招\"、\"秋招信息\"、\"有什么新的校招/网申\"、\"哪些公司 快截止了\"、\"看看互联网/央国企的秋招\"、\"打开秋招页面\"、\"qiuzhao\"、\"xixicc2027\" 等任何 查询秋招/校招/网申信息的场景时使用。支持按行业、关键词、截止日期过滤。数据每日更新在 GitHub 上，本 skill 总是拉取远端最新数据，不要用本地 pipeline 的旧产出替代。"
+        }
+      ],
+      "note": "2027届秋招信息聚合，包含 qiuzhao-feed Skill"
     }
   }
 }

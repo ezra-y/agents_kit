@@ -1,0 +1,23 @@
+{
+  "skill": "theory-of-constraints",
+  "primary_value_surface": "objective correctness",
+  "primary_metric": "bottleneck_identification_accuracy",
+  "secondary_metrics": ["throughput_improvement_prediction", "constraint_exploitation_plan_quality", "subordination_appropriateness", "elevation_timing"],
+  "distractors": {
+    "off_target_set": "Systems with no clear bottleneck; already optimized pipelines; meta-questions about Theory of Constraints",
+    "description": "Items where there is no constraint to find or where the constraint is already known and being addressed"
+  },
+  "calibration_range": [0.40, 0.70],
+  "calibration_exception": null,
+  "min_sample_primary": 60,
+  "min_sample_replication": 60,
+  "planned_comparison": "placebo",
+  "decision_gate": {
+    "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary",
+    "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+    "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+    "quarantine_redirect": "primary_delta_pp < 0 OR bottleneck_identification_accuracy < 0.50",
+    "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+  },
+  "eval_family": "Debugging/fault-localization"
+}

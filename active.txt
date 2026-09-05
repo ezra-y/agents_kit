@@ -31,7 +31,7 @@ guide-swiftui-animations
 guide-swiftui-ui-patterns
 swift-testing-pro
 impeccable
-to-prd
+to-spec
 guide-macos-spm-packaging
 swift-concurrency-pro
 writing-guidelines

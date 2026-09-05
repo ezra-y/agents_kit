@@ -1,0 +1,130 @@
+{
+  "skill": "thinking-first-principles",
+  "problems": [
+    {
+      "id": "first-principles-1",
+      "prompt": "Our analytics pipeline runs on a managed Snowflake warehouse and the bill just hit $48,000/month. Finance is asking us to cut it. The vendor's account rep says the only way down is to commit to a 2-year capacity contract for a ~15% discount, and our data team agrees that's basically the floor for a warehouse our size. We ingest about 400GB of event data per day, but 90% of our actual dashboard queries only touch the last 7 days and a handful of aggregate tables. Before we sign a 2-year commit, write up how you'd approach getting this cost down and what you'd recommend.",
+      "failure_mode": "Accepts the vendor framing that the contract discount is 'the floor' and reasons by analogy ('warehouses this size cost this much'); recommends negotiating the commit instead of questioning whether the workload fundamentally requires that warehouse at all, and never decomposes the actual compute/storage the query pattern needs (could be 80%+ cheaper via pre-aggregation, tiered storage, or a small read-optimized store)."
+    },
+    {
+      "id": "first-principles-2",
+      "prompt": "We're a 12-person startup building a B2B scheduling tool. Every competitor in our space (Calendly, Cal.com, etc.) offers a native mobile app, and our biggest prospect just asked 'do you have an iOS app?' on a sales call. Leadership wants us to greenlight building native iOS and Android apps next quarter, which is roughly 2 of our 5 engineers for a full quarter. Walk me through whether we should build the mobile apps and how you'd think about it.",
+      "failure_mode": "Treats 'competitors have apps and a prospect asked for one' as proof the apps are needed and jumps to scoping the build; never strips back to the underlying job the prospect is hiring the product for (likely 'book/manage meetings on my phone'), which a responsive web app or PWA might already satisfy at a fraction of the cost."
+    },
+    {
+      "id": "first-principles-3",
+      "prompt": "We need to add full-text search across about 8 million product documents. The team's instinct is to stand up an Elasticsearch cluster because 'that's what you use for search' and we've all seen it at previous companies. It'd be 3 nodes, plus we'd own the ops, reindexing pipeline, and an extra failure domain. Our primary datastore is already Postgres, queries are mostly keyword + filter on category/price, and we get maybe 20 searches/second at peak. What search approach should we go with?",
+      "failure_mode": "Defaults to Elasticsearch by analogy ('that's the standard search tool') without examining what the actual requirements demand; fails to recognize that at 20 qps over 8M docs with keyword+filter queries, Postgres full-text search or pg_trgm likely satisfies the real needs with zero new infrastructure, treating Elasticsearch's existence as justification for its necessity."
+    },
+    {
+      "id": "first-principles-4",
+      "prompt": "We want to build a real-time collaboration feature for our SaaS document editor—multiple users editing the same document simultaneously. Everyone on the team is saying we need to implement CRDTs (Conflict-free Replicated Data Types) because that's what Figma and Notion use. The implementation will take 3-4 months and requires deep expertise we don't have. Is CRDT the right approach for us?",
+      "failure_mode": "Accepts the CRDT requirement by analogy to Figma and Notion without questioning whether it fits this situation; doesn't decompose what 'real-time collaboration' actually requires for this specific product (cursor visibility, last-write-wins, or operational transforms might suffice at lower complexity), defaulting to the most sophisticated solution because it's what well-known companies use rather than what this use case fundamentally needs."
+    },
+    {
+      "id": "first-principles-5",
+      "prompt": "We're building an internal reporting tool and the team has decided to use GraphQL for the API layer because 'that's the modern approach' and all the new tutorials use it. Our reporting tool will have about 15 data queries used by 30 internal analysts. The backend team has no GraphQL experience. How should we think about the API design for this tool?",
+      "failure_mode": "Accepts GraphQL as the modern standard and helps design the schema; doesn't question whether GraphQL's fundamental value proposition (flexible querying for diverse clients) applies to a 15-query internal tool used by a fixed user base—where simple REST endpoints or even just a thin JSON API over direct SQL would satisfy every actual requirement without the learning curve, schema-stitching complexity, or N+1 query risks."
+    },
+    {
+      "id": "first-principles-6",
+      "prompt": "Our startup needs a customer authentication system. The engineering team is planning to build it ourselves—login, sessions, password reset, MFA—because 'we need full control over user data and security.' It's been scoped at 8 weeks for two engineers. The CTO says, 'Every serious company handles their own auth.' What's your take on this decision?",
+      "failure_mode": "Validates the 'full control' and 'every serious company does it' reasoning and helps scope the custom auth build; doesn't strip back to what authentication fundamentally requires (a secure identity store, session management, credential verification, MFA)—all of which are exactly what Auth0, Cognito, or Clerk provide, and doesn't examine whether 'full control' is the actual need or whether the assumption that DIY is necessary comes from analogy rather than specific requirements that existing solutions can't meet."
+    },
+    {
+      "id": "first-principles-7",
+      "prompt": "We're deciding how to structure our engineering team as we grow from 15 to 40 engineers over the next 18 months. Everyone is saying we should move to the Spotify squad model—squads, tribes, guilds, chapters—because 'that's how scaling engineering orgs are structured.' The CTO read about it in a blog post and is excited. What should we think through before adopting this structure?",
+      "failure_mode": "Helps design the squad/tribe structure and plan the transition; doesn't question whether the Spotify model addresses the actual organizational problem the company faces, or whether the model was created for Spotify's specific scale and structure rather than being a universal solution—treating an analogy from one company's engineering culture as a first-principles solution to a different company's org design challenge."
+    },
+    {
+      "id": "first-principles-8",
+      "prompt": "We're running a B2B SaaS product. Our deployment process currently takes 45 minutes from merge to production and requires a manual approval step. The team is saying we need to adopt Kubernetes with a full GitOps workflow because 'that's industry standard for modern deployments.' This would be a 3-month migration effort. Is Kubernetes the right solution here?",
+      "failure_mode": "Accepts Kubernetes and GitOps as the modern standard and helps plan the migration; doesn't decompose what we actually need from a deployment system (reliable deploys, rollback capability, environment promotion, deployment frequency) and ask whether those requirements at our current scale require Kubernetes—treating 'industry standard' as equivalent to 'appropriate for this situation' rather than deriving the solution from actual requirements."
+    },
+    {
+      "id": "first-principles-9",
+      "prompt": "We need to reduce LLM inference costs, which are currently $22,000/month for our AI writing assistant. The obvious approaches we've considered are: using a cheaper model, caching repeated prompts, and reducing context window size. But we've been told by a consultant that 'AI inference costs just scale with usage and there's a floor below which you can't go without hurting quality.' Before accepting that floor, how would you approach this problem?",
+      "failure_mode": "Accepts the consultant's framing that there's an irreducible floor and optimizes within those parameters (cheaper model, caching, context compression); doesn't question the assumption by decomposing what the users actually need the AI to do—whether every interaction requires a frontier model, whether the task distribution is suited to a mixture of model sizes, or whether the 'usage' pattern itself could be restructured."
+    },
+    {
+      "id": "first-principles-10",
+      "prompt": "Our data science team wants to build a feature store—a centralized repository for ML features that can be shared across models. Everyone at the last conference was talking about feature stores and several well-funded MLOps startups have raised money building them. Our ML team consists of 3 data scientists who currently share features via a shared Postgres table and some Python utilities. Should we build or buy a feature store?",
+      "failure_mode": "Accepts 'feature stores are standard ML infrastructure' by analogy and evaluates build vs. buy options for a feature store; doesn't start from what a 3-person data science team actually needs (reproducible features, shared access, versioning) and ask whether those needs are already being met by the shared Postgres table—treating conference buzz and well-funded startups as evidence of necessity rather than deriving the solution from actual requirements."
+    },
+    {
+      "id": "first-principles-11",
+      "prompt": "We want to add event tracking to our web app. The standard approach recommended by everyone we talk to is to use a third-party analytics platform (Segment, Mixpanel, Amplitude) and pipe events through it. It would cost $30,000/year for our scale. Our engineering lead says 'you just have to use one of these—building your own event tracking is crazy.' Before we sign a contract, how would you approach evaluating this?",
+      "failure_mode": "Accepts the conventional wisdom that third-party analytics platforms are necessary and evaluates which one to buy; doesn't decompose what event tracking fundamentally requires (capturing user actions, storing them queryably, analyzing patterns) and assess whether the company's specific analytical needs could be served by a much simpler self-built solution—treating 'the experts say you have to use a platform' as equivalent to 'there is no viable alternative.'"
+    },
+    {
+      "id": "first-principles-12",
+      "prompt": "We're a marketplace startup with $1.5M ARR and we want to raise a Series A. Every startup founder we've talked to says we need to hire an investment banker to run a formal fundraising process, which costs 2-3% of the raise plus upfront fees. We're targeting a $10M raise, so that's potentially $200K+ in fees. Several investors we've spoken to informally have expressed strong interest in our company already. How should we approach the fundraising process?",
+      "failure_mode": "Accepts 'you need a banker for a Series A' as industry convention and advises on selecting an investment banker; doesn't start from first principles—what does a banker provide (process management, investor introductions, competitive tension, valuation benchmarking), and which of those are actually needed given that several investors have already expressed strong interest—treating the convention as an immutable requirement rather than examining whether it applies."
+    },
+    {
+      "id": "first-principles-13",
+      "prompt": "We're building an AI agent framework and need to decide how to handle agent memory. The team has been reading papers about RAG, vector databases, and episodic memory architectures and is planning to implement all three tiers. The reasoning is 'all the serious AI agent papers use multi-tier memory.' Before building a complex memory system, how should we think about what our agent actually needs?",
+      "failure_mode": "Accepts multi-tier memory as the standard architecture based on research paper conventions and helps design the RAG/vector/episodic stack; doesn't start from what this specific agent needs to remember to do its job well—many agentic tasks don't require persistent memory at all, some need only simple key-value state, and the multi-tier architecture is designed for research problems that may be entirely different from the production use case."
+    },
+    {
+      "id": "first-principles-14",
+      "prompt": "We run a SaaS product and our contracts go through legal review at both our company and the customer's company. Average contract cycle time is 45 days. Our sales team says 'legal review is just a 45-day process in enterprise SaaS—that's standard.' We're losing deals where the prospect needed faster movement. Is 45 days actually irreducible, or is there something to examine here?",
+      "failure_mode": "Accepts 45 days as an industry norm and offers advice about managing customer expectations; doesn't decompose what legal review is actually doing (reviewing terms, negotiating deviations, approving vendor) and ask what specific parts of the 45 days are load-bearing versus what is wait time, process friction, and institutional inertia that could be dramatically reduced with a self-service terms framework, pre-approved fallback clauses, or customer-side champion coaching."
+    },
+    {
+      "id": "first-principles-15",
+      "prompt": "We want to build a notification system that sends emails, SMS, and push notifications to our users. The standard approach is to use separate third-party vendors for each channel—SendGrid for email, Twilio for SMS, and a push notification service. The engineering team says 'this is how everyone does it.' Total annual cost would be around $40,000. Before going this route, how should we think about this?",
+      "failure_mode": "Accepts the three-vendor approach as the standard by analogy and evaluates which vendors to use; doesn't decompose what a notification system fundamentally needs (reliable delivery, user preference management, template rendering, analytics) and ask whether the specific channels and volumes justify three separate vendors, whether a unified notification platform like Customer.io or Knock solves the actual need more simply, or whether simpler in-house infrastructure would suffice at the company's current scale."
+    },
+    {
+      "id": "first-principles-16",
+      "prompt": "Our user research team conducts 20-30 user interviews per month and currently processes them manually—transcription, note-taking, and thematic analysis takes about 3 hours per interview. The team wants to buy a specialized UX research platform that costs $2,500/month and has specific features for tagging, affinity diagramming, and insight repositories. Is this the right investment?",
+      "failure_mode": "Evaluates user research platforms and compares them on features and pricing; doesn't decompose what the team actually needs (transcription, searchable notes, theme identification) and ask whether general-purpose tools (a general transcription service plus a good note-taking tool) would cover 95% of the workflow at a fraction of the cost, or whether the specific features of a specialized UX platform provide value proportional to its premium—reasoning from category convention rather than actual work requirements."
+    },
+    {
+      "id": "first-principles-17",
+      "prompt": "We're building out our company's data warehouse and the team has agreed we need to follow the Medallion Architecture (Bronze/Silver/Gold layers) because 'that's the standard for modern data platforms.' The architecture team read about it in a Databricks blog post and every data engineering job listing mentions it. We're a 30-person company with 3 data sources. How should we approach our data warehouse architecture?",
+      "failure_mode": "Accepts Medallion Architecture as standard practice and helps design the three-layer implementation; doesn't start from what 3 data sources and a 30-person company actually need from a data warehouse (reliable data access, reasonable query performance, manageable maintenance) and ask whether a layered architecture designed for enterprise-scale data platforms at Databricks' customers is appropriate—treating a blog-popularized enterprise pattern as a universal first principle rather than one solution among many."
+    },
+    {
+      "id": "first-principles-18",
+      "prompt": "We're growing our engineering team and want to implement a structured career ladder. Everyone tells us we need to adopt a framework like the Dropbox or Rent the Runway engineering ladders because 'you can't build these from scratch.' We're currently 20 engineers. How should we think about career ladders?",
+      "failure_mode": "Recommends adopting an existing framework by analogy and helps adapt one; doesn't question whether a 20-engineer company actually needs the complexity of a 10-level engineering ladder designed for a company 10x its size, or what a career ladder fundamentally needs to do at this scale (help engineers understand how to grow, give managers evaluation criteria, enable fair compensation), which might be satisfied by something much simpler."
+    },
+    {
+      "id": "first-principles-19",
+      "prompt": "We're evaluating whether to use a graph database for our new social features that will include friend connections, follower relationships, and content recommendations. The graph database advocates on the team say 'relational databases can't efficiently handle graph traversals—this is a classic graph database use case.' The skeptics say switching databases is a huge operational burden. How should we reason about this?",
+      "failure_mode": "Takes the 'classic graph database use case' framing at face value and evaluates graph database options; doesn't decompose what the actual query patterns will be (typical depth of traversal, volume of nodes and edges, read vs. write ratio) and ask whether those specific patterns are materially different from what a well-indexed relational database handles—treating the 'graphs need graph databases' analogy as a first principle rather than examining whether the requirements actually exceed what SQL handles well in practice."
+    },
+    {
+      "id": "first-principles-20",
+      "prompt": "We run a consumer app with 500,000 MAU and we're planning to implement a recommendation system. The data team says we need a machine learning-based collaborative filtering model because 'recommendation systems use ML.' They're planning to build a two-tower neural network, set up a feature store, and implement an online/offline serving architecture. The project is scoped at 4 months. How should we think about this?",
+      "failure_mode": "Accepts ML-based collaborative filtering as the appropriate approach for a recommendation system and helps scope the implementation; doesn't decompose what good recommendations actually require at 500K MAU (relevant items surfaced in a good order) and ask whether a much simpler approach—popularity-based rankings, rule-based filtering, or basic item-item similarity—might achieve 80% of the recommendation quality at 10% of the implementation cost, treating ML as a first principle rather than one solution among many."
+    },
+    {
+      "id": "first-principles-21",
+      "prompt": "We want to add a job queue to handle asynchronous background processing—sending emails, generating reports, processing uploads. The team's default is to use Redis with Sidekiq or BullMQ because 'Redis queues are the standard way to do background jobs.' We're currently running about 5,000 background jobs per day. Is there a reason to question this approach?",
+      "failure_mode": "Accepts Redis queues as the standard approach and helps choose between Sidekiq and BullMQ; doesn't decompose what 5,000 jobs per day actually requires from a queue (reliable delivery, retry logic, job status tracking) and whether those requirements at that scale could be met by a database-backed queue using the application's existing Postgres instance—treating 'Redis is standard for queues' as a first principle when the simplest solution that meets the actual requirements might already be present."
+    },
+    {
+      "id": "first-principles-22",
+      "prompt": "We're building a multi-tenant SaaS application and the team is debating database tenancy models. Some engineers want one database per tenant for 'proper isolation'; others want a single database with tenant_id columns. The first approach is how 'serious enterprise SaaS companies do it.' We expect to have 200-2,000 customers within 18 months. How should we think about this decision?",
+      "failure_mode": "Frames this as a philosophical debate between two standard approaches and evaluates them on conventional tradeoffs; doesn't decompose what 'isolation' actually requires for this product (data privacy, performance guarantees, regulatory compliance) and at what scale separate databases become operationally necessary—treating 'enterprise SaaS uses separate databases' as a rule rather than a solution derived from specific enterprise-scale requirements that may not apply at 200-2,000 tenants."
+    },
+    {
+      "id": "first-principles-23",
+      "prompt": "We're a consumer fintech startup and we need to build a KYC (Know Your Customer) identity verification system. A compliance consultant told us we need to 'implement a full AML screening, document verification, biometric liveness check, and sanctions screening pipeline, because that's what regulators require.' This is a 4-month build estimated at $400,000. Before we build this, how should we approach evaluating what's actually required?",
+      "failure_mode": "Accepts the consultant's 'regulators require this full pipeline' framing and helps scope the KYC build; doesn't decompose what the actual regulatory requirements are for this company's specific product, jurisdiction, and customer risk tier—treating the consultant's maximal interpretation as equivalent to the actual legal requirement, when in reality many fintech companies operate under lighter-weight KYC regimes depending on their specific classification, and vendor solutions like Persona or Stripe Identity may satisfy the real requirement at a fraction of the cost."
+    },
+    {
+      "id": "first-principles-24",
+      "prompt": "We need to build a billing and subscription management system. The team's reflex is to integrate Stripe because 'everyone uses Stripe for billing.' Our product has a unique pricing model: customers pay based on a combination of seat count, API calls, and a negotiated base fee per contract. The contracts vary significantly per enterprise customer. Before we commit to Stripe, how should we think about our billing architecture?",
+      "failure_mode": "Accepts Stripe as the obvious choice because it's universal and evaluates how to implement the custom pricing model within Stripe; doesn't decompose what billing fundamentally requires for this specific pricing model (contract-based negotiated pricing, multi-variable metering, enterprise invoicing) and whether Stripe's data model—designed around standardized subscription plans—can represent per-contract negotiated pricing without significant workarounds, or whether a different approach (Stripe billing plus a contract management layer, or an alternative like Maxio) better fits the actual data model."
+    },
+    {
+      "id": "first-principles-25",
+      "prompt": "Our startup runs entirely on AWS and our monthly bill is $65,000. A cloud cost consultant says we should 'migrate workloads to multi-cloud to get negotiating leverage and avoid vendor lock-in, since that's what mature companies do.' The migration would take 6 months and require significant re-architecture. Before we commit to multi-cloud, how should we reason about this recommendation?",
+      "failure_mode": "Accepts 'multi-cloud for leverage and lock-in avoidance' as conventional wisdom and helps scope the migration; doesn't decompose what multi-cloud actually provides (negotiating leverage requires that you can credibly move workloads, lock-in avoidance requires that the switching cost is low enough to actually switch) and whether those benefits materialize in practice for a company at $65K/month—treating 'what mature companies do' as a first principle rather than examining whether the premise holds at this scale and what the actual switching costs and negotiating leverage would be."
+    }
+  ]
+}

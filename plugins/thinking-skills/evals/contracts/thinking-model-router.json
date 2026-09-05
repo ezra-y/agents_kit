@@ -1,0 +1,23 @@
+{
+  "skill": "model-router",
+  "primary_value_surface": "routing/discoverability",
+  "primary_metric": "routing_accuracy",
+  "secondary_metrics": ["top_k_routing_accuracy", "abstention_rate_on_ambiguous", "false_route_rate", "route_explanation_quality"],
+  "distractors": {
+    "off_target_set": "Queries that clearly map to a single model; problems outside the thinking skills catalog; meta-questions about the router itself",
+    "description": "Items where routing is trivial (one obvious model) or where the router should not be invoked (out of scope)"
+  },
+  "calibration_range": [0.40, 0.70],
+  "calibration_exception": null,
+  "min_sample_primary": 100,
+  "min_sample_replication": 100,
+  "planned_comparison": "placebo",
+  "decision_gate": {
+    "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND false_route_rate <= 0.10",
+    "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+    "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+    "quarantine_redirect": "primary_delta_pp < 0 OR false_route_rate > 0.15",
+    "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+  },
+  "eval_family": "Routing/abstention"
+}

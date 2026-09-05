@@ -1,0 +1,2558 @@
+{
+  "schema_version": 2,
+  "created_at": "2026-07-16T00:00:00.000Z",
+  "updated_at": "2026-07-16T00:00:00.000Z",
+  "phase": 5,
+  "title": "Canonical evidence registry — 28 manual-only skills; workflow machinery rejected",
+  "authority": "analysis/evidence.json",
+  "generated_by": "node evals/evidence.js generate",
+  "registry_ref": {
+    "path": "evals/studies/registry.json",
+    "registry_version": "phase6-cleanup-v1",
+    "sha256": "a03a0f38d833e1e26062ca60c8c5a34d8cbe243a7be6b330ffdfe899f237aaf7"
+  },
+  "policy": {
+    "confirmatory_requires": [
+      "matching_preregistration",
+      "eligible_split",
+      "exact_hashes",
+      "target_n_and_power",
+      "complete_health",
+      "successful_replication",
+      "restore_tested_raw_archive_or_preserved_source_with_provisional_flag"
+    ],
+    "no_public_claim_without_machine_linked_confirmatory_artifact": true,
+    "elevate_count": 0,
+    "notes": [
+      "Historical estimates remain provisional unless their declared study bundle independently passes every confirmation gate.",
+      "A statistically significant row cannot silently become an ELEVATE product verdict.",
+      "portfolio-v1 was preregistered, but zero solver calls were eligible under its frozen power and budget constraints.",
+      "All 28 active skills remain manual-only; 11 removed skills are preserved separately with absorption provenance.",
+      "workflow-v1 made zero solver calls after its frozen 24-case design failed the pre-run power gate; workflow-only machinery is marked for deletion.",
+      "Fourteen frozen historical result artifacts were accidentally deleted during cleanup; their hashes and recovery attempts are pinned in the catalog-cutover recovery ledger and they cannot support confirmatory claims."
+    ],
+    "auto_retain_count": 0
+  },
+  "summary": {
+    "active_skill_count": 28,
+    "deleted_skill_count": 11,
+    "study_count": 9,
+    "elevate_count": 0,
+    "robust_elevate_count": 0,
+    "auto_retain_count": 0,
+    "manual_only_count": 28,
+    "portfolio_run_status": "no_run",
+    "portfolio_model_calls": 0,
+    "portfolio_decision_eligible_count": 0,
+    "workflow_run_status": "no_run",
+    "workflow_model_calls": 0,
+    "workflow_decision_eligible": false,
+    "workflow_product_disposition": "delete_workflow_machinery",
+    "historical_statistical_status_counts_active": {
+      "ceiling_or_near_ceiling": 4,
+      "directional_not_significant": 1,
+      "negative_or_adverse": 1,
+      "null_not_significant": 1,
+      "null_or_no_lift": 6,
+      "significant_below_utility_margin": 1,
+      "unmeasured": 14
+    },
+    "product_disposition_counts_active": {
+      "manual_only_quarantine": 28
+    },
+    "evidence_validity": "provisional",
+    "product_disposition_global": "no_automatic_elevation"
+  },
+  "historical_artifact_loss": {
+    "status": "unrecoverable_local_deletion",
+    "lost_artifact_count": 14,
+    "current_claim_registry_directly_references_lost_paths": false,
+    "evidence_effect": "Historical workflow evidence at these paths is no longer inspectable. Their frozen path, byte count, SHA-256, and original disposition remain in the source manifest. They cannot support a confirmatory or public claim unless exact bytes are restored from an external source.",
+    "ledger_ref": {
+      "path": "evals/studies/catalog-cutover/recovery-ledger.json",
+      "sha256": "58775aec27b06e5145a5155de7cff1fbc5786b0ede2b6977634ebdba28077d65"
+    }
+  },
+  "studies": [
+    {
+      "study_id": "legacy-july-sci-method-larger-n",
+      "bundle_dir": "evals/studies/legacy-july-sci-method-larger-n",
+      "manifest_path": "evals/studies/legacy-july-sci-method-larger-n/manifest.json",
+      "aggregate_path": "evals/studies/legacy-july-sci-method-larger-n/aggregate.json",
+      "items_path": "evals/studies/legacy-july-sci-method-larger-n/items.jsonl",
+      "source_path": "evals/results/sci-method-larger-n/swe-scientific-method.json",
+      "source_sha256": "7ca6ebedc7594925e347a05403ad1adb1f2144f8810db4f0fc1a283f73267471",
+      "measured_result": {
+        "metric": "fault_localization_accuracy",
+        "acc_skill": 0.925,
+        "acc_skill_ci": [
+          0.896,
+          0.946
+        ],
+        "acc_placebo": 0.885,
+        "acc_placebo_ci": [
+          0.851,
+          0.912
+        ],
+        "delta_pp": 4,
+        "discordant_total": 21,
+        "discordant": {
+          "skill_only": 19,
+          "placebo_only": 2,
+          "both_correct": 375,
+          "both_incorrect": 30
+        },
+        "mcnemar_p_artifact": 0,
+        "mcnemar_p_continuity_corrected_approx": 0.000480341,
+        "significant_artifact": true
+      },
+      "statistical_status": "significant_below_utility_margin",
+      "replication_status": "historical_directional_signal_not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_directional_not_elevate",
+      "defects": [
+        "permissive_filename_matching",
+        "active_placebo_control",
+        "missing_raw_response_archive",
+        "missing_parsed_answer_fields",
+        "incomplete_usage_fields",
+        "source_artifact_untracked_in_git",
+        "mcnemar_p_rounded_to_zero_in_source_artifact",
+        "incomplete_scoring_denominator"
+      ],
+      "counts": {
+        "source_items": 427,
+        "bundled_items": 427,
+        "scored": 426,
+        "unscored": 1
+      }
+    },
+    {
+      "study_id": "legacy-july-verdict-five-whys",
+      "bundle_dir": "evals/studies/legacy-july-verdict-five-whys",
+      "manifest_path": "evals/studies/legacy-july-verdict-five-whys/manifest.json",
+      "aggregate_path": "evals/studies/legacy-july-verdict-five-whys/aggregate.json",
+      "items_path": "evals/studies/legacy-july-verdict-five-whys/items.jsonl",
+      "source_path": "evals/results/verdict-five-whys/swe-five-whys-plus.json",
+      "source_sha256": "6294dd990f8fd2d50ac97a23963cb1d14c60069b5cb0a8477e614fc04b31b697",
+      "measured_result": {
+        "metric": "fault_localization_accuracy",
+        "acc_skill": 0.899,
+        "acc_skill_ci": [
+          0.85,
+          0.934
+        ],
+        "acc_placebo": 0.884,
+        "acc_placebo_ci": [
+          0.833,
+          0.922
+        ],
+        "delta_pp": 1.5,
+        "discordant_total": 11,
+        "discordant": {
+          "skill_only": 7,
+          "placebo_only": 4,
+          "both_correct": 172,
+          "both_incorrect": 16
+        },
+        "mcnemar_p_artifact": 0.546,
+        "mcnemar_p_continuity_corrected_approx": 0.546494,
+        "significant_artifact": false
+      },
+      "statistical_status": "null_not_significant",
+      "replication_status": "historical_null_result_not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_no_lift",
+      "defects": [
+        "permissive_filename_matching",
+        "active_placebo_control",
+        "missing_raw_response_archive",
+        "missing_parsed_answer_fields",
+        "incomplete_usage_fields",
+        "source_artifact_untracked_in_git",
+        "incomplete_scoring_denominator"
+      ],
+      "counts": {
+        "source_items": 200,
+        "bundled_items": 200,
+        "scored": 199,
+        "unscored": 1
+      }
+    },
+    {
+      "study_id": "legacy-july-verdict-occams",
+      "bundle_dir": "evals/studies/legacy-july-verdict-occams",
+      "manifest_path": "evals/studies/legacy-july-verdict-occams/manifest.json",
+      "aggregate_path": "evals/studies/legacy-july-verdict-occams/aggregate.json",
+      "items_path": "evals/studies/legacy-july-verdict-occams/items.jsonl",
+      "source_path": "evals/results/verdict-occams/swe-occams-razor.json",
+      "source_sha256": "eab1b50a29ec59f25ffb9052c9dad69c20f6c54511d001d8425f73c0c0e91d6b",
+      "measured_result": {
+        "metric": "fault_localization_accuracy",
+        "acc_skill": 0.879,
+        "acc_skill_ci": [
+          0.827,
+          0.918
+        ],
+        "acc_placebo": 0.874,
+        "acc_placebo_ci": [
+          0.821,
+          0.913
+        ],
+        "delta_pp": 0.5,
+        "discordant_total": 13,
+        "discordant": {
+          "skill_only": 7,
+          "placebo_only": 6,
+          "both_correct": 168,
+          "both_incorrect": 18
+        },
+        "mcnemar_p_artifact": 1,
+        "mcnemar_p_continuity_corrected_approx": 1,
+        "significant_artifact": false
+      },
+      "statistical_status": "null_not_significant",
+      "replication_status": "historical_null_result_not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_no_lift",
+      "defects": [
+        "permissive_filename_matching",
+        "active_placebo_control",
+        "missing_raw_response_archive",
+        "missing_parsed_answer_fields",
+        "incomplete_usage_fields",
+        "source_artifact_untracked_in_git",
+        "incomplete_scoring_denominator"
+      ],
+      "counts": {
+        "source_items": 200,
+        "bundled_items": 200,
+        "scored": 199,
+        "unscored": 1
+      }
+    },
+    {
+      "study_id": "legacy-july-wf-confirm-behavioral",
+      "bundle_dir": "evals/studies/legacy-july-wf-confirm-behavioral",
+      "manifest_path": "evals/studies/legacy-july-wf-confirm-behavioral/manifest.json",
+      "aggregate_path": "evals/studies/legacy-july-wf-confirm-behavioral/aggregate.json",
+      "items_path": "evals/studies/legacy-july-wf-confirm-behavioral/items.jsonl",
+      "source_path": "evals/results/wf-confirm-behavioral/workflow-vs-skill.json",
+      "source_sha256": "b4fcc8a743c4ce6b3d8c8cb2624b1686020b5c86f24e3e5cba7b509b78e1d454",
+      "measured_result": {
+        "metric": "blind_pairwise_left_win_rate",
+        "left_arm": "workflow_validated",
+        "right_arm": "full_skill_typed_verified",
+        "left_wins": 66,
+        "right_wins": 70,
+        "ties": 4,
+        "left_win_rate": 0.486,
+        "lift_pp": -4,
+        "ci95": [
+          0.403,
+          0.569
+        ],
+        "p_value": 0.797,
+        "significant": false,
+        "claim_status_source": "pilot_only"
+      },
+      "statistical_status": "pilot_null",
+      "replication_status": "pilot_not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_workflow_gate_pending",
+      "defects": [
+        "judged_pilot_not_objective",
+        "missing_raw_solver_and_judge_archive",
+        "source_artifact_untracked_in_git",
+        "small_per_skill_n",
+        "source_claim_status_pilot_only"
+      ],
+      "counts": {
+        "source_problems": 140,
+        "bundled_items": 140,
+        "n_skills": 12,
+        "skill_problem_counts": {
+          "thinking-map-territory": 9,
+          "thinking-cynefin": 9,
+          "thinking-margin-of-safety": 9,
+          "thinking-socratic": 9,
+          "thinking-inversion": 9,
+          "thinking-kepner-tregoe": 9,
+          "thinking-scientific-method": 9,
+          "thinking-reversibility": 25,
+          "thinking-five-whys-plus": 9,
+          "thinking-occams-razor": 9,
+          "thinking-red-team": 9,
+          "thinking-pre-mortem": 25
+        }
+      }
+    },
+    {
+      "study_id": "legacy-july-wf-confirm-haiku",
+      "bundle_dir": "evals/studies/legacy-july-wf-confirm-haiku",
+      "manifest_path": "evals/studies/legacy-july-wf-confirm-haiku/manifest.json",
+      "aggregate_path": "evals/studies/legacy-july-wf-confirm-haiku/aggregate.json",
+      "items_path": "evals/studies/legacy-july-wf-confirm-haiku/items.jsonl",
+      "source_path": "evals/results/wf-confirm-haiku/workflow-objective.json",
+      "source_sha256": "9734cdc37a9751fc0d4e183f94bbbd400b817b698b938a367dc581b7caf19974",
+      "measured_result": {
+        "metric": "case_success_accuracy",
+        "n": 364,
+        "clusters": 363,
+        "by_arm": {
+          "workflow_validated": {
+            "n": 364,
+            "correct": 342,
+            "case_success": 342,
+            "acc": 0.94,
+            "case_success_rate": 0.94,
+            "acc_ci": [
+              0.91,
+              0.96
+            ],
+            "case_success_ci": [
+              0.91,
+              0.96
+            ],
+            "tp": 161,
+            "fp": 16,
+            "tn": 181,
+            "fn": 6,
+            "fpr": 0.081,
+            "fnr": 0.036,
+            "parse_ok": 364,
+            "parse_ok_rate": 1,
+            "parse_fail": 0,
+            "solver_failures": 0
+          },
+          "full_skill_typed_verified": {
+            "n": 364,
+            "correct": 344,
+            "case_success": 344,
+            "acc": 0.945,
+            "case_success_rate": 0.945,
+            "acc_ci": [
+              0.917,
+              0.964
+            ],
+            "case_success_ci": [
+              0.917,
+              0.964
+            ],
+            "tp": 156,
+            "fp": 9,
+            "tn": 188,
+            "fn": 11,
+            "fpr": 0.046,
+            "fnr": 0.066,
+            "parse_ok": 364,
+            "parse_ok_rate": 1,
+            "parse_fail": 0,
+            "solver_failures": 0
+          }
+        },
+        "primary_contrast": {
+          "delta_pp": -0.5,
+          "mcnemar_p": 0.845,
+          "discordant": 26,
+          "left_wins": 12,
+          "right_wins": 14
+        },
+        "claim_status_source": "inconclusive"
+      },
+      "statistical_status": "inconclusive_null",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_workflow_gate_pending",
+      "defects": [
+        "padded_workflow_arms_not_unpadded",
+        "self_checked_arms_misnamed_as_validated_or_verified",
+        "missing_no_skill_primary_control",
+        "missing_raw_response_archive",
+        "source_artifact_untracked_in_git",
+        "claim_status_not_eligible"
+      ],
+      "counts": {
+        "source_items": 364,
+        "bundled_items": 364,
+        "n_skills": 12,
+        "skill_item_counts": {
+          "thinking-socratic": 35,
+          "thinking-cynefin": 30,
+          "thinking-reversibility": 30,
+          "thinking-margin-of-safety": 30,
+          "thinking-map-territory": 30,
+          "thinking-pre-mortem": 30,
+          "thinking-inversion": 30,
+          "thinking-red-team": 30,
+          "thinking-scientific-method": 30,
+          "thinking-kepner-tregoe": 30,
+          "thinking-five-whys-plus": 29,
+          "thinking-occams-razor": 30
+        }
+      }
+    },
+    {
+      "study_id": "legacy-july-wf-confirm-opus",
+      "bundle_dir": "evals/studies/legacy-july-wf-confirm-opus",
+      "manifest_path": "evals/studies/legacy-july-wf-confirm-opus/manifest.json",
+      "aggregate_path": "evals/studies/legacy-july-wf-confirm-opus/aggregate.json",
+      "items_path": "evals/studies/legacy-july-wf-confirm-opus/items.jsonl",
+      "source_path": "evals/results/wf-confirm-opus/workflow-objective.json",
+      "source_sha256": "cfa637a3d7f7fe0129703d94957dc837ed7fa8b10b16781649376d37a6087528",
+      "measured_result": {
+        "metric": "case_success_accuracy",
+        "n": 364,
+        "clusters": 363,
+        "by_arm": {
+          "workflow_validated": {
+            "n": 364,
+            "correct": 360,
+            "case_success": 360,
+            "acc": 0.989,
+            "case_success_rate": 0.989,
+            "acc_ci": [
+              0.972,
+              0.996
+            ],
+            "case_success_ci": [
+              0.972,
+              0.996
+            ],
+            "tp": 164,
+            "fp": 1,
+            "tn": 196,
+            "fn": 3,
+            "fpr": 0.005,
+            "fnr": 0.018,
+            "parse_ok": 364,
+            "parse_ok_rate": 1,
+            "parse_fail": 0,
+            "solver_failures": 0
+          },
+          "full_skill_typed_verified": {
+            "n": 364,
+            "correct": 359,
+            "case_success": 359,
+            "acc": 0.986,
+            "case_success_rate": 0.986,
+            "acc_ci": [
+              0.968,
+              0.994
+            ],
+            "case_success_ci": [
+              0.968,
+              0.994
+            ],
+            "tp": 162,
+            "fp": 0,
+            "tn": 197,
+            "fn": 5,
+            "fpr": 0,
+            "fnr": 0.03,
+            "parse_ok": 364,
+            "parse_ok_rate": 1,
+            "parse_fail": 0,
+            "solver_failures": 0
+          }
+        },
+        "primary_contrast": {
+          "delta_pp": 0.3,
+          "mcnemar_p": 1,
+          "discordant": 3,
+          "left_wins": 2,
+          "right_wins": 1
+        },
+        "claim_status_source": "inconclusive"
+      },
+      "statistical_status": "inconclusive_null",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_workflow_gate_pending",
+      "defects": [
+        "padded_workflow_arms_not_unpadded",
+        "self_checked_arms_misnamed_as_validated_or_verified",
+        "missing_no_skill_primary_control",
+        "missing_raw_response_archive",
+        "source_artifact_untracked_in_git",
+        "claim_status_not_eligible"
+      ],
+      "counts": {
+        "source_items": 364,
+        "bundled_items": 364,
+        "n_skills": 12,
+        "skill_item_counts": {
+          "thinking-socratic": 35,
+          "thinking-cynefin": 30,
+          "thinking-reversibility": 30,
+          "thinking-margin-of-safety": 30,
+          "thinking-map-territory": 30,
+          "thinking-pre-mortem": 30,
+          "thinking-inversion": 30,
+          "thinking-red-team": 30,
+          "thinking-scientific-method": 30,
+          "thinking-kepner-tregoe": 30,
+          "thinking-five-whys-plus": 29,
+          "thinking-occams-razor": 30
+        }
+      }
+    },
+    {
+      "study_id": "legacy-july-wf-confirm-sonnet",
+      "bundle_dir": "evals/studies/legacy-july-wf-confirm-sonnet",
+      "manifest_path": "evals/studies/legacy-july-wf-confirm-sonnet/manifest.json",
+      "aggregate_path": "evals/studies/legacy-july-wf-confirm-sonnet/aggregate.json",
+      "items_path": "evals/studies/legacy-july-wf-confirm-sonnet/items.jsonl",
+      "source_path": "evals/results/wf-confirm-sonnet/workflow-objective.json",
+      "source_sha256": "b33e52f9481f59024ae539a694c1d096decf46b50f684724c9f8f484ac90cf05",
+      "measured_result": {
+        "metric": "case_success_accuracy",
+        "n": 364,
+        "clusters": 363,
+        "by_arm": {
+          "workflow_validated": {
+            "n": 364,
+            "correct": 362,
+            "case_success": 362,
+            "acc": 0.995,
+            "case_success_rate": 0.995,
+            "acc_ci": [
+              0.98,
+              0.998
+            ],
+            "case_success_ci": [
+              0.98,
+              0.998
+            ],
+            "tp": 166,
+            "fp": 1,
+            "tn": 196,
+            "fn": 1,
+            "fpr": 0.005,
+            "fnr": 0.006,
+            "parse_ok": 364,
+            "parse_ok_rate": 1,
+            "parse_fail": 0,
+            "solver_failures": 0
+          },
+          "full_skill_typed_verified": {
+            "n": 364,
+            "correct": 361,
+            "case_success": 361,
+            "acc": 0.992,
+            "case_success_rate": 0.992,
+            "acc_ci": [
+              0.976,
+              0.997
+            ],
+            "case_success_ci": [
+              0.976,
+              0.997
+            ],
+            "tp": 164,
+            "fp": 0,
+            "tn": 197,
+            "fn": 3,
+            "fpr": 0,
+            "fnr": 0.018,
+            "parse_ok": 364,
+            "parse_ok_rate": 1,
+            "parse_fail": 0,
+            "solver_failures": 0
+          }
+        },
+        "primary_contrast": {
+          "delta_pp": 0.3,
+          "mcnemar_p": 1,
+          "discordant": 3,
+          "left_wins": 2,
+          "right_wins": 1
+        },
+        "claim_status_source": "inconclusive"
+      },
+      "statistical_status": "inconclusive_null",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_workflow_gate_pending",
+      "defects": [
+        "padded_workflow_arms_not_unpadded",
+        "self_checked_arms_misnamed_as_validated_or_verified",
+        "missing_no_skill_primary_control",
+        "missing_raw_response_archive",
+        "source_artifact_untracked_in_git",
+        "claim_status_not_eligible"
+      ],
+      "counts": {
+        "source_items": 364,
+        "bundled_items": 364,
+        "n_skills": 12,
+        "skill_item_counts": {
+          "thinking-socratic": 35,
+          "thinking-cynefin": 30,
+          "thinking-reversibility": 30,
+          "thinking-margin-of-safety": 30,
+          "thinking-map-territory": 30,
+          "thinking-pre-mortem": 30,
+          "thinking-inversion": 30,
+          "thinking-red-team": 30,
+          "thinking-scientific-method": 30,
+          "thinking-kepner-tregoe": 30,
+          "thinking-five-whys-plus": 29,
+          "thinking-occams-razor": 30
+        }
+      }
+    },
+    {
+      "study_id": "portfolio-v1",
+      "bundle_dir": "evals/studies/portfolio-v1",
+      "prereg_path": "evals/studies/portfolio-v1/prereg.md",
+      "manifest_path": "evals/studies/portfolio-v1/manifest.json",
+      "cases_path": "evals/studies/portfolio-v1/cases.json",
+      "aggregate_path": "evals/studies/portfolio-v1/aggregate.json",
+      "items_path": "evals/studies/portfolio-v1/items.jsonl",
+      "prereg_sha256": "f38cc1c34f7c1e185e687d6b8c2cb0d78c84cc91a501d40a934c56cd150a12c7",
+      "manifest_sha256": "c1b257932dbee6ee40b254782dd258ef75f3512e5653aa51eb5d679037f266e9",
+      "input_registry_ref": {
+        "path": "evals/studies/registry.json",
+        "git_commit": "c2e4a73a6aded6c53d419f1f3d2a011fea91946f",
+        "registry_version": "phase2-cutover-v1",
+        "sha256": "d28daeb10339b80363c28eb2dd8f694fcb4de2541d300df1c06f475f79a73a46"
+      },
+      "current_registry_ref": {
+        "path": "evals/studies/registry.json",
+        "git_commit": "3d1f67de41495a2fa979b196a76fc5a3e66235e0",
+        "registry_version": "phase4-portfolio-v1",
+        "sha256": "7bf021d6dd4c34cd5bd91c74874114f98e1dc952ebb279021add62af8416c91e",
+        "role": "post-gate output; not a preregistration input"
+      },
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_no_run",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine",
+      "decision_eligible": false,
+      "model_calls": 0,
+      "skill_count": 28,
+      "blockers": [
+        "hard_negatives_below_minimum",
+        "heldout_below_minimum",
+        "inadequate_splits",
+        "judge_panel_blocked",
+        "missing_full_legacy_body",
+        "missing_native_dataset",
+        "non_native_applicability_labels",
+        "power_infeasible_under_frozen_design",
+        "replication_below_minimum"
+      ],
+      "disposition_counts": {
+        "manual_only_quarantine": 28
+      },
+      "frozen_case_counts": {
+        "heldout": 331,
+        "replication": 325,
+        "hard_negatives": 353
+      }
+    },
+    {
+      "study_id": "workflow-v1",
+      "bundle_dir": "evals/studies/workflow-v1",
+      "prereg_path": "evals/studies/workflow-v1/prereg.md",
+      "manifest_path": "evals/studies/workflow-v1/manifest.json",
+      "cases_path": "evals/studies/workflow-v1/cases.json",
+      "aggregate_path": "evals/studies/workflow-v1/aggregate.json",
+      "items_path": "evals/studies/workflow-v1/items.jsonl",
+      "prereg_sha256": "0f8dfba5b4c816b27a39e38dbb0aef344184415f1a349fc55cb5d21dffda1834",
+      "manifest_sha256": "de711950f67f4af314599775963a9c95ff535d86c3ab507334c196c8ee5c29df",
+      "input_registry_ref": {
+        "path": "evals/studies/registry.json",
+        "git_commit": "3d1f67de41495a2fa979b196a76fc5a3e66235e0",
+        "registry_version": "phase4-portfolio-v1",
+        "sha256": "7bf021d6dd4c34cd5bd91c74874114f98e1dc952ebb279021add62af8416c91e"
+      },
+      "current_registry_ref": {
+        "path": "evals/studies/registry.json",
+        "git_commit": "1d63b0d0fe2f3272d98ea84370e55444ef560405",
+        "registry_version": "phase5-workflow-v1",
+        "sha256": "39eb7264b5e1f516aa5e67e4c7ab06d968c72453d5de8e5396aee69b665f039d",
+        "role": "post-gate output; not a preregistration input"
+      },
+      "frozen_artifacts": {
+        "runner": {
+          "path": "evals/run-agentic.js",
+          "sha256": "4b8aeaa3c83ea000a15d66ae05c4cd4ff2d8fc1dabec1a13d9ab82230e410cda"
+        },
+        "pure_evaluator": {
+          "path": "evals/lib/agentic.js",
+          "sha256": "cef02f317cf9749824b550e6bb893a23b0f3d577e91832ee402bf781aafabf58"
+        },
+        "dataset": {
+          "path": "evals/datasets/workflow-cases-replication.jsonl",
+          "sha256": "3108849eae5636b7748cf800d49b25a9c5d9aaac78bd6986559ea5e2aaa7b0ef",
+          "split": "replication",
+          "n_cases": 24,
+          "n_candidate_nodes": 42,
+          "n_gold_nodes": 30
+        },
+        "cases": {
+          "path": "evals/studies/workflow-v1/cases.json",
+          "sha256": "54638d7dbf74b350a5d1041bb2d141ce0c2818231ef9b3c05d715482564c6c1a"
+        }
+      },
+      "candidate": "workflow_typed",
+      "comparators": [
+        "dynamic_typed",
+        "workflow_none_typed"
+      ],
+      "models": [
+        "claude-haiku-4-5-20251001",
+        "claude-sonnet-4-6",
+        "claude-opus-4-6"
+      ],
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_power_blocked",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "delete_workflow_machinery",
+      "decision_eligible": false,
+      "model_calls": 0,
+      "retention_gates": {
+        "quality": "not_eligible",
+        "efficiency": "not_eligible"
+      },
+      "blockers": [
+        "available_replication_case_clusters_below_power_requirement",
+        "quality_gate_not_estimable_at_declared_precision",
+        "efficiency_noninferiority_gate_not_estimable_at_declared_precision",
+        "no_solver_calls_permitted_after_pre_run_power_failure",
+        "neither_retention_gate_passed"
+      ],
+      "frozen_case_count": 24
+    }
+  ],
+  "skills": {
+    "thinking-bounded-rationality": {
+      "skill": "thinking-bounded-rationality",
+      "bare_skill": "bounded-rationality",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "missing_native_dataset",
+          "power_infeasible_under_frozen_design",
+          "missing_full_legacy_body",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-circle-of-competence": {
+      "skill": "thinking-circle-of-competence",
+      "bare_skill": "circle-of-competence",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "abstention_accuracy",
+        "dataset": "SelfAware balanced",
+        "n": 70,
+        "placebo": 0.7,
+        "treatment": 0.7,
+        "delta_pp": 0,
+        "p": 0.773,
+        "significant": false,
+        "source_verdict": "no calibration benefit",
+        "provenance": "routing/abstention-null",
+        "source": "evals/results/wavec/abstention-circle-of-competence.json",
+        "scorecard_skill_verdict": "no calibration benefit",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "no calibration benefit",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine_no_lift",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "missing_native_dataset",
+          "power_infeasible_under_frozen_design",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-cynefin": {
+      "skill": "thinking-cynefin",
+      "bare_skill": "cynefin",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored classify",
+        "n": 30,
+        "placebo": 0.967,
+        "treatment": 1,
+        "delta_pp": 3.3,
+        "p": 1,
+        "significant": false,
+        "source_verdict": "ceiling",
+        "provenance": "OBJ-small-ceiling",
+        "source": "evals/results/wavec/routing-cynefin.json",
+        "scorecard_skill_verdict": "ceiling",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "ceiling_or_near_ceiling",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "ceiling",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine_ceiling",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "non_native_applicability_labels",
+          "power_infeasible_under_frozen_design"
+        ]
+      }
+    },
+    "thinking-effectuation": {
+      "skill": "thinking-effectuation",
+      "bare_skill": "effectuation",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "missing_native_dataset",
+          "power_infeasible_under_frozen_design",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-first-principles": {
+      "skill": "thinking-first-principles",
+      "bare_skill": "first-principles",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored constraint",
+        "n": 30,
+        "placebo": 0.933,
+        "treatment": 1,
+        "delta_pp": 6.7,
+        "p": 0.479,
+        "significant": false,
+        "source_verdict": "near-ceiling, ns",
+        "provenance": "OBJ-small-ceiling",
+        "source": "evals/results/rerun/first-principles-constraint.json",
+        "scorecard_skill_verdict": "ceiling",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "ceiling_or_near_ceiling",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "ceiling",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine_ceiling",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "inadequate_splits",
+          "non_native_applicability_labels",
+          "power_infeasible_under_frozen_design",
+          "missing_full_legacy_body",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-five-whys-plus": {
+      "skill": "thinking-five-whys-plus",
+      "bare_skill": "five-whys-plus",
+      "measured_result": {
+        "status": "july_bundle_imported",
+        "primary_study_id": "legacy-july-verdict-five-whys",
+        "metric": "fault_localization_accuracy",
+        "n_scored": 199,
+        "acc_skill": 0.899,
+        "acc_placebo": 0.884,
+        "delta_pp": 1.5,
+        "mcnemar_p": 0.546,
+        "significant": false,
+        "source": "evals/results/verdict-five-whys/swe-five-whys-plus.json",
+        "bundle": "evals/studies/legacy-july-verdict-five-whys"
+      },
+      "statistical_status": "null_not_significant",
+      "replication_status": "historical_null_result_not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "notes": [
+        "July measured result is NO-LIFT under source verdict rule.",
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "Not replication-qualified under current gates; evidence remains provisional.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "legacy-july-verdict-five-whys",
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine_no_lift",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "non_native_applicability_labels",
+          "power_infeasible_under_frozen_design"
+        ]
+      }
+    },
+    "thinking-jobs-to-be-done": {
+      "skill": "thinking-jobs-to-be-done",
+      "bare_skill": "jobs-to-be-done",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "missing_native_dataset",
+          "power_infeasible_under_frozen_design",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-kepner-tregoe": {
+      "skill": "thinking-kepner-tregoe",
+      "bare_skill": "kepner-tregoe",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "fault_localization_accuracy",
+        "dataset": "debugging-fault-localization-decisive (224-item frozen calibrated split)",
+        "n": 224,
+        "placebo": 0.563,
+        "treatment": 0.545,
+        "delta_pp": -1.8,
+        "p": 0.289,
+        "significant": false,
+        "source_verdict": "NO-LIFT",
+        "provenance": "OBJ-powered-null",
+        "source": "evals/results/m5-primary-decisive/swe-kepner-tregoe.json",
+        "scorecard_skill_verdict": "no-lift",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "no-lift",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine_no_lift",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "non_native_applicability_labels",
+          "power_infeasible_under_frozen_design",
+          "missing_full_legacy_body"
+        ]
+      }
+    },
+    "thinking-lindy-effect": {
+      "skill": "thinking-lindy-effect",
+      "bare_skill": "lindy-effect",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "missing_native_dataset",
+          "power_infeasible_under_frozen_design",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-map-territory": {
+      "skill": "thinking-map-territory",
+      "bare_skill": "map-territory",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "fault_localization_accuracy",
+        "dataset": "debugging-fault-localization-decisive (224-item frozen calibrated split)",
+        "n": 224,
+        "placebo": 0.549,
+        "treatment": 0.571,
+        "delta_pp": 2.2,
+        "p": 0.074,
+        "significant": false,
+        "source_verdict": "NO-LIFT",
+        "provenance": "OBJ-powered-null",
+        "source": "evals/results/m5-primary-decisive/swe-map-territory.json",
+        "scorecard_skill_verdict": "no-lift",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "no-lift",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine_no_lift",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "non_native_applicability_labels",
+          "power_infeasible_under_frozen_design"
+        ]
+      }
+    },
+    "thinking-margin-of-safety": {
+      "skill": "thinking-margin-of-safety",
+      "bare_skill": "margin-of-safety",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored provision",
+        "n": 30,
+        "placebo": 0.867,
+        "treatment": 0.767,
+        "delta_pp": -10,
+        "p": 0.248,
+        "significant": false,
+        "source_verdict": "headroom, no benefit",
+        "provenance": "OBJ-small-negative",
+        "source": "evals/results/rerun/margin-of-safety-provision.json",
+        "scorecard_skill_verdict": "headroom, no benefit",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "headroom, no benefit",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine_no_lift",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "non_native_applicability_labels",
+          "power_infeasible_under_frozen_design"
+        ]
+      }
+    },
+    "thinking-model-combination": {
+      "skill": "thinking-model-combination",
+      "bare_skill": "model-combination",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "missing_native_dataset",
+          "power_infeasible_under_frozen_design",
+          "missing_full_legacy_body",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-model-router": {
+      "skill": "thinking-model-router",
+      "bare_skill": "model-router",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "missing_native_dataset",
+          "power_infeasible_under_frozen_design",
+          "missing_full_legacy_body",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-ooda": {
+      "skill": "thinking-ooda",
+      "bare_skill": "ooda",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "missing_native_dataset",
+          "power_infeasible_under_frozen_design",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-opportunity-cost": {
+      "skill": "thinking-opportunity-cost",
+      "bare_skill": "opportunity-cost",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "missing_native_dataset",
+          "power_infeasible_under_frozen_design",
+          "missing_full_legacy_body",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-pre-mortem": {
+      "skill": "thinking-pre-mortem",
+      "bare_skill": "pre-mortem",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "non_native_applicability_labels",
+          "power_infeasible_under_frozen_design",
+          "missing_full_legacy_body"
+        ]
+      }
+    },
+    "thinking-probabilistic": {
+      "skill": "thinking-probabilistic",
+      "bare_skill": "probabilistic",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "missing_native_dataset",
+          "power_infeasible_under_frozen_design",
+          "missing_full_legacy_body",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-red-team": {
+      "skill": "thinking-red-team",
+      "bare_skill": "red-team",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "DiverseVul balanced",
+        "n": 200,
+        "placebo": 0.59,
+        "treatment": 0.64,
+        "delta_pp": 5,
+        "p": 0.1,
+        "significant": false,
+        "source_verdict": "directional, not significant",
+        "provenance": "OBJ-powered-directional",
+        "source": "evals/results/confirm/redteam-diversevul-balanced-n200.json",
+        "scorecard_skill_verdict": "no-lift",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "directional_not_significant",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "no-lift",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_directional_not_elevate",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "non_native_applicability_labels",
+          "power_infeasible_under_frozen_design"
+        ]
+      }
+    },
+    "thinking-reversibility": {
+      "skill": "thinking-reversibility",
+      "bare_skill": "reversibility",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored doors",
+        "n": 30,
+        "placebo": 1,
+        "treatment": 1,
+        "delta_pp": 0,
+        "p": 1,
+        "significant": false,
+        "source_verdict": "ceiling",
+        "provenance": "OBJ-small-ceiling",
+        "source": "evals/results/rerun/reversibility-doors.json",
+        "scorecard_skill_verdict": "ceiling",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "ceiling_or_near_ceiling",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "ceiling",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine_ceiling",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "non_native_applicability_labels",
+          "power_infeasible_under_frozen_design",
+          "missing_full_legacy_body"
+        ]
+      }
+    },
+    "thinking-scientific-method": {
+      "skill": "thinking-scientific-method",
+      "bare_skill": "scientific-method",
+      "measured_result": {
+        "status": "july_bundle_imported",
+        "primary_study_id": "legacy-july-sci-method-larger-n",
+        "metric": "fault_localization_accuracy",
+        "n_scored": 426,
+        "acc_skill": 0.925,
+        "acc_placebo": 0.885,
+        "delta_pp": 4,
+        "discordant": {
+          "skill_only": 19,
+          "placebo_only": 2
+        },
+        "mcnemar_p_artifact": 0,
+        "mcnemar_p_approx": 0.000482,
+        "source": "evals/results/sci-method-larger-n/swe-scientific-method.json",
+        "bundle": "evals/studies/legacy-july-sci-method-larger-n"
+      },
+      "statistical_status": "significant_below_utility_margin",
+      "replication_status": "historical_directional_signal_not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "notes": [
+        "Does not clear AUTO-RETAIN LEAN / ELEVATE product gate.",
+        "Historical same-direction signals are not treated as replication-qualified.",
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "p<0.05 and delta 4.0pp < preregistered +5pp utility margin → DIRECTIONAL-ONLY.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "legacy-july-sci-method-larger-n",
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_directional_not_elevate",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "non_native_applicability_labels",
+          "power_infeasible_under_frozen_design",
+          "missing_full_legacy_body"
+        ]
+      }
+    },
+    "thinking-second-order": {
+      "skill": "thinking-second-order",
+      "bare_skill": "second-order",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "StrategyQA",
+        "n": 40,
+        "placebo": 0.85,
+        "treatment": 0.85,
+        "delta_pp": 0,
+        "p": 0.479,
+        "significant": false,
+        "source_verdict": "no effect",
+        "provenance": "OBJ-powered-null",
+        "source": "evals/results/rerun/strategyqa-second-order.json",
+        "scorecard_skill_verdict": "no effect",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "no effect",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine_no_lift",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "inadequate_splits",
+          "non_native_applicability_labels",
+          "power_infeasible_under_frozen_design",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-socratic": {
+      "skill": "thinking-socratic",
+      "bare_skill": "socratic",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored clarify",
+        "n": 29,
+        "placebo": 1,
+        "treatment": 0.931,
+        "delta_pp": -6.9,
+        "p": 0.479,
+        "significant": false,
+        "source_verdict": "negative",
+        "provenance": "OBJ-small-negative",
+        "source": "evals/results/wavec/routing-socratic.json",
+        "scorecard_skill_verdict": "ceiling",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "negative_or_adverse",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "ceiling",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine_negative",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "non_native_applicability_labels",
+          "power_infeasible_under_frozen_design"
+        ]
+      }
+    },
+    "thinking-steel-manning": {
+      "skill": "thinking-steel-manning",
+      "bare_skill": "steel-manning",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "missing_native_dataset",
+          "power_infeasible_under_frozen_design",
+          "missing_full_legacy_body",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-systems": {
+      "skill": "thinking-systems",
+      "bare_skill": "systems",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "fault_localization_accuracy",
+        "dataset": "SWE-bench",
+        "n": 150,
+        "placebo": 0.84,
+        "treatment": 0.827,
+        "delta_pp": -1.3,
+        "p": 0.683,
+        "significant": false,
+        "source_verdict": "no robust effect",
+        "provenance": "OBJ-powered-null",
+        "source": "evals/results/wavec/swe-systems-restored.json",
+        "scorecard_skill_verdict": "no-lift",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "no-lift",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine_no_lift",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "missing_native_dataset",
+          "power_infeasible_under_frozen_design",
+          "missing_full_legacy_body",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-theory-of-constraints": {
+      "skill": "thinking-theory-of-constraints",
+      "bare_skill": "theory-of-constraints",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored bottleneck",
+        "n": 30,
+        "placebo": 0.967,
+        "treatment": 0.967,
+        "delta_pp": 0,
+        "p": 1,
+        "significant": false,
+        "source_verdict": "ceiling",
+        "provenance": "OBJ-small-ceiling",
+        "source": "evals/results/rerun/theory-of-constraints-bottleneck.json",
+        "scorecard_skill_verdict": "ceiling",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "ceiling_or_near_ceiling",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "ceiling",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine_ceiling",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "inadequate_splits",
+          "non_native_applicability_labels",
+          "power_infeasible_under_frozen_design",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-thought-experiment": {
+      "skill": "thinking-thought-experiment",
+      "bare_skill": "thought-experiment",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "missing_native_dataset",
+          "power_infeasible_under_frozen_design",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-triz": {
+      "skill": "thinking-triz",
+      "bare_skill": "triz",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "missing_native_dataset",
+          "power_infeasible_under_frozen_design",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    },
+    "thinking-via-negativa": {
+      "skill": "thinking-via-negativa",
+      "bare_skill": "via-negativa",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "Manual-only quarantine remains in force; no automatic invocation claim.",
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "portfolio-v1 made zero solver calls because the frozen design was not feasible under the declared power and budget gates."
+      ],
+      "study_ids": [
+        "portfolio-v1"
+      ],
+      "catalog_status": "active_manual_only",
+      "prior_product_disposition": "manual_only_quarantine",
+      "auto_retain": false,
+      "portfolio_gate": {
+        "study_id": "portfolio-v1",
+        "run_status": "no_run",
+        "decision_eligible": false,
+        "measured_result": null,
+        "statistical_status": "unmeasured_preregistered_no_run",
+        "replication_status": "not_run",
+        "evidence_validity": "preregistered_blocked",
+        "product_disposition": "manual_only_quarantine",
+        "blockers": [
+          "judge_panel_blocked",
+          "missing_native_dataset",
+          "power_infeasible_under_frozen_design",
+          "heldout_below_minimum",
+          "replication_below_minimum",
+          "hard_negatives_below_minimum"
+        ]
+      }
+    }
+  },
+  "deleted_skills": {
+    "thinking-archetypes": {
+      "skill": "thinking-archetypes",
+      "bare_skill": "archetypes",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "binary_decision_accuracy",
+        "dataset": "Systems/product/strategy pairwise decisive split (117 items: 42 target bottleneck/margin-of-safety, 29 near-miss, 46 distractor)",
+        "n": 117,
+        "placebo": 0.72,
+        "treatment": 0.73,
+        "delta_pp": 0.9,
+        "p": 1,
+        "significant": false,
+        "source_verdict": "NO-LIFT",
+        "provenance": "OBJ-powered-null",
+        "source": "evals/results/m5-primary/binary-archetypes.json",
+        "scorecard_skill_verdict": "no-lift",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "deleted_after_mechanism_absorption",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "no-lift",
+      "notes": [
+        "No ELEVATE / automatic invocation claim.",
+        "Removed from the shipped catalog only after its retained mechanism was migrated to the named survivor contracts.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory."
+      ],
+      "study_ids": [],
+      "catalog_status": "deleted_after_mechanism_absorption",
+      "prior_product_disposition": "manual_only_quarantine_redirect_candidate",
+      "auto_retain": false,
+      "absorbed_into": [
+        "systems"
+      ],
+      "absorbed_mechanisms": [],
+      "deletion_reason": null
+    },
+    "thinking-bayesian": {
+      "skill": "thinking-bayesian",
+      "bare_skill": "bayesian",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored base-rate MCQ",
+        "n": 40,
+        "placebo": 0.975,
+        "treatment": 1,
+        "delta_pp": 2.5,
+        "p": 1,
+        "significant": false,
+        "source_verdict": "ceiling",
+        "provenance": "OBJ-small-ceiling",
+        "source": "evals/results/run1/correctness-bayesian.json",
+        "scorecard_skill_verdict": "ceiling",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "ceiling_or_near_ceiling",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "deleted_after_mechanism_absorption",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "ceiling",
+      "notes": [
+        "No ELEVATE / automatic invocation claim.",
+        "Removed from the shipped catalog only after its retained mechanism was migrated to the named survivor contracts.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory."
+      ],
+      "study_ids": [],
+      "catalog_status": "deleted_after_mechanism_absorption",
+      "prior_product_disposition": "manual_only_quarantine_redirect_candidate",
+      "auto_retain": false,
+      "absorbed_into": [
+        "probabilistic"
+      ],
+      "absorbed_mechanisms": [],
+      "deletion_reason": null
+    },
+    "thinking-debiasing": {
+      "skill": "thinking-debiasing",
+      "bare_skill": "debiasing",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored bias MCQ",
+        "n": 40,
+        "placebo": 1,
+        "treatment": 0.975,
+        "delta_pp": -2.5,
+        "p": 1,
+        "significant": false,
+        "source_verdict": "ceiling",
+        "provenance": "OBJ-small-ceiling",
+        "source": "evals/results/run1/correctness-debiasing.json",
+        "scorecard_skill_verdict": "ceiling",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "ceiling_or_near_ceiling",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "deleted_after_mechanism_absorption",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "ceiling",
+      "notes": [
+        "No ELEVATE / automatic invocation claim.",
+        "Removed from the shipped catalog only after its retained mechanism was migrated to the named survivor contracts.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory."
+      ],
+      "study_ids": [],
+      "catalog_status": "deleted_after_mechanism_absorption",
+      "prior_product_disposition": "manual_only_quarantine_redirect_candidate",
+      "auto_retain": false,
+      "absorbed_into": [
+        "probabilistic",
+        "steel-manning"
+      ],
+      "absorbed_mechanisms": [],
+      "deletion_reason": null
+    },
+    "thinking-dual-process": {
+      "skill": "thinking-dual-process",
+      "bare_skill": "dual-process",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "deleted_after_mechanism_absorption",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "Removed from the shipped catalog only after its retained mechanism was migrated to the named survivor contracts."
+      ],
+      "study_ids": [],
+      "catalog_status": "deleted_after_mechanism_absorption",
+      "prior_product_disposition": "manual_only_quarantine_redirect_candidate",
+      "auto_retain": false,
+      "absorbed_into": [],
+      "absorbed_mechanisms": [],
+      "deletion_reason": null
+    },
+    "thinking-feedback-loops": {
+      "skill": "thinking-feedback-loops",
+      "bare_skill": "feedback-loops",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "deleted_after_mechanism_absorption",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "Removed from the shipped catalog only after its retained mechanism was migrated to the named survivor contracts."
+      ],
+      "study_ids": [],
+      "catalog_status": "deleted_after_mechanism_absorption",
+      "prior_product_disposition": "manual_only_quarantine_redirect_candidate",
+      "auto_retain": false,
+      "absorbed_into": [
+        "systems"
+      ],
+      "absorbed_mechanisms": [],
+      "deletion_reason": null
+    },
+    "thinking-fermi-estimation": {
+      "skill": "thinking-fermi-estimation",
+      "bare_skill": "fermi-estimation",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "jeggers/fermi",
+        "n": 150,
+        "placebo": 0.407,
+        "treatment": 0.413,
+        "delta_pp": 0.7,
+        "p": 1,
+        "significant": false,
+        "source_verdict": "flat",
+        "provenance": "OBJ-powered-null",
+        "source": "evals/results/confirm/numeric-fermi-n150.json",
+        "scorecard_skill_verdict": "no-lift",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "deleted_after_mechanism_absorption",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "no-lift",
+      "notes": [
+        "No ELEVATE / automatic invocation claim.",
+        "Removed from the shipped catalog only after its retained mechanism was migrated to the named survivor contracts.",
+        "Scorecard-cited historical row only; provisional and non-confirmatory."
+      ],
+      "study_ids": [],
+      "catalog_status": "deleted_after_mechanism_absorption",
+      "prior_product_disposition": "manual_only_quarantine_redirect_candidate",
+      "auto_retain": false,
+      "absorbed_into": [
+        "probabilistic"
+      ],
+      "absorbed_mechanisms": [],
+      "deletion_reason": null
+    },
+    "thinking-inversion": {
+      "skill": "thinking-inversion",
+      "bare_skill": "inversion",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "deleted_after_mechanism_absorption",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "Removed from the shipped catalog only after its retained mechanism was migrated to the named survivor contracts."
+      ],
+      "study_ids": [],
+      "catalog_status": "deleted_after_mechanism_absorption",
+      "prior_product_disposition": "manual_only_quarantine_redirect_candidate",
+      "auto_retain": false,
+      "absorbed_into": [
+        "pre-mortem"
+      ],
+      "absorbed_mechanisms": [],
+      "deletion_reason": null
+    },
+    "thinking-leverage-points": {
+      "skill": "thinking-leverage-points",
+      "bare_skill": "leverage-points",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "deleted_after_mechanism_absorption",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "Removed from the shipped catalog only after its retained mechanism was migrated to the named survivor contracts."
+      ],
+      "study_ids": [],
+      "catalog_status": "deleted_after_mechanism_absorption",
+      "prior_product_disposition": "manual_only_quarantine",
+      "auto_retain": false,
+      "absorbed_into": [
+        "systems"
+      ],
+      "absorbed_mechanisms": [],
+      "deletion_reason": null
+    },
+    "thinking-model-selection": {
+      "skill": "thinking-model-selection",
+      "bare_skill": "model-selection",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "deleted_after_mechanism_absorption",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "Removed from the shipped catalog only after its retained mechanism was migrated to the named survivor contracts."
+      ],
+      "study_ids": [],
+      "catalog_status": "deleted_after_mechanism_absorption",
+      "prior_product_disposition": "manual_only_quarantine_redirect_candidate",
+      "auto_retain": false,
+      "absorbed_into": [
+        "model-router"
+      ],
+      "absorbed_mechanisms": [],
+      "deletion_reason": null
+    },
+    "thinking-occams-razor": {
+      "skill": "thinking-occams-razor",
+      "bare_skill": "occams-razor",
+      "measured_result": {
+        "status": "july_bundle_imported",
+        "primary_study_id": "legacy-july-verdict-occams",
+        "metric": "fault_localization_accuracy",
+        "n_scored": 199,
+        "acc_skill": 0.879,
+        "acc_placebo": 0.874,
+        "delta_pp": 0.5,
+        "mcnemar_p": 1,
+        "significant": false,
+        "source": "evals/results/verdict-occams/swe-occams-razor.json",
+        "bundle": "evals/studies/legacy-july-verdict-occams"
+      },
+      "statistical_status": "null_not_significant",
+      "replication_status": "historical_null_result_not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "deleted_after_mechanism_absorption",
+      "elevate": false,
+      "notes": [
+        "July measured result is NO-LIFT under source verdict rule.",
+        "Not replication-qualified under current gates; evidence remains provisional.",
+        "Removed from the shipped catalog only after its retained mechanism was migrated to the named survivor contracts."
+      ],
+      "study_ids": [
+        "legacy-july-verdict-occams"
+      ],
+      "catalog_status": "deleted_after_mechanism_absorption",
+      "prior_product_disposition": "manual_only_quarantine_no_lift",
+      "auto_retain": false,
+      "absorbed_into": [
+        "scientific-method"
+      ],
+      "absorbed_mechanisms": [],
+      "deletion_reason": null
+    },
+    "thinking-regret-minimization": {
+      "skill": "thinking-regret-minimization",
+      "bare_skill": "regret-minimization",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "deleted_after_mechanism_absorption",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No ELEVATE / automatic invocation claim.",
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "Removed from the shipped catalog only after its retained mechanism was migrated to the named survivor contracts."
+      ],
+      "study_ids": [],
+      "catalog_status": "deleted_after_mechanism_absorption",
+      "prior_product_disposition": "manual_only_quarantine_redirect_candidate",
+      "auto_retain": false,
+      "absorbed_into": [
+        "reversibility",
+        "opportunity-cost"
+      ],
+      "absorbed_mechanisms": [],
+      "deletion_reason": null
+    }
+  },
+  "workflow_form": {
+    "study_id": "workflow-v1",
+    "measured_result": null,
+    "statistical_status": "unmeasured_preregistered_power_blocked",
+    "replication_status": "not_run",
+    "evidence_validity": "preregistered_blocked",
+    "product_disposition": "delete_workflow_machinery",
+    "decision_eligible": false,
+    "model_calls": 0,
+    "candidate": "workflow_typed",
+    "comparators": [
+      "dynamic_typed",
+      "workflow_none_typed"
+    ],
+    "retention_gates": {
+      "quality": "not_eligible",
+      "efficiency": "not_eligible"
+    },
+    "blockers": [
+      "available_replication_case_clusters_below_power_requirement",
+      "quality_gate_not_estimable_at_declared_precision",
+      "efficiency_noninferiority_gate_not_estimable_at_declared_precision",
+      "no_solver_calls_permitted_after_pre_run_power_failure",
+      "neither_retention_gate_passed"
+    ]
+  }
+}

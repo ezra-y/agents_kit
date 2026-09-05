@@ -1,0 +1,800 @@
+{
+  "tier": 1,
+  "judge": "gemini-3.1-pro-preview",
+  "effort": "high",
+  "n": 39,
+  "n_ok": 39,
+  "overall_avg": 4.215384615384617,
+  "would_mislead": [
+    {
+      "skill": "thinking-circle-of-competence",
+      "note": "Asking an LLM to evaluate its 'track record' or whether it has 'led teams before' will likely cause it to hallucinate a human persona rather than accurately assessing its actual epistemological boundaries."
+    },
+    {
+      "skill": "thinking-regret-minimization",
+      "note": "Instructing an AI to 'project to age 80' will trigger bizarre roleplay or hallucinations, and applying human career examples to code tasks is incoherent."
+    },
+    {
+      "skill": "thinking-pre-mortem",
+      "note": "It instructs the AI to facilitate a human team meeting ('Gather the team', 'Silent brainstorming'), which could cause the agent to halt execution and ask the user to schedule a meeting."
+    },
+    {
+      "skill": "thinking-bayesian",
+      "note": "By providing math formulas for debugging, it encourages the agent to hallucinate arbitrary exact probabilities (e.g., P(database error)=0.20) and do math on them, creating a false sense of rigor for unjustified conclusions."
+    },
+    {
+      "skill": "thinking-first-principles",
+      "note": "Fails to warn about the high cognitive/time cost of this model, potentially leading the agent to waste time reinventing standard, efficient software conventions (like standard REST/CRUD patterns)."
+    },
+    {
+      "skill": "thinking-socratic",
+      "note": "Without explicit constraints, an AI agent might adopt a pure 'coaching' persona, endlessly interrogating the user with meta-questions instead of writing code or making decisions."
+    }
+  ],
+  "weakest": [
+    {
+      "skill": "thinking-circle-of-competence",
+      "avg": 2.4,
+      "weakest_dimension": "applicability",
+      "top_fix": "Redefine 'Circle of Competence' for an LLM: inside = standard OSS/well-documented concepts; outside = proprietary code, unreleased APIs, and highly context-dependent business logic where it MUST use tools to learn."
+    },
+    {
+      "skill": "thinking-regret-minimization",
+      "avg": 2.8,
+      "weakest_dimension": "actionability",
+      "top_fix": "Pivot the skill from a self-reflection tool for the agent into a coaching framework the agent can use to interview the user about product/business risks."
+    },
+    {
+      "skill": "thinking-debiasing",
+      "avg": 3,
+      "weakest_dimension": "actionability",
+      "top_fix": "Add a concrete, worked example of an AI agent applying this to an engineering or product decision (e.g., catching sunk cost in a refactor) and rewrite questions to fit agentic workflows."
+    },
+    {
+      "skill": "thinking-pre-mortem",
+      "avg": 3.2,
+      "weakest_dimension": "applicability",
+      "top_fix": "Rewrite the procedure to instruct the AI on how to autonomously apply prospective hindsight to its own generated technical plans or code, rather than describing a multi-person meeting."
+    },
+    {
+      "skill": "thinking-model-router",
+      "avg": 3.4,
+      "weakest_dimension": "actionability",
+      "top_fix": "Add a concrete, end-to-end worked example showing the routing process in action and explicit anti-patterns for when to skip routing."
+    },
+    {
+      "skill": "thinking-bayesian",
+      "avg": 3.8,
+      "weakest_dimension": "actionability",
+      "top_fix": "Replace exact probability calculations in debugging/estimation examples with qualitative likelihood ratios (e.g., 'directional updates') and explicitly warn against hallucinating fake exact priors."
+    },
+    {
+      "skill": "thinking-dual-process",
+      "avg": 3.8,
+      "weakest_dimension": "applicability",
+      "top_fix": "Map System 1 and 2 to LLM mechanics: System 1 is zero-shot/immediate token generation, System 2 is explicit chain-of-thought and scratchpad reasoning."
+    },
+    {
+      "skill": "thinking-first-principles",
+      "avg": 3.8,
+      "weakest_dimension": "actionability",
+      "top_fix": "Replace the SpaceX running example with a deep software engineering scenario (e.g., stripping a bloated data pipeline down to base compute/network bounds)."
+    },
+    {
+      "skill": "thinking-socratic",
+      "avg": 3.8,
+      "weakest_dimension": "discrimination",
+      "top_fix": "Add explicit stopping criteria and clarify whether the agent should ask these questions to itself (internally) or the user (externally)."
+    },
+    {
+      "skill": "thinking-systems",
+      "avg": 3.8,
+      "weakest_dimension": "discrimination",
+      "top_fix": "Add explicit anti-patterns and boundaries (e.g., 'Do not use for localized logic errors, simple exceptions, or syntax issues where standard debugging suffices')."
+    }
+  ],
+  "results": [
+    {
+      "skill": "thinking-archetypes",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 4,
+        "actionability": 5,
+        "discrimination": 2,
+        "discoverability": 5
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "Brilliant translation of Senge's work into software/agentic contexts, but entirely lacks boundaries for when the framework is overkill or inappropriate.",
+      "top_fix": "Add a 'When NOT to use' section that explicitly contrasts systems archetypes with linear problem-solving (like 5 Whys) for simple, isolated bugs where systemic mapping is just noise.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.2
+    },
+    {
+      "skill": "thinking-bayesian",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 4,
+        "actionability": 3,
+        "discrimination": 3,
+        "discoverability": 4
+      },
+      "weakest_dimension": "actionability",
+      "one_line_verdict": "Mathematically accurate but risks pushing agents to invent fake numbers for qualitative coding tasks to perform pseudo-rigorous math.",
+      "top_fix": "Replace exact probability calculations in debugging/estimation examples with qualitative likelihood ratios (e.g., 'directional updates') and explicitly warn against hallucinating fake exact priors.",
+      "would_mislead": true,
+      "mislead_note": "By providing math formulas for debugging, it encourages the agent to hallucinate arbitrary exact probabilities (e.g., P(database error)=0.20) and do math on them, creating a false sense of rigor for unjustified conclusions.",
+      "avg": 3.8
+    },
+    {
+      "skill": "thinking-bounded-rationality",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 5,
+        "discoverability": 4
+      },
+      "weakest_dimension": "discoverability",
+      "one_line_verdict": "An exceptionally clear and actionable adaptation of Simon's framework for software engineering, though the description is slightly too long.",
+      "top_fix": "Trim the description to under 200 characters (e.g., remove 'recognizing cognitive limits') to ensure optimal auto-invocation.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.8
+    },
+    {
+      "skill": "thinking-circle-of-competence",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 1,
+        "actionability": 1,
+        "discrimination": 2,
+        "discoverability": 3
+      },
+      "weakest_dimension": "applicability",
+      "one_line_verdict": "A faithful summary of the human mental model that completely fails to translate it into actionable procedures for an AI agent.",
+      "top_fix": "Redefine 'Circle of Competence' for an LLM: inside = standard OSS/well-documented concepts; outside = proprietary code, unreleased APIs, and highly context-dependent business logic where it MUST use tools to learn.",
+      "would_mislead": true,
+      "mislead_note": "Asking an LLM to evaluate its 'track record' or whether it has 'led teams before' will likely cause it to hallucinate a human persona rather than accurately assessing its actual epistemological boundaries.",
+      "avg": 2.4
+    },
+    {
+      "skill": "thinking-cynefin",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 5,
+        "discoverability": 4
+      },
+      "weakest_dimension": "discoverability",
+      "one_line_verdict": "An exceptional translation of the Cynefin framework into concrete, actionable engineering workflows with strong failure-mode guardrails.",
+      "top_fix": "Sharpen the description to include concrete SWE triggers (e.g., 'systemic outages', 'architecture planning') to prevent over-invocation on routine tasks.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.8
+    },
+    {
+      "skill": "thinking-debiasing",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 3,
+        "actionability": 1,
+        "discrimination": 2,
+        "discoverability": 4
+      },
+      "weakest_dimension": "actionability",
+      "one_line_verdict": "High fidelity to Kahneman's work, but reads like a corporate executive checklist with zero worked examples for an AI agent context.",
+      "top_fix": "Add a concrete, worked example of an AI agent applying this to an engineering or product decision (e.g., catching sunk cost in a refactor) and rewrite questions to fit agentic workflows.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 3
+    },
+    {
+      "skill": "thinking-dual-process",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 2,
+        "actionability": 3,
+        "discrimination": 4,
+        "discoverability": 5
+      },
+      "weakest_dimension": "applicability",
+      "one_line_verdict": "Accurate to Kahneman, but overly anthropomorphic; LLMs don't experience mood, fatigue, or 'gut feelings' that trigger System 1.",
+      "top_fix": "Map System 1 and 2 to LLM mechanics: System 1 is zero-shot/immediate token generation, System 2 is explicit chain-of-thought and scratchpad reasoning.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 3.8
+    },
+    {
+      "skill": "thinking-effectuation",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 3,
+        "actionability": 3,
+        "discrimination": 5,
+        "discoverability": 5
+      },
+      "weakest_dimension": "actionability",
+      "one_line_verdict": "Excellent fidelity to Sarasvathy's framework, but reads like a human founder's workbook rather than an interactive agentic interview protocol.",
+      "top_fix": "Rewrite the 'I/My' templates into an interactive agent workflow (e.g., 'Prompt the user to define their affordable loss before proposing a solution').",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.2
+    },
+    {
+      "skill": "thinking-feedback-loops",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 4,
+        "discrimination": 4,
+        "discoverability": 3
+      },
+      "weakest_dimension": "discoverability",
+      "one_line_verdict": "An outstanding translation of Meadows' systems thinking, but description is too long and some interventions are beyond an AI agent's agency.",
+      "top_fix": "Shorten the description to under 200 characters, and tailor the leverage points more explicitly toward code/architecture changes rather than organizational changes.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.2
+    },
+    {
+      "skill": "thinking-fermi-estimation",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 4,
+        "discoverability": 5
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "An excellent, highly actionable guide to Fermi estimation with relevant software engineering examples, lacking only explicit warnings on when precise measurement is mandatory.",
+      "top_fix": "Add an explicit 'When NOT to use' section detailing scenarios where order-of-magnitude estimates are dangerous (e.g., exact billing, cryptography, tight safety margins).",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.8
+    },
+    {
+      "skill": "thinking-first-principles",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 4,
+        "actionability": 2,
+        "discrimination": 3,
+        "discoverability": 5
+      },
+      "weakest_dimension": "actionability",
+      "one_line_verdict": "Accurate to the philosophy but relies heavily on hardware/SpaceX tropes, failing to provide deep, actionable software-specific workflows for an AI.",
+      "top_fix": "Replace the SpaceX running example with a deep software engineering scenario (e.g., stripping a bloated data pipeline down to base compute/network bounds).",
+      "would_mislead": true,
+      "mislead_note": "Fails to warn about the high cognitive/time cost of this model, potentially leading the agent to waste time reinventing standard, efficient software conventions (like standard REST/CRUD patterns).",
+      "avg": 3.8
+    },
+    {
+      "skill": "thinking-five-whys-plus",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 4,
+        "discoverability": 5
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "An exceptional, highly structured playbook that successfully adapts a simplistic technique into a robust, LLM-executable post-mortem process.",
+      "top_fix": "Clarify the exact threshold where 'What Else' branching becomes too complex and the agent should fully pivot to Kepner-Tregoe.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.8
+    },
+    {
+      "skill": "thinking-inversion",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 2,
+        "discoverability": 5
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "An exceptionally actionable and faithful representation of inversion, but lacks boundaries on when the framework is counterproductive.",
+      "top_fix": "Add an 'Anti-patterns / When NOT to use' section explaining that inversion can stifle pure creativity or cause analysis paralysis in low-risk, high-speed tasks.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.4
+    },
+    {
+      "skill": "thinking-jobs-to-be-done",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 3,
+        "discoverability": 5
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "An excellent, highly actionable guide to JTBD with great product examples, but lacks boundaries on when NOT to use it.",
+      "top_fix": "Add explicit anti-patterns or 'When NOT to use' criteria (e.g., pure technical refactoring, optimizing mature commodities, or execution/performance bugs).",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.6
+    },
+    {
+      "skill": "thinking-kepner-tregoe",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 4,
+        "discoverability": 5
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "An excellent, highly structured translation of the Kepner-Tregoe methodology into agent-executable templates and matrices.",
+      "top_fix": "Add explicit failure modes and anti-patterns, such as warning against using heavy KT processes for reversible, low-stakes decisions or highly chaotic systems.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.8
+    },
+    {
+      "skill": "thinking-leverage-points",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 4,
+        "actionability": 5,
+        "discrimination": 3,
+        "discoverability": 4
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "Brilliant mapping of Meadows to software engineering, but fails to clarify when immediate low-leverage actions (like Sev1 parameter tuning) are actually required.",
+      "top_fix": "Add a 'When NOT to Use' section explaining that during active incidents, you MUST use low-leverage interventions first to stabilize before attempting structural or paradigm shifts.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.2
+    },
+    {
+      "skill": "thinking-lindy-effect",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 4,
+        "discrimination": 5,
+        "discoverability": 4
+      },
+      "weakest_dimension": "actionability",
+      "one_line_verdict": "An exceptionally well-modeled heuristic with great failure modes, though slightly bogged down by human-centric examples (career advice).",
+      "top_fix": "Replace the 'Skill Investment' career example with an agent-centric one (e.g., auditing a package.json) and warn the agent to verify framework ages via search rather than hallucinating them.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.6
+    },
+    {
+      "skill": "thinking-map-territory",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 4,
+        "actionability": 4,
+        "discrimination": 2,
+        "discoverability": 5
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "Excellent translation of Korzybski's principle to software engineering, but completely lacks boundaries for when to avoid this philosophical analysis.",
+      "top_fix": "Add a 'When NOT to Use' section to prevent the agent from getting stuck questioning perfectly functional abstractions during trivial, straightforward tasks.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4
+    },
+    {
+      "skill": "thinking-margin-of-safety",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 4,
+        "discoverability": 5
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "Excellent, highly actionable engineering adaptation, but misses the organizational failure modes of sandbagging and Parkinson's Law.",
+      "top_fix": "Add an anti-pattern section addressing Parkinson's Law (work expanding to fill padded time) to prevent agents from defaulting to bloated, sandbagged estimates.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.8
+    },
+    {
+      "skill": "thinking-model-combination",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 3,
+        "discrimination": 5,
+        "discoverability": 4
+      },
+      "weakest_dimension": "actionability",
+      "one_line_verdict": "A superb meta-framework for orchestrating other models, but it relies heavily on empty bracketed templates rather than showing a resolved case study.",
+      "top_fix": "Replace at least one of the abstract bracketed examples with a fully worked, concrete software/agentic scenario (e.g., deciding whether to rewrite a legacy API) to show the actual payoff.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.4
+    },
+    {
+      "skill": "thinking-model-router",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 4,
+        "applicability": 5,
+        "actionability": 2,
+        "discrimination": 2,
+        "discoverability": 4
+      },
+      "weakest_dimension": "actionability",
+      "one_line_verdict": "A highly structured and applicable routing guide that suffers from a complete lack of worked examples and failure modes.",
+      "top_fix": "Add a concrete, end-to-end worked example showing the routing process in action and explicit anti-patterns for when to skip routing.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 3.4
+    },
+    {
+      "skill": "thinking-model-selection",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 3,
+        "discrimination": 5,
+        "discoverability": 4
+      },
+      "weakest_dimension": "actionability",
+      "one_line_verdict": "Strong meta-framework with excellent structural templates, but lacks concrete worked examples demonstrating the payoff in a software context.",
+      "top_fix": "Add a realistic, worked example showing the step-by-step selection of a mental model for a specific software or product scenario (e.g., debugging a race condition vs designing an API).",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.4
+    },
+    {
+      "skill": "thinking-occams-razor",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 4,
+        "discrimination": 5,
+        "discoverability": 5
+      },
+      "weakest_dimension": "actionability",
+      "one_line_verdict": "An excellent operationalization of Occam's Razor with strong heuristics and boundaries, slightly let down by a toy code example.",
+      "top_fix": "Replace the trivial `is_even` code example with a realistic agentic refactor, such as collapsing an over-engineered Strategy pattern into a simple dictionary mapping.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.8
+    },
+    {
+      "skill": "thinking-ooda",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 4,
+        "actionability": 4,
+        "discrimination": 4,
+        "discoverability": 5
+      },
+      "weakest_dimension": "applicability",
+      "one_line_verdict": "High-fidelity OODA model with strong incident examples, though the 'Orient' phase definitions lean slightly human/org-centric.",
+      "top_fix": "Translate Boyd's 'Orient' factors (cultural/genetic heritage) into concrete AI-agent equivalents like 'system instructions', 'tool constraints', and 'past session context'.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.4
+    },
+    {
+      "skill": "thinking-opportunity-cost",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 3,
+        "discoverability": 5
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "Excellent applicability and concrete engineering examples, but lacks clear boundaries on when the analysis itself is too costly.",
+      "top_fix": "Add a 'When NOT to use' section (e.g., strict compliance, reversible low-stakes decisions) to prevent analysis paralysis.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.6
+    },
+    {
+      "skill": "thinking-pre-mortem",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 2,
+        "actionability": 2,
+        "discrimination": 3,
+        "discoverability": 4
+      },
+      "weakest_dimension": "applicability",
+      "one_line_verdict": "Accurate to Klein's theory but written for a human Scrum Master, not an autonomous AI agent.",
+      "top_fix": "Rewrite the procedure to instruct the AI on how to autonomously apply prospective hindsight to its own generated technical plans or code, rather than describing a multi-person meeting.",
+      "would_mislead": true,
+      "mislead_note": "It instructs the AI to facilitate a human team meeting ('Gather the team', 'Silent brainstorming'), which could cause the agent to halt execution and ask the user to schedule a meeting.",
+      "avg": 3.2
+    },
+    {
+      "skill": "thinking-probabilistic",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 3,
+        "discoverability": 5
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "An exceptionally actionable, high-fidelity implementation of Superforecasting principles, though it lacks clear boundaries for when the heavy overhead is unjustified.",
+      "top_fix": "Add an 'Anti-patterns / When NOT to use' section explaining that low-stakes decisions, deterministic systems, or black-swan environments shouldn't use heavy probability math.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.6
+    },
+    {
+      "skill": "thinking-red-team",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 3,
+        "discoverability": 5
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "A highly actionable and concrete framework for adversarial testing, but lacks clear boundaries on when to avoid using it.",
+      "top_fix": "Add explicit anti-patterns and a 'When NOT to use' section (e.g., avoid during early brainstorming, routine unit testing, or when evaluating minor features).",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.6
+    },
+    {
+      "skill": "thinking-regret-minimization",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 2,
+        "actionability": 1,
+        "discrimination": 4,
+        "discoverability": 2
+      },
+      "weakest_dimension": "actionability",
+      "one_line_verdict": "Accurately captures Bezos's framework but is fundamentally unsuited for AI agents, as they don't have 80-year lifespans or human career trajectories.",
+      "top_fix": "Pivot the skill from a self-reflection tool for the agent into a coaching framework the agent can use to interview the user about product/business risks.",
+      "would_mislead": true,
+      "mislead_note": "Instructing an AI to 'project to age 80' will trigger bizarre roleplay or hallucinations, and applying human career examples to code tasks is incoherent.",
+      "avg": 2.8
+    },
+    {
+      "skill": "thinking-reversibility",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 5,
+        "discoverability": 4
+      },
+      "weakest_dimension": "discoverability",
+      "one_line_verdict": "An excellent adaptation of Bezos' Type 1/Type 2 framework with highly actionable software engineering patterns.",
+      "top_fix": "Remove 'hiring decisions' from the description and replace with more agent-relevant triggers like 'library selection' or 'system design'.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.8
+    },
+    {
+      "skill": "thinking-scientific-method",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 2,
+        "discoverability": 5
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "A superb, highly actionable adaptation for engineering, but lacks boundaries on when the rigorous overhead is unnecessary or detrimental.",
+      "top_fix": "Add a 'When NOT to use' section (e.g., greenfield design, brainstorming, simple implementation tasks where the solution is known) to prevent bureaucratic overhead.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.4
+    },
+    {
+      "skill": "thinking-second-order",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 4,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 3,
+        "discoverability": 4
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "A highly actionable framework with excellent software-specific examples, but lacks strict boundaries against analysis paralysis.",
+      "top_fix": "Add explicit anti-patterns defining exactly when to rely on first-order thinking (e.g., isolated bug fixes, cosmetic UI tweaks) to prevent overthinking trivial tasks.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.2
+    },
+    {
+      "skill": "thinking-socratic",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 4,
+        "actionability": 4,
+        "discrimination": 2,
+        "discoverability": 4
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "Strong SWE-focused examples, but lacks stopping criteria, risking endless and frustrating user interrogation.",
+      "top_fix": "Add explicit stopping criteria and clarify whether the agent should ask these questions to itself (internally) or the user (externally).",
+      "would_mislead": true,
+      "mislead_note": "Without explicit constraints, an AI agent might adopt a pure 'coaching' persona, endlessly interrogating the user with meta-questions instead of writing code or making decisions.",
+      "avg": 3.8
+    },
+    {
+      "skill": "thinking-steel-manning",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 3,
+        "discoverability": 5
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "Outstanding structural translation of the concept with highly relevant software engineering examples, but lacks boundaries on when it's overkill.",
+      "top_fix": "Add a explicit 'When NOT to use' section (e.g., trivial low-stakes decisions, objective factual errors, or when time constraints are critical).",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.6
+    },
+    {
+      "skill": "thinking-systems",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 4,
+        "actionability": 4,
+        "discrimination": 2,
+        "discoverability": 4
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "High-fidelity mapping to software architecture, but lacks explicit boundaries to prevent agents from overusing it on simple, linear bugs.",
+      "top_fix": "Add explicit anti-patterns and boundaries (e.g., 'Do not use for localized logic errors, simple exceptions, or syntax issues where standard debugging suffices').",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 3.8
+    },
+    {
+      "skill": "thinking-theory-of-constraints",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 3,
+        "discoverability": 4
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "Excellent procedural adaptation of TOC for software/systems, but lacks boundaries on when the framework itself shouldn't be applied.",
+      "top_fix": "Add explicit boundaries detailing when NOT to use TOC (e.g., optimizing for resilience/quality over throughput, or in highly chaotic systems) and contrast with Lean/Agile.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.4
+    },
+    {
+      "skill": "thinking-thought-experiment",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 3,
+        "discoverability": 5
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "An exceptionally practical translation of a philosophical concept into concrete software engineering workflows, let down only by missing failure modes.",
+      "top_fix": "Add explicit warnings about the 'garbage in, garbage out' failure mode: an agent's imagined consequences are entirely bounded by its own blind spots and missing domain knowledge.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.6
+    },
+    {
+      "skill": "thinking-triz",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 5,
+        "actionability": 5,
+        "discrimination": 3,
+        "discoverability": 4
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "An excellent adaptation of TRIZ for software engineering, but it lacks clear boundaries on when standard trade-offs are acceptable.",
+      "top_fix": "Add a 'When NOT to Use' section to prevent the agent from over-engineering trivial problems or applying TRIZ when standard patterns suffice.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.4
+    },
+    {
+      "skill": "thinking-via-negativa",
+      "ok": true,
+      "judge": "gemini-3.1-pro-preview",
+      "scores": {
+        "fidelity": 5,
+        "applicability": 4,
+        "actionability": 4,
+        "discrimination": 3,
+        "discoverability": 5
+      },
+      "weakest_dimension": "discrimination",
+      "one_line_verdict": "Strong translation of Taleb's subtraction principle to software, but lacks safety boundaries against reckless deletion.",
+      "top_fix": "Add 'Chesterton's Fence' as an explicit anti-pattern: do not remove complexity or code until you understand exactly why it was originally added.",
+      "would_mislead": false,
+      "mislead_note": "",
+      "avg": 4.2
+    }
+  ]
+}

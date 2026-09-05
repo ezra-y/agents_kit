@@ -1,0 +1,398 @@
+{
+  "schema_version": 2,
+  "package_id": "thinking-skills",
+  "upstream_targets": [
+    "claude"
+  ],
+  "targets": {
+    "claude": {
+      "support": "full",
+      "manifest": {
+        "path": ".claude-plugin/plugin.json",
+        "authority": "upstream"
+      },
+      "marketplace": {}
+    },
+    "codex": {
+      "support": "full",
+      "manifest": {
+        "path": ".codex-plugin/plugin.json",
+        "authority": "local"
+      },
+      "marketplace": {
+        "category": "Developer Tools",
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      }
+    }
+  },
+  "embedded_skills": {
+    "thinking-bounded-rationality": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-circle-of-competence": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-cynefin": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-effectuation": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-first-principles": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-five-whys-plus": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-jobs-to-be-done": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-kepner-tregoe": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-lindy-effect": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-map-territory": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-margin-of-safety": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-model-combination": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-model-router": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-ooda": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-opportunity-cost": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-pre-mortem": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-probabilistic": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-red-team": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-reversibility": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-scientific-method": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-second-order": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-socratic": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-steel-manning": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-systems": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-theory-of-constraints": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-thought-experiment": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-triz": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    },
+    "thinking-via-negativa": {
+      "standalone": {
+        "claude": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        },
+        "codex": {
+          "mode": "plugin_only",
+          "reason": "尚未验证脱离 Plugin 根目录后的运行依赖"
+        }
+      },
+      "dependencies": []
+    }
+  },
+  "local_paths": [
+    ".codex-plugin/plugin.json"
+  ]
+}

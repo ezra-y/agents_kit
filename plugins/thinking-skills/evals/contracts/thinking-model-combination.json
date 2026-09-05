@@ -1,0 +1,23 @@
+{
+  "skill": "model-combination",
+  "primary_value_surface": "routing/discoverability",
+  "primary_metric": "synthesis_quality",
+  "secondary_metrics": ["convergence_detection", "divergence_resolution", "unique_contribution_attribution", "combined_confidence_calibration"],
+  "distractors": {
+    "off_target_set": "Problems solvable by a single model; model soup (adding models without distinct roles); incompatible model combinations forced together",
+    "description": "Items where combination adds no value over single model, or where combinations are incoherent"
+  },
+  "calibration_range": [0.40, 0.70],
+  "calibration_exception": null,
+  "min_sample_primary": 60,
+  "min_sample_replication": 60,
+  "planned_comparison": "placebo",
+  "decision_gate": {
+    "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND synthesis_quality_score >= 0.70",
+    "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+    "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+    "quarantine_redirect": "primary_delta_pp < 0 OR model_soup_detected",
+    "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+  },
+  "eval_family": "Routing/abstention"
+}

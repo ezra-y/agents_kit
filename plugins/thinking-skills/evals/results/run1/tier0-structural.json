@@ -1,0 +1,494 @@
+{
+  "tier": 0,
+  "overall_strict_pct": 90,
+  "overall_loose_pct": 92,
+  "false_negatives": [],
+  "over_length_descriptions": [
+    {
+      "name": "thinking-leverage-points",
+      "len": 213
+    },
+    {
+      "name": "thinking-kepner-tregoe",
+      "len": 233
+    },
+    {
+      "name": "thinking-systems",
+      "len": 204
+    },
+    {
+      "name": "thinking-feedback-loops",
+      "len": 276
+    },
+    {
+      "name": "thinking-red-team",
+      "len": 214
+    },
+    {
+      "name": "thinking-bounded-rationality",
+      "len": 236
+    },
+    {
+      "name": "thinking-fermi-estimation",
+      "len": 201
+    },
+    {
+      "name": "thinking-triz",
+      "len": 223
+    }
+  ],
+  "rows": [
+    {
+      "name": "thinking-second-order",
+      "descLen": 153,
+      "strict_pct": 78,
+      "loose_pct": 92,
+      "gap": 14,
+      "strict_missing": [
+        "Template",
+        "Key Questions",
+        "Multiple Examples",
+        "Anti-patterns"
+      ],
+      "words": 895
+    },
+    {
+      "name": "thinking-socratic",
+      "descLen": 184,
+      "strict_pct": 78,
+      "loose_pct": 92,
+      "gap": 14,
+      "strict_missing": [
+        "Process/Steps",
+        "Template",
+        "Key Questions",
+        "Anti-patterns"
+      ],
+      "words": 1241
+    },
+    {
+      "name": "thinking-debiasing",
+      "descLen": 170,
+      "strict_pct": 72,
+      "loose_pct": 83,
+      "gap": 11,
+      "strict_missing": [
+        "Decision Flow",
+        "Process/Steps",
+        "Multiple Examples",
+        "Code Blocks",
+        "Anti-patterns"
+      ],
+      "words": 1058
+    },
+    {
+      "name": "thinking-dual-process",
+      "descLen": 194,
+      "strict_pct": 89,
+      "loose_pct": 100,
+      "gap": 11,
+      "strict_missing": [
+        "Template",
+        "Multiple Examples"
+      ],
+      "words": 1636
+    },
+    {
+      "name": "thinking-occams-razor",
+      "descLen": 190,
+      "strict_pct": 89,
+      "loose_pct": 100,
+      "gap": 11,
+      "strict_missing": [
+        "Template",
+        "Multiple Examples"
+      ],
+      "words": 1373
+    },
+    {
+      "name": "thinking-inversion",
+      "descLen": 164,
+      "strict_pct": 83,
+      "loose_pct": 92,
+      "gap": 9,
+      "strict_missing": [
+        "Examples",
+        "Template",
+        "Multiple Examples"
+      ],
+      "words": 971
+    },
+    {
+      "name": "thinking-leverage-points",
+      "descLen": 213,
+      "strict_pct": 83,
+      "loose_pct": 92,
+      "gap": 9,
+      "strict_missing": [
+        "Template",
+        "Description Length",
+        "Anti-patterns"
+      ],
+      "words": 1682
+    },
+    {
+      "name": "thinking-map-territory",
+      "descLen": 156,
+      "strict_pct": 83,
+      "loose_pct": 92,
+      "gap": 9,
+      "strict_missing": [
+        "Examples",
+        "Template",
+        "Multiple Examples"
+      ],
+      "words": 1331
+    },
+    {
+      "name": "thinking-model-combination",
+      "descLen": 167,
+      "strict_pct": 94,
+      "loose_pct": 100,
+      "gap": 6,
+      "strict_missing": [
+        "Process/Steps"
+      ],
+      "words": 1571
+    },
+    {
+      "name": "thinking-opportunity-cost",
+      "descLen": 162,
+      "strict_pct": 94,
+      "loose_pct": 100,
+      "gap": 6,
+      "strict_missing": [
+        "Anti-patterns"
+      ],
+      "words": 1561
+    },
+    {
+      "name": "thinking-kepner-tregoe",
+      "descLen": 233,
+      "strict_pct": 78,
+      "loose_pct": 83,
+      "gap": 5,
+      "strict_missing": [
+        "Template",
+        "Description Length",
+        "Word Count",
+        "Anti-patterns"
+      ],
+      "words": 3053
+    },
+    {
+      "name": "thinking-model-router",
+      "descLen": 118,
+      "strict_pct": 78,
+      "loose_pct": 83,
+      "gap": 5,
+      "strict_missing": [
+        "When to Use",
+        "Verification Checklist",
+        "Multiple Examples",
+        "Anti-patterns"
+      ],
+      "words": 1684
+    },
+    {
+      "name": "thinking-systems",
+      "descLen": 204,
+      "strict_pct": 78,
+      "loose_pct": 83,
+      "gap": 5,
+      "strict_missing": [
+        "Examples",
+        "Description Length",
+        "Multiple Examples",
+        "Anti-patterns"
+      ],
+      "words": 1120
+    },
+    {
+      "name": "thinking-bayesian",
+      "descLen": 176,
+      "strict_pct": 89,
+      "loose_pct": 92,
+      "gap": 3,
+      "strict_missing": [
+        "Template",
+        "Anti-patterns"
+      ],
+      "words": 1160
+    },
+    {
+      "name": "thinking-ooda",
+      "descLen": 169,
+      "strict_pct": 89,
+      "loose_pct": 92,
+      "gap": 3,
+      "strict_missing": [
+        "Process/Steps",
+        "Template"
+      ],
+      "words": 1129
+    },
+    {
+      "name": "thinking-pre-mortem",
+      "descLen": 153,
+      "strict_pct": 89,
+      "loose_pct": 92,
+      "gap": 3,
+      "strict_missing": [
+        "Multiple Examples",
+        "Anti-patterns"
+      ],
+      "words": 888
+    },
+    {
+      "name": "thinking-archetypes",
+      "descLen": 184,
+      "strict_pct": 83,
+      "loose_pct": 83,
+      "gap": 0,
+      "strict_missing": [
+        "Examples",
+        "Template",
+        "Anti-patterns"
+      ],
+      "words": 2067
+    },
+    {
+      "name": "thinking-cynefin",
+      "descLen": 176,
+      "strict_pct": 100,
+      "loose_pct": 100,
+      "gap": 0,
+      "strict_missing": [],
+      "words": 1467
+    },
+    {
+      "name": "thinking-feedback-loops",
+      "descLen": 276,
+      "strict_pct": 83,
+      "loose_pct": 83,
+      "gap": 0,
+      "strict_missing": [
+        "Template",
+        "Description Length",
+        "Anti-patterns"
+      ],
+      "words": 2067
+    },
+    {
+      "name": "thinking-five-whys-plus",
+      "descLen": 186,
+      "strict_pct": 100,
+      "loose_pct": 100,
+      "gap": 0,
+      "strict_missing": [],
+      "words": 1663
+    },
+    {
+      "name": "thinking-lindy-effect",
+      "descLen": 175,
+      "strict_pct": 100,
+      "loose_pct": 100,
+      "gap": 0,
+      "strict_missing": [],
+      "words": 1584
+    },
+    {
+      "name": "thinking-model-selection",
+      "descLen": 157,
+      "strict_pct": 100,
+      "loose_pct": 100,
+      "gap": 0,
+      "strict_missing": [],
+      "words": 1556
+    },
+    {
+      "name": "thinking-probabilistic",
+      "descLen": 187,
+      "strict_pct": 100,
+      "loose_pct": 100,
+      "gap": 0,
+      "strict_missing": [],
+      "words": 1460
+    },
+    {
+      "name": "thinking-reversibility",
+      "descLen": 171,
+      "strict_pct": 100,
+      "loose_pct": 100,
+      "gap": 0,
+      "strict_missing": [],
+      "words": 1472
+    },
+    {
+      "name": "thinking-thought-experiment",
+      "descLen": 182,
+      "strict_pct": 100,
+      "loose_pct": 100,
+      "gap": 0,
+      "strict_missing": [],
+      "words": 1380
+    },
+    {
+      "name": "thinking-circle-of-competence",
+      "descLen": 174,
+      "strict_pct": 94,
+      "loose_pct": 92,
+      "gap": -2,
+      "strict_missing": [
+        "Template"
+      ],
+      "words": 1349
+    },
+    {
+      "name": "thinking-effectuation",
+      "descLen": 182,
+      "strict_pct": 94,
+      "loose_pct": 92,
+      "gap": -2,
+      "strict_missing": [
+        "Anti-patterns"
+      ],
+      "words": 1508
+    },
+    {
+      "name": "thinking-first-principles",
+      "descLen": 198,
+      "strict_pct": 94,
+      "loose_pct": 92,
+      "gap": -2,
+      "strict_missing": [
+        "Template"
+      ],
+      "words": 880
+    },
+    {
+      "name": "thinking-jobs-to-be-done",
+      "descLen": 198,
+      "strict_pct": 94,
+      "loose_pct": 92,
+      "gap": -2,
+      "strict_missing": [
+        "Anti-patterns"
+      ],
+      "words": 1384
+    },
+    {
+      "name": "thinking-margin-of-safety",
+      "descLen": 159,
+      "strict_pct": 94,
+      "loose_pct": 92,
+      "gap": -2,
+      "strict_missing": [
+        "Anti-patterns"
+      ],
+      "words": 1257
+    },
+    {
+      "name": "thinking-red-team",
+      "descLen": 214,
+      "strict_pct": 94,
+      "loose_pct": 92,
+      "gap": -2,
+      "strict_missing": [
+        "Description Length"
+      ],
+      "words": 1548
+    },
+    {
+      "name": "thinking-regret-minimization",
+      "descLen": 162,
+      "strict_pct": 94,
+      "loose_pct": 92,
+      "gap": -2,
+      "strict_missing": [
+        "Anti-patterns"
+      ],
+      "words": 1537
+    },
+    {
+      "name": "thinking-scientific-method",
+      "descLen": 163,
+      "strict_pct": 94,
+      "loose_pct": 92,
+      "gap": -2,
+      "strict_missing": [
+        "Anti-patterns"
+      ],
+      "words": 1375
+    },
+    {
+      "name": "thinking-steel-manning",
+      "descLen": 170,
+      "strict_pct": 94,
+      "loose_pct": 92,
+      "gap": -2,
+      "strict_missing": [
+        "Anti-patterns"
+      ],
+      "words": 1386
+    },
+    {
+      "name": "thinking-theory-of-constraints",
+      "descLen": 186,
+      "strict_pct": 94,
+      "loose_pct": 92,
+      "gap": -2,
+      "strict_missing": [
+        "Anti-patterns"
+      ],
+      "words": 1587
+    },
+    {
+      "name": "thinking-via-negativa",
+      "descLen": 198,
+      "strict_pct": 94,
+      "loose_pct": 92,
+      "gap": -2,
+      "strict_missing": [
+        "Anti-patterns"
+      ],
+      "words": 1462
+    },
+    {
+      "name": "thinking-bounded-rationality",
+      "descLen": 236,
+      "strict_pct": 89,
+      "loose_pct": 83,
+      "gap": -6,
+      "strict_missing": [
+        "Template",
+        "Description Length"
+      ],
+      "words": 1653
+    },
+    {
+      "name": "thinking-fermi-estimation",
+      "descLen": 201,
+      "strict_pct": 89,
+      "loose_pct": 83,
+      "gap": -6,
+      "strict_missing": [
+        "Description Length",
+        "Anti-patterns"
+      ],
+      "words": 1667
+    },
+    {
+      "name": "thinking-triz",
+      "descLen": 223,
+      "strict_pct": 89,
+      "loose_pct": 83,
+      "gap": -6,
+      "strict_missing": [
+        "Description Length",
+        "Anti-patterns"
+      ],
+      "words": 1902
+    }
+  ]
+}

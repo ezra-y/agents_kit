@@ -1,0 +1,130 @@
+{
+  "skill": "thinking-via-negativa",
+  "problems": [
+    {
+      "id": "via-negativa-1",
+      "prompt": "Our onboarding completion rate is bad: only about 30% of new signups finish setup and reach their first 'aha' action. The team's plan to fix it is a list of additions: a guided product tour, contextual tooltips, an interactive checklist, a welcome video, and progress-nudge emails. We have a 14-step signup flow that asks for company size, role, team invites, integrations, billing info upfront, and several preference screens before users can do anything. I want a recommendation on how to actually move that 30% number. What should we do?",
+      "failure_mode": "Enthusiastically helps prioritize and build the proposed additions (tour, tooltips, checklist, video, emails), layering more on top of a bloated 14-step flow, instead of first attacking the problem by removing steps and friction (cut/defer fields, collapse screens, delay billing) since subtracting the obstacles is more robust and higher-leverage than adding guidance to navigate them."
+    },
+    {
+      "id": "via-negativa-2",
+      "prompt": "Our API p99 latency has crept up to about 1.8s and it's hurting us. The proposed fix is to add a Redis caching layer in front of the slowest endpoints, add read replicas to spread query load, and stand up a CDN for some responses. That's a meaningful chunk of new infra and ops to own. Before we commit to all that, I'll tell you what we already know from a recent trace review: there are several N+1 query patterns in the hot endpoints, we're loading full objects when callers use two fields, and there are some redundant duplicate queries within a single request. How would you approach getting this latency down?",
+      "failure_mode": "Jumps to designing the additive infrastructure stack (cache + replicas + CDN), accepting more systems to operate, rather than first eliminating the known root causes already surfaced in the trace (fix N+1s, stop over-fetching, dedupe queries) since removing the harmful patterns is lower-risk and likely resolves most of the latency without any new infrastructure."
+    },
+    {
+      "id": "via-negativa-3",
+      "prompt": "Our team's velocity feels low and people are burned out on process overhead, so leadership wants to add a new weekly 'alignment sync' meeting and a daily written status update to improve coordination. Here's our current week: daily 30-min standup, a 2-hour sprint planning, a 1-hour backlog grooming, a 1-hour sprint review, a 1-hour retro, plus an existing weekly all-hands and a separate weekly 1:1 round. Engineers say they have maybe 2-3 hours of uninterrupted focus time per day. Leadership is asking me whether the new sync and status update will help. What's your take on improving coordination here?",
+      "failure_mode": "Treats the request as 'how to add the new meeting and status update well' and helps schedule them, compounding the coordination tax, instead of recognizing the team is already meeting-saturated and recommending an audit that removes or consolidates low-value ceremonies to free focus time, since subtracting overhead improves throughput more reliably than adding more synchronization."
+    },
+    {
+      "id": "via-negativa-4",
+      "prompt": "Our machine learning model is producing worse predictions than expected. The team's plan is to collect more training data, add 5 new features they think will be predictive, tune the model hyperparameters more aggressively, and add an ensemble layer. Before they invest weeks in this work, I can tell you that our feature matrix already has 180 features, roughly 40% have low predictive importance scores, and we have strong reason to believe some correlated features are adding noise. What's the right approach here?",
+      "failure_mode": "Endorses the additive plan (more data, new features, ensemble) because more data and richer features generally improve models; misses that removing the 40% low-importance and correlated features likely reduces noise and overfitting, improving model quality through subtraction before adding complexity—the evidence already points to the solution being removal, not addition."
+    },
+    {
+      "id": "via-negativa-5",
+      "prompt": "We've been running the same microservices architecture for 3 years and our infrastructure costs have ballooned to $85,000/month. A cloud architect has proposed adding an API gateway, a service mesh (Istio), a centralized secrets manager, and a distributed tracing layer to modernize our platform. Our current pain points include inter-service communication complexity and security concerns. The team is excited about these additions. How should we approach modernizing the platform?",
+      "failure_mode": "Evaluates which of the proposed additions to prioritize and helps design the rollout; misses that the proposal adds four substantial new systems to an already complex platform, and that the right first question is whether some of the 'services' causing the inter-service pain could be consolidated—reducing services reduces inter-service complexity more durably than adding coordination infrastructure on top of it."
+    },
+    {
+      "id": "via-negativa-6",
+      "prompt": "Our React application bundle size is 4.2MB gzipped and initial page load takes 6 seconds on a typical mobile connection. The performance team's proposal is to add lazy loading, code splitting, a service worker for caching, and prefetching for the most common routes. These are all standard performance techniques. Before we build all of this, what should we look at first?",
+      "failure_mode": "Endorses the additive performance techniques as standard practice and helps prioritize the implementation plan; misses that before adding service workers, prefetching, and lazy loading infrastructure, examining what can be removed from the 4.2MB bundle (unused dependencies, tree-shaking opportunities, dead code, duplicate vendor libraries) is more robust—removal shrinks the problem at source, while the proposed additions manage symptoms of a bloated bundle."
+    },
+    {
+      "id": "via-negativa-7",
+      "prompt": "Our customer support tickets have been increasing month over month, up 40% in the last 6 months. The support team wants to hire two more agents, build a more comprehensive help center with 50 new articles, and add a live chat widget. These are the standard levers the team knows how to pull. Is there another angle we should consider before staffing up?",
+      "failure_mode": "Approves the additive plan—more agents, more documentation, live chat—as sensible support scaling; misses that a 40% increase in support volume is product-quality signal, not primarily a support capacity problem, and the right first intervention is examining what is generating the tickets (confusion, bugs, missing features, rough edges) to remove the causes, rather than adding more resources to absorb the symptoms."
+    },
+    {
+      "id": "via-negativa-8",
+      "prompt": "Our database schema has evolved over 5 years and now has 340 tables. A new engineer onboarding last month said it took them 3 weeks just to understand the data model well enough to make changes confidently. We're planning to address this by adding better ERD tooling, writing extensive data dictionary documentation, and building an internal schema explorer UI. These feel like the right investments. What would you advise?",
+      "failure_mode": "Approves the documentation and tooling additions because onboarding complexity is real and documentation is valuable; misses that the primary problem is the schema's actual complexity—340 tables after 5 years suggests significant cruft, dead tables, redundant entities—and that removing unused tables, consolidating near-duplicate entities, and archiving legacy schema would reduce the complexity that documentation is trying to compensate for."
+    },
+    {
+      "id": "via-negativa-9",
+      "prompt": "Our engineers are spending a lot of time in unproductive meetings and feel they don't have enough deep work time. The engineering director wants to implement Focus Fridays (no meetings), add a team Slack bot that surfaces daily priorities, roll out a new async update tool, and create a 'concentration zones' calendar system. What's the right way to address the deep work problem?",
+      "failure_mode": "Evaluates which of the proposed additions to implement and helps design the Focus Friday policy; misses that adding a Slack bot, async update tool, and calendar system increases the total number of coordination channels and tools—the right first move is auditing and removing the existing meetings and notification sources that are creating the problem, not layering more systems on top."
+    },
+    {
+      "id": "via-negativa-10",
+      "prompt": "We're running a B2B SaaS product and our admin panel has grown to have 47 configuration options spread across 9 settings pages. Enterprise customers say configuration is complex and our implementation team spends 2-3 days on each onboarding. Product wants to add a setup wizard, a recommended configuration templates library, and an AI assistant to help admins configure the product. What approach do you recommend for reducing implementation complexity?",
+      "failure_mode": "Helps design the setup wizard and template library as good onboarding additions; misses that the fundamental problem is 47 configuration options—most of which are likely used by a small percentage of customers—and that removing rarely-used options, setting sensible defaults, and collapsing related settings would reduce the complexity that the wizard is trying to guide users through."
+    },
+    {
+      "id": "via-negativa-11",
+      "prompt": "Our CI/CD pipeline takes 45 minutes to run and engineers are frustrated waiting for builds. The infra team wants to add a distributed build cache, shard the test suite across more runners, and add incremental build support. These investments would require about 6 weeks of infrastructure work. Before committing to all that, what other angles should we consider?",
+      "failure_mode": "Approves the additive infrastructure investments as standard CI optimization techniques; misses that examining what can be removed from the 45-minute pipeline (flaky tests, redundant test coverage, integration tests that could be replaced by focused unit tests, dead test code) is lower-risk and often produces comparable improvements—the pipeline may be slow because it's doing too much, not because it needs more resources."
+    },
+    {
+      "id": "via-negativa-12",
+      "prompt": "Our product's dashboard loads slowly and users have complained. The frontend team's plan is to add skeleton loading states, virtual scrolling for large lists, background prefetching, and an in-app loading progress indicator to improve perceived performance. These are solid UX techniques. But before we build them, are there other approaches we should consider first?",
+      "failure_mode": "Endorses the UX additions as good perceived performance techniques; misses that the question 'what can we remove from the dashboard?' should come first—if the dashboard is rendering too many widgets, showing too much data on load, or making too many API calls because of scope creep over time, subtracting unnecessary content and requests would reduce the actual load time, making the perceived-performance tricks less necessary."
+    },
+    {
+      "id": "via-negativa-13",
+      "prompt": "Our Python monorepo has become hard to work with—imports are slow, the test suite takes 35 minutes, and new contributors say setup is confusing. Leadership is considering adding a build system (Bazel), a dependency injection framework, better type stubs, and a new contributor onboarding automation tool. Is there a different way to think about this set of problems?",
+      "failure_mode": "Helps evaluate the proposed tooling additions and prioritizes the build system as highest-leverage; doesn't first ask whether the monorepo has grown past its appropriate size due to accumulated packages that could be removed, whether the slow test suite contains dead or redundant tests that could be deleted, or whether simpler tooling has been added over time that could be removed—treating 'add more tooling' as the default answer to what is often a problem of too much complexity."
+    },
+    {
+      "id": "via-negativa-14",
+      "prompt": "Our startup's Slack workspace has become overwhelming. There are 140 active channels, engineers get 200+ notifications per day, and people say they can't keep up. The proposed solution is to add a Slack digest bot that summarizes channels, create a channel tagging taxonomy system, and implement a 'must-read vs. optional' channel classification. What would you actually recommend here?",
+      "failure_mode": "Helps design the digest bot and channel taxonomy as reasonable information management tools; misses that 140 channels and 200+ notifications per day is a problem of too many channels and too many notifications—the fix is archiving or deleting unused channels, removing unnecessary @here/@channel usages, and unsubscribing from low-value channels, not adding more tools to manage the noise."
+    },
+    {
+      "id": "via-negativa-15",
+      "prompt": "We're a developer tools company and our SDK has 230 public methods across 40 classes. New users tell us the SDK is overwhelming to get started with and documentation is hard to navigate. Our developer relations team wants to add more code examples, interactive tutorials, a quickstart generator, and a searchable recipe library. What's the most effective path to improving developer experience?",
+      "failure_mode": "Endorses adding examples, tutorials, and recipe libraries as good developer education investments; misses that 230 public methods is a surface area problem—the right first question is which methods are rarely used, which are legacy or redundant, and which could be collapsed—because reducing the SDK's footprint reduces the cognitive load that documentation and tutorials are trying to compensate for."
+    },
+    {
+      "id": "via-negativa-16",
+      "prompt": "We've built a multi-step data transformation pipeline in Python with 14 stages. It's hard to maintain, bugs are hard to trace, and new engineers struggle to modify it. The tech lead wants to add structured logging to every stage, a pipeline observability dashboard, and automatic retry logic with alerting. These improvements seem obviously good. Is there another angle to consider first?",
+      "failure_mode": "Approves adding logging, observability, and retry logic as sound engineering practices for complex pipelines; misses that 14 stages is itself a signal—the pipeline may have grown by accretion and some stages could potentially be merged, eliminated, or reordered to simplify the dependency graph—and that removing unnecessary stages would reduce the surface area that needs observability, rather than adding monitoring complexity on top of structural complexity."
+    },
+    {
+      "id": "via-negativa-17",
+      "prompt": "Our product's permission system has grown complex over time. It now has 8 roles, 145 discrete permissions, a role inheritance hierarchy, and per-resource overrides. Our security team wants to add an audit logging layer for all permission checks, a permissions UI for admins to manage the complexity, and a permissions testing framework for engineers. How should we approach the permissions system challenges?",
+      "failure_mode": "Endorses the audit logging, admin UI, and testing framework as appropriate for a complex permission system; misses that 145 permissions and per-resource overrides is a complexity problem, not an observability problem—the right question first is how many of the 145 permissions are actively used, whether the inheritance hierarchy can be flattened, and whether the per-resource overrides are used by enough customers to justify the complexity—reducing permissions reduces what needs auditing."
+    },
+    {
+      "id": "via-negativa-18",
+      "prompt": "We run a newsletter with 80,000 subscribers and open rates have been declining—from 42% two years ago to 28% now. The marketing team wants to add a re-engagement campaign, a new reader preferences center, a content personalization layer, and a subject line A/B testing framework. What would you recommend for improving engagement?",
+      "failure_mode": "Helps design the re-engagement campaign and personalization layer as appropriate growth marketing techniques; misses that declining open rates often reflect a subscriber list problem—accumulated unengaged subscribers who are dragging down the average—and that removing chronically non-opening subscribers would immediately improve open rates and deliverability, providing clearer signal on whether content itself needs to change, rather than adding personalization on top of a list that may contain significant noise."
+    },
+    {
+      "id": "via-negativa-19",
+      "prompt": "We have an agent-based AI system that orchestrates tool calls to answer complex user queries. The system is making incorrect decisions about when to call which tools, leading to wasted API calls and wrong answers. The team's plan is to add a meta-agent to supervise tool selection, a confidence scoring layer, and a retry-with-different-tool fallback mechanism. These are all reasonable additions. What else should be considered?",
+      "failure_mode": "Helps design the meta-agent and confidence scoring as appropriate for an agentic system; misses that tool selection confusion is often a sign of too many tools with unclear responsibilities—examining whether some tools should be removed, merged, or given sharper scope would reduce the ambiguity that's causing poor decisions, rather than adding supervisory complexity on top of a toolkit that may be over-engineered."
+    },
+    {
+      "id": "via-negativa-20",
+      "prompt": "Our production incident resolution process averages 3.5 hours from detection to resolution. The team wants to improve this by adding more detailed runbooks for each service, creating an incident response chatbot that surfaces relevant docs during incidents, and implementing automated diagnostic scripts that run when an alert fires. Before we build all of this, are there other approaches worth examining?",
+      "failure_mode": "Endorses the runbooks, chatbot, and automated diagnostics as reasonable incident response improvements; misses asking whether the 3.5-hour average is driven by a small number of recurring incident types that could be eliminated (or whose root causes fixed permanently), or by the volume of alerts that require human investigation—reducing repeating incidents removes the need for runbooks, while reducing alert volume reduces incident frequency."
+    },
+    {
+      "id": "via-negativa-21",
+      "prompt": "We're building a new feature that lets enterprise admins manage user permissions and access controls. The product manager has specced out 12 user roles, a bulk import feature, a delegation hierarchy, per-project overrides, an audit log, an admin notification system for permission changes, and an API for external provisioning. Engineering estimates 4 months. How should we approach scoping this feature?",
+      "failure_mode": "Helps prioritize and phase the 12-role, 8-capability spec; misses asking which of these capabilities solve documented, validated pain points versus which were added because they sounded useful, and whether starting with 3 roles and 3 core capabilities—the most commonly needed subset—and building only the rest when customers request it would deliver most of the value in 25% of the time, with cleaner code."
+    },
+    {
+      "id": "via-negativa-22",
+      "prompt": "Our codebase has high coupling between modules and makes changes risky. The architecture team's plan is to introduce event sourcing, add a domain events bus, implement a CQRS pattern, and create adapter layers between all modules. These are established decoupling patterns. What's the right approach here?",
+      "failure_mode": "Evaluates the event sourcing and CQRS approach as appropriate decoupling techniques; misses asking whether removing the specific coupling relationships that are causing the most pain (rather than adding architectural infrastructure everywhere) would be more targeted and lower-risk—the appropriate first response to coupling is deleting or simplifying the entangled code, not adding architectural patterns on top of existing tightly-coupled code."
+    },
+    {
+      "id": "via-negativa-23",
+      "prompt": "We've been selling to mid-market and enterprise customers and we're struggling to close deals at the velocity we need. The sales team wants to add a new sales engineer role, a more detailed ROI calculator, a customer reference program, a competitive battlecard library, and a proof-of-concept sandbox environment. All of these seem like things good enterprise sales orgs have. How should we prioritize this sales investment?",
+      "failure_mode": "Helps prioritize the proposed additions as legitimate enterprise sales tools; misses asking what is actually causing deals not to close—which might be best diagnosed by removing friction in the existing process (shorter trials, simpler security reviews, faster legal turnaround) or eliminating deal stages that consume time without moving purchase decisions, rather than adding resources and content to a pipeline that may be losing deals for simpler reasons."
+    },
+    {
+      "id": "via-negativa-24",
+      "prompt": "Our engineering team has accumulated 6 different internal developer tools over the past 3 years: a custom deployment CLI, a local environment bootstrapper, an internal CI config generator, a database seed tool, a staging environment manager, and a developer metrics dashboard. Maintenance burden is high and new engineers are confused by the tooling landscape. The platform team wants to build a unified developer portal to surface and document all 6 tools. What would you recommend?",
+      "failure_mode": "Endorses the developer portal as a reasonable way to unify a complex tooling landscape; misses that the appropriate first response to 6 tools with high maintenance burden is asking which ones could be deleted (replaced by a vendor solution, consolidated, or simply stopped), and whether a portal addresses the actual problem (too many tools) or just documents it—reducing the number of tools reduces the maintenance burden more durably than adding a seventh tool to manage the first six."
+    },
+    {
+      "id": "via-negativa-25",
+      "prompt": "Our product has a powerful reporting module with 85 report types. Analytics data shows that the top 10 report types account for 89% of usage, while 60 report types are used by fewer than 1% of users monthly. The product team wants to invest in improving the reports by adding an AI-generated insights layer, a custom report builder, and a report scheduling system. Is there a more fundamental question to ask first?",
+      "failure_mode": "Helps design the AI insights and custom builder as valuable additions to a reporting module; misses that 60 report types used by fewer than 1% of users monthly are consuming disproportionate maintenance burden, creating UI clutter that makes the high-value reports harder to find, and complicating the codebase—removing the rarely-used reports would reduce complexity and allow the team to invest the freed capacity in making the 10 high-usage reports dramatically better."
+    }
+  ]
+}

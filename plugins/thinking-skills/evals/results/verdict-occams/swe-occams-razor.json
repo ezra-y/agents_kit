@@ -1,0 +1,1229 @@
+{
+  "mode": "swe-localize",
+  "skill": "occams-razor",
+  "solver": "claude-sonnet-4-6",
+  "n": 199,
+  "dataset_path": "/Users/tjboudreaux/Sandbox/cc-thinking-skills/evals/datasets/external/swebench-verified-slice-201-400.jsonl",
+  "dataset_count": 200,
+  "acc_with_skill": 0.879,
+  "acc_with_skill_ci": [
+    0.827,
+    0.918
+  ],
+  "acc_placebo": 0.874,
+  "acc_placebo_ci": [
+    0.821,
+    0.913
+  ],
+  "delta_pp": 0.5,
+  "mcnemar_p": 1,
+  "significant": false,
+  "discordant": 13,
+  "items": [
+    {
+      "id": "django__django-11749",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-12276",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-21596",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-8475",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "matplotlib__matplotlib-22871",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-13112",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-14170",
+      "skill_correct": false,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "scikit-learn__scikit-learn-13142",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-20590",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-9258",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-15098",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-13297",
+      "skill_correct": false,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-15916",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-13810",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-14122",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-13406",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "matplotlib__matplotlib-14623",
+      "skill_correct": true,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "django__django-15127",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "django__django-12965",
+      "skill_correct": false,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "pylint-dev__pylint-4604",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-15863",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "matplotlib__matplotlib-24637",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11951",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-15278",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11400",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11119",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "scikit-learn__scikit-learn-12682",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "matplotlib__matplotlib-21568",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11532",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11885",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-15022",
+      "skill_correct": true,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "psf__requests-5414",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-13417",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-14053",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-15499",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-12663",
+      "skill_correct": true,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "pydata__xarray-2905",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-23262",
+      "skill_correct": false,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "scikit-learn__scikit-learn-10908",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "pylint-dev__pylint-6903",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "pydata__xarray-3095",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "astropy__astropy-14508",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "matplotlib__matplotlib-22865",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "astropy__astropy-14309",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "pydata__xarray-6992",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "psf__requests-1921",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "astropy__astropy-8707",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-13128",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-9229",
+      "skill_correct": true,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "django__django-10554",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "psf__requests-1766",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "pydata__xarray-6461",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-24066",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-20154",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-13410",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-16612",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "matplotlib__matplotlib-25122",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-14631",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "scikit-learn__scikit-learn-14629",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "django__django-11790",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "matplotlib__matplotlib-20676",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-14089",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "pydata__xarray-6721",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-7748",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11490",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-12489",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "matplotlib__matplotlib-13989",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-16333",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "astropy__astropy-13453",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-16100",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-13109",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-9296",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-12481",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-9658",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-15368",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-18763",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "scikit-learn__scikit-learn-26323",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11138",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-16082",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-14248",
+      "skill_correct": true,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "django__django-16801",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-12039",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-15103",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "pydata__xarray-3993",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "astropy__astropy-14096",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-13647",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-7530",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11163",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11239",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-21930",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-15561",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-13878",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "matplotlib__matplotlib-26466",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-14373",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-8638",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "pylint-dev__pylint-8898",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-10097",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "scikit-learn__scikit-learn-10844",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-18211",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-9711",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-7590",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-8265",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-7889",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-13852",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-10880",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-13820",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-12096",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-24213",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11551",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-15467",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "matplotlib__matplotlib-24627",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-16792",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "astropy__astropy-7166",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "scikit-learn__scikit-learn-14496",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-14725",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-15017",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "django__django-16429",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "pylint-dev__pylint-7080",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-15268",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "matplotlib__matplotlib-24026",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-8056",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "scikit-learn__scikit-learn-11310",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "pydata__xarray-4629",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-16662",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-19954",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-13670",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "astropy__astropy-14539",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-21379",
+      "skill_correct": null,
+      "placebo_correct": null,
+      "scored": false
+    },
+    {
+      "id": "sympy__sympy-19040",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "pylint-dev__pylint-6386",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11276",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-16950",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-12143",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-7454",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-14311",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "pydata__xarray-3151",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-23534",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-19637",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-12325",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-14351",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-7757",
+      "skill_correct": false,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "matplotlib__matplotlib-20826",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-13757",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11477",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-18189",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-13091",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-13212",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-12713",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "matplotlib__matplotlib-24177",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "astropy__astropy-14369",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11451",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-10323",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11333",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "pydata__xarray-3305",
+      "skill_correct": false,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-15161",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "mwaskom__seaborn-3069",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-14539",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-13343",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "scikit-learn__scikit-learn-10297",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-12741",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-20916",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "django__django-12754",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-9591",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "pydata__xarray-4094",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-13809",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-18698",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11820",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "matplotlib__matplotlib-26113",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-16485",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "psf__requests-2931",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-16766",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-14976",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-15987",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "scikit-learn__scikit-learn-12585",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-12419",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-22714",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-12193",
+      "skill_correct": true,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-24539",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-24443",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "scikit-learn__scikit-learn-25102",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-10466",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "matplotlib__matplotlib-20859",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-21847",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-16136",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "astropy__astropy-8872",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-14531",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "pydata__xarray-7229",
+      "skill_correct": true,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-13031",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "scikit-learn__scikit-learn-14710",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-15957",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-14711",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-13615",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-13974",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-11087",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-10614",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sphinx-doc__sphinx-10435",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-15973",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "scikit-learn__scikit-learn-12973",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "django__django-16502",
+      "skill_correct": true,
+      "placebo_correct": true,
+      "scored": true
+    },
+    {
+      "id": "sympy__sympy-22080",
+      "skill_correct": false,
+      "placebo_correct": false,
+      "scored": true
+    }
+  ],
+  "scored_count": 199,
+  "unscored_count": 1,
+  "unscored_ids": [
+    "sympy__sympy-21379"
+  ]
+}

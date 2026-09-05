@@ -1,0 +1,86 @@
+{
+  "family": "Security/adversarial",
+  "family_key": "security-adversarial",
+  "skills": [
+    "red-team"
+  ],
+  "value_surface": "false-positive reduction",
+  "source": "Harder rebuild from diversevul.jsonl diverse-CWE items (CWE-362/400/310/200/399/189/16/346/94/22/269/415/59/193) + 10 authored near-miss safe variants (functions that look vulnerable but are actually safe) + glm-distractor items. Replaces the original diversevul-balanced pool which was predominantly CWE-787/119 (too easy for claude-sonnet-4-6). Near-miss safe variants are intentionally designed to trigger false positives from overeager security scanners \u2014 scoring penalizes FPR.",
+  "leakage": "DiverseVul data (items 0-24) derived from public CVE records and NVD entries through 2023. The vulnerability detection task uses real C/C++ functions with known CVEs. Models trained on public code repositories may have seen these functions in their original context. Leakage risk is moderate \u2014 the security classification task is distinct from code completion, but the functions themselves appear in public repositories. Near-miss safe variants (items 25-34) are freshly authored C code snippets created for this calibration and have ZERO external leakage risk. GLM distractor items are from a 2025 reasoning dataset with potential training-data overlap.\n\nSource breakdown: 1 external dataset (diversevul, diverse CWE items) with moderate training-data leakage risk; 1 authored dataset (near-miss safe variants) with zero external leakage; 1 external dataset (glm-distractor) with potential training-data overlap.",
+  "label": {
+    "definition": "Vulnerability detection: whether the model correctly classifies a C/C++ function as vulnerable (true) or safe (false). Scoring penalizes false positives (flagging safe code as vulnerable). Balanced vulnerable/safe pairs with near-miss safe variants that look suspicious but are actually secure.",
+    "values": {
+      "true": "Vulnerable (answer=Yes)",
+      "false": "Safe (answer=No)"
+    },
+    "eval_mode": "ground_truth",
+    "ground_truth_field": "answer"
+  },
+  "calibration": {
+    "baseline": 0.624,
+    "baseline_estimated": false,
+    "baseline_source": "measured_sample",
+    "band": [
+      0.4,
+      0.7
+    ],
+    "in_band": true,
+    "exemption": null,
+    "status": "measured_sample",
+    "calibrated_items": 25,
+    "in_band_items": 0,
+    "decisive_split_items": 70,
+    "calibration_only_items": 0,
+    "calibration_run_id": "calib-m3-balanced",
+    "calibration_solver": "claude-sonnet-4-6",
+    "calibration_k_trials": 5,
+    "sample_size": 25,
+    "sample_composition": "stratified: 10 vulnerable targets + 8 safe near-misses + 7 off-target distractors matching decisive split distribution",
+    "ceiling_items": 14,
+    "floor_items": 8,
+    "other_out_of_band": 3,
+    "per_class_baselines": {
+      "vulnerable_targets": 0.74,
+      "safe_near_misses": 0.875,
+      "off_target_distractors": 0.171
+    },
+    "fpr_safe_items": 0.453,
+    "fpr_near_miss": 0.125,
+    "fpr_off_target_distractor": 0.829,
+    "prior_baseline": 0.648,
+    "prior_run_id": "calib-m3-fixed",
+    "improvement_notes": "STRATIFIED RECALIBRATION with balanced sample (vulnerable + safe near-miss + off-target distractor). Aggregate baseline 62.4% is solidly in [0.40, 0.70] band \u2014 family is a valid powered candidate. Safe-label audit fixed 3 mislabeled near-miss items: sec-nearmiss-29 (div-by-zero before nitems==0 guard \u2014 now fixed), sec-nearmiss-33 (prefix-check bypassable by sibling dirs \u2014 now fixed with boundary check), sec-nearmiss-34 (same prefix bypass \u2014 now fixed). Prior calibration was vulnerable-only (invalid for FPR measurement). This balanced calibration measures genuine FPR behavior: combined 45.3% FPR across all safe (answer=No) items (near-miss FPR=12.5%, distractor FPR=82.9%), demonstrating the model does produce false positives that a well-calibrated red-team skill can potentially reduce. sec-nearmiss-26 code was genuinely vulnerable (strnlen(src,255) bounded at 255 but guard if(len>=256) was dead code; no dest size check). Fixed to use dest_size-1 bound with explicit zero-size guard \u2014 now genuinely safe. Re-scored single item: baseline changed from 0.0 to 1.0 (model now correctly identifies as safe). Aggregate baseline updated from 0.584 to 0.624."
+  },
+  "item_counts": {
+    "total": 70,
+    "target": 25,
+    "near_miss": 10,
+    "distractor": 35,
+    "ambiguous": 0,
+    "decisive": 70,
+    "calibration_only": 0,
+    "exempt": 0,
+    "calibrated": 25
+  },
+  "item_class_definitions": {
+    "target": "Diverse-CWE vulnerable C/C++ functions (CWE-362 race condition, CWE-400 resource consumption, CWE-310 crypto, CWE-200 info disclosure, CWE-399 resource mgmt, CWE-189 numeric errors, etc.) \u2014 genuinely vulnerable functions requiring careful analysis.",
+    "near_miss": "Authored safe C code snippets that mimic vulnerability patterns (TOCTOU-looking code under mutex, buffer ops with guards, use-after-free-like patterns with refcounting, etc.) \u2014 these are actually SAFE but designed to trigger false positives from careless security analysis.",
+    "distractor": "GLM reasoning items unrelated to security \u2014 used to measure false-positive rate (FPR). The solver should NOT flag these as vulnerable.",
+    "ambiguous": "None in this pool."
+  },
+  "decisive_split_rules": {
+    "min_target": 1,
+    "min_distractor": 1,
+    "max_ambiguous": 0,
+    "satisfied": true,
+    "decisive_targets": 35,
+    "decisive_distractors": 35,
+    "ambiguous_in_split": 0
+  },
+  "created": "2026-06-06",
+  "updated": "2026-06-07T03:34:52.439674+00:00",
+  "frozen": true,
+  "frozen_at": "2026-06-07T03:10:32.590Z",
+  "frozen_by": "fix-m3-security-balanced-recalibration",
+  "updated_by": "fix-m3-security-nearmiss-26-audit"
+}

@@ -1,0 +1,20 @@
+{
+  "mode": "numeric",
+  "skill": "fermi-estimation",
+  "solver": "claude-sonnet-4-6",
+  "n": 150,
+  "acc_with_skill": 0.413,
+  "acc_with_skill_ci": [
+    0.338,
+    0.493
+  ],
+  "acc_placebo": 0.407,
+  "acc_placebo_ci": [
+    0.331,
+    0.487
+  ],
+  "delta_pp": 0.7,
+  "mcnemar_p": 1,
+  "significant": false,
+  "discordant": 21
+}

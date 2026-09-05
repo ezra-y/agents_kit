@@ -1,0 +1,23 @@
+{
+  "skill": "bayesian",
+  "primary_value_surface": "calibrated classification",
+  "primary_metric": "posterior_calibration_error",
+  "secondary_metrics": ["prior_elicitation_quality", "likelihood_assessment_accuracy", "update_correctness", "base_rate_adherence"],
+  "distractors": {
+    "off_target_set": "Questions with definitive answers; situations with no meaningful prior; meta-questions about Bayesian reasoning",
+    "description": "Items where probability estimation adds no value over direct knowledge or where priors cannot be meaningfully established"
+  },
+  "calibration_range": [0.40, 0.70],
+  "calibration_exception": null,
+  "min_sample_primary": 60,
+  "min_sample_replication": 60,
+  "planned_comparison": "placebo",
+  "decision_gate": {
+    "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND posterior_calibration_error < 0.10",
+    "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+    "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+    "quarantine_redirect": "primary_delta_pp < 0 OR base_rate_adherence < 0.50",
+    "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+  },
+  "eval_family": "Quantitative/uncertainty"
+}

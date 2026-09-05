@@ -1,0 +1,88 @@
+{
+  "family": "Routing/abstention",
+  "family_key": "routing-abstention",
+  "skills": [
+    "circle-of-competence",
+    "cynefin",
+    "model-combination",
+    "model-router",
+    "socratic"
+  ],
+  "value_surface": "routing/discoverability",
+  "source": "Harder rebuild: 24 borderline selfaware items (hardest answerable/unanswerable distinctions), 12 authored NONE/unanswerable cases (questions with subtle missing context that look answerable but aren't), 10 authored close-distractor items (questions that look unanswerable but have factual answers — and vice versa), 10 socratic-clarify items, 8 cynefin-classify items. Replaces the original selfaware-heavy pool whose trivia-style answerability questions were too easy for claude-sonnet-4-6.",
+  "leakage": "Selfaware dataset (OkayestProgrammer/selfAware) contains general-knowledge questions with answerability labels — only the most borderline 24 of 70 items were selected. Leakage risk is moderate for common trivia facts, low for obscure ones. Authored NONE cases and close-distractor items are freshly authored with ZERO external leakage. Socratic-clarify and cynefin-classify datasets are locally authored — zero leakage risk. GLM distractor items may have training data overlap.\n\nSource breakdown: 1 external dataset (selfaware, borderline subset) with moderate training-data leakage; 3 authored datasets (NONE cases, close-distractors, socratic-clarify, cynefin-classify) with zero external leakage.",
+  "label": {
+    "definition": "Abstention/answerability: whether the model correctly determines if a question is answerable with verifiable information, or correctly decides whether to ask a clarifying question. Close distractors are designed to look unanswerable but have specific factual answers (testing false negatives) and vice versa (testing false positives).",
+    "values": {
+      "true": "Answerable (answerable=true) or should clarify (label=true)",
+      "false": "Unanswerable or should proceed directly"
+    },
+    "eval_mode": "ground_truth",
+    "ground_truth_fields": [
+      "answerable",
+      "label"
+    ]
+  },
+  "calibration": {
+    "baseline": 0.84,
+    "baseline_estimated": false,
+    "baseline_source": "measured_sample",
+    "band": [
+      0.4,
+      0.7
+    ],
+    "in_band": false,
+    "status": "measured_sample",
+    "calibrated_items": 25,
+    "in_band_items": 0,
+    "decisive_split_items": 64,
+    "calibration_only_items": 0,
+    "exempt_items": 0,
+    "calibration_run_id": "calib-m3-fixed",
+    "calibration_solver": "claude-sonnet-4-6",
+    "calibration_k_trials": 5,
+    "sample_size": 25,
+    "ceiling_items": 21,
+    "floor_items": 4,
+    "other_out_of_band": 0,
+    "prior_baseline": 0.88,
+    "prior_run_id": "calib-m3",
+    "improvement_notes": "Rebuilt pool with 12 authored NONE cases and 10 close-distractor items, plus only the hardest borderline selfaware items. Baseline dropped from 88% to 84% — a 4pp improvement, but still above the [0.40,0.70] calibration band. The solver remains too capable at answerability classification even on harder items.",
+    "ceiling_needs_harder_data": "CEILING-NEEDS-HARDER-DATA (Invariant #4, not a kill). After a good-faith effort sourcing 12 NONE cases with subtle missing context and 10 close distractors in both directions, and selecting only the hardest 24/70 selfaware items, claude-sonnet-4-6 still achieves 84% placebo baseline on this family at n=25, K_TRIALS=5. The answerability/abstention classification task is intrinsically well-suited to this solver's capabilities — it reliably distinguishes answerable from unanswerable questions even when the distinction is subtle. Further item hardening (e.g., multi-hop dependency questions, adversarial ambiguity exploiting solver priors, questions requiring real-time verification) may eventually bring the baseline into band, but the current good-faith effort improved only from 88% to 84%. This is an honest ceiling — NOT a kill verdict. Recommend: either accept the abstention surface as an intentional ceiling-tolerant measurement (comparing solver-with-skill vs solver-without-skill at the ceiling, where any lift is hard evidence of genuine skill value), or source items that exploit known solver weaknesses in answerability judgment.",
+    "exemption_reason": "measured_baseline_still_ceiling_after_harder_items"
+  },
+  "item_counts": {
+    "total": 64,
+    "target": 54,
+    "near_miss": 0,
+    "distractor": 10,
+    "ambiguous": 0,
+    "decisive": 64,
+    "calibration_only": 0,
+    "exempt": 0,
+    "calibrated": 25
+  },
+  "item_class_definitions": {
+    "target": "Borderline answerability questions: selfaware borderline items, NONE/unanswerable cases with subtle missing context, socratic-clarify items requiring judgment about when to ask clarifying questions, and cynefin-classify items about ordered vs unordered problems.",
+    "near_miss": "This family intentionally has 0 near-miss items. The decisive split rule requires >=1 target + >=1 distractor, which is satisfied.",
+    "distractor": "Authored close-distractor items: questions that look unanswerable but have specific factual answers (testing false negatives — solver wrongly says 'unanswerable') and vice versa. The solver should NOT trivially reject these as unanswerable.",
+    "ambiguous": "None in this pool."
+  },
+  "decisive_split_rules": {
+    "min_target": 1,
+    "min_distractor": 1,
+    "max_ambiguous": 0,
+    "satisfied": true,
+    "decisive_targets": 54,
+    "decisive_distractors": 10,
+    "ambiguous_in_split": 0
+  },
+  "pool_limitations": {
+    "near_miss_zero": "This family intentionally has 0 near-miss items. The decisive split rule requires >=1 target + >=1 distractor, which is satisfied (54 targets, 10 distractors). This is a known pool limitation — proceed without near-miss items."
+  },
+  "created": "2026-06-06",
+  "updated": "2026-06-06T19:05:00.000Z",
+  "frozen": true,
+  "frozen_at": "2026-06-06T19:05:00.000Z",
+  "frozen_by": "m3-harder-data-security-routing"
+}

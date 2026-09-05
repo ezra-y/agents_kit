@@ -1,0 +1,26 @@
+{
+  "skill": "circle-of-competence",
+  "primary_value_surface": "abstention/calibration",
+  "primary_metric": "abstention_accuracy",
+  "secondary_metrics": ["calibration_error", "overconfidence_reduction", "zone_classification_accuracy", "fetch_before_assert_rate"],
+  "distractors": {
+    "off_target_set": "Questions with verifiable grounded answers; low-stakes reversible decisions where guessing is acceptable; brainstorming/hypothetical framing; meta-questions about circle of competence",
+    "description": "Items where the answer is checkable, stakes are low, or the framing explicitly invites speculation"
+  },
+  "calibration_range": [0.30, 0.80],
+  "calibration_exception": {
+    "reason": "Abstention/calibration surface intentionally measures confidence alignment; wider range accounts for ceiling effects on easy items and floor effects on unanswerable items",
+    "range": [0.30, 0.80]
+  },
+  "min_sample_primary": 70,
+  "min_sample_replication": 70,
+  "planned_comparison": "placebo",
+  "decision_gate": {
+    "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND calibration_error_reduction >= 0.05",
+    "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+    "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+    "quarantine_redirect": "primary_delta_pp < 0 OR overconfidence_reduction < 0",
+    "ceiling_needs_harder_data": "placebo_baseline > 0.80"
+  },
+  "eval_family": "Routing/abstention"
+}

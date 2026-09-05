@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "study_id": "workflow-v1",
+  "study_version": "2026-07-16-freeze",
+  "created_at": "2026-07-16T00:00:00.000Z",
+  "bundle_kind": "workflow_value_gate_no_run",
+  "preregistration": {
+    "path": "evals/studies/workflow-v1/prereg.md",
+    "sha256": "0f8dfba5b4c816b27a39e38dbb0aef344184415f1a349fc55cb5d21dffda1834"
+  },
+  "input_registry_ref": {
+    "path": "evals/studies/registry.json",
+    "git_commit": "3d1f67de41495a2fa979b196a76fc5a3e66235e0",
+    "registry_version": "phase4-portfolio-v1",
+    "sha256": "7bf021d6dd4c34cd5bd91c74874114f98e1dc952ebb279021add62af8416c91e"
+  },
+  "current_registry_ref": {
+    "path": "evals/studies/registry.json",
+    "git_commit": "1d63b0d0fe2f3272d98ea84370e55444ef560405",
+    "registry_version": "phase5-workflow-v1",
+    "sha256": "39eb7264b5e1f516aa5e67e4c7ab06d968c72453d5de8e5396aee69b665f039d",
+    "role": "post-gate output; not a preregistration input"
+  },
+  "files": {
+    "prereg": "prereg.md",
+    "manifest": "manifest.json",
+    "cases": "cases.json",
+    "aggregate": "aggregate.json",
+    "items": "items.jsonl"
+  },
+  "frozen_artifacts": {
+    "runner": {
+      "path": "evals/run-agentic.js",
+      "sha256": "4b8aeaa3c83ea000a15d66ae05c4cd4ff2d8fc1dabec1a13d9ab82230e410cda"
+    },
+    "pure_evaluator": {
+      "path": "evals/lib/agentic.js",
+      "sha256": "cef02f317cf9749824b550e6bb893a23b0f3d577e91832ee402bf781aafabf58"
+    },
+    "dataset": {
+      "path": "evals/datasets/workflow-cases-replication.jsonl",
+      "sha256": "3108849eae5636b7748cf800d49b25a9c5d9aaac78bd6986559ea5e2aaa7b0ef",
+      "split": "replication",
+      "n_cases": 24,
+      "n_candidate_nodes": 42,
+      "n_gold_nodes": 30
+    },
+    "cases": {
+      "path": "evals/studies/workflow-v1/cases.json",
+      "sha256": "54638d7dbf74b350a5d1041bb2d141ce0c2818231ef9b3c05d715482564c6c1a"
+    }
+  },
+  "models": [
+    "claude-haiku-4-5-20251001",
+    "claude-sonnet-4-6",
+    "claude-opus-4-6"
+  ],
+  "primary_arm": "workflow_typed",
+  "comparators": [
+    "dynamic_typed",
+    "workflow_none_typed"
+  ],
+  "diagnostic_arms": [
+    "dynamic_loose",
+    "workflow_loose",
+    "dynamic_typed_self_checked",
+    "workflow_typed_self_checked"
+  ],
+  "primary_metric": "case_success",
+  "secondary_metrics": [
+    "route_exactness",
+    "route_jaccard",
+    "branch_correctness",
+    "invalid_output_recovery",
+    "solver_failure_rate",
+    "calls",
+    "input_tokens",
+    "output_tokens",
+    "cached_tokens",
+    "latency_ms",
+    "estimated_cost_usd"
+  ],
+  "independence": {
+    "unit": "workflow_case",
+    "fresh_session_per_case_model_arm": true,
+    "response_reuse_forbidden": true,
+    "self_check_owns_independent_candidate": true,
+    "seed": "workflow-v1-2026-07-16"
+  },
+  "power": {
+    "design": "paired_binary_case_success_with_cluster_aware_cost_ratios",
+    "target_power": 0.9,
+    "alpha_one_sided": 0.05,
+    "multiplicity_adjusted": true,
+    "available_independent_cases_per_model": 24,
+    "optimistic_unpaired_one_sided_margin_pp_at_p_0_5": 16.79,
+    "quality_effect_gate_pp": 5,
+    "efficiency_noninferiority_margin_pp": -2,
+    "powered": false,
+    "decision_eligible": false,
+    "reason": "Twenty-four independent cases cannot resolve the preregistered +5pp quality or -2pp efficiency quality bounds before multiplicity adjustment."
+  },
+  "budget": {
+    "ceiling_usd": 2000,
+    "estimated_cost_usd": 0,
+    "calls_eligible": 0,
+    "reason": "Power gate failed before solver execution."
+  },
+  "raw_response_policy": {
+    "verbatim_responses_in_git": false,
+    "response_sha256_required_if_run": true,
+    "restore_tested_archive_uri_required_if_run": true
+  },
+  "run_status": "no_run",
+  "evidence_validity": "preregistered_blocked",
+  "product_disposition": "delete_workflow_machinery"
+}

@@ -1,0 +1,27 @@
+{
+  "mode": "binary-decision",
+  "skill": "first-principles",
+  "tags": [
+    "first-principles-constraint"
+  ],
+  "solver": "claude-sonnet-4-6",
+  "n": 30,
+  "n_yes_label": 15,
+  "n_no_label": 15,
+  "acc_with_skill": 1,
+  "acc_with_skill_ci": [
+    0.886,
+    1
+  ],
+  "acc_placebo": 0.933,
+  "acc_placebo_ci": [
+    0.787,
+    0.982
+  ],
+  "delta_pp": 6.7,
+  "balanced_acc_with_skill": 0.5,
+  "balanced_acc_placebo": 0.433,
+  "mcnemar_p": 0.479,
+  "significant": false,
+  "discordant": 2
+}

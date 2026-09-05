@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "study_id": "scientific-method-candidate-02-root-cause",
+  "created_at": "2026-07-18",
+  "source": {
+    "confirmation_envelope_sha256": "46afe09964e1cb424e483d13ca80ce581f73e50d6ff7128d14c0afd4d56b558e",
+    "blind_cases_sha256": "20ab528e9b336ad54ae0d5cd45c9f0a3ec2d4908ab5147ef5570a0dc4e479006",
+    "adjudicated_labels_sha256": "f74ff266cf32e68a46ff3abc0737c9a3f4cc8e1f0154a31d71faa5b04ee5dd34",
+    "local_summary_sha256": "6d4ffc0ecf629cd2d7a8079f29997e8f9321eefa7a79177aa4279450655bee3f"
+  },
+  "method": {
+    "cases": 62,
+    "inclusion": "Every 100-item confirmation case where at least one of none, lean, or candidate-02 was incorrect",
+    "coding": "Fixed taxonomy, arm-masked responses, two independent coders, blind adjudication",
+    "new_eval_model_calls": 0,
+    "raw_prompts_and_responses": "Ignored local artifacts because source license metadata is unknown"
+  },
+  "coder_agreement": {
+    "primary_cause": {
+      "agree": 56,
+      "total": 62,
+      "rate": 0.9032258064516129
+    },
+    "fixability": {
+      "agree": 57,
+      "total": 62,
+      "rate": 0.9193548387096774
+    },
+    "intervention": {
+      "agree": 49,
+      "total": 62,
+      "rate": 0.7903225806451613
+    },
+    "confidence": {
+      "agree": 55,
+      "total": 62,
+      "rate": 0.8870967741935484
+    }
+  },
+  "three_arm_outcomes": {
+    "all_correct": 38,
+    "all_wrong": 35,
+    "shared_skill_benefit": 4,
+    "shared_skill_harm": 6,
+    "candidate_specific_benefit": 5,
+    "candidate_specific_harm": 7,
+    "lean_specific_benefit": 1,
+    "lean_specific_harm": 4
+  },
+  "adjudicated_primary_cause": {
+    "multi_file_gold_ambiguity": 31,
+    "insufficient_repository_context": 25,
+    "wrong_abstraction_layer": 4,
+    "explicit_clue_ignored": 1,
+    "wrong_owner_module": 1
+  },
+  "adjudicated_fixability": {
+    "task_label": 31,
+    "prompt_context": 25,
+    "skill_instruction": 6
+  },
+  "candidate_specific_harm_fixability": {
+    "prompt_context": 4,
+    "task_label": 3,
+    "skill_instruction": 0
+  },
+  "accuracy_by_gold_file_count": {
+    "one": {
+      "n": 51,
+      "none": 0.5490196078431373,
+      "lean": 0.5294117647058824,
+      "candidate_02": 0.47058823529411764,
+      "candidate_minus_none_pp": -7.843137254901967
+    },
+    "two": {
+      "n": 34,
+      "none": 0.5588235294117647,
+      "lean": 0.4117647058823529,
+      "candidate_02": 0.47058823529411764,
+      "candidate_minus_none_pp": -8.823529411764708
+    },
+    "three": {
+      "n": 15,
+      "none": 0.5333333333333333,
+      "lean": 0.6,
+      "candidate_02": 0.7333333333333333,
+      "candidate_minus_none_pp": 20
+    }
+  },
+  "pilot_composition": {
+    "items": 28,
+    "three_gold_file_items": 10,
+    "three_gold_file_share": 0.35714285714285715,
+    "candidate_minus_none_pp_on_three_gold_file_items": 20
+  },
+  "conclusions": [
+    "56 of 62 coded error cases (90.3%) were attributed to task-label ambiguity or missing repository context, not skill instructions.",
+    "All seven candidate-specific harms were attributed to task-label ambiguity or missing repository context.",
+    "Candidate 02 looked strongest on three-gold-file tasks (+20pp) but lost on one- and two-gold-file tasks; the 28-item pilot overrepresented three-file tasks.",
+    "Only six cases were classified as skill-instruction-fixable. Correcting all six without regressions would move lean from 50% to 56% while no-skill remains 55%, a taxonomy-implied differential of only +1pp.",
+    "The static issue-only forced-treatment benchmark does not supply the observable repository evidence that the shipped scientific-method skill explicitly requires."
+  ],
+  "recommended_experiments": [
+    {
+      "priority": 1,
+      "name": "tool-enabled localization",
+      "change": "Give both arms the same repository inventory and bounded read/grep budget; test whether the skill chooses more discriminating observations.",
+      "primary_metric": "Strict localization accuracy versus no-skill",
+      "secondary_metrics": [
+        "Repository observations used",
+        "Total tokens",
+        "Latency"
+      ]
+    },
+    {
+      "priority": 2,
+      "name": "single-owner static benchmark",
+      "change": "Use exactly one defensible implementation-owner gold file per task, or use set-valued scoring instead of forcing one path on multi-owner patches.",
+      "purpose": "Remove the multi-file mixture that produced the pilot's winner's-curse signal."
+    },
+    {
+      "priority": 3,
+      "name": "module-role prior",
+      "change": "On fresh tool-enabled tasks only, test an isolated instruction to prefer the module implementing the behavior over UI, route, or orchestration surfaces.",
+      "gate": "No regression on explicit-clue and single-owner cases"
+    },
+    {
+      "priority": 4,
+      "name": "clue-first fast path",
+      "change": "On fresh explicit-symbol cases, preserve filename/function clues before generating alternatives.",
+      "gate": "Must improve the explicit-clue slice without increasing total tokens"
+    }
+  ]
+}

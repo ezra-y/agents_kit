@@ -1,0 +1,50 @@
+{
+  "skill": "thinking-socratic",
+  "problems": [
+    {
+      "id": "socratic-1",
+      "prompt": "A stakeholder from the customer-success team filed this request: 'We need a real-time notifications system so users always know what's happening in their account.' They've put it on the quarterly roadmap, attached a rough mockup with a bell icon and a live feed, and asked engineering to start scoping WebSocket infrastructure this week. They seem certain this is what's needed. As the lead on this, how should I respond, and what should I work through before any code gets written or any architecture gets chosen?",
+      "failure_mode": "Jumps straight into designing and building a real-time notifications system (WebSockets, push infra, etc.) taking the stated solution at face value, without surfacing what decision or user problem it's meant to solve, what 'real-time' and 'always know' actually require, or whether notifications are even the right answer."
+    },
+    {
+      "id": "socratic-2",
+      "prompt": "Our checkout funnel analytics show a 60% drop-off on the shipping-address step, the single biggest leak in the funnel. In a 20-minute meeting the team concluded 'the address form is too long and users hate filling it out' and now wants to cut the form down to fewer fields next sprint as the fix. I'm the PM and something about how fast we landed on that explanation is nagging at me, but I can't articulate it. Help me figure out whether trimming the form is actually the right move, and how I should interrogate this before we commit the sprint.",
+      "failure_mode": "Accepts the team's causal story ('form too long') and validates the field-trimming plan, instead of questioning whether the data supports that specific cause, what alternative explanations exist (errors, shipping costs revealed, payment fears, mobile issues), and what evidence would actually distinguish them."
+    },
+    {
+      "id": "socratic-3",
+      "prompt": "A senior engineer is proposing we adopt event sourcing for our new inventory-management service. Their justification in the design doc is essentially that 'it's obviously the right pattern for anything with frequent state changes, and everyone knows it gives you a perfect audit trail for free.' The rest of the team is mostly nodding along in the channel, and it's trending toward an easy approval. I'm the one reviewing and signing off on this design. How should I actually evaluate the proposal rather than just rubber-stamping the consensus?",
+      "failure_mode": "Defers to the confident 'obviously/everyone knows' framing and approves event sourcing, rather than probing the unexamined assumptions about query patterns, operational complexity, and whether the underlying need is really auditability that could be met more simply."
+    },
+    {
+      "id": "socratic-4",
+      "prompt": "Our CEO came back from a conference convinced we're behind because a competitor just shipped an in-app AI assistant. He wants a chat assistant docked in the corner of our product, and he's asked engineering to have a prototype in two weeks. Marketing is already drafting a launch post. I'm the product lead. Before we commit a team to building this, how should I engage with the request?",
+      "failure_mode": "Takes 'build an AI assistant because a competitor has one' at face value and starts scoping a chatbot, instead of surfacing what user problem or job it would actually serve, whether our users even want conversational help, and what success would look like versus just matching a competitor's feature."
+    },
+    {
+      "id": "socratic-5",
+      "prompt": "We just lost a six-figure deal, and in the debrief the prospect's champion told our AE 'we went with the other vendor because they had a native Salesforce integration and you don't.' Leadership now wants to pull two engineers off the roadmap this quarter to build that integration so we stop losing deals. I run product. How should I think about this before we reprioritize?",
+      "failure_mode": "Accepts the stated deal-loss reason as the true cause and greenlights the Salesforce integration, without probing whether the integration was really the deciding factor (vs price, trust, or a polite brush-off), how many other prospects actually need it, and what evidence would confirm it drives revenue."
+    },
+    {
+      "id": "socratic-6",
+      "prompt": "Support ticket volume is up 40% over the last two months and our response times are slipping badly. The support lead has put together a headcount request to hire three more agents and wants my sign-off to take to finance. I manage the support org. How should I evaluate this ask?",
+      "failure_mode": "Rubber-stamps 'more agents' as the fix for rising ticket volume, rather than asking what is generating the extra tickets (a specific bug, a confusing recent release, an onboarding gap) and whether eliminating a root cause would remove the demand instead of staffing up to serve it."
+    },
+    {
+      "id": "socratic-7",
+      "prompt": "Two of my strongest frontend engineers want to rewrite our web app from our current framework into a newer one. Their pitch is that the existing stack is 'outdated and it's what's slowing us down,' and they've got a lot of enthusiasm behind a multi-month migration. The rest of the team is starting to rally around it. I'm the eng manager who has to approve or decline. How should I work through this decision?",
+      "failure_mode": "Endorses the framework rewrite on the strength of the team's enthusiasm and the 'outdated = slow' claim, instead of pinning down what 'slowing us down' concretely means (build times? shipping velocity? specific pain points), whether those are caused by the framework, and whether a rewrite is the cheapest way to address them."
+    },
+    {
+      "id": "socratic-8",
+      "prompt": "The board set a target to triple new signups this quarter, and our head of marketing is proposing we redirect most of the budget into a large paid-acquisition push to hit the number. It's framed as the obvious lever. I own growth and I'm expected to approve the plan. How should I approach this before we open the spend?",
+      "failure_mode": "Launches the paid-acquisition spend to chase the signup target as given, without questioning whether raw signups are the right goal (versus activation or retention), whether the product currently converts and keeps new users, and whether pouring traffic into a leaky funnel will actually move the outcome the board cares about."
+    },
+    {
+      "id": "socratic-9",
+      "prompt": "A long-time enterprise customer sent a heated email threatening to churn unless we 'add the ability to export everything to XML by end of month.' Our account manager is anxious and wants engineering to just build the XML export to save the relationship. I'm the engineer being pulled in. How should I handle this before writing the exporter?",
+      "failure_mode": "Builds the XML export exactly as demanded to placate the customer, rather than uncovering the underlying workflow or downstream system the customer is trying to feed, for which XML may be only one of several possible solutions and possibly not the best one."
+    }
+  ]
+}

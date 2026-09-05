@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "study_id": "scientific-method-tool-v1",
+  "manifest_sha256": "3a8486fd090b1e9e76f2a413ea2b3f68865af81185cf7f459a4f775b7710779b",
+  "stage": "calibration",
+  "claim_status": "diagnostic-only",
+  "health": {
+    "assigned_observations": 48,
+    "completed_observations": 43,
+    "solver_calls": 44,
+    "non_parse_solver_failures": 1,
+    "parse_or_protocol_failures": 2,
+    "estimated_cost_usd": 2.913498,
+    "decision_eligible": false,
+    "invalid_reason": "exhausted solver failure at sympy__sympy-19040:clue-first"
+  },
+  "partial_accuracy": {
+    "none": {
+      "correct": 9,
+      "n": 11,
+      "accuracy": 0.8181818181818182
+    },
+    "current": {
+      "correct": 8,
+      "n": 11,
+      "accuracy": 0.7272727272727273
+    },
+    "clue-first": {
+      "correct": 9,
+      "n": 11,
+      "accuracy": 0.8181818181818182
+    },
+    "module-role": {
+      "correct": 9,
+      "n": 10,
+      "accuracy": 0.9
+    }
+  },
+  "protocol_findings": [
+    "The clue-first arm timed out on both permitted attempts for sympy__sympy-19040.",
+    "The current arm reported 10 repository observations on the same item despite the four-observation prompt."
+  ],
+  "stage_disposition": {
+    "pilot": "skipped",
+    "confirmation": "skipped",
+    "replication": "skipped",
+    "skill_edit": "not_applied"
+  },
+  "reason": "Calibration failed the preregistered complete-health gate, so no candidate could advance."
+}

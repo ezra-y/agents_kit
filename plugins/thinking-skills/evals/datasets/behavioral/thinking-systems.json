@@ -1,0 +1,20 @@
+{
+  "skill": "thinking-systems",
+  "problems": [
+    {
+      "id": "systems-1",
+      "prompt": "Our checkout API started throwing intermittent 503s during the evening peak. The on-call engineer noticed our payment-provider calls were timing out, so they bumped the client timeout from 2s to 8s and added 3 retries with no backoff. It helped for about 20 minutes, then things got dramatically worse: P99 latency went from 1.2s to 14s, the connection pool saturated, and two downstream services that share the same provider also started failing even though their own code didn't change. Traffic was only about 15% above a normal Tuesday. Diagnose what's actually happening and recommend what to do.",
+      "failure_mode": "Treats the symptom locally — concludes the provider is slow and proposes tuning timeouts/retries/pool size in isolation, missing that the longer timeouts plus aggressive retries created a reinforcing retry-storm that amplified load on a shared dependency, so the 'fix' is what made it worse and the cure is to break the amplifying loop (backoff, jitter, circuit breaker, bulkheads), not enlarge buffers."
+    },
+    {
+      "id": "systems-2",
+      "prompt": "We run a two-sided marketplace connecting freelance editors with clients. Six weeks ago we shipped an 'instant match' feature that auto-assigns the fastest-responding editor to each new job. Acceptance rates jumped immediately and everyone celebrated. But over the last three weeks: average job quality scores have slowly dropped, our best editors are quietly going inactive, and new client retention at 30 days is down 11% — yet nobody can point to a bug or a bad deploy. Leadership wants to 'double down on instant match' since the early numbers were great. Tell us what you think is going on and what to do.",
+      "failure_mode": "Reasons linearly from the early positive metric ('matches went up, so do more of it') and looks for a discrete bug, missing the delayed, emergent dynamic: rewarding speed over quality shifts the mix toward lower-quality fast responders, top editors disengage as their advantage erodes, and client retention degrades on a lag — a self-reinforcing decline that the celebrated metric masks."
+    },
+    {
+      "id": "systems-3",
+      "prompt": "We're designing the autoscaler for a new event-processing service. The plan: every 30 seconds, read the Kafka consumer-lag metric, and if lag is above target, add workers proportional to the gap; if below, remove them. Each new worker takes about 90 seconds to provision, warm its caches, and start consuming. We expect traffic to arrive in sharp bursts (a 4x spike over ~2 minutes is normal). A teammate says 'just make the scaling aggressive so we react fast.' Review this design and tell us how to make it stable.",
+      "failure_mode": "Approves or tunes the proportional controller by gain alone, ignoring the 90s provisioning delay relative to the 30s control interval — the lag between action and effect makes an aggressive controller overshoot and oscillate (over-provision, then mass scale-down, then re-spike), so the right move addresses the delay/feedback structure (account for in-flight workers, predictive/scheduled scaling, damping, hysteresis) rather than cranking responsiveness."
+    }
+  ]
+}

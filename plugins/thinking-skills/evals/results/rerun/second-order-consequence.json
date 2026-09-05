@@ -1,0 +1,27 @@
+{
+  "mode": "binary-decision",
+  "skill": "second-order",
+  "tags": [
+    "second-order-consequence"
+  ],
+  "solver": "claude-sonnet-4-6",
+  "n": 30,
+  "n_yes_label": 14,
+  "n_no_label": 16,
+  "acc_with_skill": 0.833,
+  "acc_with_skill_ci": [
+    0.664,
+    0.927
+  ],
+  "acc_placebo": 0.9,
+  "acc_placebo_ci": [
+    0.744,
+    0.965
+  ],
+  "delta_pp": -6.7,
+  "balanced_acc_with_skill": 0.388,
+  "balanced_acc_placebo": 0.527,
+  "mcnemar_p": 0.617,
+  "significant": false,
+  "discordant": 4
+}
