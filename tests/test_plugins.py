@@ -1,4 +1,5 @@
 import json
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -143,6 +144,68 @@ class PluginTests(unittest.TestCase):
             self.repo.read_metadata()["skills"],
         )
         self.assertIn("example-plugin", self.repo.read_sources()["plugins"])
+
+    def test_nested_manifest_skill_is_discovered_migrated_and_kept_in_codex_manifest(
+        self,
+    ):
+        nested = self.upstream / "skills/engineering/diagnosing-bugs"
+        review = self.upstream / "skills/review"
+        shutil.rmtree(review)
+        nested.mkdir(parents=True)
+        (nested / "SKILL.md").write_text(
+            "---\nname: diagnosing-bugs\ndescription: Diagnose bugs\n---\n",
+            encoding="utf-8",
+        )
+        manifest_path = self.upstream / ".claude-plugin/plugin.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["skills"] = ["./skills/engineering/diagnosing-bugs"]
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+        standalone = self.root / "skills/tools/diagnosing-bugs"
+        standalone.mkdir(parents=True)
+        (standalone / "SKILL.md").write_text(
+            (nested / "SKILL.md").read_text(encoding="utf-8"), encoding="utf-8"
+        )
+        metadata = self.repo.read_metadata()
+        metadata["skills"]["skill:standalone/diagnosing-bugs"] = {
+            "description": "Diagnose bugs",
+            "trigger": "",
+            "recommendation": 3,
+            "tags": ["role/builder", "focus/example"],
+        }
+        self.repo.write_metadata(metadata)
+        self.repo.refresh()
+
+        snapshot = self._snapshot()
+        self.assertEqual(
+            snapshot.component_inventory.known_components["skills"],
+            (Path("skills/engineering/diagnosing-bugs"),),
+        )
+        result = plugins.import_plugin_snapshot(
+            self.repo,
+            snapshot,
+            category="tools",
+            targets=("claude", "codex"),
+            tags=["role/builder", "focus/example"],
+        )
+
+        self.assertIn("diagnosing-bugs", result.details["migrated_standalone_skills"])
+        self.assertFalse(standalone.exists())
+        entry = self.repo.require_skill("skill:plugin/example-plugin/diagnosing-bugs")
+        self.assertEqual(
+            entry.path.resolve().relative_to(
+                (self.root / "plugins/example-plugin").resolve()
+            ),
+            Path("skills/engineering/diagnosing-bugs"),
+        )
+        codex_manifest = json.loads(
+            (self.root / "plugins/example-plugin/.codex-plugin/plugin.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            codex_manifest["skills"], ["./skills/engineering/diagnosing-bugs"]
+        )
 
     def test_import_invalid_skill_metadata_leaves_repository_unchanged(self):
         (self.upstream / "skills/review/SKILL.md").write_text(

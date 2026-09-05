@@ -22,6 +22,7 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 from agents_kit import (
+    automation,
     checks,
     docs,
     installation,
@@ -29,6 +30,7 @@ from agents_kit import (
     mcps,
     migration,
     plugins,
+    runtime,
     scout,
     skills,
     source_reports,
@@ -67,6 +69,12 @@ def build_parser() -> argparse.ArgumentParser:
     status = commands.add_parser("status", help="查看仓库摘要")
     _json_flag(status)
     status.set_defaults(handler=command_status)
+
+    sync = commands.add_parser(
+        "sync", help="获取远端、同步安装并核验真实加载；有未提交修改时跳过"
+    )
+    _json_flag(sync)
+    sync.set_defaults(handler=command_sync)
 
     migrate = commands.add_parser("migrate", help="迁移旧状态到当前 Schema")
     migrate.add_argument("--dry-run", action="store_true")
@@ -123,6 +131,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="只自动应用无本地冲突的 License/Changelog 变化",
     )
     source_update.add_argument("--yes", action="store_true")
+    source_update.add_argument(
+        "--repo-only",
+        action="store_true",
+        help="只更新仓库，不修改本机安装；用于云端检查",
+    )
     _json_flag(source_update)
     source_update.set_defaults(handler=command_source_update)
 
@@ -278,6 +291,11 @@ def build_parser() -> argparse.ArgumentParser:
     plugin_update.add_argument("--auto-docs", action="store_true")
     plugin_update.add_argument("--dry-run", action="store_true")
     plugin_update.add_argument("--yes", action="store_true")
+    plugin_update.add_argument(
+        "--repo-only",
+        action="store_true",
+        help="只更新仓库，不修改本机安装；用于云端检查",
+    )
     _json_flag(plugin_update)
     plugin_update.set_defaults(handler=command_plugin_update)
 
@@ -444,6 +462,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     check = commands.add_parser("check", help="执行完整只读体检")
     check.add_argument("--repo-only", action="store_true")
+    check.add_argument(
+        "--runtime",
+        action="store_true",
+        help="核验 Claude/Codex 实际插件加载，不调用模型",
+    )
     _json_flag(check)
     check.set_defaults(handler=command_check)
     return root
@@ -460,6 +483,10 @@ def command_status(args: argparse.Namespace, context: Context) -> dict[str, Any]
         "skills": len(inventory),
         "plugins": len(repo.plugin_inventory()),
         "active": len(repo.read_active()),
+        "independent_enabled": len(repo.read_active()),
+        "configured_available": len(repo.skill_activation()),
+        "availability_note": "包含随插件启用的技能；实际加载以 check --runtime 为准",
+        "sync": automation.read_status(repo),
         "desired_installations": sum(
             len(record.get("skills", [])) + len(record.get("plugins", []))
             for record in repo.read_desired_installations()["targets"].values()
@@ -478,6 +505,13 @@ def command_status(args: argparse.Namespace, context: Context) -> dict[str, Any]
         ),
         "categories": dict(sorted(by_category.items())),
     }
+
+
+def command_sync(args: argparse.Namespace, context: Context) -> dict[str, Any]:
+    result = automation.sync(context.repo)
+    if result.get("status") == "failed":
+        raise CommandError(result.get("message", "同步失败"), result)
+    return result
 
 
 def command_migrate(args: argparse.Namespace, context: Context) -> dict[str, Any]:
@@ -793,7 +827,7 @@ def command_source_update(args: argparse.Namespace, context: Context) -> dict[st
                     )
             if "plugins" in combined.changed:
                 marketplace.build(context.repo)
-        result = context.finish(combined)
+        result = context.finish(combined, apply_clients=not args.repo_only)
         result["results"] = results
         result["failures"] = failures
         return result
@@ -1005,11 +1039,11 @@ def command_plugin_inspect(
             revision=revision,
             source_spec=resolved_spec,
         )
+        embedded_ids = set(plugins._embedded_skill_ids(root))
         existing = {
             entry.name: entry.qualified_id
             for entry in context.repo.skill_registry().values()
-            if entry.owner_kind == "standalone"
-            and (root / "skills" / entry.name / "SKILL.md").is_file()
+            if entry.owner_kind == "standalone" and entry.name in embedded_ids
         }
         inventory = snapshot.component_inventory
         return {
@@ -1234,7 +1268,7 @@ def command_plugin_update(args: argparse.Namespace, context: Context) -> dict[st
     if combined.changed:
         with context.repo.write_lock():
             marketplace.build(context.repo)
-        finished = context.finish(combined)
+        finished = context.finish(combined, apply_clients=not args.repo_only)
     else:
         finished = {"changed": [], "details": {}, "warnings": [], "effects": {}}
     finished["results"] = results
@@ -1521,11 +1555,18 @@ def command_global_disable(
 
 
 def command_global_apply(args: argparse.Namespace, context: Context) -> dict[str, Any]:
-    return installation.apply_global(
+    result = installation.apply_global(
         context.repo,
         dry_run=args.dry_run,
         target=args.target,
     ).details
+    if not args.dry_run:
+        result["runtime"] = runtime.plugin_report(
+            context.repo, target_filter=args.target
+        )
+        if not result["runtime"]["ok"]:
+            raise CommandError("安装操作已完成，但宿主加载未通过", result)
+    return result
 
 
 def command_project_install(
@@ -1570,6 +1611,7 @@ def command_check(args: argparse.Namespace, context: Context) -> dict[str, Any]:
         context.repo,
         command_help=context.command_help,
         repo_only=args.repo_only,
+        verify_runtime=args.runtime,
     )
     result = {
         "ok": report.ok,
@@ -1591,7 +1633,9 @@ class Context:
         self.parser = parser
         self.command_help = full_help(parser)
 
-    def finish(self, change: ChangeSet) -> dict[str, Any]:
+    def finish(
+        self, change: ChangeSet, *, apply_clients: bool = True
+    ) -> dict[str, Any]:
         effects: dict[str, Any] = {}
         if Effect.DOCS_BUILD in change.effects:
             with self.repo.write_lock():
@@ -1617,10 +1661,24 @@ class Context:
                         "effects": effects,
                     },
                 )
-        if Effect.GLOBAL_APPLY in change.effects:
+        if Effect.GLOBAL_APPLY in change.effects and apply_clients:
             effects[Effect.GLOBAL_APPLY.value] = installation.apply_global(
                 self.repo
             ).details
+            if "plugins" in change.changed or "plugin" in change.details:
+                native = runtime.plugin_report(
+                    self.repo, target_filter=change.details.get("target")
+                )
+                effects["runtime"] = native
+                if not native["ok"]:
+                    raise CommandError(
+                        "配置已更新，但宿主加载未通过",
+                        {
+                            "changed": sorted(change.changed),
+                            "details": change.details,
+                            "effects": effects,
+                        },
+                    )
         return {
             "changed": sorted(change.changed),
             "details": change.details,

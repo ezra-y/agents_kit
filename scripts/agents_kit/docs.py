@@ -226,7 +226,7 @@ function render(){
         +'<span class="on">'+'★'.repeat(r.rec)+'</span><span class="off">'+'★'.repeat(5-r.rec)
         +'</span></span> '+RECLABEL[r.rec]+'</span></div>')
       +'<div class="s-row"><span class="sk">来源</span><span class="sv">'+up+'</span></div>';
-    return '<tr data-rec="'+r.rec+'" data-name="'+r.name+'">'
+    return '<tr data-rec="'+r.rec+'" data-ref="'+esc(r.ref||r.kind+':'+r.name)+'">'
       +'<td class="c-name"><button class="sname" type="button" aria-expanded="false">'
         +'<span class="caret">▶</span>'+r.name+'</button>'+badges
         +'<span class="meta">'+meta+'</span></td>'
@@ -252,7 +252,7 @@ tb.addEventListener('click',e=>{
   b.setAttribute('aria-expanded',String(!open));
   b.querySelector('.caret').textContent=open?'▶':'▼';
   if(open){ tr.nextElementSibling.remove(); return; }
-  const r=DATA.find(x=>x.name===tr.dataset.name);
+  const r=DATA.find(x=>(x.ref||x.kind+':'+x.name)===tr.dataset.ref);
   const files=r.files.length?('<div><div class="dlabel">附带资源 · '+r.files.length+' 个文件</div>'
     +'<div class="dfiles">'+r.files.map(f=>'<div>'+esc(f)+'</div>').join('')+'</div></div>'):'';
   const actions=r.kind==='mcp'
@@ -293,6 +293,23 @@ document.querySelectorAll('.sbtn').forEach(b=>b.addEventListener('click',()=>{
   render();
 }));
 q.addEventListener('input',render);
+const syncStatus=document.getElementById('sync-status');
+const runtimeStatus=document.getElementById('runtime-status');
+const runtimeButton=document.getElementById('check-runtime');
+if(location.protocol!=='file:'){
+  fetch('/api/status').then(r=>r.json()).then(s=>{
+    syncStatus.textContent='同步：'+s.message+'；上次完整成功：'+(s.last_success_at||'尚无记录');
+  }).catch(()=>{syncStatus.textContent='同步状态读取失败，请查看 agents-kit status';});
+}
+runtimeButton.addEventListener('click',async()=>{
+  if(location.protocol==='file:'){runtimeStatus.textContent='请运行 agents-kit ui 后检查。';return;}
+  runtimeButton.disabled=true;runtimeStatus.textContent='正在核验实际加载，不调用模型…';
+  try{
+    const response=await fetch('/api/runtime');const report=await response.json();
+    runtimeStatus.textContent=report.ok?'插件实际加载检查通过：'+report.plugins.length+' 个安装。':report.problems.join('；');
+  }catch(error){runtimeStatus.textContent='加载检查失败：'+error.message;}
+  finally{runtimeButton.disabled=false;}
+});
 render();
 """
 
@@ -301,11 +318,7 @@ GENERATED_END = "<!-- END GENERATED -->"
 
 
 def collect_rows(repo: Repository) -> list[dict[str, Any]]:
-    active = {
-        raw_ref
-        for target in repo.read_desired_installations()["targets"].values()
-        for raw_ref in target.get("skills", [])
-    }
+    active = repo.skill_activation()
     rows: list[dict[str, Any]] = []
     for ref, entry in sorted(repo.skill_registry().items()):
         raw = (entry.path / "SKILL.md").read_text(encoding="utf-8", errors="replace")
@@ -348,7 +361,16 @@ def collect_rows(repo: Repository) -> list[dict[str, Any]]:
                 "body": body.strip(),
                 "manual": bool(frontmatter.get("disable-model-invocation")),
                 "active": ref in active,
-                "status": "常驻" if ref in active else "已收录",
+                "status": (
+                    "随插件启用"
+                    if entry.owner_kind == "plugin" and active.get(ref)
+                    else "独立启用"
+                    if "independent" in active.get(ref, {}).values()
+                    else "依赖启用"
+                    if active.get(ref)
+                    else "只收藏"
+                ),
+                "activation": active.get(ref, {}),
                 "path": "",
                 "repo": source_label,
                 "url": source_url,
@@ -495,11 +517,7 @@ def render_markdown(repo: Repository, rows: list[dict[str, Any]]) -> str:
 def render_catalog_markdown(repo: Repository) -> str:
     sources = repo.read_scout()["sources"]
     inventory = repo.skill_registry()
-    active = {
-        raw_ref
-        for target in repo.read_desired_installations()["targets"].values()
-        for raw_ref in target.get("skills", [])
-    }
+    active = repo.skill_activation()
     active_names = {repo.require_skill(ref).name for ref in active if ref in inventory}
     indexed_total = sum(len(record.get("skills", [])) for record in sources.values())
     inactive = sorted(
@@ -515,7 +533,7 @@ def render_catalog_markdown(repo: Repository) -> str:
             f"（其中常驻 **{len(active)}**）"
         ),
         "",
-        "匹配优先级：常驻（会话里已可见）→ 已收录未常驻（启用即可，零下载）→",
+        "匹配优先级：配置启用（实际加载用 `check --runtime` 核验）→ 已收录未常驻（启用即可，零下载）→",
         "未收录索引（从上游安装）。按描述匹配即可；描述拿不准、候选难取舍或任务",
         "关键时再读全文——已收录的直接读本地",
         "`~/agents_kit/skills/` 或 owner Plugin 中的 `SKILL.md`，未收录的点「技能」列链接",
@@ -742,13 +760,16 @@ def render_html(
 <div class="wrap">
 <header>
   <h1>{total} 个技能 · {scout_count} 个未收录 · {mcp_count} 个 MCP</h1>
-  <p class="lede">每行标签标明状态：<b>常驻</b>（全局生效）、<b>已收录</b>（仓库有，启用即可用）、
+  <p class="lede">每行标签区分：<b>独立启用</b>、<b>随插件启用</b>、<b>依赖启用</b>和<b>只收藏</b>。
   <b>仅索引</b>（未收录，只有链接和描述，内容未下载）。点名称可就地展开完整记录。
   本页由 <code>agents-kit docs build</code> 生成。</p>
+  <p id="sync-status" class="lede">通过 agents-kit ui 打开，可查看同步与插件加载状态。</p>
+  <button id="check-runtime" class="btn" type="button">检查插件实际加载</button>
+  <div id="runtime-status" class="lede" role="status"></div>
 </header>
 <div class="stats">
   <div class="stat"><span class="n">{total}</span><span class="l">已收录技能</span></div>
-  <div class="stat g"><span class="n">{active_count}</span><span class="l">常驻（全局生效）</span></div>
+  <div class="stat g"><span class="n">{active_count}</span><span class="l">配置启用（含插件子技能）</span></div>
   <div class="stat"><span class="n">{scout_count}</span><span class="l">未收录（仅索引）</span></div>
   <div class="stat"><span class="n">{source_count}</span><span class="l">有来源记录</span></div>
   <div class="stat"><span class="n">{mcp_count}</span><span class="l">MCP 清单</span></div>

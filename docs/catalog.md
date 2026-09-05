@@ -1,8 +1,8 @@
 # 收藏技能总目录
 
-全部收藏 **242** 个：未收录索引 **9** · 已收录 **233**（其中常驻 **105**）
+全部收藏 **245** 个：未收录索引 **9** · 已收录 **236**（其中常驻 **107**）
 
-匹配优先级：常驻（会话里已可见）→ 已收录未常驻（启用即可，零下载）→
+匹配优先级：配置启用（实际加载用 `check --runtime` 核验）→ 已收录未常驻（启用即可，零下载）→
 未收录索引（从上游安装）。按描述匹配即可；描述拿不准、候选难取舍或任务
 关键时再读全文——已收录的直接读本地
 `~/agents_kit/skills/` 或 owner Plugin 中的 `SKILL.md`，未收录的点「技能」列链接
@@ -75,7 +75,6 @@ Emil Kowalski 的动效与 UI 设计技能合集
 | `semantic-scholar` | 学术研究 | Semantic Scholar 专用论文检索：侧重正式会议和期刊，返回 venue、DOI、引用量、TLDR 与开放获取链接，用于补充 arXiv 预印本。 |
 | `social-science-paper-writing` | 学术研究 | 面向社会科学与设计研究的论文工作流：支持选题诊断、研究问题细化、文献综述规划、CNKI/Google Scholar 到 Zotero 的资料流、理论框架、问卷访谈与案例研究设计、草稿审查、证据和因果表述检查。 |
 | `thesis-figure-skill` | 学术研究 | 面向论文研究框架、方法流程、概念模型、服务蓝图和系统关系的可编辑配图工作流：先明确关系与布局，再用 TikZ 或 draw.io 实现、渲染和检查，避免用不可编辑 AI 位图承载关键学术结构。 |
-| `ai-speaking-coach` | AI Building | 根据学习者目标和听说表现维护个性化计划，结合 GPT Live、间隔复习、知识库和定时提醒的一对一英语口语教练 |
 | `build-mcp-app` | AI Building | 给 MCP 服务加交互式 UI / widget。什么时候 widget 胜过纯文本、widget 与 elicitation 怎么区分、两种部署形态、App 类运行时。Anthropic 官方。 |
 | `build-mcp-server` | AI Building | 建 MCP 服务。先盘问用途(连什么、谁用、暴露几个动作、要不要中途要用户输入、上游怎么认证),再推荐部署形态,默认推荐远程 streamable-HTTP。Anthropic 官方。 |
 | `build-mcpb` | AI Building | 把本地 MCP 服务打包成可安装的 .mcpb，覆盖 Node/Python 运行时打包、manifest、跨平台路径、本地权限和发布检查。Anthropic 官方。 |
@@ -87,6 +86,10 @@ Emil Kowalski 的动效与 UI 设计技能合集
 | `session-report` | AI Building | 从 ~/.claude/projects 的会话记录生成可探索的 HTML 用量报告:token、缓存命中、子代理、技能调用、最贵的 prompt。 |
 | `skill-development` | AI Building | 往插件里加技能、渐进披露设计原则、技能创建流程、description 怎么写才能被正确触发,632 行。 |
 | `skill-publisher` | AI Building | 将 Agent Skill 发布、更新并核验到 GitHub、ClawHub、AgentSkill.sh、skills.sh、Claude 社区目录和 OpenAI Plugins，保留可恢复的跨平台回执。 |
+| `speaking-head-teacher` | AI Building | Head teacher "狗蛋" for the AI speaking school. Use for learner onboarding, importing or building speaking curriculum, creating or revising a course plan, preparing today's lesson, or when T-30/T14 explicitly asks the head teacher to act. Do not use for live voice teaching or post-class evidence extraction. |
+| `speaking-learning-analyst` | AI Building | Learning analyst "小菜" for the AI speaking school. Use after first planning to create or update T-30/T0/T14 scheduled tasks, every 14 days for cycle assessment, or when the learner asks to inspect long-term progress. Decide KEEP, ADJUST, REPLAN, or DEFER and hand plan changes to the head teacher. Do not perform item-level class review or directly rewrite the course plan. |
+| `speaking-live-teacher` | AI Building | GPT Live speaking teacher "小King". Use in a voice session when the learner says phrases such as "小King，上课", "开始今天的口语课", "打开今天的教案", "继续今天的口语练习", or explicitly invokes this skill. Read the ready lesson, register the current Voice session ID, and teach. Do not create the long-term plan or perform the post-class review. |
+| `speaking-teaching-assistant` | AI Building | Post-class teaching assistant "小禾". Use only when T-30 or the user explicitly requests a class review, backfill, or learning-record update. Read the pending Voice session by ID, compare it with the lesson and curriculum, extract item-level evidence, apply memory scheduling, and hand the result to the head teacher. Do not teach the live class or rewrite the course plan. |
 | `writing-rules` | AI Building | 写 hookify 规则:规则文件格式、frontmatter、多条件高级写法,369 行。 |
 | `codebase-design` | 通用工程 | 代码库设计:怎么把模块划得更深、边界更清楚,让代码既好测试又好让 AI 导航。是 improve-codebase-architecture 的依赖。 |
 | `opencli-adapter-author` | 通用工程 | 给新站点写 opencli 适配器,或给已有站点加命令,15 个附件。从初次侦察、字段解码、写适配器到验证,含决策树、逐步 runbook 和卡住时的降级路径。中文写的。 |
@@ -148,8 +151,6 @@ Emil Kowalski 的动效与 UI 设计技能合集
 | `canvas-design` | 运营与内容 | 用设计哲学做 .png / .pdf 视觉作品(海报、艺术品),82 个附件。核心主张是先生成一套视觉哲学再落地,并明确要求原创、不抄在世艺术家。Anthropic 官方。 |
 | `frontend-slides` | 运营与内容 | 动画丰富的 HTML 演示文稿,376 行 + 161 个附件。可从零做,也能把 PPTX 转成网页。含固定舞台规则、内容密度模式、三种工作模式检测。 |
 | `slides` | 运营与内容 | 策略性 HTML 演示:Chart.js 图表、design token、响应式布局、文案公式、按场景选幻灯片策略。 |
-| `domain-modeling` | 产品 | 领域建模:梳理业务概念、统一术语、产出领域词汇表,74 行。 |
-| `grilling` | 产品 | 拷问式访谈的**引擎**,12 行。一次一个问题走完决策树,每问都给推荐答案。grill-me 和 grill-with-docs 都靠它。 |
 | `to-issues` | 产品 | 把计划/规格拆成可独立认领的 issue,用 tracer bullet 纵向切片。已更新到上游最新(上游改名 to-tickets,105 行)。 |
 | `triage` | 产品 | 用状态机和五种 triage 角色流转 issue,要求每条评论带免责声明。 |
 | `lark-approval` | 研究与办公 | 审批:查处理待办已办实例、搜可发起的审批定义、看详情并发起原生审批实例。 |
@@ -175,4 +176,4 @@ Emil Kowalski 的动效与 UI 设计技能合集
 
 ## 三、常驻（会话里天然可见，此处仅备查）
 
-`accessibility-wcag` · `agent-reach` · `agent-trajectory` · `api-design-patterns` · `apple-docs-index` · `authentication-patterns` · `banner-design` · `core-animation` · `deep-dive` · `design-system` · `design-systems-index` · `diagnose` · `frontend-design` · `grill-me` · `grill-with-docs` · `gsap-core` · `gsap-performance` · `gsap-plugins` · `gsap-timeline` · `guide-macos-spm-packaging` · `guide-swift-testing` · `guide-swiftdata` · `guide-swiftui-animations` · `guide-swiftui-performance-audit` · `guide-swiftui-ui-patterns` · `guide-swiftui-view-refactor` · `hig` · `high-end-visual-design` · `human-writing` · `impeccable` · `improve-codebase-architecture` · `ios-dev` · `ios-liquid-glass` · `ios-motion-patterns-index` · `ios-ui-craft` · `khazix-writer` · `lark-apps` · `lark-doc` · `lark-drive` · `lark-event` · `lark-im` · `lark-markdown` · `lark-shared` · `last30days` · `minimalist-ui` · `nextjs-mastery` · `opencli-autofix` · `playground` · `ponytail` · `ponytail-audit` · `ponytail-debt` · `ponytail-gain` · `ponytail-help` · `ponytail-review` · `pp-agent-capture` · `prototype` · `redesign-existing-projects` · `reference-interpreter` · `reverse-skill-router` · `rust-systems` · `security-hardening` · `setup-matt-pocock-skills` · `simulator-utils` · `skill-creator` · `smart-search` · `swift-concurrency-pro` · `swift-development` · `swift-testing-pro` · `swiftdata-agent-skill` · `swiftui-design-skill` · `swiftui-pro` · `tdd` · `thinking-bounded-rationality` · `thinking-circle-of-competence` · `thinking-cynefin` · `thinking-effectuation` · `thinking-first-principles` · `thinking-five-whys-plus` · `thinking-jobs-to-be-done` · `thinking-kepner-tregoe` · `thinking-lindy-effect` · `thinking-map-territory` · `thinking-margin-of-safety` · `thinking-model-combination` · `thinking-model-router` · `thinking-ooda` · `thinking-opportunity-cost` · `thinking-pre-mortem` · `thinking-probabilistic` · `thinking-red-team` · `thinking-reversibility` · `thinking-scientific-method` · `thinking-second-order` · `thinking-socratic` · `thinking-steel-manning` · `thinking-systems` · `thinking-theory-of-constraints` · `thinking-thought-experiment` · `thinking-triz` · `thinking-via-negativa` · `to-prd` · `ui-ux-pro-max` · `watch` · `write-a-skill` · `writing-guidelines`
+`accessibility-wcag` · `agent-reach` · `agent-trajectory` · `api-design-patterns` · `apple-docs-index` · `authentication-patterns` · `banner-design` · `core-animation` · `deep-dive` · `design-system` · `design-systems-index` · `diagnose` · `domain-modeling` · `frontend-design` · `grill-me` · `grill-with-docs` · `grilling` · `gsap-core` · `gsap-performance` · `gsap-plugins` · `gsap-timeline` · `guide-macos-spm-packaging` · `guide-swift-testing` · `guide-swiftdata` · `guide-swiftui-animations` · `guide-swiftui-performance-audit` · `guide-swiftui-ui-patterns` · `guide-swiftui-view-refactor` · `hig` · `high-end-visual-design` · `human-writing` · `impeccable` · `improve-codebase-architecture` · `ios-dev` · `ios-liquid-glass` · `ios-motion-patterns-index` · `ios-ui-craft` · `khazix-writer` · `lark-apps` · `lark-doc` · `lark-drive` · `lark-event` · `lark-im` · `lark-markdown` · `lark-shared` · `last30days` · `minimalist-ui` · `nextjs-mastery` · `opencli-autofix` · `playground` · `ponytail` · `ponytail-audit` · `ponytail-debt` · `ponytail-gain` · `ponytail-help` · `ponytail-review` · `pp-agent-capture` · `prototype` · `redesign-existing-projects` · `reference-interpreter` · `reverse-skill-router` · `rust-systems` · `security-hardening` · `setup-matt-pocock-skills` · `simulator-utils` · `skill-creator` · `smart-search` · `swift-concurrency-pro` · `swift-development` · `swift-testing-pro` · `swiftdata-agent-skill` · `swiftui-design-skill` · `swiftui-pro` · `tdd` · `thinking-bounded-rationality` · `thinking-circle-of-competence` · `thinking-cynefin` · `thinking-effectuation` · `thinking-first-principles` · `thinking-five-whys-plus` · `thinking-jobs-to-be-done` · `thinking-kepner-tregoe` · `thinking-lindy-effect` · `thinking-map-territory` · `thinking-margin-of-safety` · `thinking-model-combination` · `thinking-model-router` · `thinking-ooda` · `thinking-opportunity-cost` · `thinking-pre-mortem` · `thinking-probabilistic` · `thinking-red-team` · `thinking-reversibility` · `thinking-scientific-method` · `thinking-second-order` · `thinking-socratic` · `thinking-steel-manning` · `thinking-systems` · `thinking-theory-of-constraints` · `thinking-thought-experiment` · `thinking-triz` · `thinking-via-negativa` · `to-prd` · `ui-ux-pro-max` · `watch` · `write-a-skill` · `writing-guidelines`

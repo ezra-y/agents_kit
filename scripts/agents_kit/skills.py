@@ -31,11 +31,7 @@ def list_skills(
     tags: list[str] | None = None,
     tracked_only: bool = False,
 ) -> list[dict[str, Any]]:
-    active_refs = {
-        raw_ref
-        for target in repo.read_desired_installations()["targets"].values()
-        for raw_ref in target.get("skills", [])
-    }
+    activation = repo.skill_activation()
     validate_known_tags(repo, tags or [])
     required_tags = set(tags or [])
     rows: list[dict[str, Any]] = []
@@ -46,7 +42,7 @@ def list_skills(
         tracked = (
             entry.owner_kind == "plugin" and entry.owner_id in plugin_sources
         ) or repo.source_record(ref) is not None
-        active = ref in active_refs
+        active = bool(activation.get(ref))
         if active_only and not active:
             continue
         if category and entry.category != category:
@@ -66,6 +62,8 @@ def list_skills(
                     "id": entry.owner_id,
                 },
                 "active": active,
+                "active_targets": sorted(activation.get(ref, {})),
+                "activation": activation.get(ref, {}),
                 "tracked": tracked,
                 "description": metadata.get("description", ""),
                 "tags": skill_tags,
@@ -100,9 +98,7 @@ def show_skill(repo: Repository, name: str) -> dict[str, Any]:
         "path": str(entry.path),
         "owner": {"kind": entry.owner_kind, "id": entry.owner_id},
         "active_targets": [
-            target
-            for target, record in repo.read_desired_installations()["targets"].items()
-            if entry.qualified_id in record.get("skills", [])
+            target for target in repo.skill_activation().get(entry.qualified_id, {})
         ],
         "source": source,
         "metadata": repo.metadata_record(entry.qualified_id),

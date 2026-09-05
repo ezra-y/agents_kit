@@ -159,7 +159,7 @@ class ScoutTests(unittest.TestCase):
 
         html = (self.root / "docs/index.html").read_text(encoding="utf-8")
         self.assertEqual(html.count('"name": "alpha"'), 1)
-        self.assertIn('"status": "已收录"', html)
+        self.assertIn('"status": "只收藏"', html)
         self.assertIn('"status": "仅索引"', html)
         self.run_cli("check", "--repo-only", "--json")
 

@@ -285,14 +285,7 @@ def inventory_plugin(root: Path) -> ComponentInventory:
             continue
         if component == "skills":
             paths = tuple(
-                sorted(
-                    (
-                        path.relative_to(root)
-                        for path in directory.iterdir()
-                        if path.is_dir() and (path / "SKILL.md").is_file()
-                    ),
-                    key=lambda path: path.as_posix(),
-                )
+                path.relative_to(root) for path in _embedded_skill_paths(root).values()
             )
         else:
             paths = (Path(directory_name),)
@@ -418,7 +411,7 @@ def import_plugin_snapshot(
             + ", ".join(active_duplicates)
         )
     for skill_id, entry in duplicates.items():
-        candidate = snapshot.root / "skills" / skill_id
+        candidate = _embedded_skill_paths(snapshot.root)[skill_id]
         if repo.hash_directory(entry.path) != repo.hash_directory(candidate):
             raise PluginError(
                 f"同名独立 Skill 与 Plugin 内容不同，需要人工迁移：{skill_id}"
@@ -677,6 +670,7 @@ def update_plugin_from_snapshot(
                 shutil.copytree(source, destination, dirs_exist_ok=True, symlinks=True)
             else:
                 shutil.copy2(source, destination)
+        _refresh_generated_manifests(current, stage)
         _sync_embedded_sidecar(stage)
         candidate_spec = load_plugin_spec(stage)
         plan = _plan_plugin_update(
@@ -700,7 +694,7 @@ def update_plugin_from_snapshot(
         changed.add("desired_installations")
     return ChangeSet(
         changed=changed,
-        effects={Effect.DOCS_BUILD, Effect.CHECK},
+        effects={Effect.GLOBAL_APPLY, Effect.DOCS_BUILD, Effect.CHECK},
         details={"plugin": plugin_id, **comparison},
     )
 
@@ -833,10 +827,48 @@ def _create_target_manifest(root: Path, target: str, package_id: str) -> None:
     )
     manifest = {key: source[key] for key in common_keys if key in source}
     manifest["name"] = str(manifest.get("name") or package_id)
-    if (root / "skills").is_dir():
+    if "skills" in source:
+        manifest["skills"] = source["skills"]
+    elif (root / "skills").is_dir():
         manifest["skills"] = "./skills/"
     destination.parent.mkdir(parents=True, exist_ok=True)
     _write_json(destination, manifest)
+
+
+def _refresh_generated_manifests(current: PluginSpec, stage: Path) -> None:
+    """Advance inherited fields, but preserve fields the user customized."""
+    common = (
+        "name",
+        "version",
+        "description",
+        "author",
+        "homepage",
+        "repository",
+        "license",
+        "keywords",
+        "skills",
+    )
+    for target, spec in current.targets.items():
+        if spec.manifest is None or spec.manifest.authority != "local":
+            continue
+        other = "claude" if target == "codex" else "codex"
+        if other not in current.upstream_targets:
+            continue
+        before = manifest_data(current.root, other) or {}
+        after = manifest_data(stage, other) or {}
+        local = manifest_data(current.root, target) or {}
+        updated = dict(local)
+        for key in common:
+            old_value = before.get(key, "./skills/" if key == "skills" else None)
+            local_value = local.get(key, "./skills/" if key == "skills" else None)
+            if local_value != old_value:
+                continue
+            if key in after:
+                updated[key] = after[key]
+            elif key != "skills":
+                updated.pop(key, None)
+        if updated != local:
+            _write_json(stage / spec.manifest.path, updated)
 
 
 def _default_marketplace(target: str) -> dict[str, str]:
@@ -941,7 +973,7 @@ def _plan_plugin_import(
             skill_id, None
         )
         generated = _default_skill_metadata(
-            staged_plugin / "skills" / skill_id,
+            _embedded_skill_paths(staged_plugin)[skill_id],
             tags=tags,
         )
         if record is None:
@@ -1001,14 +1033,14 @@ def _plan_plugin_update(
         current = existing.get(skill_id)
         if current is not None:
             _default_skill_metadata(
-                staged_plugin / "skills" / skill_id,
+                _embedded_skill_paths(staged_plugin)[skill_id],
                 tags=list(current.get("tags", [])),
             )
             continue
         if template is None:
             raise PluginError(f"{plugin_id} 新增 {skill_id}，但没有可继承的 metadata")
         record = _default_skill_metadata(
-            staged_plugin / "skills" / skill_id,
+            _embedded_skill_paths(staged_plugin)[skill_id],
             tags=list(template.get("tags", [])),
         )
         record["category"] = template.get("category", "ai-building")
@@ -1072,15 +1104,45 @@ def _standalone_duplicates(repo: Repository, plugin_root: Path) -> dict[str, Any
     }
 
 
+def _embedded_skill_paths(root: Path, *, target: str | None = None) -> dict[str, Path]:
+    # Inventory is the union; each client's availability uses its own manifest.
+    manifests = [
+        manifest_data(root, platform) for platform in ([target] if target else TARGETS)
+    ]
+    candidates: list[Path] = []
+    for manifest in manifests:
+        if manifest is None:
+            continue
+        declared = manifest.get("skills", "./skills/")
+        items = [declared] if isinstance(declared, str) else declared
+        if not isinstance(items, list) or any(
+            not isinstance(item, str) for item in items
+        ):
+            raise PluginError("Plugin manifest 的 skills 必须是路径或路径数组")
+        for item in items:
+            relative = _validate_relative_path(root, item, field="manifest.skills")
+            path = root / relative
+            if not path.exists() and "skills" not in manifest:
+                continue
+            if not path.is_dir():
+                raise PluginError(f"Plugin manifest skills 路径不存在：{item}")
+            for directory, dirs, files in os.walk(path):
+                dirs[:] = [name for name in dirs if name not in TRANSPORT_IGNORES]
+                if "SKILL.md" in files:
+                    candidates.append(Path(directory))
+                    dirs[:] = []
+    found: dict[str, Path] = {}
+    for path in sorted(set(candidates), key=lambda item: item.as_posix()):
+        skill_id = path.name
+        previous = found.get(skill_id)
+        if previous is not None and previous != path:
+            raise PluginError(f"Plugin Skill ID 重复：{skill_id}: {previous} / {path}")
+        found[skill_id] = path
+    return dict(sorted(found.items()))
+
+
 def _embedded_skill_ids(root: Path) -> list[str]:
-    skills_root = root / "skills"
-    if not skills_root.is_dir():
-        return []
-    return sorted(
-        path.name
-        for path in skills_root.iterdir()
-        if path.is_dir() and (path / "SKILL.md").is_file()
-    )
+    return list(_embedded_skill_paths(root))
 
 
 def _default_skill_metadata(root: Path, *, tags: list[str]) -> dict[str, Any]:

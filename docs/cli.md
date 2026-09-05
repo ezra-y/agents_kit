@@ -4,13 +4,14 @@
 
 ```text
 usage: agents-kit [-h]
-                  {status,migrate,source,skill,plugin,marketplace,mcp,global,project,docs,ui,check} ...
+                  {status,sync,migrate,source,skill,plugin,marketplace,mcp,global,project,docs,ui,check} ...
 
 统一管理 agents_kit 中的技能、来源、安装和生成文档
 
 positional arguments:
-  {status,migrate,source,skill,plugin,marketplace,mcp,global,project,docs,ui,check}
+  {status,sync,migrate,source,skill,plugin,marketplace,mcp,global,project,docs,ui,check}
     status              查看仓库摘要
+    sync                获取远端、同步安装并核验真实加载；有未提交修改时跳过
     migrate             迁移旧状态到当前 Schema
     source              检查和更新技能来源
     skill               管理中央技能库
@@ -28,6 +29,13 @@ options:
 
 $ agents-kit status --help
 usage: agents-kit status [-h] [--json]
+
+options:
+  -h, --help  show this help message and exit
+  --json
+
+$ agents-kit sync --help
+usage: agents-kit sync [-h] [--json]
 
 options:
   -h, --help  show this help message and exit
@@ -109,7 +117,7 @@ options:
 
 $ agents-kit source update --help
 usage: agents-kit source update [-h] [--all] [--dry-run] [--safe]
-                                [--auto-docs] [--yes] [--json]
+                                [--auto-docs] [--yes] [--repo-only] [--json]
                                 [name]
 
 positional arguments:
@@ -122,6 +130,7 @@ options:
   --safe       兼容别名；等同 --auto-docs
   --auto-docs  只自动应用无本地冲突的 License/Changelog 变化
   --yes
+  --repo-only  只更新仓库，不修改本机安装；用于云端检查
   --json
 
 $ agents-kit source report --help
@@ -412,7 +421,7 @@ options:
 
 $ agents-kit plugin update --help
 usage: agents-kit plugin update [-h] [--all] [--auto-docs] [--dry-run] [--yes]
-                                [--json]
+                                [--repo-only] [--json]
                                 [name]
 
 positional arguments:
@@ -424,6 +433,7 @@ options:
   --auto-docs
   --dry-run
   --yes
+  --repo-only  只更新仓库，不修改本机安装；用于云端检查
   --json
 
 $ agents-kit plugin detach --help
@@ -743,10 +753,11 @@ options:
   --no-open
 
 $ agents-kit check --help
-usage: agents-kit check [-h] [--repo-only] [--json]
+usage: agents-kit check [-h] [--repo-only] [--runtime] [--json]
 
 options:
   -h, --help   show this help message and exit
   --repo-only
+  --runtime    核验 Claude/Codex 实际插件加载，不调用模型
   --json
 ```

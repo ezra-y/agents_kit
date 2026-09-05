@@ -10,6 +10,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
+from . import automation, runtime
 from .repository import Repository
 
 
@@ -51,13 +52,19 @@ class CatalogHandler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         path = urlsplit(self.path).path
+        if path == "/api/status":
+            self._send_json(automation.read_status(self.server.repo))
+            return
+        if path == "/api/runtime":
+            self._send_json(runtime.plugin_report(self.server.repo))
+            return
         if path == "/api/health":
             self._send_json({"ok": True})
             return
         if path in {"/", "/index.html", "/docs/index.html"}:
             self._send_file(self.server.html_path)
             return
-        if path.startswith("/skills/"):
+        if path.startswith(("/skills/", "/plugins/")):
             candidate = self._skill_file(path)
             if candidate is not None:
                 self._send_file(candidate)
@@ -88,10 +95,15 @@ class CatalogHandler(BaseHTTPRequestHandler):
         return
 
     def _skill_file(self, request_path: str) -> Path | None:
-        relative = Path(unquote(request_path.removeprefix("/skills/")))
+        prefix = "/plugins/" if request_path.startswith("/plugins/") else "/skills/"
+        relative = Path(unquote(request_path.removeprefix(prefix)))
         if relative.is_absolute() or ".." in relative.parts:
             return None
-        root = self.server.repo.skills_dir.resolve()
+        root = (
+            self.server.repo.plugins_dir
+            if prefix == "/plugins/"
+            else self.server.repo.skills_dir
+        ).resolve()
         candidate = (root / relative).resolve()
         if candidate != root and root not in candidate.parents:
             return None

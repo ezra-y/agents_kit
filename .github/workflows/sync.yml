@@ -27,17 +27,11 @@ jobs:
       - name: 测试
         run: uv run --with "PyYAML>=6,<7" python -m unittest discover -s tests
 
-      - name: AI 口语教练测试
-        working-directory: plugins/ai-speaking-coach/skills/ai-speaking-coach
+      - name: AI 口语学校插件测试
+        working-directory: plugins/ai-speaking-school
         env:
-          UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/ai-speaking-coach-venv
-        run: uv run --extra dev pytest -q
-
-      - name: AI 口语教练 Plugin 包测试
-        working-directory: plugins/ai-speaking-coach
-        env:
-          UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/ai-speaking-coach-venv
-        run: uv run --project skills/ai-speaking-coach --extra dev pytest -q tests
+          UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/ai-speaking-school-venv
+        run: uv run --extra dev pytest -q tests
 
       - name: 静态检查
         run: |
@@ -79,7 +73,7 @@ jobs:
 
       - name: 自动更新安全的小改动
         run: |
-          if ! scripts/agents-kit source update --all --safe --yes --json > "$RUNNER_TEMP/source-check.json"; then
+          if ! scripts/agents-kit source update --all --auto-docs --yes --repo-only --json > "$RUNNER_TEMP/source-check.json"; then
             cat "$RUNNER_TEMP/source-check.json"
             exit 1
           fi

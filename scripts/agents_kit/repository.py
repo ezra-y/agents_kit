@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from .models import AssetRef, ContentMode, PluginSpec, SkillEntry
-from .plugins import PluginError, load_plugin_spec
+from .plugins import PluginError, _embedded_skill_paths, load_plugin_spec
 from .taxonomy import TaxonomyError, validate_definition
 
 CONFIG_NAME = "agents-kit.json"
@@ -137,13 +137,7 @@ class Repository:
 
         metadata = self.read_metadata()["skills"]
         for plugin_id, plugin in self.plugin_inventory(refresh=refresh).items():
-            skills_root = plugin.root / "skills"
-            if not skills_root.is_dir():
-                continue
-            for path in sorted(skills_root.iterdir()):
-                if not path.is_dir() or not (path / "SKILL.md").is_file():
-                    continue
-                name = path.name
+            for name, path in _embedded_skill_paths(plugin.root).items():
                 ref = AssetRef.plugin_skill(plugin_id, name)
                 record = metadata.get(ref.canonical, {})
                 category = record.get("category")
@@ -217,6 +211,32 @@ class Repository:
     def require_skill(self, selector: str | AssetRef) -> SkillEntry:
         ref = self.resolve_skill_ref(selector)
         return self.skill_registry()[ref.canonical]
+
+    def skill_activation(self) -> dict[str, dict[str, str]]:
+        """Declared availability per client; runtime loading is checked separately."""
+        inventory = self.skill_registry()
+        result: dict[str, dict[str, str]] = {}
+        metadata = self.read_metadata()["skills"]
+        for target, state in self.read_desired_installations()["targets"].items():
+            pending = list(state.get("skills", []))
+            explicit = set(pending)
+            seen: set[str] = set()
+            while pending:
+                ref = pending.pop()
+                if ref in seen or ref not in inventory:
+                    continue
+                seen.add(ref)
+                result.setdefault(ref, {})[target] = (
+                    "independent" if ref in explicit else "dependency"
+                )
+                pending.extend(metadata.get(ref, {}).get("dependencies", []))
+            for item in state.get("plugins", []):
+                plugin_id = AssetRef.parse(item["ref"]).local_id
+                plugin = self.require_plugin(plugin_id)
+                for name in _embedded_skill_paths(plugin.root, target=target):
+                    ref = AssetRef.plugin_skill(plugin_id, name).canonical
+                    result.setdefault(ref, {})[target] = "plugin"
+        return result
 
     def read_active(self) -> list[str]:
         if self.desired_installations_path.is_file():

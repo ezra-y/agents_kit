@@ -1,6 +1,8 @@
 import unittest
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[1]
 SYNC_WORKFLOW = ROOT / ".github/workflows/sync.yml"
 
@@ -23,15 +25,23 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn("git diff --cached --check", workflow)
         self.assertIn("scripts/agents-kit check --repo-only", workflow)
 
-    def test_verify_checks_all_generated_docs_and_plugin_tests(self):
+    def test_verify_checks_existing_plugin_test_directories(self):
         workflow = SYNC_WORKFLOW.read_text(encoding="utf-8")
-
         self.assertIn("git diff --exit-code -- 'docs/*.md'", workflow)
-        self.assertIn(
-            "plugins/ai-speaking-coach/skills/ai-speaking-coach",
-            workflow,
-        )
-        self.assertIn("plugins/ai-speaking-coach", workflow)
+        data = yaml.load(workflow, Loader=yaml.BaseLoader)
+        directories = [
+            ROOT / step["working-directory"]
+            for job in data["jobs"].values()
+            for step in job["steps"]
+            if "working-directory" in step
+        ]
+        self.assertTrue(directories)
+        for directory in directories:
+            self.assertTrue(
+                directory.is_dir(), f"Workflow directory missing: {directory}"
+            )
+            self.assertTrue((directory / "pyproject.toml").is_file())
+            self.assertTrue((directory / "tests").is_dir())
 
 
 if __name__ == "__main__":

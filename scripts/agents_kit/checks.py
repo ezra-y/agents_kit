@@ -5,7 +5,7 @@ import urllib.parse
 from pathlib import Path
 from typing import Any
 
-from . import docs, marketplace, mcps, plugins
+from . import docs, marketplace, mcps, plugins, runtime
 from .installation import (
     InstallationError,
     global_plan,
@@ -22,7 +22,13 @@ REFERENCE = re.compile(r"`/([a-z][a-z0-9-]{2,40})`")
 MARKDOWN_LINK = re.compile(r"!?\[[^\]]*\]\(([^)\n]+)\)")
 
 
-def run(repo: Repository, *, command_help: str, repo_only: bool = False) -> CheckReport:
+def run(
+    repo: Repository,
+    *,
+    command_help: str,
+    repo_only: bool = False,
+    verify_runtime: bool = False,
+) -> CheckReport:
     report = CheckReport()
     try:
         inventory = repo.skill_registry(refresh=True)
@@ -42,12 +48,14 @@ def run(repo: Repository, *, command_help: str, repo_only: bool = False) -> Chec
     _check_docs(repo, command_help, report)
     if not repo_only:
         _check_global(repo, report)
+    if verify_runtime:
+        native = runtime.plugin_report(repo)
+        report.sections["runtime"] = native
+        report.problems.extend(native["problems"])
     report.sections["summary"] = {
         "skills": len(inventory),
-        "active": sum(
-            len(record.get("skills", []))
-            for record in repo.read_desired_installations()["targets"].values()
-        ),
+        "active": len(repo.read_active()),
+        "configured_available": len(repo.skill_activation()),
         "sources": len(repo.read_sources()["skills"])
         + len(repo.read_sources()["plugins"]),
         "plugins": len(repo.plugin_inventory()),
@@ -264,7 +272,7 @@ def _check_plugins(
                     f"{plugin_id}/{skill_id}: self_contained Skill "
                     "不能声明 Plugin 根目录依赖"
                 )
-            skill_root = spec.root / "skills" / skill_id
+            skill_root = plugins._embedded_skill_paths(spec.root)[skill_id]
             for path in skill_root.rglob("*"):
                 if not path.is_file() or path.is_symlink():
                     continue
@@ -308,6 +316,14 @@ def _check_plugins(
                 continue
             if manifest.get("name") != plugin_id:
                 report.problems.append(f"{plugin_id}: {target} manifest name 不一致")
+            declared = manifest.get("skills", [])
+            paths = [declared] if isinstance(declared, str) else declared
+            if target == "claude" and isinstance(paths, list):
+                for path in paths:
+                    if isinstance(path, str) and not path.startswith("./"):
+                        report.problems.append(
+                            f"{plugin_id}: Claude skills 路径须以 ./ 开头：{path}"
+                        )
             if (
                 target_spec.manifest.authority == "upstream"
                 and target not in spec.upstream_targets
@@ -559,6 +575,10 @@ def _check_global(repo: Repository, report: CheckReport) -> None:
     report.problems.extend(plan["conflicts"])
     for action in plan["actions"]:
         report.problems.append(f"全局安装未收敛：{action['action']} {action['target']}")
+    for action in plan["marketplace_actions"]:
+        report.problems.append(
+            f"插件安装未收敛：{action['action']} {action.get('plugin', action.get('marketplace', ''))}"
+        )
     report.sections["global"] = plan
 
 

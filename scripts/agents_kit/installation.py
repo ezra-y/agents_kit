@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from .models import AssetRef, ChangeSet, Effect, PluginSpec
+from .plugins import _hash_paths, manifest_data, plugin_file_paths
 from .repository import Repository
 
 
@@ -831,6 +832,36 @@ def _codex_marketplace_plan(
                 ],
             }
         )
+    for plugin_id in sorted(desired_ids.intersection(installed)):
+        item = installed[plugin_id]
+        expected = manifest_data(repo.require_plugin(plugin_id).root, "codex") or {}
+        version = expected.get("version")
+        reasons = []
+        if item.get("enabled") is False:
+            reasons.append("插件已停用")
+        if version and item.get("version") != version:
+            reasons.append("安装版本与中央仓库不一致")
+        if item.get("version") and not _codex_cache_matches(
+            repo, plugin_id, marketplace_name, str(item["version"])
+        ):
+            reasons.append("安装副本与中央仓库内容不一致")
+        if reasons:
+            actions.append(
+                {
+                    "action": "plugin_refresh",
+                    "platform": "codex",
+                    "plugin": plugin_id,
+                    "marketplace": marketplace_name,
+                    "reason": "；".join(reasons),
+                    "command": [
+                        executable,
+                        "plugin",
+                        "add",
+                        f"{plugin_id}@{marketplace_name}",
+                        "--json",
+                    ],
+                }
+            )
     for plugin_id in sorted(set(installed) - desired_ids):
         actions.append(
             {
@@ -848,6 +879,31 @@ def _codex_marketplace_plan(
             }
         )
     return actions
+
+
+def _codex_cache_matches(
+    repo: Repository, plugin_id: str, marketplace: str, version: str
+) -> bool:
+    cache = (
+        Path(os.environ.get("CODEX_HOME", str(Path.home() / ".codex")))
+        / "plugins/cache"
+    )
+    installed_root = cache / marketplace / plugin_id / version
+    if not installed_root.is_dir():
+        return False
+    source_root = repo.require_plugin(plugin_id).root
+    # Native installation skips symlinks and transient environments/caches.
+    source_files = [
+        p for p in plugin_file_paths(source_root) if not (source_root / p).is_symlink()
+    ]
+    installed_files = [
+        p
+        for p in plugin_file_paths(installed_root)
+        if not (installed_root / p).is_symlink()
+    ]
+    return set(source_files) == set(installed_files) and _hash_paths(
+        source_root, source_files
+    ) == _hash_paths(installed_root, installed_files)
 
 
 def _desired_plugin_ids(record: dict[str, Any], *, target: str) -> list[str]:

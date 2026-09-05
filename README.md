@@ -192,6 +192,7 @@ agents-kit plugin update <Plugin> --yes
 
 默认策略是 `review`。检查结果分别报告 `merge_state`、`risk_class` 和
 `decision`。只有 `upstream_only + docs_only` 可由 `--auto-docs` 自动应用。
+云端更新使用 `--repo-only`，只处理仓库文件，不尝试启动本机客户端。
 当前只有 License 和 Changelog 归入 `docs_only`；README、`SKILL.md`、Prompt、
 Manifest、Hook、MCP、脚本、二进制和未知文件即使没有本地冲突也要人工确认。
 完整 Plugin 更新复制整个上游子树，再覆盖 sidecar 声明的本地 authority 路径；
@@ -199,25 +200,28 @@ Manifest、Hook、MCP、脚本、二进制和未知文件即使没有本地冲�
 
 ### 本机自动同步
 
-macOS 使用 LaunchAgent `com.ezra.agents-kit-sync`，每 60 分钟检查一次
-`origin/main`。同步脚本位于
-`~/Library/Application Support/agents-kit/sync-local.zsh`，调度配置位于
-`~/Library/LaunchAgents/com.ezra.agents-kit-sync.plist`。
+macOS 每 60 分钟运行 `agents-kit sync`，入口是仓库内的
+`scripts/sync-local.zsh`。仅在干净的 `main` 上快进更新，不自动提交、推送或覆盖工作区。
+即使远端没有新提交，也会核对安装、版本和真实插件加载。
 
-脚本只允许干净的 `main` 分支 fast-forward。本地有未提交内容、独立提交或分叉时
-会跳过，不会覆盖本地内容，也不会自动 push。同步完成后，全局软链接立即使用新版；
-项目级复制安装需要单独重新安装。
+完整流程：拉取仓库 → 更新插件索引与清单 → 同步安装副本 → 核验两端实际加载。
+“跳过”“失败”“完整成功”分别记录，不把退出码 0 当成已经同步。
+运行记录只保留当前一份，位于 `~/.local/state/agents-kit/sync-status.json`；
+包含上次尝试、上次完整成功、阻塞原因及插件加载结果。
 
 ```bash
-# 查看状态
-launchctl print gui/$(id -u)/com.ezra.agents-kit-sync
-
-# 立即执行一次
-launchctl kickstart -k gui/$(id -u)/com.ezra.agents-kit-sync
-
-# 查看日志
-tail -n 20 ~/Library/Logs/agents-kit-sync.log
+agents-kit status                 # 查看数量和上次同步结果
+agents-kit sync                   # 立即执行完整同步；有修改时安全跳过
+agents-kit check --runtime        # 核验仓库、安装和实际加载，不调用模型
+agents-kit check --repo-only --runtime  # 只查技能插件，不检查独立 MCP 配置
+agents-kit ui                     # 网页区分独立/随插件启用，并可检查实际加载
 ```
+
+插件更新会同步本地生成清单中仍继承上游的版本和技能路径，保留用户改过的字段。
+Codex 安装核对版本、启用状态及实际安装文件；发现差异使用原生安装命令更新，
+不手工修改客户端缓存。Claude 出现同名来源遮挡或清单错误时，实际加载检查会明确报错。
+Thinking 的 Claude 路径修复是本地改动；若上游也修改该清单，更新须审查，不自动覆盖。
+
 
 ## 文档与体检
 

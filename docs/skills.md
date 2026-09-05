@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **233** 个 · 常驻 **105** 个 · 有上游可检查更新 **203** 个
+共 **236** 个 · 常驻 **107** 个 · 有上游可检查更新 **203** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -163,10 +163,10 @@
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
-| `domain-modeling` | 领域建模:梳理业务概念、统一术语、产出领域词汇表,74 行。 | `role/workflow` `focus/domain-modeling` `focus/requirements-discovery` `output/domain-model` |  | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/domain-modeling) |
+| `domain-modeling` | 领域建模:梳理业务概念、统一术语、产出领域词汇表,74 行。 | `role/workflow` `focus/domain-modeling` `focus/requirements-discovery` `output/domain-model` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/domain-modeling) |
 | `grill-me` | 拷问你的计划直到达成共识,现在是 7 行的入口,实际跑 grilling。已更新到上游最新。 | `role/workflow` `focus/decision-making` `focus/requirements-discovery` `output/decision` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/productivity/grill-me) |
 | `grill-with-docs` | 拷问 + 落文档版本:边问边更新 CONTEXT.md 和 ADR,现在是 7 行入口,跑 grilling + domain-modeli | `role/workflow` `focus/architecture-decisions` `focus/requirements-discovery` `output/design-spec` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs) |
-| `grilling` | 拷问式访谈的引擎,12 行。一次一个问题走完决策树,每问都给推荐答案。grill-me 和 grill-with-docs 都靠它。 | `role/workflow` `focus/decision-making` `focus/stakeholder-interview` `output/decision` |  | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling) |
+| `grilling` | 拷问式访谈的引擎,12 行。一次一个问题走完决策树,每问都给推荐答案。grill-me 和 grill-with-docs 都靠它。 | `role/workflow` `focus/decision-making` `focus/stakeholder-interview` `output/decision` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling) |
 | `prototype` | 做一次性原型回答一个具体问题。分两支:状态/业务逻辑问题走可运行的终端应用,UI 问题走一个路由下可切换的多套截然不同的方案。 | `role/builder` `focus/product-validation` `focus/prototyping` `output/prototype` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/engineering/prototype) |
 | `thinking-bounded-rationality` | 有限理性。搜索或调研可能无止境时，先定一个明确的“够用”阈值，遇到第一个达标的选项就收手，不追最优解。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
 | `thinking-circle-of-competence` | 能力圈。判断某个断言自己有没有依据时，先划出证据边界，再估错判的代价，然后选择回答、去查还是明说不知道，不硬编。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` | ● | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
@@ -271,12 +271,11 @@
 | `smart-search` | 基于本机 opencli 的智能搜索路由:指定站点、社交媒体、技术资料、新闻、购物、旅游、求职、金融、中文内容各走不同的源。含强制预检、单题 | `role/router` `focus/web-research` `platform/opencli` `output/research` | ● | — |
 | `watch` | 读取视频 URL 或本地视频:用 yt-dlp 下载、ffmpeg 抽帧,优先提取原生字幕,无字幕时可调用 Groq 或 OpenAI Wh | `role/researcher` `focus/video-analysis` `output/summary` `output/transcript` | ● | [github.com/bradautomates/claude-video](https://github.com/bradautomates/claude-video/tree/main/skills/watch) |
 
-## AI Building (`ai-building`，18 个)
+## AI Building (`ai-building`，21 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
 | `agent-trajectory` | 把 Agent 会话日志变成轨迹回放：双层总表+上下文曲线+统一右侧面板（步骤详情/问AI），实时模式、一键问AI或复制、HTML/PDF导 | `role/builder` `focus/agent-observability` `focus/data-visualization` `output/report` | ● | — |
-| `ai-speaking-coach` | 根据学习者目标和听说表现维护个性化计划，结合 GPT Live、间隔复习、知识库和定时提醒的一对一英语口语教练 | `role/workflow` `focus/database` `focus/knowledge-base` `focus/workflow-automation` `platform/macos` `output/skill` |  | — |
 | `build-mcp-app` | 给 MCP 服务加交互式 UI / widget。什么时候 widget 胜过纯文本、widget 与 elicitation 怎么区分、两 | `role/builder` `focus/mcp-ui` `focus/tool-integration` `platform/mcp` `output/app` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) |
 | `build-mcp-server` | 建 MCP 服务。先盘问用途(连什么、谁用、暴露几个动作、要不要中途要用户输入、上游怎么认证),再推荐部署形态,默认推荐远程 streama | `role/builder` `focus/api-integration` `focus/mcp-server` `platform/mcp` `output/code` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) |
 | `build-mcpb` | 把本地 MCP 服务打包成可安装的 .mcpb，覆盖 Node/Python 运行时打包、manifest、跨平台路径、本地权限和发布检查。 | `role/builder` `focus/mcp-server` `platform/mcp` `output/code` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) |
@@ -291,6 +290,10 @@
 | `skill-creator` | 从零建技能、改进已有技能、衡量技能表现,481 行 + 17 个附件。含意图捕获、访谈调研、SKILL.md 写作指南。Anthropic  | `role/workflow` `focus/skill-authoring` `focus/skill-evaluation` `output/skill` | ● | [github.com/anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/skill-creator) |
 | `skill-development` | 往插件里加技能、渐进披露设计原则、技能创建流程、description 怎么写才能被正确触发,632 行。 | `role/guide` `focus/progressive-disclosure` `focus/skill-authoring` `output/skill` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/plugin-dev/skills/skill-development) |
 | `skill-publisher` | 将 Agent Skill 发布、更新并核验到 GitHub、ClawHub、AgentSkill.sh、skills.sh、Claude  | `role/workflow` `focus/release` `focus/skill-authoring` `focus/workflow-automation` `platform/multi-platform` `output/skill` |  | — |
+| `speaking-head-teacher` | Head teacher "狗蛋" for the AI speaking school. Use for learner onboardi | `role/workflow` `focus/database` `focus/knowledge-base` `focus/workflow-automation` `platform/macos` `output/skill` |  | — |
+| `speaking-learning-analyst` | Learning analyst "小菜" for the AI speaking school. Use after first plan | `role/workflow` `focus/database` `focus/knowledge-base` `focus/workflow-automation` `platform/macos` `output/skill` |  | — |
+| `speaking-live-teacher` | GPT Live speaking teacher "小King". Use in a voice session when the lea | `role/workflow` `focus/database` `focus/knowledge-base` `focus/workflow-automation` `platform/macos` `output/skill` |  | — |
+| `speaking-teaching-assistant` | Post-class teaching assistant "小禾". Use only when T-30 or the user exp | `role/workflow` `focus/database` `focus/knowledge-base` `focus/workflow-automation` `platform/macos` `output/skill` |  | — |
 | `write-a-skill` | 建新技能:结构、渐进披露、附带资源,113 行。 | `role/builder` `focus/progressive-disclosure` `focus/skill-authoring` `output/skill` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/productivity/writing-great-skills) |
 | `writing-rules` | 写 hookify 规则:规则文件格式、frontmatter、多条件高级写法,369 行。 | `role/builder` `focus/agent-rules` `focus/hooks` `platform/claude` `output/config` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/hookify/skills/writing-rules) |
 
