@@ -1,0 +1,138 @@
+{
+  "sources": {
+    "name": "招聘来源",
+    "keyField": "来源链接",
+    "fields": [
+      {
+        "name": "公司",
+        "type": "text"
+      },
+      {
+        "name": "来源链接",
+        "type": "text"
+      },
+      {
+        "name": "招聘方向",
+        "type": "text"
+      },
+      {
+        "name": "地点",
+        "type": "text"
+      },
+      {
+        "name": "招聘类型",
+        "type": "text"
+      },
+      {
+        "name": "届别或条件",
+        "type": "text"
+      },
+      {
+        "name": "来源更新时间",
+        "type": "text"
+      },
+      {
+        "name": "检查结果",
+        "type": "text"
+      },
+      {
+        "name": "用户选择",
+        "type": "select",
+        "multiple": false,
+        "options": [
+          {
+            "name": "待决定"
+          },
+          {
+            "name": "处理"
+          },
+          {
+            "name": "再看看"
+          },
+          {
+            "name": "不考虑"
+          }
+        ]
+      }
+    ]
+  },
+  "candidates": {
+    "name": "候选岗位",
+    "keyField": "岗位链接",
+    "fields": [
+      {
+        "name": "公司",
+        "type": "text"
+      },
+      {
+        "name": "岗位",
+        "type": "text"
+      },
+      {
+        "name": "岗位链接",
+        "type": "text"
+      },
+      {
+        "name": "完整JD",
+        "type": "text"
+      },
+      {
+        "name": "用户选择",
+        "type": "select",
+        "multiple": false,
+        "options": [
+          {
+            "name": "待决定"
+          },
+          {
+            "name": "准备投递"
+          },
+          {
+            "name": "再看看"
+          },
+          {
+            "name": "不考虑"
+          }
+        ]
+      },
+      {
+        "name": "材料摘要",
+        "type": "text"
+      },
+      {
+        "name": "确认投递",
+        "type": "checkbox"
+      },
+      {
+        "name": "填写状态",
+        "type": "text"
+      },
+      {
+        "name": "提交状态",
+        "type": "text"
+      },
+      {
+        "name": "官网原文",
+        "type": "text"
+      },
+      {
+        "name": "检查结果",
+        "type": "text"
+      },
+      {
+        "name": "最近检查时间",
+        "type": "datetime",
+        "style": {
+          "format": "yyyy/MM/dd HH:mm"
+        }
+      },
+      {
+        "name": "投递日期",
+        "type": "datetime",
+        "style": {
+          "format": "yyyy/MM/dd"
+        }
+      }
+    ]
+  }
+}

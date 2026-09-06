@@ -13,6 +13,7 @@ description: 在企业招聘官网填写、保存并检查站内简历。用户�
 ### 1.1 读取已有状态
 
 1. 执行 `node bin/applyctl.js task list --json`，用 `taskId` 找到任务；已有运行调用 `apply.get_status { runId }`。
+   同时运行 `python3 skills/recruitment-link/scripts/table-locations.py --data-root <dataRoot> show`，按 [表格位置与创建](../recruitment-link/references/table-setup.md) 读取本批原表和行身份。未登记时交给 recruitment-link 登记或创建；用户只要求当前网页操作且不需要表格时保留本地结果。
 2. 读取该任务绑定的简历、履历记录、材料和已确认答案，按 [私有资料](references/private-resume-data.md) 核对原始材料。
 3. 没有可用中文简历时索要，英文可选。已有资料不重问；缺少的必填事实集中询问，选填留空。
 4. 在用户指定的公司范围内工作。只读找匹配岗位需要用户已表达这一目的，按已存意向和官网完整 JD 判断；资料不足标“待核实”。
@@ -81,6 +82,7 @@ description: 在企业招聘官网填写、保存并检查站内简历。用户�
 
 ## 6. 结束或交接
 
+按表格位置与创建第 5 节回写本批原行并读回确认，明确区分已保存、独审通过和已投递；写回失败报告“表格待同步”。
 用户只要求填写时，保存并独审后结束；有问题则如实交付未完成项。用户授权找岗位时，按 [候选岗位记录](../official-apply/references/source-and-candidate-records.md) 收集岗位链接和完整 JD，交用户选择。
 用户明确要求真实投递时，将 `taskId`、`runId`、`serverReadback`、`evidencePath` 和通过的独审报告交给 `job-application-submit`；岗位专属字段改动也须先审查。
 无需立即交接到下一阶段时，完成证据采集后调用 `apply.close_run { runId }` 释放本次会话；需要修复时重新打开。批次用 `apply.next_work { batchId }` 继续；若重复返回同一已知阻塞项，按登录流程第 2.2 步从本批清单继续其他任务。结束或报告整批等待前，把尾批待审记录审完。

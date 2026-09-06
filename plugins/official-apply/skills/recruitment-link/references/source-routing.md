@@ -1,5 +1,18 @@
 # 来源选择细节
 
+## 表格位置与外部数据
+
+先按 SKILL.md 读取 `<dataRoot>/tables/locations.json`。已有文件或链接直接复用；没有表格先创建，没有招聘来源按 find-sources 搜索。
+本地 SQLite、CSV、JSON 和远端数据文件都留在插件外，先读取结构及记录数。SQLite 用 sqlite3 只读连接查看表/列后 SELECT，CSV 用 csv.DictReader，JSON 用 JSON 解析工具；不把整个数据库直接当作具体岗位申请队列。
+外部链接先用当前网页/仓库工具读取真实文件说明与内容；需要下载时保存到私有 sources 目录，不带入公共插件包。保留来源、原文和更新时间，不把历史快照当成当前开放岗位。
+
+## 任务输入由 Agent 从已有资料生成
+
+公司简历任务需要 task_kind=company_resume、company_name、job_url；具体岗位额外需要 job_title、job_selection_source、job_selection_evidence。只填站内简历仍用 review 模式，任务类型不是提交授权。
+execute 来自用户处理范围；batch_id 由同批共用；resume_material_id 与完整 profile_record_ids 从已核对资料绑定复用。
+company_key/job_key 可省略；status/result_note 不放导入输入。没有额外附件时省略 additional_material_ids 或使用真正的数组 []，不要写字符串 "[]"。
+external_row_id 保留原表实际行身份，并按 table-setup 第 5 节保存批次与原表的对应关系，方便后续恢复和写回。
+
 ## 用户已经提供岗位来源
 
 岗位表、飞书 Base、公司名称、公司招聘页或具体岗位链接都属于用户已经提供来源。先保持

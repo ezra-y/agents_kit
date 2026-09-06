@@ -17,7 +17,7 @@ description: 在企业招聘官网完成已经明确岗位的申请和最终提�
 6. 用户在后续消息确认摘要，或第二张表中同一岗位的专用“确认投递”已由用户勾选且已展示摘要
    与当前批准摘要一致，或已有明确的来源范围、选择规则和材料批次委托时，调用
    `apply.submit { runId, confirm: true, approvalToken }`。
-7. 从成功页、提交接口和应聘记录读取结果，按任务保存证据。
+7. 从成功页、提交接口和应聘记录读取结果，按任务保存证据。按 [原表回写](../recruitment-link/references/table-setup.md) 第 5 节更新对应行并读回；使用本批登记，不要求用户重复提供表格链接。
 8. 结果不确定时，请用户在官网应聘记录中核对。核对后调用
    `apply.resolve_submission { runId, result, confirmedBy }`。这个工具只改本地结果，不再次点击。
 
