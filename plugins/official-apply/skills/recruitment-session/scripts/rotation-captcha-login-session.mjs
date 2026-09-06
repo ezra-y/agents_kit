@@ -6,8 +6,7 @@ import path from 'node:path';
 import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
 
-import { getSkillPaths } from '../../../src/config/paths.ts';
-import { createMcpServer } from '../../../src/mcp/create-mcp-server.ts';
+import { launch } from '../../../bin/launch.js';
 import {
   attachCaptchaNetworkObserver,
   readCaptchaDecision,
@@ -28,7 +27,7 @@ if (process.argv.includes('--help')) {
       'Usage: OFFICIAL_APPLY_PHONE=<phone> node',
       '  skills/recruitment-session/scripts/rotation-captcha-login-session.mjs',
       '  --task-id <taskId> --login-url <url>',
-      '  [--profile-name feishu-jobs] [--headed] [--auto]',
+      '  [--profile-name captcha-<taskId>] [--channel chrome|msedge|chromium] [--headed] [--auto]',
       '',
       'Interactive commands:',
       '  fast',
@@ -43,7 +42,7 @@ if (process.argv.includes('--help')) {
 
 const taskId = option('--task-id');
 const loginUrl = option('--login-url');
-const profileName = option('--profile-name', 'feishu-jobs');
+const profileName = option('--profile-name', `captcha-${taskId}`);
 const phone = process.env['OFFICIAL_APPLY_PHONE'];
 const headless = !process.argv.includes('--headed');
 const auto = process.argv.includes('--auto');
@@ -53,6 +52,8 @@ if (!/^1\d{10}$/.test(phone ?? '')) {
   throw new Error('OFFICIAL_APPLY_PHONE must be an 11-digit mainland China number');
 }
 
+const { getSkillPaths } = await launch('src/config/paths.ts');
+const { createMcpServer } = await launch('src/mcp/create-mcp-server.ts');
 const paths = getSkillPaths();
 const server = createMcpServer({ paths });
 let runId;
@@ -353,6 +354,7 @@ process.on('SIGTERM', () => void close());
 const opened = await server.callTool('apply.open_task', {
   taskId,
   browserMode: 'persistent',
+  ...(option('--channel') ? { channel: option('--channel') } : {}),
   profileName,
   headless,
 });
@@ -376,8 +378,10 @@ if (auto) {
 }
 
 const rl = readline.createInterface({ input: process.stdin });
+let pendingCommand = Promise.resolve();
+rl.on('close', () => void pendingCommand.then(close));
 rl.on('line', (line) => {
-  void (async () => {
+  pendingCommand = pendingCommand.then(async () => {
     const [command, value] = line.trim().split(/\s+/, 2);
     if (command === 'fast') await fast(page);
     if (command === 'code' && value) {
@@ -408,7 +412,7 @@ rl.on('line', (line) => {
       );
     }
     if (command === 'quit') await close();
-  })().catch((error) => {
+  }).catch((error) => {
     write('ERROR', {
       message: error instanceof Error ? error.message.split('\n')[0] : String(error),
     });

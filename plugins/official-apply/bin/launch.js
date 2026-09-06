@@ -209,12 +209,10 @@ export async function launch(relativeEntry) {
   }
 
   if (choice.kind === 'dist') {
-    await import(pathToFileURL(compiled).href);
-    return;
+    return import(pathToFileURL(compiled).href);
   }
   if (choice.kind === 'source') {
-    await import(pathToFileURL(source).href);
-    return;
+    return import(pathToFileURL(source).href);
   }
 
   process.stderr.write(unsupportedMessage(process.versions.node, path.relative(ROOT, compiled)));

@@ -6,8 +6,7 @@ import path from 'node:path';
 import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
 
-import { getSkillPaths } from '../../../src/config/paths.ts';
-import { createMcpServer } from '../../../src/mcp/create-mcp-server.ts';
+import { launch } from '../../../bin/launch.js';
 import {
   attachCaptchaNetworkObserver,
   readCaptchaDecision,
@@ -62,7 +61,7 @@ if (process.argv.includes('--help')) {
       'Usage: OFFICIAL_APPLY_PHONE=<phone> node',
       '  skills/recruitment-session/scripts/jigsaw-captcha-session.mjs',
       '  --task-id <taskId>',
-      '  [--profile-name jigsaw-captcha] [--headed] [--auto]',
+      '  [--profile-name captcha-<taskId>] [--channel chrome|msedge|chromium] [--headed] [--auto]',
       '  [--max-attempts 1|2]',
       '',
       'Interactive commands:',
@@ -80,7 +79,7 @@ if (process.argv.includes('--help')) {
 
 const taskId = option('--task-id');
 if (!taskId) throw new Error('--task-id is required');
-const profileName = option('--profile-name', 'jigsaw-captcha');
+const profileName = option('--profile-name', `captcha-${taskId}`);
 const headless = !process.argv.includes('--headed');
 const auto = process.argv.includes('--auto');
 const maxAttempts = Number(option('--max-attempts', '2'));
@@ -91,6 +90,8 @@ if (auto && !/^1\d{10}$/.test(phone ?? '')) {
 if (!Number.isInteger(maxAttempts) || maxAttempts < 1 || maxAttempts > 2) {
   throw new Error('--max-attempts must be 1 or 2');
 }
+const { getSkillPaths } = await launch('src/config/paths.ts');
+const { createMcpServer } = await launch('src/mcp/create-mcp-server.ts');
 const paths = getSkillPaths();
 const server = createMcpServer({ paths });
 let runId;
@@ -617,6 +618,7 @@ process.on('SIGTERM', () => void close());
 const opened = await server.callTool('apply.open_task', {
   taskId,
   browserMode: 'persistent',
+  ...(option('--channel') ? { channel: option('--channel') } : {}),
   profileName,
   headless,
 });
@@ -636,8 +638,10 @@ if (auto) {
 }
 
 const rl = readline.createInterface({ input: process.stdin });
+let pendingCommand = Promise.resolve();
+rl.on('close', () => void pendingCommand.then(close));
 rl.on('line', (line) => {
-  void (async () => {
+  pendingCommand = pendingCommand.then(async () => {
     const [command, value] = line.trim().split(/\s+/, 2);
     if (command === 'inspect') await inspect();
     if (command === 'sms' && value) {
@@ -663,7 +667,7 @@ rl.on('line', (line) => {
     }
     if (command === 'resume') await fillAndSaveResume();
     if (command === 'quit') await close();
-  })().catch((error) => {
+  }).catch((error) => {
     write('ERROR', {
       message: error instanceof Error ? error.message.split('\n')[0] : String(error),
     });

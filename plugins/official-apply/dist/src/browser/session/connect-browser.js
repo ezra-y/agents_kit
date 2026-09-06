@@ -24,12 +24,7 @@ import { isInsideLocalRoot } from "../../config/paths.js";
 import { restorePersistentSessionStorage } from "./persist-session-storage.js";
 import { activateBrowserSession, bindBrowserSessionLifecycle, } from "./browser-session-lifecycle.js";
 const DEFAULT_PROFILE_NAME = 'default';
-/**
- * 挑 channel。
- *
- * 测试默认用 Playwright 自带的 chromium（机器上不一定装了 Chrome）；
- * 真实投递默认用系统 Chrome，因为用户的登录态在那里。
- */
+/** 显式参数优先，其次启动器读入的用户配置；测试使用独立 Chromium。 */
 function resolveChannel(mode, channel) {
     if (channel !== undefined) {
         return channel;
@@ -57,25 +52,22 @@ function headedWindowArgs(headless) {
     }
     return args;
 }
-/**
- * 系统浏览器起不来时退回 Playwright 自带的 chromium。
- *
- * 默认用系统 Chrome 是有原因的：它的 UA 和指纹更像真人，招聘网站不容易拦。
- * 但机器上不一定装了 Chrome 或 Edge，这时候硬失败没有意义——
- * 退回自带的 chromium 仍然能干活。
- *
- * 退回这件事必须让人知道，所以会往 stderr 写一行。
- */
+/** 仅浏览器未安装时尝试备用内核；档案占用和其他启动错误保留原始原因。 */
 async function withChannelFallback(channel, launch) {
     try {
         return await launch(channel);
     }
     catch (error) {
-        if (channel === 'chromium') {
+        if (channel === 'chromium' || !/Executable doesn't exist|distribution.*is not found/i.test(describeError(error))) {
             throw error;
         }
         process.stderr.write(`[official-apply] 启动 ${channel} 失败（${describeError(error)}），退回 Playwright 自带的 chromium。\n`);
-        return launch('chromium');
+        try {
+            return await launch('chromium');
+        }
+        catch (fallbackError) {
+            throw new Error(`${describeError(error)}；备用 Chromium 启动失败：${describeError(fallbackError)}`);
+        }
     }
 }
 const DEFAULT_TIMEOUT_MS = 60_000;
@@ -152,6 +144,9 @@ export async function connectBrowser(options) {
             });
         }
         catch (error) {
+            if (/ProcessSingleton|profile.*in use|SingletonLock/i.test(describeError(error))) {
+                throw browserError('browser_profile_in_use', `${profileDir} 正被另一个浏览器会话使用。请复用该会话，或用 --profile-name 指定独立档案（新档案可能需要登录）；不要删除锁文件或关闭用户浏览器。`);
+            }
             throw browserError('browser_launch_failed', describeError(error));
         }
         await restorePersistentSessionStorage(context, profileDir);
