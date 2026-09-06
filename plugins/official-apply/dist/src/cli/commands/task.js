@@ -34,7 +34,6 @@ async function handleTaskRun(context) {
         return failed('cli_invalid_option', `--mode 只能是 review 或 auto，收到 ${rawMode}`);
     }
     const browserMode = (readString(context.args.options, 'browser') ?? 'persistent');
-    const headless = readBoolean(context.args.options, 'headless');
     // 1. 打开任务并把页面准备好。这一串 CLI 和 MCP 共用同一个函数。
     let started;
     try {
@@ -42,7 +41,7 @@ async function handleTaskRun(context) {
             paths: context.paths,
             taskId,
             browserMode,
-            headless,
+            ...(context.args.options['headless'] === undefined ? {} : { headless: readBoolean(context.args.options, 'headless') }),
             now: context.now,
         });
     }

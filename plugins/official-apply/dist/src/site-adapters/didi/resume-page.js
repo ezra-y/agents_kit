@@ -240,6 +240,7 @@ async function validateServer(page, payload) {
     const basic = asRecord(resume['basicInfo']);
     for (const key of [
         'name',
+        'email',
         'gender',
         'academicDegree',
         'location',
@@ -366,6 +367,7 @@ export const didiResumePage = {
             basicInfo: compact({
                 name,
                 phone: text(account, 'phone') ?? phone,
+                email: text(input.basic, 'person.contact.email') ?? text(account, 'email'),
                 fullPhone: text(account, 'fullPhone') ??
                     (phone === undefined ? undefined : `+86 ${phone}`),
                 gender: text(input.basic, 'person.identity.gender') ??

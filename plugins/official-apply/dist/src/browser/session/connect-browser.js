@@ -76,27 +76,12 @@ function connected(session) {
     bindBrowserSessionLifecycle(session);
     return session;
 }
-/**
- * 这次该不该开有头浏览器。
- *
- * | 模式 | 默认 | 为什么 |
- * | --- | --- | --- |
- * | `isolated_test` | **无头** | 给机器看的，人不需要看见 |
- * | `persistent` | 有头 | 用户要在里面登录、看着表单、确认提交 |
- * | `attach_existing` | 有头 | 接管的本来就是用户开着的窗口 |
- *
- * 这条默认值是踩出来的：原来一律默认有头，而 `isolated_test`
- * （**专门给测试用的那个模式**）也走这个默认值。测试并发跑起来，
- * Dock 上一口气弹十几个窗口，电脑没法用。
- *
- * 拆成纯函数是为了能不开浏览器就测这条规则——
- * 用真启动去测「默认是不是有头」，测试本身就会弹窗，等于没解决问题。
- */
+/** 新建会话默认无头；接管现有窗口保留显示状态，显式参数优先。 */
 export function resolveHeadless(mode, explicit) {
     if (explicit !== undefined) {
         return explicit;
     }
-    return mode === 'isolated_test';
+    return mode !== 'attach_existing';
 }
 export function browserError(code, detail) {
     return new Error(`${code}: ${detail}`);

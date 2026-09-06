@@ -12,7 +12,8 @@ description: 为企业招聘官网准备登录状态并找到站内简历入口�
 ### 1.1 复用已有状态
 
 已有 runId 先调用 `apply.get_status { runId }`，用 `apply.list_open_runs {}` 确认仍有活跃会话。
-没有活跃会话则调用 `apply.open_task { taskId, browserMode: "persistent" }`，保存返回的 runId。
+新建浏览器默认 headless:true，可正常读取字段、填写、保存和截图；headless:false 的可见窗口也允许，按实际操作需要选择。接管用户已有窗口不改变其显示状态。
+没有活跃会话则调用 `apply.open_task { taskId, browserMode: "persistent", headless: true }`，保存返回的 runId。
 需要复用用户 Chrome/Edge 登录态时，在 open_task 中提供已确认的 `channel`、`loginStateSource`、`loginStateSourceProfile` 和目标 `loginStateDomains`。Edge 对应 msedge；不要假定所有用户都用 Edge、默认浏览器档案或 163 邮箱。
 `attach_existing` 仅在已有有效动态 `cdpEndpoint` 时使用；不编造地址，不关闭用户原来的浏览器窗口。
 
