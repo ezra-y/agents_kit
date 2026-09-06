@@ -45,51 +45,6 @@ function recordsOf(payload, key) {
 function sectionValue(records) {
     return records.map((record) => record.values);
 }
-function packSkills(records) {
-    const names = records
-        .map((record) => recordText(record, 'name', 'skill'))
-        .filter((item) => item !== undefined);
-    if (names.length <= MAX_SKILL_CARDS) {
-        return names.map((name) => ({ name, level: '熟练' }));
-    }
-    const groups = [
-        {
-            name: 'Agent 工程、MCP 与多智能体开发',
-            level: '精通',
-            pattern: /Agent|MCP|Multi-Agent|Claude Code|Codex/i,
-        },
-        {
-            name: 'Agent Skill 全周期开发',
-            level: '精通',
-            pattern: /Agent Skill/i,
-        },
-        {
-            name: 'AIGC、LoRA 与 ComfyUI 工作流',
-            level: '精通',
-            pattern: /AIGC|LoRA|ComfyUI/i,
-        },
-        {
-            name: 'Python、桌面端与服务器工程',
-            level: '熟练',
-            pattern: /Python|Tauri|SwiftUI|Git|Linux|Docker|Caddy|PostgreSQL/i,
-        },
-        {
-            name: '用户研究、交互原型与视觉设计',
-            level: '熟练',
-            pattern: /用户研究|竞品|信息架构|Figma|视觉|动效|PS|AE|Rhino|KeyShot/i,
-        },
-        {
-            name: '问卷统计、质性研究与 Codebook',
-            level: '熟练',
-            pattern: /问卷|统计|SPSS|STATA|扎根理论|Codebook|MAXQDA/i,
-        },
-    ];
-    const unmatched = names.filter((name) => !groups.some((group) => group.pattern.test(name)));
-    if (unmatched.length > 0) {
-        groups[MAX_SKILL_CARDS - 1].name += `、${unmatched.join('、')}`;
-    }
-    return groups.map(({ name, level }) => ({ name, level }));
-}
 function normalizedDegree(value) {
     if (/master|硕士/i.test(value))
         return '硕士';
@@ -689,7 +644,7 @@ export function createNeteaseResumePage(options = {}) {
                     experience: sectionValue(input.experience),
                     projects: input.projects.slice(0, MAX_PROJECT_CARDS).map((record) => record.values),
                     awards: sectionValue(input.awards),
-                    skills: packSkills((input.skills ?? []).map((record) => record.values)),
+                    skills: (input.skills ?? []).filter(record => recordText(record.values, 'level') !== undefined).slice(0, MAX_SKILL_CARDS).map(record => record.values),
                     ...(input.materials?.['attachment.resume'] === undefined
                         ? {}
                         : { 'attachment.resume': input.materials['attachment.resume'] }),
@@ -697,6 +652,12 @@ export function createNeteaseResumePage(options = {}) {
                 missing,
                 conflicts: [],
                 skipped: [
+                    ...(input.skills ?? []).filter(record => recordText(record.values, 'level') === undefined).map(record => ({
+                        key: 'skills.level', reason: `${String(record.values['name'] ?? '该技能')}的掌握程度没有明确来源，未填写技能卡片`,
+                    })),
+                    ...(input.skills ?? []).filter(record => recordText(record.values, 'level') !== undefined).slice(MAX_SKILL_CARDS).map(record => ({
+                        key: 'skills.capacity', reason: `官网技能卡片容量不足，${String(record.values['name'] ?? '该技能')}未填写`,
+                    })),
                     ...input.projects.slice(MAX_PROJECT_CARDS).map((record, index) => ({
                         key: `projects[${MAX_PROJECT_CARDS + index}]`,
                         reason: `官网最多填写 ${MAX_PROJECT_CARDS} 个独立项目；${String(record.values['name'] ?? record.values['label'] ?? '该项目')}未填写到官网`,

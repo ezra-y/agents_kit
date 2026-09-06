@@ -148,11 +148,18 @@ export function validateResumeProfile(input) {
         });
     }
     for (const section of ['skills', 'languages']) {
-        if (profile[section].some((value) => typeof value !== 'string')) {
+        if (profile[section].some((value) => {
+            if (typeof value === 'string')
+                return false;
+            return !(section === 'skills' && isRecord(value)
+                && typeof value['name'] === 'string' && value['name'].trim() !== ''
+                && (value['level'] === undefined || typeof value['level'] === 'string')
+                && (value['description'] === undefined || typeof value['description'] === 'string'));
+        })) {
             issues.push({
                 pointer: `/${section}`,
                 code: 'shape_invalid',
-                message: `${section} 只能包含字符串。`,
+                message: section === 'skills' ? '技能需为文字或包含name和可选level的记录。' : `${section} 只能包含字符串。`,
             });
         }
     }

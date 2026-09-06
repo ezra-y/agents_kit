@@ -358,13 +358,6 @@ function resolveRequiredCustomFields(input, fields) {
                 continue;
             }
         }
-        if (/最高学历教学方式/.test(label)) {
-            const fullTime = options.find((option) => String(option['label'] ?? '') === '全日制');
-            if (fullTime !== undefined) {
-                values.push({ object_id: id, value: String(fullTime['value']) });
-                continue;
-            }
-        }
         if (/毕业时间/.test(label)) {
             const latest = [...input.education]
                 .map((record) => text(record.values, 'endDate', 'end_date'))

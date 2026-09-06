@@ -59,7 +59,7 @@ export function renderProfileMarkdown(profile) {
         line('级别', record.level),
     ]));
     if (profile.skills.length > 0) {
-        output.push('## 技能', '', profile.skills.map((item) => `- ${item}`).join('\n'), '');
+        output.push('## 技能', '', profile.skills.map(item => typeof item === 'string' ? `- ${item}` : `- ${item.name}${item.level ? `（${item.level}）` : ''}${item.description ? `：${item.description}` : ''}`).join('\n'), '');
     }
     if (profile.languages.length > 0) {
         output.push('## 语言', '', profile.languages.map((item) => `- ${item}`).join('\n'), '');
