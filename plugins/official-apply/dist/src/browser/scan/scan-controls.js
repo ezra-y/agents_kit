@@ -497,6 +497,24 @@ export function isAntiBotField(field) {
     // 隐藏的、名字里带 captcha 的控件，一律当反爬容器。
     return !field.visible && /captcha|turnstile/i.test(`${field.htmlName ?? ''} ${field.rawLabel}`);
 }
+/** 招聘列表的搜索框不是简历字段，不能拿去向用户要答案。 */
+export function isSearchControl(element) {
+    if (element.type === 'search' || element.role === 'searchbox') {
+        return true;
+    }
+    const text = [
+        element.placeholder,
+        element.htmlName,
+        element.htmlId,
+        ...element.labelEvidence.map((item) => item.text),
+    ]
+        .filter((value) => value !== null && value !== undefined)
+        .join(' ');
+    return /(?:搜索|查找).*(?:职位|岗位|关键词)|(?:输入|请输入).*(?:职位|岗位).*(?:关键词|关键字)/.test(text);
+}
+export function isIgnoredControl(element) {
+    return !element.visible;
+}
 export function normalizeControlKind(element) {
     if (element.isButtonLike) {
         return 'action_button';
@@ -654,6 +672,9 @@ export function scanControls(snapshot, context = {}) {
             continue;
         }
         if (!element.isFormControl) {
+            continue;
+        }
+        if (isIgnoredControl(element) || isSearchControl(element)) {
             continue;
         }
         const isGrouped = (element.type === 'radio' || element.type === 'checkbox') &&

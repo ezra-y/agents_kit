@@ -41,10 +41,10 @@ lark-cli base +record-list --as user --base-token <真实Base编号> --table-id 
 ```
 
 读取列表时 `data.fields` 对应 `data.data` 的列，`data.record_id_list` 对应行；检查 has_more 后继续 offset 分页。仅需要某几列时重复传 --field-id。
-同一 Base 有多张表时，根据用户指定的用途选；名称相似不等于用途已确认。记录真实 ID、链接和必要的 fieldMap：
+同一 Base 有多张表时，根据用户指定的用途选；名称相似不等于用途已确认。记录真实 ID、链接和必要的 fieldMap。飞书 fieldMap 使用字段 ID，供矩阵解析工具准确定位：
 
 ```json
-{"kind":"feishu","location":"https://用户域名/base/真实Base编号","name":"用户实际表名","baseToken":"真实Base编号","tableId":"真实表编号","fieldMap":{"公司":"实际公司列","岗位链接":"实际岗位链接列","检查结果":"实际检查结果列"}}
+{"kind":"feishu","location":"https://用户域名/base/真实Base编号","name":"用户实际表名","baseToken":"真实Base编号","tableId":"真实表编号","fieldMap":{"公司":"公司字段ID","来源链接":"来源链接字段ID","岗位链接":"岗位链接字段ID","处理完成":"填写完成字段ID","填写状态":"填写状态字段ID","提交状态":"提交状态字段ID","检查结果":"检查结果字段ID"}}
 ```
 
 register 用法同上。只有普通外部页面链接、还没解析为飞书坐标时，可登记 `{ "kind":"link", "location":"https://实际来源页面", "name":"来源名" }`；用浏览器/网页读取工具打开。普通链接登记不代表有写权限或能直接更新网页。
@@ -83,7 +83,7 @@ fields 是 JSON 数组本身，不是文件名；用 Python subprocess 参数数
 创建结果不确定时先查现有表，不能立即重复创建。新建表意图已明确时直接执行，不再重复问是否建表。
 
 需要减少可见列时，用 `+view-create --json '{"name":"选岗位","type":"grid"}'` 创建视图，再用 `+view-set-visible-fields --json '{"visible_fields":["公司","岗位","岗位链接","用户选择","检查结果"]}'`，两者都传真实 base-token/table-id，后者加返回的 view-id。
-已有表优先保留原列和视图，用 fieldMap 适配；确实缺少当前功能所需字段且用户已要求该功能时，用 `+field-create --json '<模板中对应字段对象>'` 补列。不要把历史“处理”复选框当成“确认投递”。
+已有表优先保留原列和视图，用 fieldMap 适配；继续填写需要明确处理完成、填写状态、提交状态列，不能把未知列或不存在的列当作未完成。确实缺少当前功能所需字段且用户已要求该功能时，用 `+field-create --json '<模板中对应字段对象>'` 补列。不要把历史“处理”复选框当成“确认投递”。
 
 ## 4. 把外部数据或搜索结果放进表
 
@@ -108,4 +108,4 @@ python3 skills/recruitment-link/scripts/table-locations.py --data-root <dataRoot
 本地用该批原表路径及 keyField 读取后更新；默认位置仍相同时可直接 upsert-local。默认位置已变化时用文件工具更新批次原文件，不覆盖新默认登记。
 飞书用该批保存的 Base/表/行 ID 调用 record-upsert，只传必要结果；随后用 `+record-get --as user --base-token <id> --table-id <id> --record-id <id> --format json` 读回核对。
 验证码值和登录令牌不回写。更新失败保留本地结果并报告“表格待同步”，不能把网页操作成功说成表格已更新。
-这里由活跃 Agent 执行读写，没有后台同步服务；不需要用户再次提供已登记的位置。
+继续填写的选行条件和两表完成顺序以 [表格筛选与收尾](fill-selection.md) 为准。这里由活跃 Agent 执行读写，没有后台同步服务；不需要用户再次提供已登记的位置。

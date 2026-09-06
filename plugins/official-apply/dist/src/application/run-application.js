@@ -27,6 +27,9 @@ const DEFAULT_MAX_PAGES = 10;
  * 但真实表单不会深到哪里去。配合状态哈希去重，足够防住死循环。
  */
 const MAX_RESCAN_ROUNDS = 5;
+export function requiredMissing(items) {
+    return items.filter((item) => item.required);
+}
 /**
  * 页面状态指纹。
  *
@@ -174,11 +177,12 @@ export async function runApplication(context, request) {
             now,
         });
         // 4. 缺答案就一次问完，然后停下来等人。
-        if (answers.missing.length > 0) {
-            persistMissingAnswerRequests({ paths: request.paths, runId: request.runId, now }, answers.missing);
+        const requiredAnswers = requiredMissing(answers.missing);
+        if (requiredAnswers.length > 0) {
+            persistMissingAnswerRequests({ paths: request.paths, runId: request.runId, now }, requiredAnswers);
             move('waiting_for_user', 'missing_answers');
-            pendingQuestions = answers.missing;
-            stoppedBecause = `还有 ${answers.missing.length} 个问题需要你回答`;
+            pendingQuestions = requiredAnswers;
+            stoppedBecause = `还有 ${requiredAnswers.length} 个问题需要你回答`;
             break;
         }
         // 5. 批量填写。
@@ -309,10 +313,11 @@ export async function runApplication(context, request) {
                 now,
             });
             // 条件字段带出了新问题，就停下来一次问完。
-            if (workingAnswers.missing.length > 0) {
-                persistMissingAnswerRequests({ paths: request.paths, runId: request.runId, now }, workingAnswers.missing);
+            const requiredConditionalAnswers = requiredMissing(workingAnswers.missing);
+            if (requiredConditionalAnswers.length > 0) {
+                persistMissingAnswerRequests({ paths: request.paths, runId: request.runId, now }, requiredConditionalAnswers);
                 move('waiting_for_user', 'missing_answers_after_conditional');
-                pendingQuestions = workingAnswers.missing;
+                pendingQuestions = requiredConditionalAnswers;
                 break;
             }
             const nextFill = await fillPage({ page: context.page }, {

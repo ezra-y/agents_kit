@@ -7,16 +7,16 @@ description: 在企业招聘官网填写、保存并检查站内简历。用户�
 
 输入为 `taskId`、`runId`、`batchId`、`resumeUrl` 和本次处理范围。按下面顺序执行；调用示例中的值替换为本次真实值。
 命令在插件根目录执行；先读配置中的私有数据绝对目录。下文 `<dataRoot>` 指该目录，所有证据都保存在其中。
+`task run` 是旧的一键页面执行入口，不包含下面的表格选行、表二收尾和独立审查，不能用它替代本流程。当前宿主未提供 apply 工具时，使用可用浏览器工具逐步完成相同动作与读回；缺少某步能力要说明，不能跳过。
 
 ## 1. 核对任务与资料
 
 ### 1.1 读取已有状态
 
-1. 执行 `node bin/applyctl.js task list --json`，用 `taskId` 找到任务；已有运行调用 `apply.get_status { runId }`。
-   同时运行 `python3 skills/recruitment-link/scripts/table-locations.py --data-root <dataRoot> show`，按 [表格位置与创建](../recruitment-link/references/table-setup.md) 读取本批原表和行身份。未登记时交给 recruitment-link 登记或创建；用户只要求当前网页操作且不需要表格时保留本地结果。
-2. 读取该任务绑定的简历、履历记录、材料和已确认答案，按 [私有资料](references/private-resume-data.md) 核对原始材料。
-3. 没有可用中文简历时索要，英文可选。已有资料不重问；缺少的必填事实集中询问，选填留空。
-4. 在用户指定的公司范围内工作。只读找匹配岗位需要用户已表达这一目的，按已存意向和官网完整 JD 判断；资料不足标“待核实”。
+1. 运行 `python3 skills/recruitment-link/scripts/table-locations.py --data-root <dataRoot> show`，先确认第一张来源表与第二张结果表。按 [表格筛选与收尾](../recruitment-link/references/fill-selection.md) 读取当前表格，生成允许填写的行清单。
+2. 只为清单中的 eligible 行查找已关联 taskId/runId，再用 `apply.get_status { runId }` 读状态。task list 用于查关联记录，不根据最近运行时间、历史登录成功或旧失败清单选择公司。
+3. 按 [私有资料](references/private-resume-data.md) 读取当前行绑定的简历、履历和答案。没有可用中文简历时索要；缺少必填事实集中询问，选填留空。
+4. 没有第二张表时先按登记/创建流程补齐结果存放位置；不把“以后有推荐岗位再建表”作为省略保存结果的理由。
 
 ### 1.2 确认可以继续
 
@@ -42,7 +42,9 @@ description: 在企业招聘官网填写、保存并检查站内简历。用户�
 
 ### 3.1 写入
 
-调用 `apply.fill_page { runId }`。检查 `data.outcome`、`data.fill.failed` 和 `data.preparation.skipped`；通用分支检查每项填写结果。
+先按当前网页实际值列出空白字段/缺失卡片及已存在内容，仅对空白部分写入；不能把“任务未完成”理解为整页重填。已有值与资料冲突时记录差异，未经用户要求不覆盖。
+`apply.fill_page { runId }` 没有 empty_only 参数，也不保证保留非空字段；仅在本次目标栏目为空且已确认脚本不会覆盖其他内容时调用。已有内容的页面用当前浏览器工具逐字段补空并读回；工具不能表达局部写入时停止该页，报告“缺少局部填写能力”，不调用整页脚本碰运气。
+调用填写工具后检查 `data.outcome`、`data.fill.failed`、`data.preparation.skipped` 或实际字段读回；任务行筛选返回的 fillMode 只是写入范围要求，不是现有 MCP 参数。
 每个真实项目独立填写，沿用原名称、日期和角色；应用私有 `includeInApplications: false` 偏好。单一描述框同时保留概述和全部详细条目。
 官网限制条数或字数时记录具体未填内容；未经用户允许，不通过合并项目或删掉后续段落消除错误。官网没有对应栏目时说明附件承载情况。
 
@@ -64,6 +66,7 @@ description: 在企业招聘官网填写、保存并检查站内简历。用户�
 
 按 [证据与恢复](references/evidence-recovery.md) 收集原资料、保存前字段全文、服务器读回全文，以及两阶段完整截图。
 多页/折叠卡片/滚动文本框要补齐未显示的内容；完整页面截图不代表文本框里所有段落都已展示。优先读控件完整值，截图辅助核对栏目归属。
+按表格筛选与收尾第 3 节立即把保存结果写入第二张表并读回，记录其真实 recordId；第一张表先记已保存或部分填写，独审前不勾完成。
 把本次 `taskId`、`runId`、最新 `evidencePath` 写入 `<dataRoot>/reviews/<batchId>/index.json`，标为 `pending`；单任务用 taskId 代替 batchId。
 
 ## 5. 每 10 家交给独立 Agent 审查
@@ -82,7 +85,7 @@ description: 在企业招聘官网填写、保存并检查站内简历。用户�
 
 ## 6. 结束或交接
 
-按表格位置与创建第 5 节回写本批原行并读回确认，明确区分已保存、独审通过和已投递；写回失败报告“表格待同步”。
+独审后按表格筛选与收尾第 3 节更新第二张表的同一行；确认完整且独审通过、结果表写回成功后，才勾选第一张表的处理完成并读回。写回失败记“表格待同步”，不能宣布该公司已全部完成。
 用户只要求填写时，保存并独审后结束；有问题则如实交付未完成项。用户授权找岗位时，按 [候选岗位记录](../official-apply/references/source-and-candidate-records.md) 收集岗位链接和完整 JD，交用户选择。
 用户明确要求真实投递时，将 `taskId`、`runId`、`serverReadback`、`evidencePath` 和通过的独审报告交给 `job-application-submit`；岗位专属字段改动也须先审查。
 无需立即交接到下一阶段时，完成证据采集后调用 `apply.close_run { runId }` 释放本次会话；需要修复时重新打开。批次用 `apply.next_work { batchId }` 继续；若重复返回同一已知阻塞项，按登录流程第 2.2 步从本批清单继续其他任务。结束或报告整批等待前，把尾批待审记录审完。

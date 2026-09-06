@@ -53,6 +53,18 @@
             "name": "不考虑"
           }
         ]
+      },
+      {
+        "name": "填写完成",
+        "type": "checkbox"
+      },
+      {
+        "name": "填写状态",
+        "type": "text"
+      },
+      {
+        "name": "提交状态",
+        "type": "text"
       }
     ]
   },
@@ -71,6 +83,13 @@
       {
         "name": "岗位链接",
         "type": "text"
+      },
+      {
+        "name": "简历入口",
+        "type": "text",
+        "style": {
+          "type": "url"
+        }
       },
       {
         "name": "完整JD",
