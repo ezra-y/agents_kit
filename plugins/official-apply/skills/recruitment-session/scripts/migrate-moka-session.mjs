@@ -8,6 +8,7 @@ import {
   writeFile,
 } from 'node:fs/promises';
 import path from 'node:path';
+import { launch } from '../../../bin/launch.js';
 
 const COOKIE_NAMES = new Set([
   'connect.sid',
@@ -57,7 +58,8 @@ if (
   throw new Error('--target-host 必须是完整域名，不带协议和路径');
 }
 
-const root = path.resolve('.local/browser-profile');
+const { getSkillPaths } = await launch('src/config/paths.ts');
+const root = getSkillPaths().browserProfileDir;
 const sourcePath = path.join(
   root,
   fromProfile,

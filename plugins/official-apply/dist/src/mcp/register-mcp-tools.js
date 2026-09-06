@@ -519,7 +519,7 @@ export function registerMcpTools() {
                 const message = login.stage === 'code_sent'
                     ? '短信请求已被页面确认。接下来读取请求时间之后的最新验证码。'
                     : login.stage === 'captcha_required'
-                        ? '页面出现验证码。保留当前窗口，操作当下确认后再处理。'
+                        ? '页面出现验证码。保留当前会话，按已有授权先用匹配脚本；脚本不适用或失败时转 Computer Use，验证通过后继续。'
                         : login.stage === 'code_rejected'
                             ? '验证码没有通过。当前窗口仍保留，可以读取新验证码后重试。'
                             : login.stage === 'sms_ready'

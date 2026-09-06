@@ -1,5 +1,8 @@
 # 保存、证据、视觉辅助与恢复
 
+所有运行文件使用配置解析出的绝对 `<dataRoot>`：材料、截图、会话、临时图片、审查报告和表格登记集中在此处。文中的 `.local/` 都是这个目录的简称，不相对于终端当前目录。可复用脚本随插件发布，私有运行数据不写入会被更新替换的插件安装缓存，也不写到桌面或其他项目。
+工具能指定输出位置时直接传 `<dataRoot>` 下的绝对路径；宿主强制生成临时截图时，将本任务需要保留的文件归档到此目录并引用归档路径，能清理的本任务临时副本在结束后清理，不移动或删除宿主管理的文件。
+
 ## 网站脚本保存路径
 
 先调用 `apply.validate_page { runId }`，再调用 `apply.advance { runId, actionKind: "save" }`。
@@ -13,6 +16,7 @@
   review-data.json      原始填写资料、两阶段实际字段全文及采集问题
 ```
 
+evidencePath 是相对本次运行的插件根目录返回的路径；按插件根目录解析成绝对路径，不能按终端当前目录或再次拼 dataRoot。确认它位于已配置的数据目录后写入审查清单。
 真实内容只在私有证据中保存。外部报告只提供结果和必要差异，不把整份个人资料写入公共日志。
 review-data 包含 source.payload、beforeSave 和 serverReadback；source 尚未经过网站字段转换。
 serverReadback.reopened=false 表示未能重新打开，不能把当前页面当成服务器读回。截图失败也会标明；逐项核实文件可读，不能只看 evidencePath 存在。
@@ -21,7 +25,8 @@ serverReadback.reopened=false 表示未能重新打开，不能把当前页面�
 ## 通用页面保存路径
 
 没有匹配网站脚本时，advance 返回的保存响应确认不包含自动重新打开或上述证据包。
-保存前后分别用当前宿主可用的浏览器工具读取实际控件完整值并完整截图；保存后显式打开真实简历 URL，再读回。
+在 `<dataRoot>/evidence/sites/<host>/resume-save/<runId>-<time>/` 建立本次目录，保存前后分别用当前宿主可用的浏览器工具读取实际控件完整值并完整截图；保存后显式打开真实简历 URL，再读回。
+截图命名仍使用 before-save.png 和 server-readback.png；只提供视口截图的电脑工具需滚动覆盖各栏目，依次编号，不能把一张视口图称为全页截图。
 例如持有同一页面的 Playwright 工具可用 `page.locator('textarea').evaluateAll(nodes => nodes.map(node => node.value))` 读取全文、`page.screenshot({path, fullPage:true})` 截图；不是持有该页面的环境不能照搬局部变量 page。
 已有通用扫描快照在 `<dataRoot>/runs/<runId>/snapshots/`，可读其中的 schema.fields，但要检查是否覆盖所需栏目和全文。
 工具只暴露当前视口、不能读取完整字段或无法重新打开时，记录 insufficient_evidence，不能用自检结果补造全文。按独立审查提示词要求提供相同三方证据；不声称通用分支已自动生成 review-data.json。
@@ -39,10 +44,17 @@ serverReadback.reopened=false 表示未能重新打开，不能把当前页面�
 报告必须来自实际独立调用，并覆盖本轮每个 taskId 和最新 evidencePath。核对后写回 reviewStatus 和 reportPath；丢项、旧路径、报告未生成均保持 pending。
 修改材料或字段使旧报告失效；修复后重新保存并使用新证据再次审查。任务恢复时先读清单，避免因底层任务状态 completed 而漏掉待审项。
 
-## 视觉兜底
+## 视觉操作
 
-普通输入框、下拉、单选、复选、日期和文件上传使用 Playwright 结构化操作。
-结构化方法已有失败证据时，才使用局部视觉兜底：
+填写、选择、上传、翻页、草稿保存和验证码都遵循：先用匹配脚本或当前页面的结构化工具，缺少适配或操作失败时转 Computer Use（电脑操作）。视觉方式完成后仍须保存、重新打开、核对全文和独立审查。
+
+1. 读取当前宿主电脑操作工具的实际说明，确认它能控制目标页面。复用当前浏览器、账号和页面；不为视觉操作另建另一种浏览器的填写程序。
+2. 浏览器截图/坐标工具能控制无头页面时继续无头。只有桌面工具时使用配置中同款浏览器的可见窗口；若工具不能将现有无头会话显示出来，先保存已填内容和可用会话状态，再关闭本任务旧会话，用同一配置/档案重开并检查真实登录。不能继承的未保存内容和验证码须重新读取，不能关闭用户原有浏览器。
+3. 获取新截图，确认目标控件后执行点击、输入、拖动或滚动。多步表单逐页处理；不得对旧截图连续盲点。普通“确认/提交”按钮先核实实际用途，最终投递仍走提交流程。
+4. 能读 DOM/控件值时读回完整 expectedValue；视觉独有控件通过操作后截图及保存后重新打开核实。读不到文本框全文时滚动/展开补齐，仍缺证据则明确待核实，不能宣布完整通过。
+5. 无电脑操作工具、无法控制当前页面或视觉操作也失败，才连同实际工具结果交能力演进诊断；同一问题已诊断则复用记录。用户缺失事实、网站拒绝或宿主权限要求仍需如实处理，换操作方式不扩大权限。
+
+已有当前字段 runtimeRef 时可复用 MCP 的局部辅助：
 
 ```text
 apply.build_visual_fallback { runId, runtimeRef, goal }
@@ -50,7 +62,7 @@ apply.build_visual_fallback { runId, runtimeRef, goal }
 → apply.verify_visual_fallback { runId, runtimeRef, expectedValue }
 ```
 
-runtimeRef 必须来自本次实际扫描。expectedValue 传完整期望值，避免默认只验证非空。视觉操作后用 DOM、ARIA 或字段值验证；截图作为辅助证据。
+没有 runtimeRef 时直接按上述宿主电脑操作步骤处理，不把该辅助工具的前置条件当作全部视觉操作的限制。runtimeRef 必须来自本次实际扫描。expectedValue 传完整期望值，避免默认只验证非空。视觉操作后用 DOM、ARIA 或字段值验证；截图作为辅助证据。
 
 ## 隐私和证据
 

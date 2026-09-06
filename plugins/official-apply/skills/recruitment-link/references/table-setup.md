@@ -84,6 +84,7 @@ fields 是 JSON 数组本身，不是文件名；用 Python subprocess 参数数
 
 需要减少可见列时，用 `+view-create --json '{"name":"选岗位","type":"grid"}'` 创建视图，再用 `+view-set-visible-fields --json '{"visible_fields":["公司","岗位","岗位链接","用户选择","检查结果"]}'`，两者都传真实 base-token/table-id，后者加返回的 view-id。
 已有表优先保留原列和视图，用 fieldMap 适配；继续填写需要明确处理完成、填写状态、提交状态列，不能把未知列或不存在的列当作未完成。确实缺少当前功能所需字段且用户已要求该功能时，用 `+field-create --json '<模板中对应字段对象>'` 补列。不要把历史“处理”复选框当成“确认投递”。
+结果表使用模板中的“登录方式”单选列（手机/邮箱/其他/未确认）；已有表先 field-list 查重，仅缺少时 field-create，并把返回的字段 ID 登记到 candidates.fieldMap。旧本地 CSV 不会自动补模板列：备份原文件，用文件工具仅在表头末尾增加“登录方式”，旧行补空单元格，保留已有列和内容；xlsx 用表格工具做同样补列。
 
 ## 4. 把外部数据或搜索结果放进表
 

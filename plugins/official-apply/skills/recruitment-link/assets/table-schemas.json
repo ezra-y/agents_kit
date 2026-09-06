@@ -151,6 +151,25 @@
         "style": {
           "format": "yyyy/MM/dd"
         }
+      },
+      {
+        "name": "登录方式",
+        "type": "select",
+        "multiple": false,
+        "options": [
+          {
+            "name": "手机"
+          },
+          {
+            "name": "邮箱"
+          },
+          {
+            "name": "其他"
+          },
+          {
+            "name": "未确认"
+          }
+        ]
       }
     ]
   }

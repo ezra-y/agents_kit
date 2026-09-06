@@ -43,7 +43,7 @@ description: 在企业招聘官网填写、保存并检查站内简历。用户�
 ### 3.1 写入
 
 先按当前网页实际值列出空白字段/缺失卡片及已存在内容，仅对空白部分写入；不能把“任务未完成”理解为整页重填。已有值与资料冲突时记录差异，未经用户要求不覆盖。
-`apply.fill_page { runId }` 没有 empty_only 参数，也不保证保留非空字段；仅在本次目标栏目为空且已确认脚本不会覆盖其他内容时调用。已有内容的页面用当前浏览器工具逐字段补空并读回；缺少局部写入或当前站点脚本时，先按 [能力演进](../recruitment-capability-evolution/SKILL.md) 在现有浏览器接口下补最小能力并验证；确实不能处理才停止该页，不调用整页脚本碰运气。
+`apply.fill_page { runId }` 没有 empty_only 参数，也不保证保留非空字段；仅在本次目标栏目为空且已确认脚本不会覆盖其他内容时调用。已有内容的页面用当前浏览器工具逐字段补空并读回；无适用脚本或结构化操作失败时，先按 [视觉操作](references/evidence-recovery.md#视觉操作) 使用 Computer Use。视觉路径仍失败时，再按 [能力演进](../recruitment-capability-evolution/SKILL.md) 在现有浏览器接口下补最小能力并验证；确实不能处理才停止该页，不调用整页脚本碰运气。
 调用填写工具后检查 `data.outcome`、`data.fill.failed`、`data.preparation.skipped` 或实际字段读回；任务行筛选返回的 fillMode 只是写入范围要求，不是现有 MCP 参数。
 官网分设工作与实习栏目时，同一段经历按已确认的任职性质只进入一个栏目；只有合并栏目时才统一填写，不能把一段实习复制到两栏。
 所有用户选中的项目逐条完整填写，沿用原名称、日期和角色；应用私有 `includeInApplications: false` 排除标记，不因名称含 Skill 等词自行删选。单一描述框同时保留概述和全部详细条目。
@@ -52,7 +52,7 @@ description: 在企业招聘官网填写、保存并检查站内简历。用户�
 ### 3.2 校验与失败处理
 
 调用 `apply.validate_page { runId }`。网站脚本检查 `data.validation.valid/issues`；通用分支检查 `data.valid/issues`。失败时只修有问题的字段，再校验。
-结构化操作失败且有当前字段引用时，按 [证据与恢复](references/evidence-recovery.md) 调用视觉辅助，验证时提供完整 `expectedValue`，不能只验证非空。
+结构化操作失败时，按 [视觉操作](references/evidence-recovery.md#视觉操作) 使用 Computer Use；有当前字段引用时可调用局部视觉辅助，验证提供完整 `expectedValue`，不能只验证非空。无字段引用不代表电脑操作不可用。
 遇到浏览器/页面/字段操作/脚本/保存/读回等技术问题，宣布技术阻塞前必须先调用一次 [能力演进](../recruitment-capability-evolution/SKILL.md) 诊断和尝试修复；成功后继续原阶段，仍失败再记录具体阻塞。同一问题复用已有演进记录，不无限重复。缺用户事实或权限时不通过代码猜补或绕过。
 这些校验属于填写者自检，还不算独立审查。
 
@@ -69,7 +69,7 @@ description: 在企业招聘官网填写、保存并检查站内简历。用户�
 
 按 [证据与恢复](references/evidence-recovery.md) 收集原资料、保存前字段全文、服务器读回全文，以及两阶段完整截图。
 多页/折叠卡片/滚动文本框要补齐未显示的内容；完整页面截图不代表文本框里所有段落都已展示。优先读控件完整值，截图辅助核对栏目归属。
-按表格筛选与收尾第 3 节立即把保存结果写入第二张表并读回，记录其真实 recordId；第一张表先记已保存或部分填写，独审前不勾完成。
+按表格筛选与收尾第 3 节立即把保存结果写入第二张表并读回，同时写入登录阶段确认的登录方式，记录其真实 recordId；第一张表先记已保存或部分填写，独审前不勾完成。
 把本次 `taskId`、`runId`、最新 `evidencePath` 写入 `<dataRoot>/reviews/<batchId>/index.json`，标为 `pending`；单任务用 taskId 代替 batchId。
 
 ## 5. 每 10 家交给独立 Agent 审查

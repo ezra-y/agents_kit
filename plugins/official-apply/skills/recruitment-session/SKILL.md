@@ -28,12 +28,12 @@ description: 为企业招聘官网准备登录状态并找到站内简历入口�
 
 读取 [登录与验证码](references/login-verification.md)。在用户已授权的范围内复用手机号、已登录邮箱和可用验证码工具。
 短信路径为 `apply.login { runId, action: "begin_sms", phone }`，确认已发送后读取本次验证码，再调用 `apply.login { runId, action: "submit_sms_code", code }`。
-邮箱代码通过当前可用的浏览器工具读取用户已登录的邮箱；只取本次请求之后、对应服务的代码。图片验证码按参考文档选择实际可用工具。
+邮箱代码通过当前可用的浏览器工具读取用户已登录的邮箱；只取本次请求之后、对应服务的代码。图片验证码先用匹配脚本；无适用脚本或脚本失败，再用 Computer Use（电脑操作），按参考文档验证实际结果。
 每次完成验证后在同一 runId 调用 `apply.login { runId, action: "inspect" }`，成功才继续。
 
 ### 2.2 阻塞与继续
 
-没有登录态但能够登录时继续尝试；验证码无法取得、邮箱未登录或可行重试仍失败时，记录该公司原因和所需用户动作。
+没有登录态但能够登录时继续尝试；出现验证码不能直接判为阻塞。先完成第 2.1 节的脚本和电脑操作路径，再判断是否缺少验证码、邮箱登录或实际工具能力，并记录具体原因和所需用户动作。
 启动环境、页面加载或站点操作脚本出现技术问题时，宣布阻塞前先调用一次 [能力演进](../recruitment-capability-evolution/SKILL.md) 诊断和尝试修复，成功后继续；同一问题保留处理记录。工具权限或网站明确拒绝如实记录，不通过另写浏览器绕过。
 按 [证据与恢复](../resume-fill-review/references/evidence-recovery.md) 更新已有阻塞记录，验证码值和登录令牌不进入长期资料。
 调用 `apply.next_work { batchId }` 寻找下一项。部分入口失败不会更新调度状态；若它再次返回同一已知阻塞 taskId，读取 `node bin/applyctl.js task list --json`，按本批已确认范围选择其他未处理任务并用 open_task 打开，保留当前阻塞，不反复循环。
@@ -50,7 +50,8 @@ description: 为企业招聘官网准备登录状态并找到站内简历入口�
 
 ### 3.2 交接
 
-用户还要填写时，把 `taskId`、`batchId`、`runId`、`resumeUrl`、`pageScriptId`、`loginStatus` 和 `blockers` 交给 `resume-fill-review`，完成该公司的填写后再处理下一家。
+记录本次实际成功使用的 `loginMethod`（手机/邮箱/其他）。仅复用已有登录态且无法确定原方式时记“未确认”，不根据简历中的手机/邮箱猜测，不为补列强制退出重登；已确认的同账号历史登录方式可沿用，但不能据此判定当前仍登录。
+用户还要填写时，把 `taskId`、`batchId`、`runId`、`resumeUrl`、`pageScriptId`、`loginStatus`、`loginMethod` 和 `blockers` 交给 `resume-fill-review`，完成该公司的填写后再处理下一家。
 用户只要登录或寻找入口时在此结束；不执行填写和提交。会话不再需要时调用 `apply.close_run { runId }` 释放本次资源。
 
 ## 按需使用的会话工具

@@ -11,13 +11,13 @@ const RESUME_BY_ACTION = {
 /** 每种卡点的默认说明。只有 flow.message 缺失时才用。 */
 const FALLBACK_MESSAGE = {
     login: '当前需要登录。',
-    captcha: '页面出现验证码，需要人工确认。',
+    captcha: '验证码待处理：先用匹配脚本，失败或不适用时转 Computer Use；验证通过后继续。',
     sms_code: '需要短信验证码。',
     unknown_required_answer: '页面要追问缺失答案。',
     sensitive_confirmation: '需要确认敏感信息。',
     submission_confirmation: '需要确认最终提交。',
     site_blocked: '页面跳到了未登记的域名，已暂停自动操作。',
-    tool_failure: '登录工具没有适配这个页面，需要人工处理。',
+    tool_failure: '登录工具尚未适配此页：先尝试 Computer Use，并调用能力演进诊断后再判断阻塞。',
     submission_uncertain: '提交结果不确定，需要去官网人工确认。',
 };
 export function loginHumanTakeover(runId, flow) {
