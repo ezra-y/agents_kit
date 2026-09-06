@@ -112,6 +112,7 @@ export function packageSkill(paths) {
         '.mcp.json',
         '.codex/config.toml',
         'agents/openai.yaml',
+        'agents/resume-field-reviewer.md',
         'bin/applyctl.js',
         'bin/applyctl-mcp.js',
         'bin/launch.js',

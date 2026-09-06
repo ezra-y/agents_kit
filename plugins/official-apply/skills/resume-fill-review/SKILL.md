@@ -1,84 +1,86 @@
 ---
 name: resume-fill-review
-description: 在企业招聘官网填写、保存并审查站内简历。用户要求更新简历、补教育/工作/项目、上传 PDF、检查站内简历，或已经有 recruitment-session 的 runId 时使用。读取官网真实字段，调用 PageScript 填写，保存后重新打开服务器简历并检查结构和语义。
+description: 在企业招聘官网填写、保存并检查站内简历。用户要求更新简历、补教育/工作/项目、上传 PDF、检查站内简历，或已经有 recruitment-session 的 runId 时使用。先核对资料，再填写并重新打开服务器简历，最后交独立 Agent 对照原资料、字段全文和截图审查。填写请求停在审查结果，不提交申请。
 ---
 
 # resume-fill-review
 
-使用 `recruitment-session` 提供的 `runId` 完成站内简历。
+输入为 `taskId`、`runId`、`batchId`、`resumeUrl` 和本次处理范围。按下面顺序执行；调用示例中的值替换为本次真实值。
+命令在插件根目录执行；先读配置中的私有数据绝对目录。下文 `<dataRoot>` 指该目录，所有证据都保存在其中。
 
-## 流程
+## 1. 核对任务与资料
 
-1. 读取任务绑定的私有简历、材料和已确认答案。没有可用中文简历时，在打开填写页前向用户索要；
-   英文简历可选。
-2. 首次使用或简历变更时，按 [私有简历和答案](references/private-resume-data.md) 导入；已有有效资料时
-   直接查缺项，并补齐本批适用的常见资料。
-3. 读取当前公司官网的字段、必填规则、选项、重复卡片、上传控件和页面实现版本。
-4. 按栏目映射私有资料并填写全部可确定内容；官网解析附件只用于辅助，不直接作为最终数据。
-5. 读回当前表单并保存，再重新打开服务器简历，检查结构、语义、附件和完整截图。
+### 1.1 读取已有状态
 
-## 填写原则
+1. 执行 `node bin/applyctl.js task list --json`，用 `taskId` 找到任务；已有运行调用 `apply.get_status { runId }`。
+2. 读取该任务绑定的简历、履历记录、材料和已确认答案，按 [私有资料](references/private-resume-data.md) 核对原始材料。
+3. 没有可用中文简历时索要，英文可选。已有资料不重问；缺少的必填事实集中询问，选填留空。
+4. 在用户指定的公司范围内工作。只读找匹配岗位需要用户已表达这一目的，按已存意向和官网完整 JD 判断；资料不足标“待核实”。
 
-- 官网字段和选项决定表单结构。
-- 同一招聘系统的不同公司可能使用不同页面版本和请求格式。PageScript 必须根据当前页面
-  的真实字段和官网请求生成数据，不能直接套用另一家公司的请求。
-- 教育、工作、项目和奖项保持原记录类型。每个真实项目独立填写，沿用原项目名和起止时间。
-- 单一描述框同时写入概述和详细条目；保存后逐条核对原文，不能只检查“字段非空”。
-- 先读取私有资料中的项目选择偏好；`includeInApplications: false` 的记录保留在资料库，当前网申不填写。
-- 项目所需日期和角色从原简历、本地资料和已有证据中拆出；没有证据时不编造。
-- 某栏目要求源资料没有的必填值时，先使用官网支持且语义不变的等价栏目保存记录。
-  没有等价栏目时保留在附件，并把该字段记为阻断。
-- 官网缺少对应栏目时，内容保留在附件简历。
-- 官网限制记录数量时，按私有资料顺序填写可容纳的独立记录；其余记录保留在附件简历，
-  并在审查结果中写明栏目容量和剩余数量。
-- 作品链接使用真实 URL。
-- 已确认的答案直接复用。当前任务适用的常见缺项一次询问；陌生必填问题记为阻断，与同批缺项
-  集中询问，保存后按正确范围复用。
+### 1.2 确认可以继续
 
-一个真实页面使用一个完整 PageScript。辅助函数负责数据准备、控件操作和站点格式转换。
-优先用 Playwright 读取页面结构和网络请求。发现稳定的站内接口后，可以由 PageScript
-直接写入，但仍需使用当前页面的登录态，并在保存后重新读取服务器数据。
+1. 本批仅处理未投递记录时，跳过已确认提交的任务；结果不确定的任务先核对官网应聘记录，保持原结果，不能当未投递重做。
+2. 明确岗位须确认官网仍接受申请、硬条件与用户事实相符；停止招聘或明确不符就记录原因。公司简历入口本身不能证明岗位开放。
+3. 没有有效运行或登录已失效，交给 [登录流程](../recruitment-session/SKILL.md)，取得可用 `runId` 后继续。缺少具体岗位不妨碍独立站内简历的填写。
 
-## MCP 连接
+## 2. 读取真实字段并补答案
 
-Agent 使用同一个 `runId` 调用：
+### 2.1 扫描和解析
 
-- `apply.inspect_page`：扫描当前页面的字段、选项、按钮、错误和页面结构。
-- `apply.resolve_page`：理解字段含义，并从私有简历和已存答案中准备填写数据。
-- `apply.save_answers`：保存用户补充的信息，供当前或后续任务复用。
-- `apply.fill_page`：通过当前页面的 PageScript 写入已经确定的数据。
-- `apply.validate_page`：重新读取页面，检查填写结果、报错和缺失字段。
-- `apply.advance`：执行保存、下一步或上一步，但不执行最终提交。
-- `apply.build_visual_fallback`：结构化填写失败时，生成交给 Computer Use 的最小操作。
-- `apply.verify_visual_fallback`：视觉操作完成后重扫页面，确认动作真的生效。
-- `apply.get_status`：读取当前任务、页面进度和阻断原因。
-- `apply.close_run`：审查结束后关闭指定浏览器会话。
+依次调用 `apply.inspect_page { runId }`、`apply.resolve_page { runId }`。
+外层 `ok: true` 只说明工具调用成功。网站脚本分支检查 `data.preparation.missing/conflicts/skipped` 和缺失材料/记录；通用分支检查 `data.missing`、`data.requiresReviewRuntimeRefs`。
+网站脚本返回的 `resolvedKeys` 只有键名，不能据此声称字段内容正确。已知答案与官网选项矛盾时停止该字段，说明需要确认的具体内容。
 
-保存站内简历时使用 `apply.advance { actionKind: "save" }`。共享核心调用 PageScript 保存，
-再用原 `runId` 重新打开服务器简历并校验。PageScript 使用 Playwright 操作页面。
+### 2.2 保存用户回答
 
-## 审查输出
+收到真实回答后调用 `apply.save_answers { runId, answers: [{ canonicalKey, value, scope }] }`，scope 按私有资料说明选择。
+随后再次 `apply.resolve_page { runId }`。新增履历或更换材料按私有资料说明更新任务绑定并建立新运行，旧运行不会自动读到新绑定。
+必填缺项暂时无法补齐时记录该公司阻塞，先处理其他公司；同一问题在批次内合并询问。
 
-```text
-reviewed
-serverReadback
-sectionCounts
-semanticIssues
-evidencePath
-```
+## 3. 填写并检查当前表单
 
-用户只要求简历时，服务器读回和审查通过后结束。用户明确要求申请岗位时，把 `taskId`、
-`runId`、`serverReadback` 和 `evidencePath` 交给 `job-application-submit`。
+### 3.1 写入
 
-用户已授权按求职意向查看岗位时，填写完成后只读收集该官网展示的具体推荐岗位、链接和完整 JD，
-按 [招聘来源和候选岗位记录](../official-apply/references/source-and-candidate-records.md) 交给用户选择。
-这一步不提交申请。
+调用 `apply.fill_page { runId }`。检查 `data.outcome`、`data.fill.failed` 和 `data.preparation.skipped`；通用分支检查每项填写结果。
+每个真实项目独立填写，沿用原名称、日期和角色；应用私有 `includeInApplications: false` 偏好。单一描述框同时保留概述和全部详细条目。
+官网限制条数或字数时记录具体未填内容；未经用户允许，不通过合并项目或删掉后续段落消除错误。官网没有对应栏目时说明附件承载情况。
 
-交给投递 Skill 前，必须确认当前任务已有明确岗位，而且岗位来自用户提供的来源或用户明确
-授权的代选结果。公司入口、招聘项目名称和职位列表不能当成明确岗位，也不能在本 Skill
-中自行补选岗位。
+### 3.2 校验与失败处理
 
-首次导入或更新私有资料时，读取
-[references/private-resume-data.md](references/private-resume-data.md)。
-需要保存证据、视觉辅助、备份和恢复时，读取
-[references/evidence-recovery.md](references/evidence-recovery.md)。
+调用 `apply.validate_page { runId }`。网站脚本检查 `data.validation.valid/issues`；通用分支检查 `data.valid/issues`。失败时只修有问题的字段，再校验。
+结构化操作失败且有当前字段引用时，按 [证据与恢复](references/evidence-recovery.md) 调用视觉辅助，验证时提供完整 `expectedValue`，不能只验证非空。
+这些校验属于填写者自检，还不算独立审查。
+
+## 4. 保存、重新打开与采集证据
+
+### 4.1 保存草稿
+
+自检通过后调用 `apply.advance { runId, actionKind: "save" }`。明确传 `save`，不用下一步或提交代替。
+网站脚本分支检查 `data.saveDraft.attempted/saved`、`data.serverReadback.valid` 和 `data.evidencePath`；通用分支的 `data.saveConfirmation.confirmed` 只证明保存响应，仍须重新打开并读回。
+保存失败或无法确认服务器读回时保留“保存/读回待核实”，不能报告完整成功。
+
+### 4.2 交付完整审查材料
+
+按 [证据与恢复](references/evidence-recovery.md) 收集原资料、保存前字段全文、服务器读回全文，以及两阶段完整截图。
+多页/折叠卡片/滚动文本框要补齐未显示的内容；完整页面截图不代表文本框里所有段落都已展示。优先读控件完整值，截图辅助核对栏目归属。
+把本次 `taskId`、`runId`、最新 `evidencePath` 写入 `<dataRoot>/reviews/<batchId>/index.json`，标为 `pending`；单任务用 taskId 代替 batchId。
+
+## 5. 每 10 家交给独立 Agent 审查
+
+### 5.1 派发与等待
+
+默认每积累 10 家待审记录审一轮，覆盖这 10 家全部记录；尾批不足 10 家、任务结束或真实提交前也立即审查相关记录。
+读取 [独立审查提示词](../../agents/resume-field-reviewer.md)，通过当前宿主的子 Agent 工具启动新上下文，传入本批 index 路径和指定的报告路径。工具名称以当前宿主实际提供的为准。
+填写者不兼任审查者。没有独立 Agent 能力时保持 `pending` 并说明“独立审查未执行”，不以重新提示自己替代。
+
+### 5.2 处理结果
+
+读取审查者实际生成的逐公司报告；只有全部必需证据可读、字段完整且无未解决差异时，该项才记 `passed`。`needs_fix` 交填写者修复后重新保存、截图、独审；缺证据记 `insufficient_evidence`。
+每次修改字段或材料都使该项旧审查失效，重新标 `pending`。报告绑定本次 evidencePath；恢复任务先读 index，不能因任务库显示 completed 就跳过待审项。
+每家公司只反馈已保存、独审通过/待审/待修、阻塞和下一步；不把程序自检通过说成独审通过。
+
+## 6. 结束或交接
+
+用户只要求填写时，保存并独审后结束；有问题则如实交付未完成项。用户授权找岗位时，按 [候选岗位记录](../official-apply/references/source-and-candidate-records.md) 收集岗位链接和完整 JD，交用户选择。
+用户明确要求真实投递时，将 `taskId`、`runId`、`serverReadback`、`evidencePath` 和通过的独审报告交给 `job-application-submit`；岗位专属字段改动也须先审查。
+无需立即交接到下一阶段时，完成证据采集后调用 `apply.close_run { runId }` 释放本次会话；需要修复时重新打开。批次用 `apply.next_work { batchId }` 继续；若重复返回同一已知阻塞项，按登录流程第 2.2 步从本批清单继续其他任务。结束或报告整批等待前，把尾批待审记录审完。

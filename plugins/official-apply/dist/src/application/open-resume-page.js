@@ -1,3 +1,4 @@
+import { setSessionPage } from "../browser/session/browser-session-lifecycle.js";
 import { openApplicationPage } from "../browser/session/open-application-page.js";
 import { isMokaRecruitmentPath } from "../site-adapters/moka/routes.js";
 function isFeishuJobsHost(hostname) {
@@ -252,6 +253,7 @@ async function visiblePhoneLogin(page) {
     return (await phone.count()) > 0 && phone.isVisible().catch(() => false);
 }
 async function navigate(request, url) {
+    setSessionPage(request.session, request.page);
     await openApplicationPage(request.session, {
         runId: request.runId,
         url,

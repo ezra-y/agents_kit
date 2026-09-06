@@ -483,7 +483,7 @@
     },
     "skill:plugin/official-apply/resume-fill-review": {
       "recommendation": 3,
-      "description": "在企业招聘官网填写、保存并审查站内简历。用户要求更新简历、补教育/工作/项目、上传 PDF、检查站内简历，或已经有 recruitment-session 的 runId 时使用。读取官网真实字段，调用 PageScript 填写，保存后重新打开服务器简历并检查结构和语义。",
+      "description": "在企业招聘官网填写、保存并检查站内简历。用户要求更新简历、补教育/工作/项目、上传 PDF、检查站内简历，或已经有 recruitment-session 的 runId 时使用。先核对资料，再填写并重新打开服务器简历，最后交独立 Agent 对照原资料、字段全文和截图审查。填写请求停在审查结果，不提交申请。",
       "trigger": "",
       "tags": [
         "role/workflow",

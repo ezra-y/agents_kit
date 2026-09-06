@@ -7,13 +7,13 @@
 
 ```text
 apply.login { runId, action: "inspect" }
-→ logged_in：继续投递
+→ logged_in：返回用户要求的填写或检查阶段
 → login_required：
   apply.login { runId, action: "begin_sms", phone: "<用户授权的手机号>" }
 → code_sent：
   读取 requestedAt 之后最新验证码
   apply.login { runId, action: "submit_sms_code", code: "<验证码>" }
-→ logged_in：继续投递
+→ logged_in：返回用户要求的填写或检查阶段
 ```
 
 `begin_sms` 先点击网页上的“短信登录”，确认标签已经选中，再填写可见手机号框。
@@ -61,8 +61,7 @@ Cookie、Local Storage 或其他企业数据；写入前自动备份目标状态
 默认由 Agent 操作验证码。视觉验证码优先使用 Computer Use 点击；Computer Use 无法定位
 当前窗口时，使用同一 Playwright 页面操作。两种入口都失败后请用户接管。
 
-出现图片、滑块或安全验证时保留浏览器和 `runId`。真正操作验证码前按宿主规则取得
-操作当下确认。确认后再用 Computer Use 操作当前窗口。
+出现图片、滑块或安全验证时保留浏览器和 `runId`。已获得的登录和验证码处理授权在本批内复用；仅在当前宿主工具明确要求额外确认时请求确认，并说明具体要求。使用工具在当前窗口操作。
 
 第一次定位超时后重新 `inspect`，确认登录模式、可见控件和页面错误。完成可行的重试后
 再记录阻断，并保留页面和 `runId`。

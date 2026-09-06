@@ -5,73 +5,53 @@ description: 为企业招聘官网准备登录状态并找到站内简历入口�
 
 # recruitment-session
 
-从 `taskId` 建立一个可继续填写的真实浏览器会话。
+从 `taskId` 建立可继续填写的浏览器会话。登录成功后回到用户要求的阶段，登录不代表投递授权。
 
-## 流程
+## 1. 打开任务并检查登录
 
-1. 使用 Playwright persistent profile 打开任务。
-2. 复用已有登录态；需要时迁移目标域名 Cookie或执行站点短信登录。
-3. 在个人中心、账号菜单、前端路由和网络接口中找到站内简历入口。
-4. 进入真实编辑页，匹配 PageScript，并保存 `runId`、`batchId` 和稳定 URL。
-5. 每完成或阻断一家公司后调用 `apply.next_work { batchId }`，继续处理返回的任务。
+### 1.1 复用已有状态
 
-找简历入口时调用 `apply.open_resume`。职位列表和岗位详情不属于简历入口；除非用户明确
-要求代选岗位，否则不能为了进入申请表而选择一个岗位。官网没有独立简历入口时，继续检查
-个人中心路由和简历接口；仍找不到就记录该公司“简历入口依赖明确岗位”，然后处理下一家。
-只有 `apply.next_work` 返回 `waiting_for_user` 时，才能说明整批都在等待用户。
+已有 runId 先调用 `apply.get_status { runId }`，用 `apply.list_open_runs {}` 确认仍有活跃会话。
+没有活跃会话则调用 `apply.open_task { taskId, browserMode: "persistent" }`，保存返回的 runId。
+需要复用用户 Chrome/Edge 登录态时，在 open_task 中提供已确认的 `channel`、`loginStateSource`、`loginStateSourceProfile` 和目标 `loginStateDomains`。Edge 对应 msedge；不要假定所有用户都用 Edge、默认浏览器档案或 163 邮箱。
+`attach_existing` 仅在已有有效动态 `cdpEndpoint` 时使用；不编造地址，不关闭用户原来的浏览器窗口。
 
-## Playwright 与 Computer Use
+### 1.2 检查真实登录结果
 
-- Playwright 负责浏览器会话、结构化页面、网络观察和状态读回。
-- Computer Use 负责图片、点选、滑块验证码，以及 Mac“信息”等桌面界面。
-- 验证码完成后继续使用同一个 `runId` 检查登录结果。
+调用 `apply.login { runId, action: "inspect" }`。已登录则进入第 3 步；需要登录则进入第 2 步。
+登录成功以目标网址和登录后页面标志为准，Cookie 数量或头像缓存不能单独证明成功。
 
-## MCP 连接
+## 2. 完成能够自动处理的登录
 
-Agent 调用：
+### 2.1 短信、邮箱和图片验证码
 
-- `apply.open_task`：打开任务页面并创建可连续使用的 `runId`。
-- `apply.next_work`：完成或阻断一家公司后，读取同批下一项可继续的工作。
-- `apply.login`：在原页面检查登录状态，或执行短信登录等登录动作。
-- `apply.open_resume`：在当前账号中找到并打开站内简历编辑页。
-- `apply.get_status`：读取当前任务、页面、登录状态和阻断原因。
-- `apply.approve_host`：用户允许跳转到新的招聘域名后，记录并放行该域名。
-- `apply.list_open_runs`：列出当前仍在运行的浏览器会话。
-- `apply.close_run`：关闭指定会话并释放浏览器页面。
+读取 [登录与验证码](references/login-verification.md)。在用户已授权的范围内复用手机号、已登录邮箱和可用验证码工具。
+短信路径为 `apply.login { runId, action: "begin_sms", phone }`，确认已发送后读取本次验证码，再调用 `apply.login { runId, action: "submit_sms_code", code }`。
+邮箱代码通过当前可用的浏览器工具读取用户已登录的邮箱；只取本次请求之后、对应服务的代码。图片验证码按参考文档选择实际可用工具。
+每次完成验证后在同一 runId 调用 `apply.login { runId, action: "inspect" }`，成功才继续。
 
-MCP 持有浏览器页面并调用共享登录核心。Agent 按本 Skill 的步骤调用 MCP。
+### 2.2 阻塞与继续
 
-## 会话入口
+没有登录态但能够登录时继续尝试；验证码无法取得、邮箱未登录或可行重试仍失败时，记录该公司原因和所需用户动作。
+按 [证据与恢复](../resume-fill-review/references/evidence-recovery.md) 更新已有阻塞记录，验证码值和登录令牌不进入长期资料。
+调用 `apply.next_work { batchId }` 寻找下一项。部分入口失败不会更新调度状态；若它再次返回同一已知阻塞 taskId，读取 `node bin/applyctl.js task list --json`，按本批已确认范围选择其他未处理任务并用 open_task 打开，保留当前阻塞，不反复循环。
+只有本批实际任务都已完成或逐项有明确阻塞，才报告整批结束/等待；Markdown 阻塞记录本身不会驱动程序自动跳过。
 
-- `persistent`：正式默认入口，登录状态保存在项目 profile。
-- `attach_existing`：调用方提供有效动态 CDP 地址时的实验性接管入口。
-- 浏览器扩展后台标签：登录态只存在于用户浏览器时的辅助入口。
-- Computer Use：验证码和桌面视觉入口。
+## 3. 打开真实简历入口
 
-登录成功后调用 `apply.open_resume`。它在原 `runId` 中进入当前账号的简历编辑页并匹配
-PageScript。
+### 3.1 查找并进入
 
-同一 Moka 招聘系统的另一个企业站尚未登录时，先运行
-`scripts/migrate-moka-session.mjs`，只迁移已验证有用的五个会话 Cookie。迁移后仍要用
-`apply.login { action: "inspect" }` 验证目标站登录状态，不能只凭 Cookie 数量判断成功。
+调用 `apply.open_resume { runId }`，保存返回的 resumeUrl 和 PageScript 信息。PageScript 是当前网站的填写脚本。
+职位列表和岗位详情不等于简历入口。先检查个人中心、账号菜单、路由和接口；除非用户明确要求代选岗位，否则不为进入申请表而自行选择岗位。
+没有独立简历入口且需要具体岗位时，记录“简历入口依赖明确岗位”，处理下一家公司。
+跳转到需要用户允许的新招聘域名时，依实际授权调用 `apply.approve_host`，不用登录操作扩大公司范围。
 
-底层测试使用内部临时浏览器 helper；正式入口处理真实站点会话。
+### 3.2 交接
 
-## 输出
+用户还要填写时，把 `taskId`、`batchId`、`runId`、`resumeUrl`、`pageScriptId`、`loginStatus` 和 `blockers` 交给 `resume-fill-review`，完成该公司的填写后再处理下一家。
+用户只要登录或寻找入口时在此结束；不执行填写和提交。会话不再需要时调用 `apply.close_run { runId }` 释放本次资源。
 
-```text
-taskId
-batchId
-runId
-siteHost
-resumeUrl
-pageScriptId
-loginStatus
-blockers
-```
+## 按需使用的会话工具
 
-用户还要填写或检查简历时，把 `runId`、`resumeUrl` 和 `pageScriptId` 交给
-`resume-fill-review`。用户只要登录或寻找入口时在本 Skill 结束。
-
-需要短信、Mac“信息”、浏览器后台邮箱、旋转图片或其他视觉验证码时，读取
-[references/login-verification.md](references/login-verification.md)。
+Playwright 负责结构化页面和状态读回；Computer Use（电脑操作）负责当前宿主支持的视觉验证码或桌面短信界面。工具是否可用以实际环境为准。
+Moka 跨企业会话迁移按登录参考文档中的 `scripts/migrate-moka-session.mjs` 执行，迁移后再次 inspect；其他网站不套用 Moka 的 Cookie 规则。

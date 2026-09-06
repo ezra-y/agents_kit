@@ -1,5 +1,7 @@
 import { chmodSync, mkdirSync, writeFileSync, } from 'node:fs';
 import path from 'node:path';
+import { buildCanonicalApplicationPayload } from "./build-canonical-application-payload.js";
+import { captureResumeReviewPage } from "./capture-resume-review-page.js";
 import { openResumePage } from "./open-resume-page.js";
 import { resolvePageScriptForPage, saveWithPageScript, validateWithPageScript, } from "./page-script-flow.js";
 import { isInsideLocalRoot, toRepoRelative } from "../config/paths.js";
@@ -25,7 +27,7 @@ function markCompanyResumeCompleted(paths, taskId, now = new Date().toISOString(
 function messageOf(error) {
     return error instanceof Error ? (error.message.split('\n')[0] ?? error.name) : String(error);
 }
-async function attachEvidencePath(request, result, beforeScreenshot) {
+async function attachEvidencePath(request, result, reviewData) {
     if (!result.saveDraft.attempted)
         return result;
     const host = new URL(request.page.url()).hostname;
@@ -39,15 +41,28 @@ async function attachEvidencePath(request, result, beforeScreenshot) {
         if (process.platform !== 'win32')
             chmodSync(filePath, 0o600);
     };
+    const { screenshot: beforeScreenshot, ...beforeSave } = reviewData.beforeSave;
     if (beforeScreenshot !== undefined) {
         writePrivate(path.join(evidenceDir, 'before-save.png'), beforeScreenshot);
     }
-    const afterScreenshot = await request.page
-        .screenshot({ fullPage: true })
-        .catch(() => undefined);
+    const readback = reviewData.serverReadback;
+    const { screenshot: afterScreenshot, ...afterPage } = readback.reopened
+        ? readback.page : { screenshot: undefined };
     if (afterScreenshot !== undefined) {
         writePrivate(path.join(evidenceDir, 'server-readback.png'), afterScreenshot);
     }
+    writePrivate(path.join(evidenceDir, 'review-data.json'), `${JSON.stringify({
+        schemaVersion: 1,
+        taskId: request.taskId,
+        runId: request.runId,
+        capturedAt: new Date().toISOString(),
+        source: reviewData.source,
+        beforeSave,
+        serverReadback: readback.reopened
+            ? { reopened: true, page: afterPage } : readback,
+        independentReview: 'pending',
+    }, (key, value) => /password|passwd|captcha|verification.?code|one.?time.?code|token|cookie|验证码|密码/i.test(key)
+        ? undefined : value, 2)}\n`);
     const evidencePath = toRepoRelative(request.paths, evidenceDir);
     writePrivate(path.join(evidenceDir, 'result.json'), `${JSON.stringify({
         schemaVersion: 1,
@@ -61,9 +76,16 @@ async function attachEvidencePath(request, result, beforeScreenshot) {
     return { ...result, evidencePath };
 }
 export async function savePageScriptWithReadback(request) {
-    const beforeScreenshot = await request.page
-        .screenshot({ fullPage: true })
-        .catch(() => undefined);
+    const reviewData = {
+        source: buildCanonicalApplicationPayload({
+            paths: request.paths,
+            taskId: request.taskId,
+            profileRecordIds: request.profileRecordIds,
+            materialIds: request.materialRefs,
+        }),
+        beforeSave: await captureResumeReviewPage(request.page),
+        serverReadback: { reopened: false, error: 'save_not_confirmed' },
+    };
     const saved = await saveWithPageScript({
         paths: request.paths,
         page: request.page,
@@ -76,7 +98,7 @@ export async function savePageScriptWithReadback(request) {
         return saved;
     }
     if (!saved.saveDraft.saved) {
-        return attachEvidencePath(request, saved, beforeScreenshot);
+        return attachEvidencePath(request, saved, reviewData);
     }
     try {
         const reopened = await openResumePage({
@@ -84,6 +106,10 @@ export async function savePageScriptWithReadback(request) {
             page: request.page,
             runId: request.runId,
         });
+        reviewData.serverReadback = {
+            reopened: true,
+            page: await captureResumeReviewPage(request.page),
+        };
         const resolution = await resolvePageScriptForPage({
             paths: request.paths,
             page: request.page,
@@ -130,13 +156,16 @@ export async function savePageScriptWithReadback(request) {
                 valid: confirmed,
                 issueCount: readback.validation.issues.length,
             },
-        }, beforeScreenshot);
+        }, reviewData);
         if (confirmed)
             markCompanyResumeCompleted(request.paths, request.taskId);
         return result;
     }
     catch (error) {
         const readbackError = messageOf(error);
+        if (!reviewData.serverReadback.reopened) {
+            reviewData.serverReadback = { reopened: false, error: readbackError };
+        }
         return attachEvidencePath(request, {
             preparation: saved.preparation,
             saveDraft: {
@@ -145,7 +174,7 @@ export async function savePageScriptWithReadback(request) {
                 message: `保存后的服务器读回失败：${readbackError}`,
             },
             readbackError,
-        }, beforeScreenshot);
+        }, reviewData);
     }
 }
 //# sourceMappingURL=save-page-script-with-readback.js.map

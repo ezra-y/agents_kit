@@ -57,7 +57,7 @@ node bin/applyctl.js resume show --id resume_xxx
 微信使用 `basic.wechat`，身高厘米数使用 `basic.heightCm`。学院和成绩等履历内容写回对应教育记录。
 `site.custom.*` 只有字段编号时不假装已经保存。
 
-已有 `runId` 且真实表单问到字段时，才使用 `apply.save_answers`，每条回答带上正确 scope。已有
+已有 `runId` 且真实表单问到字段时，才使用 `apply.save_answers`，每条回答带上正确 scope。scope 形状为 `{ "type": "global", "key": "user" }`；公司、岗位、单次申请分别使用 company/job/application 与真实范围 key。已有
 已确认答案不重问。陌生必填问题先记为阻断，与同批问题集中询问；得到答案后保存并复用。具体网站
 仍可能出现新的必填问题。
 
