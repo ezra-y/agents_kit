@@ -336,7 +336,7 @@
 | `official-apply` | 统一处理网申任务。用户要整理岗位来源、导入任务、登录招聘官网、填写或检查站内简历、继续上次任务、准备或确认最终投递时使用。根据用户目的和已有 | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
 | `qiuzhao-feed` | 实时拉取 xixicc2027 的 2027 届秋招 jobs.json，按行业、关键词和截止时间筛选并生成可交互网页与简报。 | `role/researcher` `focus/trend-research` `focus/web-research` `platform/web` `output/report` |  | [github.com/xixicc186/xixicc2027](https://github.com/xixicc186/xixicc2027) |
 | `recruitment-capability-evolution` | 演进企业招聘自动化能力。真实站点暴露出重复人工操作、现有 Skill 或 PageScript 不适用、共享核心缺少能力，或 Agent 需 | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
-| `recruitment-link` | 准备招聘来源和工作表。用户给出岗位表、飞书链接、招聘数据文件、官网链接，或没有招聘来源时使用。先读取已登记的表格位置；没有表格时按用户偏好创 | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
+| `recruitment-link` | 准备招聘来源和工作表。用户给出岗位表、飞书链接、招聘数据文件、官网链接，或没有招聘来源、原招聘链接失效需要查找当前入口时使用。先读取已登记的 | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
 | `recruitment-session` | 为企业招聘官网准备登录状态并找到站内简历入口。用户要求登录招聘站、复用 Chrome/Edge 登录态、处理短信或图片验证码、进入个人中心或 | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
 | `resume-fill-review` | 在企业招聘官网填写、保存并检查站内简历。用户要求更新简历、补教育/工作/项目、上传 PDF、检查站内简历，或已经有 recruitment- | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
 | `smart-search` | 基于本机 opencli 的智能搜索路由:指定站点、社交媒体、技术资料、新闻、购物、旅游、求职、金融、中文内容各走不同的源。含强制预检、单题 | `role/router` `focus/web-research` `platform/opencli` `output/research` | ● | — |

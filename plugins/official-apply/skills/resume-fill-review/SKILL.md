@@ -30,6 +30,7 @@ description: 在企业招聘官网填写、保存并检查站内简历。用户�
 
 依次调用 `apply.inspect_page { runId }`、`apply.resolve_page { runId }`。
 外层 `ok: true` 只说明工具调用成功。网站脚本分支检查 `data.preparation.missing/conflicts/skipped` 和缺失材料/记录；通用分支检查 `data.missing`、`data.requiresReviewRuntimeRefs`。
+工具返回空页面、无字段或找不到下一步时，先按 [入口与页面恢复](../recruitment-link/references/entry-recovery.md) 检查实际页面，按结果回到来源查找、视觉操作或能力演进；再继续解析。
 网站脚本返回的 `resolvedKeys` 只有键名，不能据此声称字段内容正确。已知答案与官网选项矛盾时停止该字段，说明需要确认的具体内容。
 
 ### 2.2 保存用户回答
