@@ -468,7 +468,6 @@ function resolveRequiredCustomFields(input, fields) {
             if (child !== undefined &&
                 typeof child['id'] === 'string' &&
                 photo !== undefined) {
-                values.push({ object_id: id, value: [] });
                 photoField = { parentId: id, childId: child['id'] };
                 continue;
             }
@@ -815,6 +814,14 @@ async function uploadResumeAttachment(page, localPath) {
         page.off('response', parseHandler);
     }
 }
+function setCustomPhoto(resume, photo) {
+    resume['customized_data'] = {
+        ...asRecord(resume['customized_data']),
+        [String(photo['object_id'])]: [photo],
+    };
+    resume['basic_info_customized_data'] = asRows(resume['basic_info_customized_data'])
+        .filter(item => item['object_id'] !== photo['object_id']);
+}
 async function uploadCustomImage(page, localPath) {
     const input = page.locator('input[type=file][accept*="image"]').first();
     if ((await input.count()) === 0) {
@@ -1158,6 +1165,7 @@ export const feishuJobsResumePage = {
         const photoField = asRecord(payload.resolved['requiredCustomPhoto']);
         const photoParentId = photoField['parentId'];
         const photoChildId = photoField['childId'];
+        let stagedPhoto;
         if (typeof photoParentId === 'string' &&
             typeof photoChildId === 'string') {
             const materials = asRecord(payload.resolved['materials']);
@@ -1176,20 +1184,11 @@ export const feishuJobsResumePage = {
             else {
                 try {
                     const image = await uploadCustomImage(page, photoPath);
-                    const customized = asRows(resume['basic_info_customized_data']);
-                    const parent = customized.find((item) => item['object_id'] === photoParentId);
-                    if (parent === undefined) {
-                        customized.push({
-                            object_id: photoParentId,
-                            value: [{ object_id: photoChildId, value: [image] }],
-                        });
-                    }
-                    else {
-                        parent['value'] = [
-                            { object_id: photoChildId, value: [image] },
-                        ];
-                    }
-                    resume['basic_info_customized_data'] = customized;
+                    stagedPhoto = {
+                        object_id: photoParentId,
+                        children: [{ object_id: photoChildId, value: [image] }],
+                    };
+                    setCustomPhoto(resume, stagedPhoto);
                     fields.push({ key: 'attachment.photo', outcome: 'filled' });
                 }
                 catch (error) {
@@ -1236,11 +1235,12 @@ export const feishuJobsResumePage = {
         const stagedAttachmentId = typeof resume['portal_attachment_id'] === 'string'
             ? resume['portal_attachment_id']
             : undefined;
-        await page.evaluate(({ key, portalAttachmentId }) => {
+        await page.evaluate(({ key, portalAttachmentId, photo }) => {
             window[key] = {
                 portalAttachmentId,
+                photo,
             };
-        }, { key: STAGED_KEY, portalAttachmentId: stagedAttachmentId });
+        }, { key: STAGED_KEY, portalAttachmentId: stagedAttachmentId, photo: stagedPhoto });
         return fillResult(fields);
     },
     async validate(page, payload) {
@@ -1324,6 +1324,16 @@ export const feishuJobsResumePage = {
                     expectedName: 'language',
                     extras: [{ actual: 'proficiency', expected: 'proficiency' }],
                 }, issues);
+                const photoField = asRecord(payload.resolved['requiredCustomPhoto']);
+                if (typeof photoField['parentId'] === 'string') {
+                    const customized = asRecord(current['customized_data']);
+                    const parent = asRows(customized[photoField['parentId']])[0];
+                    const child = asRows(parent?.['children'])
+                        .find(item => item['object_id'] === photoField['childId']);
+                    if (asRows(child?.['value']).length === 0) {
+                        issues.push({ key: 'attachment.photo', code: 'server_readback_mismatch', message: '个人照片未保存到服务器', severity: 'error' });
+                    }
+                }
                 const materials = asRecord(payload.resolved['materials']);
                 const resumeMaterial = asRecord(materials['attachment.resume']);
                 const expectedFile = typeof resumeMaterial['localPath'] === 'string'
@@ -1372,15 +1382,16 @@ export const feishuJobsResumePage = {
                 pageChanged: false,
             };
         }
-        const stagedAttachmentId = await page.evaluate((key) => {
-            const state = window[key];
-            if (state === null || typeof state !== 'object' || Array.isArray(state)) {
-                return undefined;
-            }
-            const value = state['portalAttachmentId'];
-            return typeof value === 'string' && value !== '' ? value : undefined;
-        }, STAGED_KEY);
+        const staged = asRecord(await page.evaluate(key => window[key], STAGED_KEY));
+        const stagedAttachmentId = text(staged, 'portalAttachmentId');
         const resume = asRecord(apiPayload.body['resume']);
+        const stagedPhoto = asRecord(staged['photo']);
+        if (typeof stagedPhoto['object_id'] === 'string') {
+            setCustomPhoto(resume, stagedPhoto);
+        }
+        else if (payload.resolved['requiredCustomPhoto'] !== undefined) {
+            return { attempted: false, saved: false, message: '个人照片尚未上传，请先完成照片填写', evidence: [], pageChanged: false };
+        }
         if ((typeof resume['portal_attachment_id'] !== 'string' ||
             resume['portal_attachment_id'] === '') &&
             stagedAttachmentId !== undefined) {
