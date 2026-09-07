@@ -46,12 +46,11 @@ async function prepareAtsxSmsForm(page) {
     const checkbox = page.locator('input[type=checkbox]:visible').first();
     if ((await checkbox.count()) > 0 &&
         !(await checkbox.isChecked().catch(() => false))) {
-        await checkbox.check({ force: true });
+        await checkbox.evaluate(element => {
+            if (element instanceof HTMLInputElement)
+                element.click();
+        });
     }
-    const button = page.locator('.loginForm-validCode button:visible').first();
-    await page.waitForFunction((element) => element instanceof HTMLButtonElement &&
-        !element.disabled &&
-        element.getAttribute('aria-disabled') !== 'true', await button.elementHandle(), { timeout: 5_000 });
 }
 export function classifyPddSmsSendResponse(value) {
     const body = value !== null && typeof value === 'object' && !Array.isArray(value)

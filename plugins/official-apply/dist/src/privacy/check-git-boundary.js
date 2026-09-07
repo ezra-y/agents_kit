@@ -46,7 +46,7 @@ const SENSITIVE_PATTERNS = [
     {
         id: 'cookie_header',
         severity: 'blocking',
-        pattern: /(^|\b)(set-)?cookie\s*[:=]\s*[^\s"']{8,}/i,
+        pattern: /(^|\b)(set-)?cookie["']?\s*[:=]\s*["']?[^\s"'=;]+=[^\s"']{8,}/i,
         hint: '疑似 Cookie 值',
     },
     {

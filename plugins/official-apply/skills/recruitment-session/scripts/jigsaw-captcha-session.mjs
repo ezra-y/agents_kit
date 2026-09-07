@@ -155,6 +155,11 @@ async function waitForJigsawEngine(page, timeoutMs = 10_000) {
         return engine;
       }
     }
+    for (const frame of page.frames()) {
+      if ((await frame.locator('img.whirl-img-inner-base').count()) > 0) {
+        throw new Error('captcha_type_rotation: 当前为旋转题，请使用 rotation-captcha-login-session.mjs，不能用拼图位移算法');
+      }
+    }
     await page.waitForTimeout(50);
   }
   throw new Error('jigsaw_engine_not_found');

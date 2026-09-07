@@ -1,3 +1,49 @@
+async function captureScrollableScreenshots(page, sensitiveSelector) {
+    // Full-page screenshots already cover document scrolling; only supplement inner panels.
+    const handle = await page.evaluateHandle(() => {
+        const candidates = Array.from(document.querySelectorAll('body *'))
+            .filter((element) => {
+            if (element.matches('input, textarea, select, [contenteditable]'))
+                return false;
+            const style = getComputedStyle(element);
+            const rect = element.getBoundingClientRect();
+            return /auto|scroll/.test(style.overflowY) && style.visibility !== 'hidden' &&
+                rect.width > 0 && rect.height > 0 && element.clientHeight > 0 &&
+                element.scrollHeight > element.clientHeight + 120;
+        });
+        return candidates.sort((left, right) => (right.scrollHeight - right.clientHeight) - (left.scrollHeight - left.clientHeight))[0] ?? null;
+    });
+    const target = handle.asElement();
+    if (target === null) {
+        await handle.dispose();
+        return [];
+    }
+    const originalTop = await target.evaluate(element => element.scrollTop);
+    const screenshots = [];
+    const mask = page.frames().flatMap((frame) => [
+        frame.locator(sensitiveSelector),
+        frame.getByLabel(/password|验证码|密码|captcha|verification.?code|one.?time.?code/i),
+        frame.getByPlaceholder(/password|验证码|密码|captcha|verification.?code|one.?time.?code/i),
+    ]);
+    try {
+        const plan = await target.evaluate(element => ({
+            maximum: element.scrollHeight - element.clientHeight,
+            step: Math.max(1, Math.floor(element.clientHeight * 0.85)),
+        }));
+        for (let position = 0;; position = Math.min(position + plan.step, plan.maximum)) {
+            await target.evaluate((element, top) => { element.scrollTop = top; }, position);
+            await page.waitForTimeout(80);
+            screenshots.push(await page.screenshot({ fullPage: false, mask }));
+            if (position === plan.maximum)
+                break;
+        }
+        return screenshots;
+    }
+    finally {
+        await target.evaluate((element, top) => { element.scrollTop = top; }, originalTop);
+        await handle.dispose();
+    }
+}
 /** Visible resume evidence, kept separate from the scanner's abbreviated routing text. */
 export async function captureResumeReviewPage(page) {
     const errors = [];
@@ -106,6 +152,13 @@ export async function captureResumeReviewPage(page) {
     catch (error) {
         errors.push(`screenshot: ${error instanceof Error ? error.name : 'capture_failed'}`);
     }
+    let scrollScreenshots = [];
+    try {
+        scrollScreenshots = await captureScrollableScreenshots(page, sensitiveSelector);
+    }
+    catch (error) {
+        errors.push(`scroll_screenshot: ${error instanceof Error ? error.name : 'capture_failed'}`);
+    }
     let structuredData;
     try {
         structuredData = await page.evaluate(() => {
@@ -126,6 +179,8 @@ export async function captureResumeReviewPage(page) {
         frames,
         errors,
         screenshotCaptured: screenshot !== undefined,
+        scrollScreenshotCount: scrollScreenshots.length,
+        scrollScreenshots,
         screenshot,
         ...(structuredData === undefined ? {} : { structuredData }),
     };

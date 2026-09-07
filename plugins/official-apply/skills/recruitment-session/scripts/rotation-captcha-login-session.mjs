@@ -237,7 +237,7 @@ async function fast(page) {
     await page.waitForTimeout(250);
     const agreement = page.locator('input[type=checkbox]:visible').first();
     if (!(await agreement.isChecked().catch(() => false))) {
-      await agreement.check({ force: true });
+      await agreement.evaluate(element => element.click());
     }
     await page.waitForTimeout(500);
     const sendButton = page.getByRole('button', { name: '获取验证码' }).first();
@@ -391,7 +391,7 @@ rl.on('line', (line) => {
       }
       const agreement = page.locator('input[type=checkbox]').first();
       if (!(await agreement.isChecked().catch(() => false))) {
-        await agreement.check({ force: true });
+        await agreement.evaluate(element => element.click());
       }
       write(
         'CODE',

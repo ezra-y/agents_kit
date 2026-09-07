@@ -41,16 +41,23 @@ async function attachEvidencePath(request, result, reviewData) {
         if (process.platform !== 'win32')
             chmodSync(filePath, 0o600);
     };
-    const { screenshot: beforeScreenshot, ...beforeSave } = reviewData.beforeSave;
+    const { screenshot: beforeScreenshot, scrollScreenshots: beforeScrollScreenshots, ...beforeSave } = reviewData.beforeSave;
     if (beforeScreenshot !== undefined) {
         writePrivate(path.join(evidenceDir, 'before-save.png'), beforeScreenshot);
     }
+    beforeScrollScreenshots.forEach((screenshot, index) => {
+        writePrivate(path.join(evidenceDir, `before-save-scroll-${String(index + 1).padStart(2, '0')}.png`), screenshot);
+    });
     const readback = reviewData.serverReadback;
-    const { screenshot: afterScreenshot, ...afterPage } = readback.reopened
-        ? readback.page : { screenshot: undefined };
+    const { screenshot: afterScreenshot, scrollScreenshots: afterScrollScreenshots, ...afterPage } = readback.reopened
+        ? readback.page
+        : { screenshot: undefined, scrollScreenshots: [] };
     if (afterScreenshot !== undefined) {
         writePrivate(path.join(evidenceDir, 'server-readback.png'), afterScreenshot);
     }
+    afterScrollScreenshots.forEach((screenshot, index) => {
+        writePrivate(path.join(evidenceDir, `server-readback-scroll-${String(index + 1).padStart(2, '0')}.png`), screenshot);
+    });
     writePrivate(path.join(evidenceDir, 'review-data.json'), `${JSON.stringify({
         schemaVersion: 1,
         taskId: request.taskId,

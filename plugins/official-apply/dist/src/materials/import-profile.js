@@ -58,6 +58,7 @@ const BASIC_TO_CANONICAL = {
     englishTierPreference: 'qualification.english.tier_preference',
     englishCertificate: 'qualification.english.certificate',
     postgraduateEnglishScore: 'qualification.exam.postgraduate_english_score',
+    expectedSalary: 'application.compensation.expected_salary',
     desiredCities: 'application.preference.desired_city',
     desiredRole: 'application.preference.desired_role',
     interviewAccepted: 'application.interview.method',

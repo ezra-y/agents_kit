@@ -129,10 +129,15 @@ function projectRows(input) {
 function awardRows(input) {
     return input.awards.map((record) => {
         const date = text(record.values, 'date');
-        const name = text(record.values, 'label') ??
-            [text(record.values, 'name'), text(record.values, 'level')]
+        const label = text(record.values, 'label');
+        const level = text(record.values, 'level');
+        const name = label === undefined
+            ? [text(record.values, 'name'), level]
                 .filter((item) => item !== undefined)
-                .join('｜');
+                .join('｜')
+            : level !== undefined && !label.includes(level)
+                ? `${label}｜${level}`
+                : label;
         return compact({
             awardDate: date === undefined
                 ? undefined
@@ -380,7 +385,8 @@ export const didiResumePage = {
                     text(account, 'gender'),
                 experience: account['experience'],
                 academicDegree: text(education?.values ?? {}, 'degree'),
-                location: desiredCities[0] ?? text(account, 'location'),
+                location: text(input.basic, 'person.location.current_city') ??
+                    text(account, 'location'),
                 lastSpeciality: text(education?.values ?? {}, 'major'),
                 lastCompany: text(latestWork?.values ?? {}, 'company'),
                 citizenId: identificationNumber,
@@ -391,7 +397,7 @@ export const didiResumePage = {
             }),
             jobIntention: compact({
                 salary: account['salary'],
-                aimSalary: account['aimSalary'],
+                aimSalary: text(input.basic, 'application.compensation.expected_salary') ?? account['aimSalary'],
                 forwardLocation: desiredCities.length > 0
                     ? desiredCities.join('、')
                     : text(account, 'forwardLocation'),
@@ -477,6 +483,54 @@ export const didiResumePage = {
                 evidence: [],
                 pageChanged: false,
             };
+        }
+        const account = await readAccount(page);
+        const basic = asRecord(resume['basicInfo']);
+        const name = text(basic, 'name');
+        if (name !== undefined &&
+            text(account, 'name') === undefined) {
+            const accountId = account['id'] ?? account['candidateAccountId'];
+            const nameResponse = await page.evaluate(async ({ accountId: id, name: accountName, orgId, siteId }) => {
+                const root = window;
+                const result = await fetch('/api/outer/ats-apply/personal-center/updateName', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        accept: 'application/json',
+                        'content-type': 'application/json',
+                        'x-csrf-token': String(root.TurboApply?.data?.csrfToken ?? ''),
+                    },
+                    body: JSON.stringify({ orgId, siteId, name: accountName, accountId: id }),
+                });
+                let data;
+                try {
+                    data = await result.json();
+                }
+                catch {
+                    data = undefined;
+                }
+                const record = data !== null && typeof data === 'object' && !Array.isArray(data)
+                    ? data
+                    : {};
+                return {
+                    ok: result.ok,
+                    code: record['errorCode'] ?? record['code'],
+                    success: record['success'],
+                };
+            }, { accountId, name, orgId: resume['orgId'], siteId: resume['siteId'] });
+            const updated = nameResponse.ok &&
+                (nameResponse.success === true ||
+                    nameResponse.code === 0 ||
+                    nameResponse.code === '0');
+            if (!updated) {
+                return {
+                    attempted: true,
+                    saved: false,
+                    message: 'Moka 姓名更新接口没有返回成功结果',
+                    evidence: [],
+                    pageChanged: false,
+                };
+            }
         }
         const response = await page.evaluate(async (body) => {
             const root = window;

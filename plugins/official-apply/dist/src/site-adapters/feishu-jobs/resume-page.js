@@ -106,7 +106,7 @@ function educationRows(input, includeEducationType, includeAcademicRanking, sett
         end_time: chinaMonthTimestamp(text(record.values, 'endDate', 'end_date')),
         school: text(record.values, 'school') ?? '',
         degree: degree(text(record.values, 'degree')),
-        ...(includeEducationType ? { education_type: 2 } : {}),
+        ...(includeEducationType ? { education_type: settingValue(settings, 'education_type', text(record.values, 'educationType', 'education_type')) } : {}),
         ...(includeAcademicRanking
             ? {
                 academic_ranking: settingValue(settings, 'academic_ranking', text(record.values, 'rank', 'academic_ranking')),
@@ -140,11 +140,32 @@ function projectRows(input) {
             name: clipped(name, 200),
             role: clipped(text(record.values, 'role') ?? '', 200),
             start_time: chinaMonthTimestamp(text(record.values, 'startDate', 'start_date')),
-            end_time: chinaMonthTimestamp(text(record.values, 'endDate', 'end_date'), record.values['current'] === true),
+            ...(record.values['current'] === true
+                ? {}
+                : {
+                    end_time: chinaMonthTimestamp(text(record.values, 'endDate', 'end_date')),
+                }),
             description: recordDescription(record),
             link: explicitLink ?? '',
             customized_data: [],
         });
+    });
+}
+function languageRows(input, settings) {
+    return (input.languages ?? []).flatMap((record) => {
+        const language = text(record.values, 'language', 'name');
+        if (language === undefined)
+            return [];
+        const languageCode = settingValue(settings, 'language', language);
+        if (typeof languageCode !== 'number')
+            return [];
+        const row = { language: languageCode };
+        const sourceProficiency = text(record.values, 'proficiency', 'level');
+        const proficiencyCode = settingValue(settings, 'proficiency', sourceProficiency)
+            ?? settingValue(settings, 'proficiency', text(record.values, 'preferredProficiency'));
+        if (typeof proficiencyCode === 'number')
+            row.proficiency = proficiencyCode;
+        return [row];
     });
 }
 function resolvedProjectValues(input) {
@@ -187,6 +208,11 @@ const LEGACY_CITY_CODES = {
     上海: 'CT_125',
     上海市: 'CT_125',
 };
+function resolveHometownCityCode(input, fields, current) {
+    const city = text(input.basic, 'person.location.hometown_city');
+    return (city === undefined ? undefined : resolveCityCode(fields, ['hometown_city'], city))
+        ?? text(current, 'hometown_city_code');
+}
 function normalizeCityName(value) {
     return value.replace(/\s+/g, '').replace(/市$/, '');
 }
@@ -237,12 +263,26 @@ function fieldFacts(facts) {
 function settingFacts(facts) {
     return asRecord(facts?.['commonSettings']);
 }
+function fieldIsVisible(fields, field) {
+    if (field['visible'] !== true)
+        return false;
+    let parentId = field['parent'];
+    while (parentId !== undefined) {
+        const parent = fields.find(candidate => candidate['id'] === parentId);
+        if (parent === undefined)
+            break;
+        if (parent['visible'] === false)
+            return false;
+        parentId = parent['parent'];
+    }
+    return true;
+}
 function hasVisibleField(fields, name) {
-    return fields.some((field) => field['visible'] === true &&
+    return fields.some((field) => fieldIsVisible(fields, field) &&
         (field['name'] === name || field['label'] === name));
 }
 function hasRequiredField(fields, name) {
-    return fields.some((field) => field['visible'] === true &&
+    return fields.some((field) => fieldIsVisible(fields, field) &&
         field['required'] === true &&
         (field['name'] === name || field['label'] === name));
 }
@@ -324,14 +364,27 @@ function resolveRequiredCustomFields(input, fields) {
     const missing = [];
     let photoField;
     for (const field of fields) {
-        if (field['visible'] !== true ||
+        const label = String(field['label'] ?? '');
+        if (fieldIsVisible(fields, field) &&
+            field['isCustomized'] === true &&
+            field['parent'] !== undefined &&
+            /自我评价/.test(label)) {
+            const selfEvaluation = input.basic['open_question.self_evaluation'];
+            if (typeof selfEvaluation === 'string' && selfEvaluation.trim() !== '') {
+                values.push({
+                    object_id: String(field['id'] ?? ''),
+                    value: selfEvaluation.trim(),
+                });
+            }
+            continue;
+        }
+        if (!fieldIsVisible(fields, field) ||
             field['required'] !== true ||
             field['isCustomized'] !== true) {
             continue;
         }
         const id = String(field['id'] ?? '');
         const name = String(field['name'] ?? '');
-        const label = String(field['label'] ?? '');
         const options = asRows(field['options']);
         const visibleChildren = fields.filter((candidate) => candidate['parent'] === id && candidate['visible'] === true);
         if (visibleChildren.length > 0 && !/个人形象/.test(label)) {
@@ -339,6 +392,15 @@ function resolveRequiredCustomFields(input, fields) {
         }
         const customKey = `site.custom.${id}`;
         const customValue = input.basic[customKey];
+        if (/招聘信息(?:获取渠道|来源)/.test(label) &&
+            input.basic['application.source.allow_available_option'] === true &&
+            normalizeCustomAnswer(customValue, options) === undefined) {
+            const official = options.find((option) => /官网/.test(String(option['label'] ?? '')));
+            if (official !== undefined) {
+                values.push({ object_id: id, value: String(official['value']) });
+                continue;
+            }
+        }
         if (customValue !== undefined) {
             const answer = normalizeCustomAnswer(customValue, options);
             if (answer !== undefined) {
@@ -350,13 +412,6 @@ function resolveRequiredCustomFields(input, fields) {
                 reason: `已保存答案无法匹配飞书招聘自定义字段“${label || id}”的当前选项`,
             });
             continue;
-        }
-        if (/招聘信息获取渠道/.test(label)) {
-            const official = options.find((option) => /官网/.test(String(option['label'] ?? '')));
-            if (official !== undefined) {
-                values.push({ object_id: id, value: String(official['value']) });
-                continue;
-            }
         }
         if (/毕业时间/.test(label)) {
             const latest = [...input.education]
@@ -423,9 +478,9 @@ function buildPayload(input, current, fields, settings, customValues, forceCreat
     const currentCustomized = current['customized_data'];
     const currentBasicCustomized = current['basic_info_customized_data'];
     const desiredCities = stringList(input.basic['application.preference.desired_city']);
-    const currentCity = text(input.basic, 'person.location.current_city', 'person.contact.current_city') ?? desiredCities[0];
+    const currentCity = text(input.basic, 'person.location.current_city', 'person.contact.current_city');
     const currentCityCode = currentCity === undefined
-        ? undefined
+        ? text(current, 'current_city_code')
         : resolveCityCode(fields, ['current_city'], currentCity);
     const preferredCityCodes = desiredCities
         .map((city) => resolveCityCode(fields, ['preferred_city_list', 'application_preferred_city_list'], city))
@@ -464,7 +519,9 @@ function buildPayload(input, current, fields, settings, customValues, forceCreat
         ...(hasVisibleField(fields, 'age') && age !== undefined ? { age } : {}),
         ...(hasVisibleField(fields, 'gender') && gender !== undefined ? { gender } : {}),
         nationality_id: 'CN_1',
-        ...(formRenderer === 'formily' ? { hometown_city_code: null } : {}),
+        ...(hasVisibleField(fields, 'hometown_city')
+            ? { hometown_city_code: resolveHometownCityCode(input, fields, current) }
+            : {}),
         ...(hasVisibleField(fields, 'current_city') && currentCityCode !== undefined
             ? { current_city_code: currentCityCode }
             : {}),
@@ -482,9 +539,11 @@ function buildPayload(input, current, fields, settings, customValues, forceCreat
         award_list: attachCustomValues(awardRows(input, requireAwardYear), distributedCustomValues.sections.get('award_list')),
         competition_list: attachCustomValues(competitionRows(input, requireAwardYear), distributedCustomValues.sections.get('competition_list')),
         certificate_list: [],
-        language_skill_list: languageCustomValues === undefined || languageCustomValues.length === 0
-            ? []
-            : [{ customized_data: languageCustomValues }],
+        language_skill_list: languageCustomValues !== undefined && languageCustomValues.length > 0
+            ? [{ customized_data: languageCustomValues }]
+            : hasVisibleField(fields, 'language_list')
+                ? languageRows(input, settings)
+                : asRows(current['language_skill_list']),
         sns_list: snsCustomValues === undefined || snsCustomValues.length === 0
             ? standardSns
             : attachCustomValues(standardSns.length === 0 ? [{}] : standardSns, snsCustomValues),
@@ -912,6 +971,13 @@ export const feishuJobsResumePage = {
                 missing.push({ key, reason: '飞书招聘基础信息缺少已确定答案' });
             }
         }
+        if (hasRequiredField(fields, 'education_type')) {
+            input.education.forEach((record, index) => {
+                if (settingValue(settings, 'education_type', text(record.values, 'educationType', 'education_type')) === undefined) {
+                    missing.push({ key: `education[${index}].educationType`, reason: '学历类型需要用户事实并匹配官网选项' });
+                }
+            });
+        }
         if (input.education.length === 0) {
             missing.push({ key: 'education', reason: '飞书招聘需要至少一段教育经历' });
         }
@@ -944,10 +1010,9 @@ export const feishuJobsResumePage = {
             missing.push({ key: 'person.identity.gender', reason: '性别为飞书招聘必填项' });
         }
         if (hasRequiredField(fields, 'current_city')) {
-            const currentCity = text(input.basic, 'person.location.current_city', 'person.contact.current_city') ??
-                stringList(input.basic['application.preference.desired_city'])[0];
-            if (currentCity === undefined ||
-                resolveCityCode(fields, ['current_city'], currentCity) === undefined) {
+            const currentCity = text(input.basic, 'person.location.current_city', 'person.contact.current_city');
+            if ((currentCity === undefined && text(current, 'current_city_code') === undefined) ||
+                (currentCity !== undefined && resolveCityCode(fields, ['current_city'], currentCity) === undefined)) {
                 missing.push({
                     key: 'person.contact.current_city',
                     reason: currentCity === undefined
@@ -955,6 +1020,13 @@ export const feishuJobsResumePage = {
                         : `官网城市选项中没有“${currentCity}”`,
                 });
             }
+        }
+        if (hasRequiredField(fields, 'hometown_city') &&
+            resolveHometownCityCode(input, fields, current) === undefined) {
+            missing.push({
+                key: 'person.location.hometown_city',
+                reason: '家乡为必填项，请在官网城市选项中选择资料中的家乡',
+            });
         }
         if (hasRequiredField(fields, 'preferred_city_list')) {
             const desiredCities = stringList(input.basic['application.preference.desired_city']);
@@ -970,9 +1042,11 @@ export const feishuJobsResumePage = {
         }
         missing.push(...requiredCustom.missing);
         const resumeMaterial = materialPath(input);
-        if (attachmentId(current) === undefined && resumeMaterial === undefined) {
+        const existingAttachmentId = attachmentId(current);
+        if (existingAttachmentId === undefined && resumeMaterial === undefined) {
             missing.push({ key: 'attachment.resume', reason: '飞书招聘缺少附件简历' });
         }
+        const materials = Object.fromEntries(Object.entries(input.materials ?? {}).filter(([key]) => key !== 'attachment.resume' || existingAttachmentId === undefined));
         return {
             resolved: {
                 basic: input.basic,
@@ -980,11 +1054,13 @@ export const feishuJobsResumePage = {
                 career: valuesOf(input.experience.filter((record) => !isInternship(record))),
                 internship: valuesOf(input.experience.filter(isInternship)),
                 projects: resolvedProjectValues(input),
+                languages: valuesOf(input.languages ?? []),
+                languageSkillRows: hasVisibleField(fields, 'language_list') ? languageRows(input, settings) : [],
                 awards: valuesOf(input.awards.filter((record) => !requireAwardYear || hasAwardYear(record))),
                 competitions: valuesOf(requireAwardYear
                     ? input.awards.filter((record) => !hasAwardYear(record))
                     : []),
-                materials: input.materials ?? {},
+                materials,
                 ...(requiredCustom.photoField === undefined
                     ? {}
                     : {
@@ -995,12 +1071,12 @@ export const feishuJobsResumePage = {
             missing,
             conflicts: [],
             skipped: [
+                ...(input.languages !== undefined && input.languages.length > 0 && !hasVisibleField(fields, 'language_list')
+                    ? [{ key: 'languages', reason: '官网当前未提供可编辑语言栏目，保留服务器已有语言数据' }]
+                    : []),
                 ...(input.skills === undefined || input.skills.length === 0
                     ? []
                     : [{ key: 'skills', reason: '官网没有独立技能栏目，保留在附件简历' }]),
-                ...(input.languages === undefined || input.languages.length === 0
-                    ? []
-                    : [{ key: 'languages', reason: '本地没有可直接映射的语言熟练度答案' }]),
             ],
         };
     },
@@ -1185,6 +1261,12 @@ export const feishuJobsResumePage = {
                     actualName: 'name',
                     expectedName: 'name',
                     extras: [{ actual: 'description', expected: 'level' }],
+                }, issues);
+                compareRows(asRows(current['language_skill_list']), records(payload, 'languageSkillRows'), {
+                    key: 'languages',
+                    actualName: 'language',
+                    expectedName: 'language',
+                    extras: [{ actual: 'proficiency', expected: 'proficiency' }],
                 }, issues);
                 const materials = asRecord(payload.resolved['materials']);
                 const resumeMaterial = asRecord(materials['attachment.resume']);
