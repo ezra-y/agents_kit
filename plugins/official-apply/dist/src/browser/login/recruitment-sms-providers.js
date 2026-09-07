@@ -313,10 +313,17 @@ export const bytedanceLogin = createSmsLoginProvider({
     submitButton: (page) => page.locator('button:visible').filter({ hasText: /^登录$/ }).first(),
     agreement: (page) => page.locator('input[type=checkbox]:visible').first(),
     async beforeSend(page) {
+        const later = page.getByText('稍后再说', { exact: true });
+        await later.waitFor({ state: 'visible', timeout: 3_000 }).catch(() => undefined);
+        if (await visible(later))
+            await later.click({ force: true });
         const agreement = page.locator('input[type=checkbox]:visible').first();
         if ((await agreement.count()) > 0 &&
             !(await agreement.isChecked().catch(() => false))) {
-            await agreement.check({ force: true });
+            await agreement.evaluate((element) => element.click());
+            if (!(await agreement.isChecked().catch(() => false))) {
+                throw new Error('字节跳动登录隐私条款没有成功勾选');
+            }
         }
     },
     async beforeSubmit(page) {

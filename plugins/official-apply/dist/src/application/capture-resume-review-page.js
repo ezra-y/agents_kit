@@ -2,6 +2,15 @@
 export async function captureResumeReviewPage(page) {
     const errors = [];
     const frames = [];
+    // Moka renders its resume after bootstrap data; an early full-page PNG only captures the spinner.
+    if (await page.evaluate(() => 'TurboApply' in window)) {
+        try {
+            await page.locator('textarea:visible').first().waitFor({ state: 'visible', timeout: 10_000 });
+        }
+        catch {
+            errors.push('resume_content_not_ready: visible resume text areas did not render');
+        }
+    }
     const sensitiveSelector = [
         'input[type="password"]',
         'input[autocomplete="one-time-code"]',
@@ -97,12 +106,28 @@ export async function captureResumeReviewPage(page) {
     catch (error) {
         errors.push(`screenshot: ${error instanceof Error ? error.name : 'capture_failed'}`);
     }
+    let structuredData;
+    try {
+        structuredData = await page.evaluate(() => {
+            const root = window;
+            const candidateAccount = root.TurboApply?.data?.candidateAccount;
+            return candidateAccount !== null &&
+                typeof candidateAccount === 'object' &&
+                !Array.isArray(candidateAccount)
+                ? { source: 'TurboApply.data.candidateAccount', candidateAccount }
+                : undefined;
+        });
+    }
+    catch (error) {
+        errors.push(`structured_data: ${error instanceof Error ? error.name : 'capture_failed'}`);
+    }
     return {
         capturedAt: new Date().toISOString(),
         frames,
         errors,
         screenshotCaptured: screenshot !== undefined,
         screenshot,
+        ...(structuredData === undefined ? {} : { structuredData }),
     };
 }
 //# sourceMappingURL=capture-resume-review-page.js.map

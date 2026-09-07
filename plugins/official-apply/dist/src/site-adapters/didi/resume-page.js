@@ -1,3 +1,4 @@
+import { fullProjectDescription } from "../../materials/record-description.js";
 const HOST = 'campus.didiglobal.com';
 const STAGED_KEY = '__officialApplyDidiResume';
 function asRecord(value) {
@@ -115,14 +116,13 @@ function projectRows(input) {
     return input.projects.map((record) => {
         const role = text(record.values, 'role');
         const normalizedRole = role !== undefined && /solo builder/i.test(role) ? '独立开发者' : role;
-        const bullets = stringList(record.values['bullets']).join('\n');
         return compact({
             startDate: month(text(record.values, 'startDate', 'start_date')),
             endDate: endMonth(record.values),
             projectName: text(record.values, 'name', 'label'),
             title: normalizedRole,
-            projectDescription: text(record.values, 'description') ?? bullets,
-            responsibilities: bullets === '' ? normalizedRole : bullets,
+            projectDescription: fullProjectDescription(record.values),
+            responsibilities: '',
         });
     });
 }
@@ -144,6 +144,12 @@ function awardRows(input) {
             awardName: name,
         });
     });
+}
+function languageRows(input) {
+    return (input.languages ?? []).map((record) => compact({
+        language: text(record.values, 'language', 'name'),
+        level: text(record.values, 'proficiency', 'level'),
+    }));
 }
 function resolvedResume(payload) {
     const value = payload.resolved['apiResume'];
@@ -360,7 +366,7 @@ export const didiResumePage = {
             if (value === undefined)
                 missing.push({ key, reason });
         }
-        const personal = text(input.basic, 'profile.summary', 'person.summary') ??
+        const personal = text(input.basic, 'open_question.self_evaluation', 'profile.summary', 'person.summary') ??
             text(account, 'personal');
         const resume = {
             uploadInfo: { resumeKey: '', attachments: [] },
@@ -394,7 +400,7 @@ export const didiResumePage = {
             educationInfo: educationRows(input),
             practiceInfo: experienceRows(input, 'practice'),
             projectInfo: projectRows(input),
-            languageInfo: stringList(input.basic['profile.languages']).map((language) => ({ language })),
+            languageInfo: languageRows(input),
             selfDescription: personal === undefined ? {} : { personal },
             awardInfo: awardRows(input),
             applyInfo: {},

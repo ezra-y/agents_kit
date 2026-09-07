@@ -1,4 +1,4 @@
-import { fullRecordDescription } from "../../materials/record-description.js";
+import { fullRecordDescription, fullProjectDescription } from "../../materials/record-description.js";
 const HOST = 'zhaopin.kuaishou.cn';
 const RESUME_HASH = '#/official/resume-preview/';
 const READ_PATH = '/recruit/e/api/v1/user/resume/info';
@@ -102,8 +102,8 @@ function buildProjects(input) {
         toPresent: row.values['current'] === true,
         projectName: text(row.values, 'name') ?? '',
         projectDuty: text(row.values, 'role') ?? '',
-        projectDescription: text(row.values, 'description') ?? '',
-        projectResponsibility: lines(row.values),
+        projectDescription: fullProjectDescription(row.values),
+        projectResponsibility: '',
     }));
 }
 function buildAwards(input, current) {

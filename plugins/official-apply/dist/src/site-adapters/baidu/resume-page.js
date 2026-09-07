@@ -1,4 +1,4 @@
-import { fullRecordDescription } from "../../materials/record-description.js";
+import { fullRecordDescription, fullProjectDescription } from "../../materials/record-description.js";
 import { fillTextControl, readControlValue } from "../../browser/actions/fill-text-control.js";
 const HOST = 'talent.baidu.com';
 const PATHS = new Set(['/jobs/resume/create', '/jobs/resume/edit']);
@@ -485,12 +485,11 @@ async function fillProjects(page, records) {
         results.push(await fillText(field(page, `subjectName${item.index}`).locator('input').first(), recordText(item.record, 'name'), `${prefix}.name`, '项目名称'));
         results.push(await fillText(field(page, `position${item.index}`).locator('input').first(), recordText(item.record, 'role'), `${prefix}.role`, '项目职务'));
         results.push(...(await fillDateRange(field(page, `subjectDate${item.index}`), recordText(item.record, 'startDate', 'start_date'), endDate, prefix)));
-        results.push(await fillText(field(page, `subjectDesc${item.index}`).locator('textarea[name]').first(), recordText(item.record, 'description'), `${prefix}.description`, '项目描述'));
-        const bulletText = Array.isArray(item.record['bullets'])
-            ? item.record['bullets'].filter((item) => typeof item === 'string').join('\n')
-            : '';
-        const responsibilities = bulletText.trim() === '' ? recordText(item.record, 'description') : bulletText;
-        results.push(await fillText(field(page, `positionDesc${item.index}`).locator('textarea[name]').first(), responsibilities, `${prefix}.responsibilities`, '项目职责'));
+        results.push(await fillText(field(page, `subjectDesc${item.index}`).locator('textarea[name]').first(), fullProjectDescription(item.record), `${prefix}.description`, '项目描述'));
+        const duties = field(page, `positionDesc${item.index}`).locator('textarea[name]').first();
+        if (await duties.count()) {
+            results.push(await fillText(duties, '', `${prefix}.responsibilities`, '项目职责'));
+        }
     }
     return results;
 }
