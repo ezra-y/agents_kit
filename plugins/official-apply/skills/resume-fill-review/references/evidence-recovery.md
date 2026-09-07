@@ -42,7 +42,7 @@ serverReadback.reopened=false 表示未能重新打开，不能把当前页面�
 每次保存后立刻更新该项最新 evidencePath，并设 pending。一次只由填写者写清单；审查者写单独的 report-<轮次>.json。
 积累 10 家或遇到尾批/结束/提交前时，按 SKILL.md 第 5 步派独立 Agent 审查全部待审项。提示词位于插件根目录 agents/resume-field-reviewer.md，它是派发任务使用的提示词文件，不会仅因放入 agents/ 就自动运行。
 报告必须来自实际独立调用，并覆盖本轮每个 taskId 和最新 evidencePath。核对后写回 reviewStatus 和 reportPath；丢项、旧路径、报告未生成均保持 pending。
-修改材料或字段使旧报告失效；修复后重新保存并使用新证据再次审查。任务恢复时先读清单，避免因底层任务状态 completed 而漏掉待审项。
+修改材料或字段后，把原报告加入 supplementalEvidence，复审受影响项；全量保存还要比较其他字段是否变化。只有补截图时，保留已核对的保存结果并只补证据，核实同一内容版本后复审缺证部分。新报告引用沿用的旧报告和证据，任务恢复时读取清单中尚未解决的动作。
 
 ## 视觉操作
 
