@@ -90,6 +90,16 @@ function degree(value) {
         return 4;
     return 9;
 }
+function highestEducation(input) {
+    const ranks = { 4: 1, 5: 2, 6: 3, 7: 4, 11: 4, 8: 5 };
+    return input.education.reduce((best, record) => {
+        if (best === undefined)
+            return record;
+        const bestRank = ranks[degree(text(best.values, 'degree')) ?? -1] ?? -1;
+        const recordRank = ranks[degree(text(record.values, 'degree')) ?? -1] ?? -1;
+        return recordRank > bestRank ? record : best;
+    }, undefined);
+}
 function compactObject(value) {
     return Object.fromEntries(Object.entries(value).filter(([, item]) => item !== undefined));
 }
@@ -169,7 +179,13 @@ function languageRows(input, settings) {
     });
 }
 function resolvedProjectValues(input) {
-    return input.projects.map((record) => ({ ...record.values }));
+    return input.projects.map((record) => ({
+        ...record.values,
+        start_time: chinaMonthTimestamp(text(record.values, 'startDate', 'start_date')) ?? null,
+        end_time: record.values['current'] === true
+            ? null
+            : chinaMonthTimestamp(text(record.values, 'endDate', 'end_date')) ?? null,
+    }));
 }
 function hasAwardYear(record) {
     const value = text(record.values, 'date');
@@ -413,6 +429,27 @@ function resolveRequiredCustomFields(input, fields) {
             });
             continue;
         }
+        if (/最高学历教学方式/.test(label)) {
+            const education = highestEducation(input);
+            const educationType = education === undefined
+                ? undefined
+                : text(education.values, 'educationType', 'education_type');
+            const fullTime = education?.values['fullTime'];
+            const mode = fullTime === true
+                ? '全日制'
+                : fullTime === false
+                    ? '非全日制'
+                    : /非全日制/.test(educationType ?? '')
+                        ? '非全日制'
+                        : /全日制/.test(educationType ?? '')
+                            ? '全日制'
+                            : undefined;
+            const answer = normalizeCustomAnswer(mode, options);
+            if (answer !== undefined) {
+                values.push({ object_id: id, value: answer });
+                continue;
+            }
+        }
         if (/毕业时间/.test(label)) {
             const latest = [...input.education]
                 .map((record) => text(record.values, 'endDate', 'end_date'))
@@ -443,13 +480,17 @@ function resolveRequiredCustomFields(input, fields) {
         }
         const canonicalKey = name === 'marital_status' || /婚姻/.test(label)
             ? 'person.identity.marital_status'
-            : /驾驶证|驾照/.test(label)
-                ? 'person.credential.has_driver_license'
-                : /调配|调剂/.test(label)
-                    ? 'application.preference.accept_transfer'
-                    : /派遣|外派/.test(label)
-                        ? 'application.preference.accept_assignment'
-                        : undefined;
+            : /出生日期|生日/.test(label)
+                ? 'person.identity.birth_date'
+                : /籍贯/.test(label)
+                    ? 'person.contact.native_place'
+                    : /驾驶证|驾照/.test(label)
+                        ? 'person.credential.has_driver_license'
+                        : /调配|调剂/.test(label)
+                            ? 'application.preference.accept_transfer'
+                            : /派遣|外派/.test(label)
+                                ? 'application.preference.accept_assignment'
+                                : undefined;
         if (canonicalKey === undefined) {
             missing.push({
                 key: customKey,
@@ -457,7 +498,10 @@ function resolveRequiredCustomFields(input, fields) {
             });
             continue;
         }
-        const answer = normalizeCustomAnswer(input.basic[canonicalKey], options);
+        const value = canonicalKey === 'person.contact.native_place'
+            ? text(input.basic, 'person.contact.native_place', 'person.location.native_place')
+            : input.basic[canonicalKey];
+        const answer = normalizeCustomAnswer(value, options);
         if (answer === undefined) {
             missing.push({
                 key: canonicalKey,
@@ -962,6 +1006,16 @@ export const feishuJobsResumePage = {
             : 'legacy';
         const payloadCurrent = forceCreate ? {} : current;
         const missing = [];
+        if (requireAwardYear && !hasVisibleField(fields, 'competition_list')) {
+            input.awards.forEach((record, index) => {
+                if (!hasAwardYear(record)) {
+                    missing.push({
+                        key: `awards[${index}].date`,
+                        reason: `${text(record.values, 'name', 'label') ?? '奖项'}缺少获奖年份；官网获奖栏要求年份，且未开放比赛栏`,
+                    });
+                }
+            });
+        }
         for (const key of [
             'person.identity.full_name',
             'person.contact.phone',
@@ -1248,6 +1302,8 @@ export const feishuJobsResumePage = {
                     extras: [
                         { actual: 'role', expected: 'role' },
                         { actual: 'link', expected: 'projectLink' },
+                        { actual: 'start_time', expected: 'start_time' },
+                        { actual: 'end_time', expected: 'end_time' },
                     ],
                 }, issues);
                 compareRows(asRows(current['award_list']), records(payload, 'awards'), {

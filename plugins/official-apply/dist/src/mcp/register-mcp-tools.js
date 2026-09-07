@@ -16,6 +16,7 @@
 import { startRunSession } from "../application/start-run-session.js";
 import { openResumePage } from "../application/open-resume-page.js";
 import { savePageScriptWithReadback } from "../application/save-page-script-with-readback.js";
+import { captureResumeReviewEvidence } from "../application/capture-resume-review-evidence.js";
 import { resolveCurrentPage } from "../application/resolve-current-page.js";
 import { resolvePageWithRecipe } from "../application/resolve-page-with-recipe.js";
 import { getRunStatus } from "../application/get-run-status.js";
@@ -603,11 +604,14 @@ export function registerMcpTools() {
         },
         {
             name: 'apply.inspect_page',
-            description: '扫描当前页面，返回字段、动作、上传控件和页面类型。只读。',
+            description: '扫描当前页面，返回字段、动作、上传控件和页面类型。captureEvidence=true 时补采完整可见字段和内部滚动截图到私有目录；不保存或提交官网。',
             mutating: false,
             inputSchema: {
                 type: 'object',
-                properties: { runId: { type: 'string' } },
+                properties: {
+                    runId: { type: 'string' },
+                    captureEvidence: { type: 'boolean', description: '补采当前简历页审查证据；默认不采集。' },
+                },
                 required: ['runId'],
             },
             async handler(input) {
@@ -615,6 +619,12 @@ export function registerMcpTools() {
                 if (isToolResult(found)) {
                     return found;
                 }
+                const reviewEvidence = input.args['captureEvidence'] === true
+                    ? await captureResumeReviewEvidence({
+                        paths: input.paths, page: found.page,
+                        taskId: found.run.taskId, runId: found.run.runId,
+                    })
+                    : undefined;
                 const pageScript = asPageScript(found.run.pageScript);
                 if (pageScript !== undefined) {
                     const result = await inspectWithPageScript({
@@ -625,13 +635,13 @@ export function registerMcpTools() {
                         profileRecordIds: found.run.profileRecordIds,
                         materialRefs: found.run.materialRefs,
                     });
-                    return ok(result, `命中 ${pageScript.id}，已读取真实页面状态。`);
+                    return ok({ ...result, reviewEvidence }, `命中 ${pageScript.id}，已读取真实页面状态。`);
                 }
                 const schema = await currentSchema(found.session, found.page, found.run.runId, input.now, found.run);
                 // 这一份就是「填写之前的基准」。校验时拿它和填后现状对比。
                 found.run.lastPreFillSchema = schema;
                 const cache = found.run.schemaCache;
-                return ok(schema, `扫到 ${schema.fields.length} 个字段（本页累计完整扫描 ${cache?.fullScanCount() ?? 1} 次）。`);
+                return ok({ ...schema, reviewEvidence }, `扫到 ${schema.fields.length} 个字段（本页累计完整扫描 ${cache?.fullScanCount() ?? 1} 次）。`);
             },
         },
         {

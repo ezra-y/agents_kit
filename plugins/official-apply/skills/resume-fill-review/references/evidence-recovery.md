@@ -22,6 +22,13 @@ review-data 包含 source.payload、beforeSave 和 serverReadback；source 尚�
 serverReadback.reopened=false 表示未能重新打开，不能把当前页面当成服务器读回。截图失败也会标明；逐项核实文件可读，不能只看 evidencePath 存在。
 单张截图不保证所有控件内部文本可见。文本框全文、折叠卡片、分页、附件与子页面按需补齐，补充文件和原始材料路径一并加入 index 条目的 supplementalEvidence。
 
+## 只补当前页面证据
+
+已手动保存、只缺字段全文或截图时，调用 `apply.inspect_page { runId, captureEvidence: true }`。
+`data.reviewEvidence` 返回绝对 evidencePath、字段数、截图数和 errors。目录中的 review-page.json 保存当前可见控件全文，page.png 和 scroll-*.png 覆盖页面及内部滚动区。
+先检查 errors，再打开截图核实栏目覆盖。折叠栏目先通过实际页面展开，再补采。把该目录加入原 index 条目的 supplementalEvidence。
+该操作不改表单、不点击保存、不重新加载页面；证据范围是当前视图。保存响应及服务器复开的证明沿用原证据，不能用补采动作替代。
+
 ## 通用页面保存路径
 
 没有匹配网站脚本时，advance 返回的保存响应确认不包含自动重新打开或上述证据包。
