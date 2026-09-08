@@ -97,6 +97,7 @@ export async function resolveWithPageScript(context) {
             version: context.script.version,
             status: context.script.status,
         },
+        source: built,
         preparation: preparationSummary(prepared),
         missingProfileRecordIds: built.missingProfileRecordIds,
         missingMaterialIds: built.missingMaterialIds,

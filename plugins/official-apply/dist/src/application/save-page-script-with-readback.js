@@ -6,24 +6,6 @@ import { openResumePage } from "./open-resume-page.js";
 import { resolvePageScriptForPage, saveWithPageScript, validateWithPageScript, } from "./page-script-flow.js";
 import { isInsideLocalRoot, toRepoRelative } from "../config/paths.js";
 import { siteEvidenceDirectory } from "../site-adapters/inventory.js";
-import { openRuntimeDatabase } from "../storage/open-runtime-database.js";
-function markCompanyResumeCompleted(paths, taskId, now = new Date().toISOString()) {
-    const runtime = openRuntimeDatabase({ paths });
-    try {
-        runtime.db
-            .prepare(`UPDATE application_tasks
-            SET status = 'completed',
-                result_note = '公司简历已保存并通过服务器读回',
-                updated_at = ?
-          WHERE id = ?
-            AND task_kind = 'company_resume'
-            AND status NOT IN ('submitted', 'submission_uncertain', 'skipped')`)
-            .run(now, taskId);
-    }
-    finally {
-        runtime.close();
-    }
-}
 function messageOf(error) {
     return error instanceof Error ? (error.message.split('\n')[0] ?? error.name) : String(error);
 }
@@ -164,8 +146,6 @@ export async function savePageScriptWithReadback(request) {
                 issueCount: readback.validation.issues.length,
             },
         }, reviewData);
-        if (confirmed)
-            markCompanyResumeCompleted(request.paths, request.taskId);
         return result;
     }
     catch (error) {

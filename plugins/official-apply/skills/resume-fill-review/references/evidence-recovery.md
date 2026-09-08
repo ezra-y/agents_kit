@@ -32,11 +32,11 @@ serverReadback.reopened=false 表示未能重新打开，不能把当前页面�
 ## 通用页面保存路径
 
 没有匹配网站脚本时，advance 返回的保存响应确认不包含自动重新打开或上述证据包。
-在 `<dataRoot>/evidence/sites/<host>/resume-save/<runId>-<time>/` 建立本次目录，保存前后分别用当前宿主可用的浏览器工具读取实际控件完整值并完整截图；保存后显式打开真实简历 URL，再读回。
+在 `<dataRoot>/evidence/sites/<host>/resume-save/<runId>-<time>/` 建立本次目录，记录本次修改范围，保存后显式打开真实简历 URL，读取实际控件完整值。保存前已读值直接复用；文字无法说明的栏目、选中状态或附件才补截图。
 截图命名仍使用 before-save.png 和 server-readback.png；只提供视口截图的电脑工具需滚动覆盖各栏目，依次编号，不能把一张视口图称为全页截图。
 例如持有同一页面的 Playwright 工具可用 `page.locator('textarea').evaluateAll(nodes => nodes.map(node => node.value))` 读取全文、`page.screenshot({path, fullPage:true})` 截图；不是持有该页面的环境不能照搬局部变量 page。
 已有通用扫描快照在 `<dataRoot>/runs/<runId>/snapshots/`，可读其中的 schema.fields，但要检查是否覆盖所需栏目和全文。
-工具只暴露当前视口、不能读取完整字段或无法重新打开时，记录 insufficient_evidence，不能用自检结果补造全文。按独立审查提示词要求提供相同三方证据；不声称通用分支已自动生成 review-data.json。
+工具只暴露当前视口、不能读取完整字段或无法重新打开时，记录 insufficient_evidence，不能用自检结果补造全文。按独立审查提示词提供源资料和保存后实际内容；不声称通用分支已自动生成 review-data.json。
 
 ## 独立审查清单与恢复
 

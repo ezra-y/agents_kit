@@ -4,8 +4,8 @@ export function describeNextBatchWork(result, batchId) {
     switch (result.status) {
         case 'work':
             return `批次 ${batchId} 下一项是任务 ${result.taskId}。`;
-        case 'waiting_for_user':
-            return `批次 ${batchId} 的剩余任务都在等待用户。`;
+        case 'blocked':
+            return `批次 ${batchId} 暂无可执行任务，请按各任务的具体原因继续处理。`;
         case 'done':
             switch (result.reason) {
                 case 'batch_not_found':
@@ -48,7 +48,11 @@ export function getNextBatchWork(batchId, paths = getSkillPaths()) {
         }
         const tasks = runtime.db
             .prepare(`SELECT t.id, t.execute, t.task_kind, t.status,
-                latest.id AS run_id, latest.state AS run_state
+                latest.id AS run_id, latest.state AS run_state,
+                (EXISTS (SELECT 1 FROM missing_answer_requests m
+                  WHERE m.run_id = latest.id AND m.status = 'pending') OR
+                 EXISTS (SELECT 1 FROM human_takeover_requests h
+                  WHERE h.run_id = latest.id AND h.status = 'pending')) AS pending_user_work
            FROM application_tasks AS t
            LEFT JOIN application_runs AS latest
              ON latest.id = (
@@ -65,6 +69,7 @@ export function getNextBatchWork(batchId, paths = getSkillPaths()) {
             return { status: 'done', reason: 'batch_empty' };
         }
         let queued;
+        let retry;
         let blocked = false;
         for (const task of tasks) {
             if (task.execute !== 1 ||
@@ -82,8 +87,13 @@ export function getNextBatchWork(batchId, paths = getSkillPaths()) {
                 if (disposition === 'finished') {
                     continue;
                 }
-                if (disposition === 'blocked') {
+                if (disposition === 'blocked' || task.pending_user_work !== 0) {
                     blocked = true;
+                    continue;
+                }
+                if (task.run_state === 'failed_recoverable') {
+                    retry ??= { status: 'work', taskId: task.id, taskKind: task.task_kind,
+                        reason: 'resume_recoverable_run', runId: task.run_id };
                     continue;
                 }
                 return {
@@ -109,8 +119,10 @@ export function getNextBatchWork(batchId, paths = getSkillPaths()) {
                 reason: 'next_queued_task',
             };
         }
+        if (retry !== undefined)
+            return retry;
         return blocked
-            ? { status: 'waiting_for_user', reason: 'remaining_tasks_blocked' }
+            ? { status: 'blocked', reason: 'remaining_tasks_blocked' }
             : { status: 'done', reason: 'batch_complete' };
     }
     finally {

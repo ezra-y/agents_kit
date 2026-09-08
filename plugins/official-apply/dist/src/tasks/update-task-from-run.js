@@ -97,7 +97,7 @@ export function updateTaskFromRun(request) {
         runtime.db.exec('BEGIN IMMEDIATE');
         try {
             const run = runtime.db
-                .prepare(`SELECT run.task_id, run.state,
+                .prepare(`SELECT run.task_id, task.task_kind, run.state,
                   task.status AS task_status, task.result_note AS task_result_note
              FROM application_runs AS run
              JOIN application_tasks AS task ON task.id = run.task_id
@@ -150,10 +150,15 @@ export function updateTaskFromRun(request) {
             LIMIT 1`)
                 .get(request.runId);
             const hasPendingHumanWork = pending.n > 0 || takeover !== undefined;
-            const status = protectedStatus ??
-                (run.state === 'failed_recoverable'
+            const resumeReviewPending = run.task_kind === 'company_resume' &&
+                run.state === 'ready_for_review' && !hasPendingHumanWork;
+            const status = protectedStatus ?? (resumeReviewPending ? 'in_progress' :
+                run.state === 'failed_recoverable'
                     ? statusForFailedRecoverable(hasPendingHumanWork)
                     : STATE_TO_STATUS[run.state]);
+            if (resumeReviewPending && protectedStatus === undefined) {
+                notes.push('简历待独立审查，代理继续处理。');
+            }
             if (pending.n > 0) {
                 notes.push(`还有 ${pending.n} 个问题没回答`);
             }

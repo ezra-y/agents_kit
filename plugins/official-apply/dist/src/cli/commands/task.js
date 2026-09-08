@@ -92,6 +92,31 @@ async function handleTaskRun(context) {
 }
 export const taskCommands = [
     {
+        name: 'task complete',
+        summary: '填写、独立审查和结果表同步结束后，记录公司简历任务完成。',
+        usage: 'applyctl task complete --task <taskId> [--json]',
+        requiredOptions: ['task'],
+        handler(context) {
+            const taskId = readString(context.args.options, 'task');
+            if (taskId === undefined)
+                return usageError('缺少 --task <taskId>。');
+            const runtime = openRuntimeDatabase({ paths: context.paths });
+            try {
+                const result = runtime.db.prepare(`UPDATE application_tasks
+          SET status = 'completed', result_note = '公司简历填写处理完成', updated_at = ?
+          WHERE id = ? AND task_kind = 'company_resume'
+            AND status NOT IN ('submitted', 'submission_uncertain', 'skipped')`)
+                    .run(context.now, taskId);
+                return result.changes === 0
+                    ? failed('cli_command_failed', '没有可标记完成的公司简历任务。')
+                    : ok({ taskId, status: 'completed' }, '已记录公司简历任务完成。');
+            }
+            finally {
+                runtime.close();
+            }
+        },
+    },
+    {
         name: 'task run',
         summary: '跑一次投递流程；默认 review 模式，停在最终提交之前。',
         usage: 'applyctl task run --task <taskId> [--mode review|auto] [--headless] [--json]',

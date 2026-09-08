@@ -40,6 +40,8 @@ node bin/applyctl.js resume show --id resume_xxx
 
 ## 补齐本批资料
 
+同一批次准备一次资料，后续公司复用。先将用户新确认的通用事实通过现有 `profile import` 或 `apply.save_answers` 写入正式资料；`preferences.json` 用于选项含义，不单独保存一份只供审核读取的新事实。已有 confirmedFacts 时，将适用值同步到正式字段后再填写。填写者和审核者使用同一份已合并资料及来源，新增回答只更新受影响字段。任务绑定不同时补读差异记录，不重新提取整份 PDF。
+
 先读取任务绑定的材料、`profile_records` 和已确认答案，再结合当前任务和
 `knowledge/field-catalog.yaml` 找缺项。不要把答案表当成全部私有资料。把本批适用的必填项和常见项
 集中问一次。除婚姻状况、驾照等目录字段外，真实批次还可能需要学院、成绩排名、部门和任职性质、面试方式、英语
