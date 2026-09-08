@@ -2078,6 +2078,19 @@
         "output/reference"
       ]
     },
+    "skill:standalone/dashi-ppt": {
+      "recommendation": 4,
+      "description": "从需求或文档生成可在浏览器编辑的 HTML 演示文稿，并支持导出 PPTX / PDF。",
+      "trigger": "制作 PPT、演示文稿、幻灯片、汇报材料，或需要可编辑 PPTX / PDF 时使用。",
+      "tags": [
+        "role/builder",
+        "focus/presentation-design",
+        "focus/presentations",
+        "platform/web",
+        "stack/html",
+        "output/slides"
+      ]
+    },
     "skill:standalone/deep-dive": {
       "recommendation": 3,
       "description": "不依赖外部 API 的深度研究:把问题拆成 DAG、按依赖顺序并行跑子代理、按缺口迭代一轮。",

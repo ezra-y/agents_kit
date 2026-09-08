@@ -421,6 +421,20 @@
         "content_sha256": "46526f1ce1797b5d9ddded670b41bc5b0141f95733ffcd98fefe6c51cca1faea"
       }
     },
+    "skill:standalone/dashi-ppt": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/chuspeeism/dashi-ppt-skill.git",
+        "ref": "",
+        "path": "skills/dashi-ppt"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "f595ea6d5bb32de5d9bf669d20f15e311ba17039",
+        "content_sha256": "c996beb040e7f4ef888ba86477c2860c81e456340d5afa30d379b7ff938099e6"
+      }
+    },
     "skill:standalone/deep-dive": {
       "provider": "git",
       "locator": {

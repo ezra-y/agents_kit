@@ -1,6 +1,6 @@
 # 收藏技能总目录
 
-全部收藏 **315** 个：未收录索引 **11** · 已收录 **304**（其中常驻 **154**）
+全部收藏 **316** 个：未收录索引 **11** · 已收录 **305**（其中常驻 **154**）
 
 匹配优先级：配置启用（实际加载用 `check --runtime` 核验）→ 已收录未常驻（启用即可，零下载）→
 未收录索引（从上游安装）。按描述匹配即可；描述拿不准、候选难取舍或任务
@@ -190,6 +190,7 @@ Emil Kowalski 的动效与 UI 设计技能合集
 | `frontend-slides` | 运营与内容 | 动画丰富的 HTML 演示文稿,376 行 + 161 个附件。可从零做,也能把 PPTX 转成网页。含固定舞台规则、内容密度模式、三种工作模式检测。 |
 | `marketing-agi` | 运营与内容 | A complete marketing department in one skill. Website and landing-page audits with weighted 0-100 scores, copywriting with panel scoring and AI-slop removal, an 18-tactic ad hook engine, GEO/AEO for getting cited by ChatGPT/Perplexity/AI Overviews, paid-ads creative diagnosis and production briefs, email sequences, LinkedIn/X writing, launch playbooks, positioning and offer design, competitor teardowns, app store optimization, honest analytics and test design. Use for ANY marketing task — audit, write, rewrite, diagnose, score, plan, launch, position, price, analyze — whenever the user mentions marketing, growth, conversion, copy, ads, hooks, CPM, ROAS, SEO, GEO, email, social, landing pages, funnels, launches, competitors, brand, positioning, pricing, or app stores, or says "my landing page sucks", "nobody's converting", "why are my CPMs up", "AI doesn't recommend us", "write me 20 hooks". Route via the table inside; fan out subagents for multi-dimensional work. Not for pure engineering, legal, or finance. |
 | `slides` | 运营与内容 | 策略性 HTML 演示:Chart.js 图表、design token、响应式布局、文案公式、按场景选幻灯片策略。 |
+| `dashi-ppt` | 研究与办公 | 从需求或文档生成可在浏览器编辑的 HTML 演示文稿，并支持导出 PPTX / PDF。 |
 | `deep-dive` | 研究与办公 | 不依赖外部 API 的深度研究:把问题拆成 DAG、按依赖顺序并行跑子代理、按缺口迭代一轮。 |
 | `lark-approval` | 研究与办公 | 审批:查处理待办已办实例、搜可发起的审批定义、看详情并发起原生审批实例。 |
 | `lark-attendance` | 研究与办公 | 考勤打卡:只能查自己的打卡记录。 |
