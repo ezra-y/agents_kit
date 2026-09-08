@@ -577,11 +577,20 @@ export function registerMcpTools() {
                         now: input.now,
                     });
                     if (login.stage !== 'logged_in' && login.stage !== 'unsupported') {
+                        syncHumanTakeover({ paths: input.paths, runId: found.run.runId,
+                            active: loginHumanTakeover(found.run.runId, login) ?? {
+                                runId: found.run.runId, reason: 'login', message: '简历入口仍需要登录。',
+                                resumeCondition: '完成当前公司的登录后继续打开简历。', currentUrl: found.page.url(),
+                            }, now: input.now });
                         return fail('resume_login_required', '已找到简历网址，但当前登录状态无效。继续使用原 runId 调用 apply.login。', {
                             ...opened,
                             login,
                             checkedScriptIds: pageScript.checkedScriptIds,
                         });
+                    }
+                    if (login.stage === 'logged_in') {
+                        syncHumanTakeover({ paths: input.paths, runId: found.run.runId,
+                            resolveReasons: ['login'], now: input.now });
                     }
                     return ok({
                         ...opened,
@@ -590,6 +599,8 @@ export function registerMcpTools() {
                         skipped: pageScript.skipped,
                     }, `已进入 ${opened.resumeUrl}，未命中 PageScript。接下来调用 apply.inspect_page 走通用填写。`);
                 }
+                syncHumanTakeover({ paths: input.paths, runId: found.run.runId,
+                    resolveReasons: ['login'], now: input.now });
                 return ok({
                     ...opened,
                     siteHost: hostname,

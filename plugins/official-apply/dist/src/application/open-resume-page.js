@@ -1,6 +1,7 @@
 import { setSessionPage } from "../browser/session/browser-session-lifecycle.js";
 import { openApplicationPage } from "../browser/session/open-application-page.js";
 import { isMokaRecruitmentPath } from "../site-adapters/moka/routes.js";
+import { syncHumanTakeover } from "./sync-human-takeover.js";
 function isFeishuJobsHost(hostname) {
     return hostname.endsWith('.jobs.feishu.cn');
 }
@@ -264,6 +265,19 @@ async function navigate(request, url) {
     };
 }
 export async function openResumePage(request) {
+    try {
+        return await navigateResumePage(request);
+    }
+    catch (error) {
+        if (error instanceof Error && error.message.startsWith('resume_login_required:')) {
+            syncHumanTakeover({ paths: request.session.paths, runId: request.runId,
+                active: { runId: request.runId, reason: 'login', message: error.message,
+                    resumeCondition: '在当前公司完成登录后，继续打开简历。', currentUrl: request.page.url() } });
+        }
+        throw error;
+    }
+}
+async function navigateResumePage(request) {
     const current = new URL(request.page.url());
     const feishuJobsPage = await isFeishuJobsPage(request.page);
     if (isResumeEditor(current, feishuJobsPage)) {

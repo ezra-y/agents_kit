@@ -78,6 +78,14 @@ export async function startRunSession(request) {
     invalidatePendingSubmissionApprovals({ paths: request.paths, runId: opened.runId });
     const scope = readTaskScopeKeys(request.paths, request.taskId);
     const sessionId = browserSessionIdForRun(request.paths, opened.runId);
+    const runtime = openRuntimeDatabase({ paths: request.paths });
+    let previousBrowser;
+    try {
+        previousBrowser = runtime.db.prepare("SELECT profile_name, browser_name FROM browser_sessions WHERE id = ? AND mode = 'persistent'").get(sessionId);
+    }
+    finally {
+        runtime.close();
+    }
     const startedAt = request.now ?? new Date().toISOString();
     prepareBrowserSession(request.paths, sessionId, browserMode, startedAt);
     let session;
@@ -86,6 +94,10 @@ export async function startRunSession(request) {
     try {
         let channel = request.channel;
         let profileName = request.profileName;
+        if (browserMode === 'persistent') {
+            if (typeof previousBrowser?.profile_name === 'string')
+                profileName ??= previousBrowser.profile_name;
+        }
         if (request.loginStateSource !== undefined) {
             if (browserMode !== 'persistent') {
                 throw new Error('login_state_mode_invalid: 登录态迁移只能用于 persistent 浏览器模式');
@@ -93,7 +105,7 @@ export async function startRunSession(request) {
             if (request.loginStateDomains === undefined || request.loginStateDomains.length === 0) {
                 throw new Error('login_state_domains_missing: 登录态迁移缺少域名');
             }
-            profileName = request.profileName ?? `${request.loginStateSource}-import`;
+            profileName ??= `${request.loginStateSource}-import`;
             loginStateMigration = await migrateBrowserLoginState({
                 paths: request.paths,
                 sourceBrowser: request.loginStateSource,
@@ -105,6 +117,11 @@ export async function startRunSession(request) {
                 now: request.now,
             });
             channel ??= loginStateMigration.recommendedChannel;
+        }
+        const previousChannel = previousBrowser?.browser_name;
+        if (browserMode === 'persistent' &&
+            (previousChannel === 'chrome' || previousChannel === 'chromium' || previousChannel === 'msedge')) {
+            channel ??= previousChannel;
         }
         // 2. 连浏览器、开页面。
         session = await connectBrowser({
