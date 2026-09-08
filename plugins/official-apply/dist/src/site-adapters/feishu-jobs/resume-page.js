@@ -5,6 +5,7 @@ const READ_PATH = '/api/v1/user/latest/resume';
 const STAGED_KEY = '__officialApplyFeishuJobsResume';
 const PORTAL_TYPE_CAMPUS = 6;
 const PORTAL_ENTRANCE = 1;
+const ONGOING_END_TIME = -1;
 function text(values, ...keys) {
     for (const key of keys) {
         const value = values[key];
@@ -42,14 +43,10 @@ function serverResume(facts) {
     return asRecord(facts?.['serverResume']);
 }
 function chinaMonthTimestamp(value, current = false) {
+    if (current)
+        return ONGOING_END_TIME;
     if (value !== undefined && /^\d{4}-\d{2}$/.test(value)) {
         return Date.parse(`${value}-01T00:00:00+08:00`);
-    }
-    if (current) {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        return Date.parse(`${year}-${month}-01T00:00:00+08:00`);
     }
     return undefined;
 }
@@ -150,11 +147,7 @@ function projectRows(input) {
             name: clipped(name, 200),
             role: clipped(text(record.values, 'role') ?? '', 200),
             start_time: chinaMonthTimestamp(text(record.values, 'startDate', 'start_date')),
-            ...(record.values['current'] === true
-                ? {}
-                : {
-                    end_time: chinaMonthTimestamp(text(record.values, 'endDate', 'end_date')),
-                }),
+            end_time: chinaMonthTimestamp(text(record.values, 'endDate', 'end_date'), record.values['current'] === true),
             description: recordDescription(record),
             link: explicitLink ?? '',
             customized_data: [],
@@ -182,9 +175,7 @@ function resolvedProjectValues(input) {
     return input.projects.map((record) => ({
         ...record.values,
         start_time: chinaMonthTimestamp(text(record.values, 'startDate', 'start_date')) ?? null,
-        end_time: record.values['current'] === true
-            ? null
-            : chinaMonthTimestamp(text(record.values, 'endDate', 'end_date')) ?? null,
+        end_time: chinaMonthTimestamp(text(record.values, 'endDate', 'end_date'), record.values['current'] === true) ?? null,
     }));
 }
 function hasAwardYear(record) {
