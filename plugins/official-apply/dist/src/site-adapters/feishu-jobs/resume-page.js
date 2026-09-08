@@ -544,6 +544,13 @@ function buildPayload(input, current, fields, settings, customValues, forceCreat
     const standardSns = includeSns && wechat !== undefined && wechatType !== undefined
         ? [{ sns_type: wechatType, link: wechat }]
         : [];
+    const works = asRows(current['works_list']);
+    for (const project of input.projects) {
+        const link = text(project.values, 'projectLink', 'url');
+        if (link !== undefined && !works.some(work => text(work, 'link') === link)) {
+            works.push({ link, description: text(project.values, 'name', 'label') ?? '' });
+        }
+    }
     const resume = compactObject({
         ...(resumeId === undefined ? {} : { id: resumeId }),
         name: text(input.basic, 'person.identity.full_name') ?? '',
@@ -569,7 +576,7 @@ function buildPayload(input, current, fields, settings, customValues, forceCreat
         career_list: attachCustomValues(careerRows(input, 'career'), distributedCustomValues.sections.get('career_list')),
         internship_list: attachCustomValues(careerRows(input, 'internship'), distributedCustomValues.sections.get('internship_list')),
         project_list: attachCustomValues(projectRows(input), distributedCustomValues.sections.get('project_list')),
-        works_list: attachCustomValues([], distributedCustomValues.sections.get('works_list')),
+        works_list: attachCustomValues(works, distributedCustomValues.sections.get('works_list')),
         award_list: attachCustomValues(awardRows(input, requireAwardYear), distributedCustomValues.sections.get('award_list')),
         competition_list: attachCustomValues(competitionRows(input, requireAwardYear), distributedCustomValues.sections.get('competition_list')),
         certificate_list: [],
