@@ -31,7 +31,7 @@ description: 在企业招聘官网填写、保存并检查站内简历。用户�
 已在简历页时直接调用 `apply.resolve_page { runId }`，它会读取页面并解析答案。只有需要查入口、控件或补证据时调用 `apply.inspect_page`。
 外层 `ok: true` 只说明工具调用成功。网站脚本分支检查 `data.preparation.missing/conflicts/skipped` 和缺失材料/记录；通用分支检查 `data.missing`、`data.requiresReviewRuntimeRefs`。
 工具返回空页面、无字段或找不到下一步时，先按 [入口与页面恢复](../recruitment-link/references/entry-recovery.md) 检查实际页面，按结果回到来源查找、视觉操作或能力演进；再继续解析。
-网站脚本返回的 `source.payload` 是本任务已合并的完整资料，包含有效履历回答和项目排除结果；填写与审查复用它。`resolvedKeys` 只有键名，不能据此声称字段内容正确。已知答案与官网选项矛盾时停止该字段，说明需要确认的具体内容。
+`apply.resolve_page` 两条路径都返回 `source.payload`，即本任务已合并的完整资料，包含有效履历回答和项目排除结果；填写与审查复用它。`resolvedKeys` 只有键名，不能据此声称字段内容正确。已知答案与官网选项矛盾时停止该字段，说明需要确认的具体内容。
 
 ### 2.2 保存用户回答
 

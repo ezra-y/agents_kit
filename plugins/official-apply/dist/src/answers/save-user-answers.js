@@ -30,10 +30,16 @@ export function saveUserAnswers(request) {
                     // 验证码这类只在会话内有效，绝不落长期库。
                     continue;
                 }
+                const recordKey = answer.scope.type === 'profile_record'
+                    ? answer.scope.key.replace(/^profile_record:/, '')
+                    : answer.scope.key;
+                const scopeKey = answer.scope.type === 'profile_record'
+                    ? `profile_record:${recordKey}`
+                    : answer.scope.key;
                 const previous = priv.db
                     .prepare(`SELECT id FROM answer_values
-             WHERE canonical_key = ? AND scope_type = ? AND scope_key = ? AND status = 'active'`)
-                    .all(answer.canonicalKey, answer.scope.type, answer.scope.key);
+             WHERE canonical_key = ? AND scope_type = ? AND scope_key IN (?, ?) AND status = 'active'`)
+                    .all(answer.canonicalKey, answer.scope.type, scopeKey, recordKey);
                 const answerId = newId('answer');
                 priv.db
                     .prepare(`INSERT INTO answer_values
@@ -41,7 +47,7 @@ export function saveUserAnswers(request) {
                 status, user_confirmed, confidence, valid_until, last_confirmed_at,
                 supersedes_answer_id, created_at, updated_at)
              VALUES (?, ?, ?, ?, ?, 'current_user_input', ?, 'active', 1, 1, ?, ?, ?, ?, ?)`)
-                    .run(answerId, answer.canonicalKey, answer.scope.type, answer.scope.key, JSON.stringify(answer.value), `run:${request.runId}`, answer.validUntil ?? null, now, previous[0]?.id ?? null, now, now);
+                    .run(answerId, answer.canonicalKey, answer.scope.type, scopeKey, JSON.stringify(answer.value), `run:${request.runId}`, answer.validUntil ?? null, now, previous[0]?.id ?? null, now, now);
                 savedAnswerIds.push(answerId);
                 for (const old of previous) {
                     priv.db

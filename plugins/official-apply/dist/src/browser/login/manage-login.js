@@ -56,9 +56,10 @@ export async function manageLogin(input) {
             providerId: 'unsupported',
             stage: 'unsupported',
             pageUrlRedacted: redactLoginPageUrl(input.page.url()),
-            nextAction: 'record_blocker',
+            nextAction: 'recover_entry',
             evidence: ['当前网址没有已安装的登录适配器'],
             errorCode: 'login_provider_not_found',
+            message: '当前登录适配器未覆盖此页，继续在同一会话检查官网入口和可见登录控件。',
         };
     }
     switch (input.action) {

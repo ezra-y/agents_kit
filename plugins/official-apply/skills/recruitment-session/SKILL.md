@@ -34,6 +34,8 @@ open_task 未成功打开页面、跳转异常或页面与工具读数矛盾时�
 
 ### 2.2 阻塞与继续
 
+`nextAction: recover_entry` 表示当前登录工具未覆盖此页。按 [入口与页面恢复](../recruitment-link/references/entry-recovery.md) 在同一会话检查官网导航与可见控件，完成普通登录后再进入简历；它不会建立等待用户修工具的卡点。
+
 没有登录态但能够登录时继续尝试；出现验证码不能直接判为阻塞。先完成第 2.1 节的脚本和电脑操作路径，再判断是否缺少验证码、邮箱登录或实际工具能力，并记录具体原因和所需用户动作。
 入口失效回到 recruitment-link；可见页面读不到或缺动作按入口与页面恢复检查。确属环境或脚本能力问题时交给 [能力演进](../recruitment-capability-evolution/SKILL.md)，修复后继续；权限和网站明确拒绝按实际证据处理。
 按 [证据与恢复](../resume-fill-review/references/evidence-recovery.md) 更新已有阻塞记录，验证码值和登录令牌不进入长期资料。

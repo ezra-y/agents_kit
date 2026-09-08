@@ -35,15 +35,13 @@ export async function validatePage(session, page, request) {
     const current = inspection.schema;
     const currentByRef = new Map(current.fields.map((field) => [field.runtimeRef, field]));
     const issues = [];
-    // 0. 空页面不能算校验成功。扫描结果为空只说明扫描器没看到任何东西，
-    //    不等于页面填完了。必须 fields/uploads/actions 三者全部为空才判定，
-    //    只有上传控件或只有可点击动作的页面不受影响。
-    if (current.fields.length === 0 && current.uploads.length === 0 && current.actions.length === 0) {
+    // 上传控件可以核对附件；导航或提交按钮不能证明填写结果。
+    if (current.fields.length === 0 && current.uploads.length === 0) {
         issues.push({
             severity: 'error',
             code: 'page_scan_empty',
-            message: '页面扫描结果为空：没有字段、上传控件或可点击动作。空页面不能视为校验成功',
-            evidence: ['扫描器没有在这页上发现任何可操作内容，无法确认填写结果'],
+            message: '没有可核对的表单字段或上传控件，先检查实际入口和页面',
+            evidence: [`扫描到 ${current.actions.length} 个动作，但没有可核对的填写内容`],
         });
     }
     // 1. 期望字段：值是不是真的写进去了。

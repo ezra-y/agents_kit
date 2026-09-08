@@ -51,6 +51,21 @@ serverReadback.reopened=false 表示未能重新打开，不能把当前页面�
 报告必须来自实际独立调用，并覆盖本轮每个 taskId 和最新 evidencePath。核对后写回 reviewStatus 和 reportPath；丢项、旧路径、报告未生成均保持 pending。
 修改材料或字段后，把原报告加入 supplementalEvidence，复审受影响项；全量保存还要比较其他字段是否变化。只有补截图时，保留已核对的保存结果并只补证据，核实同一内容版本后复审缺证部分。新报告引用沿用的旧报告和证据，任务恢复时读取清单中尚未解决的动作。
 
+## 批量浏览器会话脚本
+
+需要在同一个页面连续执行多步时，用 JSONL（每行一个 JSON 对象）启动轻量会话脚本。它复用正式 MCP 的 `apply.*` 工具和同一个 `runId` 页面，输入从管道传入，不受终端单行 4KB 限制：
+
+```bash
+node skills/resume-fill-review/scripts/browser-session.mjs \
+  --evidence-dir "$dataRoot/runs/browser-session-check" <<'JSONL'
+{"tool":"apply.open_task","args":{"taskId":"实际任务","headless":true,"channel":"chromium","profileName":"实际档案"}}
+{"operation":"evaluate","runId":"上一步返回的 runId","expression":"document.body.innerText"}
+{"operation":"locator","runId":"上一步返回的 runId","selector":"button","method":"screenshot","arguments":[{}]}
+JSONL
+```
+
+每行输出一条结果，截图会写入 `<dataRoot>` 并只返回 `screenshotPath`，不会把二进制 `Buffer`（二进制数据）打印或重复写进 JSON。`fill`、短信验证码等请求要加 `"sensitive":true`；手机号和履历内容可按正常证据保留，密码和验证码会从长期命令记录中去掉。输入结束后脚本会关闭 MCP 会话和浏览器；页面仍需用 `apply.close_run` 提前关闭时，照常发送该工具调用。
+
 ## 视觉操作
 
 填写、选择、上传、翻页、草稿保存和验证码都遵循：先用匹配脚本或当前页面的结构化工具，缺少适配或操作失败时转 Computer Use（电脑操作）。视觉方式完成后仍须保存、重新打开、核对全文和独立审查。

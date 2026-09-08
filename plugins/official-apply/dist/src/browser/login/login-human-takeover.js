@@ -6,6 +6,7 @@ const RESUME_BY_ACTION = {
     confirm_captcha: '完成页面上的验证码确认。',
     provide_sms_code: '提供短信验证码。',
     retry_sms: '重发短信并重试登录。',
+    recover_entry: '检查官网入口和当前登录控件，完成后继续同一会话。',
     record_blocker: '人工处理并解除阻断后再继续。',
 };
 /** 每种卡点的默认说明。只有 flow.message 缺失时才用。 */
@@ -34,7 +35,7 @@ export function loginHumanTakeover(runId, flow) {
         case 'code_rejected':
             return takeover(runId, flow, 'sms_code');
         case 'unsupported':
-            return takeover(runId, flow, 'tool_failure');
+            return undefined;
         case 'failed':
             if (flow.nextAction === 'retry_sms') {
                 return takeover(runId, flow, 'site_blocked');

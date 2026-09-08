@@ -20,6 +20,7 @@ import { savePageScriptWithReadback } from "../application/save-page-script-with
 import { captureResumeReviewEvidence } from "../application/capture-resume-review-evidence.js";
 import { resolveCurrentPage } from "../application/resolve-current-page.js";
 import { resolvePageWithRecipe } from "../application/resolve-page-with-recipe.js";
+import { buildCanonicalApplicationPayload } from "../application/build-canonical-application-payload.js";
 import { getRunStatus } from "../application/get-run-status.js";
 import { advancePage } from "../application/advance-page.js";
 import { fillProfileGroups } from "../application/fill-profile-groups.js";
@@ -469,6 +470,22 @@ export function registerMcpTools() {
                         : { code: readString(input.args, 'code') }),
                     now: input.now,
                 });
+                if (login.errorCode === 'login_provider_not_found') {
+                    syncHumanTakeover({
+                        paths: input.paths,
+                        runId: found.run.runId,
+                        resolveReasons: ['tool_failure'],
+                        now: input.now,
+                    });
+                    return fail(login.errorCode, login.message ?? '继续检查当前入口。', {
+                        ...login,
+                        runId: found.run.runId,
+                        recoveryStep: 'entry-recovery',
+                        recoveryReference: 'skills/recruitment-link/references/entry-recovery.md',
+                        nextTool: 'apply.inspect_page',
+                        resumeWith: 'apply.open_resume',
+                    });
+                }
                 if (action === 'inspect' && login.providerId === 'moka.shared.sms' &&
                     (login.stage === 'sms_ready' || login.stage === 'login_required')) {
                     let reusedFromProfile;
@@ -678,7 +695,7 @@ export function registerMcpTools() {
         },
         {
             name: 'apply.resolve_page',
-            description: '保存官网字段、映射到公共字段、找出答案和缺失问题。内部组合 persistSiteFields、mapSiteFields 和 resolveAnswers。',
+            description: '保存官网字段、映射到公共字段、找出答案和待处理问题。source.payload 返回本任务合并了有效用户回答的完整资料，供填写和审查共同使用。',
             mutating: true,
             inputSchema: {
                 type: 'object',
@@ -706,6 +723,12 @@ export function registerMcpTools() {
                         : `已按 ${pageScript.id} 准备数据，可以调用 apply.fill_page。`);
                 }
                 found.run.executionRoute = 'generic_scan';
+                const source = buildCanonicalApplicationPayload({
+                    paths: input.paths,
+                    taskId: found.run.taskId,
+                    profileRecordIds: found.run.profileRecordIds,
+                    materialIds: found.run.materialRefs,
+                });
                 const schema = await currentSchema(found.session, found.page, found.run.runId, input.now, found.run);
                 // 和 CLI 主循环走同一个入口：先查站点/家族配方，对不上才全局语义扫描。
                 // 两边各写一遍的话，迟早有一边忘记查配方。
@@ -765,6 +788,9 @@ export function registerMcpTools() {
                     .map((field) => field.runtimeRef));
                 recordResolutionState(found.run, schema, answers.missing.filter((entry) => entry.required).length, resolved.requiresReviewRuntimeRefs.filter((runtimeRef) => requiredRuntimeRefs.has(runtimeRef)).length, input.now);
                 return ok({
+                    source,
+                    missingProfileRecordIds: source.missingProfileRecordIds,
+                    missingMaterialIds: source.missingMaterialIds,
                     mappings: resolved.mappings,
                     requiresReviewRuntimeRefs: resolved.requiresReviewRuntimeRefs,
                     resolved: answers.resolved,
@@ -783,9 +809,13 @@ export function registerMcpTools() {
                 }, `${withRecipe.decision.reason}。` +
                     `本页 ${resolved.recipeHintFieldCount} 个字段靠配方定下含义，` +
                     `${resolved.scoredFieldCount} 个字段走了全局语义扫描。` +
-                    (answers.missing.length > 0
-                        ? `还有 ${answers.missing.length} 个问题需要用户回答，先问完再填。`
-                        : '答案齐了，可以调用 apply.fill_page。'));
+                    (schema.fields.length === 0 && schema.uploads.length === 0
+                        ? '当前没有可核对的表单字段，先检查实际入口和页面。'
+                        : answers.missing.length > 0
+                            ? `还有 ${answers.missing.length} 个待处理字段，结合 source.payload 和实际控件检查答案与映射。`
+                            : resolved.requiresReviewRuntimeRefs.length > 0
+                                ? `还有 ${resolved.requiresReviewRuntimeRefs.length} 个字段含义待匹配。`
+                                : '答案已匹配，可以调用 apply.fill_page。'));
             },
         },
         {
