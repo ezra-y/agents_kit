@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import { execFileSync } from 'node:child_process';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
 
 import { launch } from '../../../bin/launch.js';
+import { createCaptchaCase } from './captcha-case.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const SOLVER = path.join(HERE, 'solve-overlay-rotation-captcha.py');
@@ -50,8 +50,10 @@ const paths = getSkillPaths();
 const server = createMcpServer({ paths });
 let runId;
 let closing = false;
+let captchaCase;
 
 function write(event, data) {
+  captchaCase?.recordEvent(event, data);
   process.stdout.write(`${event} ${JSON.stringify(data)}\n`);
 }
 
@@ -75,6 +77,7 @@ async function challengeFrame(page, timeoutMs = 8_000) {
 }
 
 async function downloadCurrentChallenge(frame) {
+  await frame.locator('#img-back-div').screenshot({ path: path.join(captchaCase.directory, 'challenge-rendered.png') });
   const challenge = await frame.evaluate(() => {
     const background = document.querySelector('#img-back-div');
     const piece = document.querySelector('#img-rotate-div img');
@@ -96,9 +99,9 @@ async function downloadCurrentChallenge(frame) {
     );
   }
   const stamp = Date.now();
-  const pieceFile = path.join(paths.tmpDir, `overlay-rotation-${stamp}-piece.png`);
+  const pieceFile = path.join(captchaCase.directory, `overlay-rotation-${stamp}-piece.png`);
   const backgroundFile = path.join(
-    paths.tmpDir,
+    captchaCase.directory,
     `overlay-rotation-${stamp}-background.png`,
   );
   await Promise.all([
@@ -109,19 +112,7 @@ async function downloadCurrentChallenge(frame) {
 }
 
 function solveCurrentChallenge(files) {
-  const solution = JSON.parse(
-    execFileSync(
-      'python3',
-      [
-        SOLVER,
-        '--piece',
-        files.pieceFile,
-        '--background',
-        files.backgroundFile,
-      ],
-      { encoding: 'utf8' },
-    ),
-  );
+  const solution = captchaCase.solve(['--piece', files.pieceFile, '--background', files.backgroundFile]);
   if (!solution.ok || solution.confidence === 'low') {
     throw new Error(`overlay_rotation_solution_unusable: ${JSON.stringify(solution)}`);
   }
@@ -142,6 +133,7 @@ async function dragToAngle(page, frame, clockwiseDegrees) {
   if (maxDistance <= 0) throw new Error('overlay_rotation_track_unusable');
   const normalizedAngle = ((clockwiseDegrees % 360) + 360) % 360;
   const targetDistance = (normalizedAngle / 360) * maxDistance;
+  captchaCase.record('drag_target', { sliderBox, trackBox, normalizedAngle, targetDistance, maxDistance });
   const startX = sliderBox.x + sliderBox.width / 2;
   const startY = sliderBox.y + sliderBox.height / 2;
 
@@ -166,6 +158,8 @@ async function dragToAngle(page, frame, clockwiseDegrees) {
     await page.waitForTimeout(8 + (step % 5));
   }
   await page.waitForTimeout(100);
+  captchaCase.record('drag_observed', { sliderBox: await slider.boundingBox(),
+    pieceStyle: await frame.locator('#img-rotate-div').getAttribute('style') });
   await page.mouse.up();
   return { normalizedAngle, targetDistance, maxDistance };
 }
@@ -219,45 +213,58 @@ async function fast(page) {
   if (frame === undefined) {
     throw new Error(`overlay_rotation_not_ready: ${JSON.stringify(status)}`);
   }
-  const files = await downloadCurrentChallenge(frame);
-  const solution = solveCurrentChallenge(files);
-  write('SOLUTION', solution);
-  const verificationResponse = page
-    .waitForResponse((response) => {
-      const url = new URL(response.url());
-      return (
-        response.request().method() === 'POST' &&
-        url.pathname.endsWith('/cgi-bin/api/check')
-      );
-    }, { timeout: 10_000 })
-    .catch(() => undefined);
-  const drag = await dragToAngle(
-    page,
-    frame,
-    Number(solution.clockwiseDegrees),
-  );
-  const verification = await readDecision(await verificationResponse);
-  await page.waitForTimeout(1_500);
-  status = await server.callTool('apply.login', {
-    runId,
-    action: 'inspect',
-  });
-  if (status.ok && status.data?.stage === 'sms_ready') {
+  captchaCase = createCaptchaCase({ evidenceDir: paths.evidenceDir, pageUrl: page.url(),
+    runId, taskId, type: 'overlay_rotation', solver: SOLVER, sessionScript: fileURLToPath(import.meta.url) });
+  write('CASE', { directory: captchaCase.directory });
+  try {
+    const files = await downloadCurrentChallenge(frame);
+    const solution = solveCurrentChallenge(files);
+    write('SOLUTION', solution);
+    const verificationResponse = page
+      .waitForResponse((response) => {
+        const url = new URL(response.url());
+        return (
+          response.request().method() === 'POST' &&
+          url.pathname.endsWith('/cgi-bin/api/check')
+        );
+      }, { timeout: 10_000 })
+      .catch(() => undefined);
+    const drag = await dragToAngle(
+      page,
+      frame,
+      Number(solution.clockwiseDegrees),
+    );
+    const verification = await readDecision(await verificationResponse);
+    captchaCase.record('verification_response', verification);
+    await page.waitForTimeout(1_500);
     status = await server.callTool('apply.login', {
       runId,
-      action: 'begin_sms',
-      phone,
+      action: 'inspect',
     });
+    if (status.ok && status.data?.stage === 'sms_ready') {
+      status = await server.callTool('apply.login', {
+        runId,
+        action: 'begin_sms',
+        phone,
+      });
+    }
+    write('FAST_RESULT', {
+      solution,
+      drag,
+      verification,
+      status,
+      solved:
+        status.ok &&
+        (status.data?.stage === 'code_sent' || status.data?.stage === 'logged_in'),
+    });
+    captchaCase.finish(status.ok && (status.data?.stage === 'code_sent' || status.data?.stage === 'logged_in')
+      ? 'passed' : 'not_confirmed', { verification, loginStage: status.data?.stage });
+  } catch (error) {
+    captchaCase.fail(error);
+    throw error;
+  } finally {
+    captchaCase = undefined;
   }
-  write('FAST_RESULT', {
-    solution,
-    drag,
-    verification,
-    status,
-    solved:
-      status.ok &&
-      (status.data?.stage === 'code_sent' || status.data?.stage === 'logged_in'),
-  });
 }
 
 async function close() {

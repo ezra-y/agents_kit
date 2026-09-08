@@ -10,7 +10,46 @@
 同一档案被占用时返回 browser_profile_in_use，先复用仍在运行的会话，或使用明确的独立档案。不要删除锁文件、关闭用户浏览器或盲目安装备用浏览器。
 脚本收到 quit 或输入通道关闭时，会完成已收到的命令后关闭自己创建的会话；SIGINT/SIGTERM 会立即终止本脚本会话。仅在所选浏览器未安装时尝试备用 Chromium；备用也缺失会保留两层错误说明，不掩盖最初原因。
 
-文中 `.local/` 指配置的 dataRoot；运行命令时替换为该绝对路径，不能在当前目录新建另一份。临时挑战图片用完后清理，长期只保留必要的脱敏结果。
+文中 `.local/` 指配置的 dataRoot；运行命令时替换为该绝对路径，不能在当前目录新建另一份。用于改进和复测的验证码案例长期保留在下述案例目录。
+
+## 用案例改进验证码能力
+
+三个验证码会话入口在每次求解时输出 `CASE`（案例目录），自动保存到
+`.local/evidence/sites/<host>/captcha/case-*/`。每个案例包含实际输入图片、求解器和操作脚本快照、
+求解参数与原始输出、置信度、已取得的动作数据及网站响应摘要。短信验证码不进入案例。
+读取到验证结果后立即保存；后续登录检查失败也能看到该结果。进程中断留下 `in_progress`
+（未结束），不把它记为验证通过。案例会占用磁盘，不按临时文件自动清理。
+
+遇到失败，先读该案例判断是识别、拖动还是网站拒绝，再改对应代码。修改后离线重跑该案例和
+已有标注案例。复测只重新求解图片，不向网站提交旧验证码，也不能代替新题的真实验证。
+
+```bash
+node skills/recruitment-session/scripts/replay-captcha-cases.mjs <案例目录>
+node skills/recruitment-session/scripts/replay-captcha-cases.mjs <案例根目录> --solver-dir <新版求解器目录>
+node skills/recruitment-session/scripts/replay-captcha-cases.mjs <案例目录> --baseline
+```
+
+默认使用当前求解器；`--baseline` 使用案例保存的旧求解器。结果另写为 `replay-*.json`，
+保留旧输出，并显示新输出是否改变，不覆盖原始记录。
+
+确认正确答案后，在 `case.json` 对应的 `solverRuns` 项增加 `expected`。例如确认缺口横坐标为
+110、允许误差1像素时，填写 `"expected": {"targetX": {"value": 110, "tolerance": 1}}`。
+角度比较可设置 `period: 360`，使359度和1度按2度差比较。标签必须来自可核实的依据，
+不能直接把求解器本次输出当标准答案。
+
+有标签时，复测报告 `passed`（通过）或 `failed`（失败）；无标签时报告 `unlabelled`
+（未确认答案）。输出变化、较高置信度和命令正常退出都不能单独证明识别更准确。
+未取得求解输入的记录报告 `no_solver_input`，用于定位取图或启动失败，不计入准确率。
+
+已有图片可导入，原文件保持不动：
+
+```bash
+node skills/recruitment-session/scripts/import-captcha-case.mjs --type jigsaw -- --background <背景图绝对路径> --piece <拼图片绝对路径>
+```
+
+另外支持 `rotation`（圆环旋转，传 `--inner` 和 `--outer`）与 `overlay_rotation`
+（覆盖旋转，传 `--piece` 和 `--background`）。已知来源页可加 `--page-url`；未知来源存入
+`unattributed`（来源未确认）。离线导入不补造当时的网站响应或成功结论。
 
 ## 短信登录
 
@@ -191,8 +230,8 @@ JCAP 官方脚本使用：
 因此直接读取当前轨道和滑块宽度换算。`0°` 是轨道起点，接近 `360°` 才是轨道终点；不得把
 `0°` 自动改成拖满全程。其他引擎没有这个确定关系时，才在同一次按压内做小距离校准。
 
-证据按站点放在 `.local/evidence/sites/<host>/captcha/`。保存当前题目的脱敏运行结果、
-求解 JSON 和验证结果；不要保存短信验证码或完整手机号。
+案例按站点放在 `.local/evidence/sites/<host>/captcha/`，包含原图、求解输入输出和验证结果；
+不保存短信验证码或完整手机号。
 
 ## 拼图滑块验证码
 

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import { execFileSync } from 'node:child_process';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
 
 import { launch } from '../../../bin/launch.js';
+import { createCaptchaCase } from './captcha-case.mjs';
 import {
   attachCaptchaNetworkObserver,
   readCaptchaDecision,
@@ -58,8 +58,10 @@ const paths = getSkillPaths();
 const server = createMcpServer({ paths });
 let runId;
 let closing = false;
+let captchaCase;
 
 function write(event, data) {
+  captchaCase?.recordEvent(event, data);
   process.stdout.write(`${event} ${JSON.stringify(data)}\n`);
 }
 
@@ -137,6 +139,8 @@ async function solveCurrentImages(frame) {
     undefined,
     { timeout: 8_000 },
   );
+  await frame.locator('img.whirl-img-outer-base').first().screenshot({ path: path.join(captchaCase.directory, 'outer-rendered.png') });
+  await frame.locator('img.whirl-img-inner-base').first().screenshot({ path: path.join(captchaCase.directory, 'inner-rendered.png') });
   const [outerSrc, innerSrc] = await Promise.all([
     frame.locator('img.whirl-img-outer-base').first().getAttribute('src'),
     frame.locator('img.whirl-img-inner-base').first().getAttribute('src'),
@@ -153,20 +157,14 @@ async function solveCurrentImages(frame) {
     );
   }
   const stamp = Date.now();
-  const outerFile = path.join(paths.tmpDir, `rotation-captcha-${stamp}-outer.png`);
-  const innerFile = path.join(paths.tmpDir, `rotation-captcha-${stamp}-inner.png`);
+  const outerFile = path.join(captchaCase.directory, `rotation-captcha-${stamp}-outer.png`);
+  const innerFile = path.join(captchaCase.directory, `rotation-captcha-${stamp}-inner.png`);
   await Promise.all([
     writeFile(outerFile, Buffer.from(await outerResponse.arrayBuffer())),
     writeFile(innerFile, Buffer.from(await innerResponse.arrayBuffer())),
   ]);
 
-  const solution = JSON.parse(
-    execFileSync(
-      'python3',
-      [ROTATION_SOLVER, '--inner', innerFile, '--outer', outerFile],
-      { encoding: 'utf8' },
-    ),
-  );
+  const solution = captchaCase.solve(['--inner', innerFile, '--outer', outerFile]);
   if (!solution.ok || solution.confidence === 'low') {
     throw new Error(`rotation_solution_unusable: ${JSON.stringify(solution)}`);
   }
@@ -188,6 +186,7 @@ async function calibratedSinglePress(page, frame, targetAngle) {
   await page.waitForTimeout(80);
 
   const probeAngle = await relativeRotation(frame);
+  captchaCase.record('motion_probe', { sliderBox: box, probeDistance, probeAngle });
   if (!Number.isFinite(probeAngle) || probeAngle <= 0.5) {
     await page.mouse.up();
     throw new Error(`rotation_probe_failed: ${probeAngle}`);
@@ -195,6 +194,7 @@ async function calibratedSinglePress(page, frame, targetAngle) {
   const anglePerPixel = probeAngle / probeDistance;
   const totalDistance = targetAngle / anglePerPixel;
   const remaining = totalDistance - probeDistance;
+  captchaCase.record('drag_target', { targetAngle, anglePerPixel, totalDistance });
   const steps = Math.max(48, Math.ceil(Math.abs(remaining) / 1.25));
   for (let step = 1; step <= steps; step += 1) {
     const progress = step / steps;
@@ -274,68 +274,81 @@ async function fast(page) {
     .first()
     .waitFor({ state: 'visible', timeout: 8_000 });
 
-  const solution = await solveCurrentImages(currentFrame);
-  write('SOLUTION', solution);
-  const verificationResponse = waitForCaptchaDecision(page);
-  await calibratedSinglePress(
-    page,
-    currentFrame,
-    Number(solution.clockwiseDegrees),
-  );
-  const response = await verificationResponse;
-  let verification = {};
-  if (response !== undefined) {
-    try {
-      verification = (await readCaptchaDecision(response)).body;
-    } catch {
-      verification = {};
+  captchaCase = createCaptchaCase({ evidenceDir: paths.evidenceDir, pageUrl: page.url(),
+    runId, taskId, type: 'rotation', solver: ROTATION_SOLVER, sessionScript: fileURLToPath(import.meta.url) });
+  write('CASE', { directory: captchaCase.directory });
+  try {
+    const solution = await solveCurrentImages(currentFrame);
+    write('SOLUTION', solution);
+    const verificationResponse = waitForCaptchaDecision(page);
+    await calibratedSinglePress(
+      page,
+      currentFrame,
+      Number(solution.clockwiseDegrees),
+    );
+    const response = await verificationResponse;
+    let verification = {};
+    if (response !== undefined) {
+      try {
+        const decision = await readCaptchaDecision(response);
+        captchaCase.record('verification_response', decision);
+        verification = decision.body;
+      } catch {
+        verification = {};
+      }
     }
-  }
-  await page
-    .waitForFunction(
-      () => !document.querySelector('iframe[src*="verifycenter"]'),
-      undefined,
-      { timeout: 2_500 },
-    )
-    .catch(() => undefined);
-  if (verification.code === 200) {
     await page
       .waitForFunction(
-        () => {
-          const buttons = [...document.querySelectorAll('button')];
-          return buttons.some((button) =>
-            /重新获取|\d+\s*秒|\d+\s*s/i.test(button.innerText),
-          );
-        },
+        () => !document.querySelector('iframe[src*="verifycenter"]'),
         undefined,
-        { timeout: 5_000 },
+        { timeout: 2_500 },
       )
       .catch(() => undefined);
+    if (verification.code === 200) {
+      await page
+        .waitForFunction(
+          () => {
+            const buttons = [...document.querySelectorAll('button')];
+            return buttons.some((button) =>
+              /重新获取|\d+\s*秒|\d+\s*s/i.test(button.innerText),
+            );
+          },
+          undefined,
+          { timeout: 5_000 },
+        )
+        .catch(() => undefined);
+    }
+
+    const loginStatus = await server.callTool('apply.login', {
+      runId,
+      action: 'inspect',
+    });
+
+    const verificationStillOpen = page.frames().some((candidate) =>
+      candidate.url().includes('verifycenter'),
+    );
+    const sendText = await page
+      .getByText(/重新获取|获取验证码/)
+      .first()
+      .innerText()
+      .catch(() => '');
+    write('FAST_RESULT', {
+      verification,
+      loginStatus,
+      verificationStillOpen,
+      sendText,
+      captchaSolved: verification.code === 200,
+      solved:
+        (loginStatus.ok && loginStatus.data?.stage === 'code_sent') ||
+        (!verificationStillOpen && /重新获取|\d+\s*秒|\d+s/.test(sendText)),
+    });
+    captchaCase.finish(verification.code === 200 ? 'passed' : 'not_confirmed', { verification });
+  } catch (error) {
+    captchaCase.fail(error);
+    throw error;
+  } finally {
+    captchaCase = undefined;
   }
-
-  const loginStatus = await server.callTool('apply.login', {
-    runId,
-    action: 'inspect',
-  });
-
-  const verificationStillOpen = page.frames().some((candidate) =>
-    candidate.url().includes('verifycenter'),
-  );
-  const sendText = await page
-    .getByText(/重新获取|获取验证码/)
-    .first()
-    .innerText()
-    .catch(() => '');
-  write('FAST_RESULT', {
-    verification,
-    loginStatus,
-    verificationStillOpen,
-    sendText,
-    captchaSolved: verification.code === 200,
-    solved:
-      (loginStatus.ok && loginStatus.data?.stage === 'code_sent') ||
-      (!verificationStillOpen && /重新获取|\d+\s*秒|\d+s/.test(sendText)),
-  });
 }
 
 async function close() {

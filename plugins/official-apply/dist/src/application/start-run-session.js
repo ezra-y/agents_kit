@@ -81,7 +81,7 @@ export async function startRunSession(request) {
     const runtime = openRuntimeDatabase({ paths: request.paths });
     let previousBrowser;
     try {
-        previousBrowser = runtime.db.prepare("SELECT profile_name, browser_name FROM browser_sessions WHERE id = ? AND mode = 'persistent'").get(sessionId);
+        previousBrowser = runtime.db.prepare("SELECT profile_name, browser_name FROM browser_sessions WHERE id = ? AND mode = 'persistent' AND profile_name IS NOT NULL").get(sessionId);
     }
     finally {
         runtime.close();

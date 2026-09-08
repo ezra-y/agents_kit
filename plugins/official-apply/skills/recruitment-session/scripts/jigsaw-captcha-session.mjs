@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import { execFileSync } from 'node:child_process';
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
 
 import { launch } from '../../../bin/launch.js';
+import { createCaptchaCase } from './captcha-case.mjs';
 import {
   attachCaptchaNetworkObserver,
   readCaptchaDecision,
@@ -96,8 +96,10 @@ const paths = getSkillPaths();
 const server = createMcpServer({ paths });
 let runId;
 let closing = false;
+let captchaCase;
 
 function write(event, data) {
+  captchaCase?.recordEvent(event, data);
   process.stdout.write(`${event} ${JSON.stringify(data)}\n`);
 }
 
@@ -169,7 +171,7 @@ async function captureBackground(page, engine, attempt) {
   const background = page.locator(engine.background).first();
   await background.waitFor({ state: 'visible', timeout: 15_000 });
   const file = path.join(
-    paths.tmpDir,
+    captchaCase.directory,
     `jigsaw-${engine.id}-${Date.now()}-${attempt}.png`,
   );
   await background.screenshot({ path: file });
@@ -190,7 +192,7 @@ async function describeEngineAssets(page, engine) {
         const style = getComputedStyle(element);
         return {
           tag: element.tagName,
-          src: element.getAttribute('src'),
+          src: element instanceof HTMLImageElement ? element.src : element.getAttribute('src'),
           style: element.getAttribute('style'),
           backgroundImage: style.backgroundImage,
           backgroundPosition: style.backgroundPosition,
@@ -220,11 +222,11 @@ async function downloadEngineAssets(engine, assets, attempt) {
   }
   const stamp = Date.now();
   const backgroundFile = path.join(
-    paths.tmpDir,
+    captchaCase.directory,
     `jigsaw-${engine.id}-${stamp}-${attempt}-background`,
   );
   const pieceFile = path.join(
-    paths.tmpDir,
+    captchaCase.directory,
     `jigsaw-${engine.id}-${stamp}-${attempt}-piece`,
   );
   await Promise.all([
@@ -245,7 +247,7 @@ function calculateGap(
   sourceYRatio,
   solver,
 ) {
-  const args = [SOLVER, '--background', file];
+  const args = ['--background', file];
   if (pieceFile !== undefined) {
     args.push('--piece', pieceFile);
   } else {
@@ -263,12 +265,7 @@ function calculateGap(
       );
     }
   }
-  const output = execFileSync(
-    'python3',
-    args,
-    { encoding: 'utf8' },
-  );
-  return JSON.parse(output);
+  return captchaCase.solve(args);
 }
 
 async function dragCurrentChallenge(page, engine, attempt) {
@@ -286,6 +283,7 @@ async function dragCurrentChallenge(page, engine, attempt) {
   if (!backgroundBox || !pieceBox || !sliderBox || !controlBox) {
     throw new Error('jigsaw_geometry_unavailable');
   }
+  captchaCase.record('geometry', { backgroundBox, pieceBox, sliderBox, controlBox });
   const sourceXRatio =
     (pieceBox.x - backgroundBox.x) / backgroundBox.width;
   const sourceWidthRatio = pieceBox.width / backgroundBox.width;
@@ -393,6 +391,7 @@ async function dragCurrentChallenge(page, engine, attempt) {
     probedSliderBox === null ? 0 : (probedSliderBox.x - sliderBox.x) / probeDistance;
   const calibration =
     engine.motionModel === 'piece' ? piecePerMouse : sliderPerMouse;
+  captchaCase.record('motion_probe', { probeDistance, piecePerMouse, sliderPerMouse });
   if (!Number.isFinite(calibration) || calibration <= 0.05) {
     await page.mouse.up();
     throw new Error('jigsaw_motion_calibration_failed');
@@ -412,6 +411,7 @@ async function dragCurrentChallenge(page, engine, attempt) {
       ? targetPieceDistance / piecePerMouse
       : targetSliderDistance / sliderPerMouse;
   const remaining = totalMouseDistance - probeDistance;
+  captchaCase.record('drag_target', { targetSliderDistance, totalMouseDistance });
   const steps =
     engine.dragProfile === 'behavioral'
       ? Math.max(105, Math.ceil(Math.abs(remaining) / 1.25))
@@ -444,12 +444,15 @@ async function dragCurrentChallenge(page, engine, attempt) {
     engine.dragProfile === 'behavioral' ? 420 : 220,
   );
   const verificationResponse = waitForCaptchaDecision(page, 6_000);
+  captchaCase.record('drag_observed', { pieceBox: await piece.boundingBox(), sliderBox: await slider.boundingBox() });
   await page.mouse.up();
   const response = await verificationResponse;
   let verification = {};
   if (response !== undefined) {
     try {
-      verification = (await readCaptchaDecision(response)).body;
+      const decision = await readCaptchaDecision(response);
+      captchaCase.record('verification_response', decision);
+      verification = decision.body;
     } catch {
       verification = {};
     }
@@ -510,19 +513,33 @@ function verificationPassed(verification) {
 async function autoSolve() {
   const page = server.pageOf(runId);
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    const engine = await waitForJigsawEngine(page);
-    const drag = await dragCurrentChallenge(page, engine, attempt);
-    if (verificationPassed(drag.verification)) {
-      write('CAPTCHA_SOLVED', { attempt, runId });
-      return { attempt, captchaSolved: true };
-    }
-    const status = await inspect();
-    if (status.ok && status.data?.stage === 'code_sent') {
-      write('SOLVED', { attempt, runId });
-      return { attempt, captchaSolved: true, codeSent: true };
-    }
-    if (!status.ok || status.data?.stage !== 'captcha_required') {
-      throw new Error(`jigsaw_unexpected_status: ${JSON.stringify(status)}`);
+    captchaCase = createCaptchaCase({ evidenceDir: paths.evidenceDir, pageUrl: page.url(),
+      runId, taskId, type: 'jigsaw', solver: SOLVER, sessionScript: fileURLToPath(import.meta.url) });
+    write('CASE', { directory: captchaCase.directory });
+    try {
+      const engine = await waitForJigsawEngine(page);
+      captchaCase.record('engine', { id: engine.id, attempt });
+      const drag = await dragCurrentChallenge(page, engine, attempt);
+      if (verificationPassed(drag.verification)) {
+        captchaCase.finish('passed', { verification: drag.verification });
+        write('CAPTCHA_SOLVED', { attempt, runId });
+        return { attempt, captchaSolved: true };
+      }
+      const status = await inspect();
+      if (status.ok && status.data?.stage === 'code_sent') {
+        captchaCase.finish('passed', { loginStage: 'code_sent' });
+        write('SOLVED', { attempt, runId });
+        return { attempt, captchaSolved: true, codeSent: true };
+      }
+      if (!status.ok || status.data?.stage !== 'captcha_required') {
+        throw new Error(`jigsaw_unexpected_status: ${JSON.stringify(status)}`);
+      }
+      captchaCase.finish('not_passed', { verification: drag.verification, loginStage: status.data?.stage });
+    } catch (error) {
+      captchaCase.fail(error);
+      throw error;
+    } finally {
+      captchaCase = undefined;
     }
   }
   throw new Error(`jigsaw_failed_after_${maxAttempts}_fresh_challenge`);
