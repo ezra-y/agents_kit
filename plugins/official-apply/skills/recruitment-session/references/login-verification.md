@@ -89,6 +89,21 @@ apply.login { runId, action: "inspect" }
 
 ## Moka 登录态迁移
 
+`apply.login inspect` 和 `apply.open_resume` 会自动尝试复用已验证登录。目前覆盖
+`app.mokahr.com` 同域名下的企业站，沿用各公司的独立浏览器档案。
+
+登录检查成功、且账号联系方式与已确认资料匹配时，程序立即在现有登录快照中记下账号和
+验证时间。旧登录失效后，按验证时间查找同域名、同账号的来源，只把服务器会话凭据传入
+目标档案。在目标公司重新检查账号，成功才保存；来源失效或账号不匹配时恢复原凭据。
+工具结果的 `reusedFromProfile` 表示实际采用的来源档案，不包含登录令牌。
+
+第一次启用时，先对现有有效档案调用一次 `apply.login inspect` 或打开简历以登记来源。
+之后成功的登录和复用都会更新记录。历史“已验证”不代表永远有效，每次采用仍需现场检查。
+没有可用来源时继续原有登录流程。自动复用安排在填写前；填写中不自动刷新，保留未保存内容。
+
+这沿用 [auto-browser 的命名登录档案复用流程](https://github.com/LvcidPsyche/auto-browser/blob/main/examples/login-and-save-profile.md)，
+并补入本项目需要的来源选择、目标账号验证和失败恢复。
+
 一个 Moka 企业站已经短信登录，另一个 Moka 企业站仍要求登录时，优先迁移已验证有用的
 最小会话状态：
 

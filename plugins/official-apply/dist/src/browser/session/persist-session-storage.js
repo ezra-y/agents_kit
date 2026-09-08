@@ -4,7 +4,7 @@ const FILE_NAME = '.official-apply-web-state.json';
 function snapshotPath(profileDir) {
     return path.join(profileDir, FILE_NAME);
 }
-function readSnapshot(profileDir) {
+export function readPersistentWebState(profileDir) {
     const file = snapshotPath(profileDir);
     if (!existsSync(file)) {
         return { version: 2, origins: {}, cookies: [] };
@@ -20,6 +20,7 @@ function readSnapshot(profileDir) {
                 version: 2,
                 origins: parsed.origins,
                 cookies: parsed.cookies,
+                ...(parsed.verifiedLogin !== undefined ? { verifiedLogin: parsed.verifiedLogin } : {}),
             };
         }
     }
@@ -29,7 +30,7 @@ function readSnapshot(profileDir) {
     return { version: 2, origins: {}, cookies: [] };
 }
 export async function restorePersistentSessionStorage(context, profileDir) {
-    const snapshot = readSnapshot(profileDir);
+    const snapshot = readPersistentWebState(profileDir);
     if (snapshot.cookies.length > 0) {
         await context.addCookies(snapshot.cookies);
     }
@@ -45,8 +46,10 @@ export async function restorePersistentSessionStorage(context, profileDir) {
         }
     }, snapshot.origins);
 }
-export async function savePersistentSessionStorage(context, profileDir) {
-    const snapshot = readSnapshot(profileDir);
+export async function savePersistentSessionStorage(context, profileDir, verifiedLogin) {
+    const snapshot = readPersistentWebState(profileDir);
+    if (verifiedLogin !== undefined)
+        snapshot.verifiedLogin = verifiedLogin;
     const activeHosts = new Set();
     for (const page of context.pages()) {
         let origin;

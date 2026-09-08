@@ -15,6 +15,7 @@
  */
 import { startRunSession } from "../application/start-run-session.js";
 import { openResumePage } from "../application/open-resume-page.js";
+import { rememberMokaLogin, reuseMokaLogin } from "../application/reuse-moka-login.js";
 import { savePageScriptWithReadback } from "../application/save-page-script-with-readback.js";
 import { captureResumeReviewEvidence } from "../application/capture-resume-review-evidence.js";
 import { resolveCurrentPage } from "../application/resolve-current-page.js";
@@ -457,7 +458,7 @@ export function registerMcpTools() {
                     action !== 'submit_sms_code') {
                     return fail('mcp_invalid_argument', 'action 必须是 inspect、begin_sms 或 submit_sms_code。');
                 }
-                const login = await manageLogin({
+                let login = await manageLogin({
                     page: found.page,
                     action,
                     ...(readString(input.args, 'phone') === undefined
@@ -468,6 +469,26 @@ export function registerMcpTools() {
                         : { code: readString(input.args, 'code') }),
                     now: input.now,
                 });
+                if (action === 'inspect' && login.providerId === 'moka.shared.sms' &&
+                    (login.stage === 'sms_ready' || login.stage === 'login_required')) {
+                    let reusedFromProfile;
+                    try {
+                        reusedFromProfile = await reuseMokaLogin({ session: found.session, page: found.page, runId: found.run.runId });
+                    }
+                    catch (error) {
+                        syncHumanTakeover({ paths: input.paths, runId: found.run.runId, now: input.now,
+                            active: { runId: found.run.runId, reason: 'login', message: '当前未登录，自动复用登录未能完成。',
+                                resumeCondition: '检查复用错误或完成当前公司登录后继续。', currentUrl: found.page.url() } });
+                        throw error;
+                    }
+                    if (reusedFromProfile !== undefined) {
+                        login = { ...await manageLogin({ page: found.page, action: 'inspect', now: input.now }), reusedFromProfile };
+                        login.evidence.push(`已从档案 ${reusedFromProfile} 复用登录并在当前公司验证账号。`);
+                    }
+                }
+                if (login.stage === 'logged_in') {
+                    await rememberMokaLogin({ session: found.session, page: found.page, runId: found.run.runId });
+                }
                 // 映射成卡点并立即同步进运行库：失败返回前也已经记录，
                 // logged_in / sms_ready 会解除旧 pending。MCP 层不写 SQL，
                 // 只调用共享函数。
@@ -488,7 +509,7 @@ export function registerMcpTools() {
                         : { active: takeover }),
                     now: input.now,
                 });
-                if (action !== 'inspect') {
+                if (action !== 'inspect' || login.reusedFromProfile !== undefined) {
                     markPageMutated(found.run, `login_${action}`, input.now);
                 }
                 if (login.stage === 'logged_in') {
