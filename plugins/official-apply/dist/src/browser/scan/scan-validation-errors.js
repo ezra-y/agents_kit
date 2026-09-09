@@ -11,6 +11,9 @@ export function scanValidationErrors(snapshot) {
     };
     const framePrefix = snapshot.framePath.join('>') || 'main';
     for (const element of snapshot.elements) {
+        if (!element.visible) {
+            continue;
+        }
         // 字段自己说自己错了。
         if (element.ariaInvalid) {
             for (const text of element.describedByText) {
