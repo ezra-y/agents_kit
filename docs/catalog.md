@@ -1,6 +1,6 @@
 # 收藏技能总目录
 
-全部收藏 **316** 个：未收录索引 **11** · 已收录 **305**（其中常驻 **154**）
+全部收藏 **317** 个：未收录索引 **11** · 已收录 **306**（其中常驻 **154**）
 
 匹配优先级：配置启用（实际加载用 `check --runtime` 核验）→ 已收录未常驻（启用即可，零下载）→
 未收录索引（从上游安装）。按描述匹配即可；描述拿不准、候选难取舍或任务
@@ -189,6 +189,7 @@ Emil Kowalski 的动效与 UI 设计技能合集
 | `canvas-design` | 运营与内容 | 用设计哲学做 .png / .pdf 视觉作品(海报、艺术品),82 个附件。核心主张是先生成一套视觉哲学再落地,并明确要求原创、不抄在世艺术家。Anthropic 官方。 |
 | `frontend-slides` | 运营与内容 | 动画丰富的 HTML 演示文稿,376 行 + 161 个附件。可从零做,也能把 PPTX 转成网页。含固定舞台规则、内容密度模式、三种工作模式检测。 |
 | `marketing-agi` | 运营与内容 | A complete marketing department in one skill. Website and landing-page audits with weighted 0-100 scores, copywriting with panel scoring and AI-slop removal, an 18-tactic ad hook engine, GEO/AEO for getting cited by ChatGPT/Perplexity/AI Overviews, paid-ads creative diagnosis and production briefs, email sequences, LinkedIn/X writing, launch playbooks, positioning and offer design, competitor teardowns, app store optimization, honest analytics and test design. Use for ANY marketing task — audit, write, rewrite, diagnose, score, plan, launch, position, price, analyze — whenever the user mentions marketing, growth, conversion, copy, ads, hooks, CPM, ROAS, SEO, GEO, email, social, landing pages, funnels, launches, competitors, brand, positioning, pricing, or app stores, or says "my landing page sucks", "nobody's converting", "why are my CPMs up", "AI doesn't recommend us", "write me 20 hooks". Route via the table inside; fan out subagents for multi-dimensional work. Not for pure engineering, legal, or finance. |
+| `meme-image` | 运营与内容 | 咩咩梗图制作：中文化、加字、修改与原创画面，统一调用已有做图能力 |
 | `slides` | 运营与内容 | 策略性 HTML 演示:Chart.js 图表、design token、响应式布局、文案公式、按场景选幻灯片策略。 |
 | `dashi-ppt` | 研究与办公 | 从需求或文档生成可在浏览器编辑的 HTML 演示文稿，并支持导出 PPTX / PDF。 |
 | `deep-dive` | 研究与办公 | 不依赖外部 API 的深度研究:把问题拆成 DAG、按依赖顺序并行跑子代理、按缺口迭代一轮。 |

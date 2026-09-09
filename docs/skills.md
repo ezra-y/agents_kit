@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **305** 个 · 常驻 **154** 个 · 有上游可检查更新 **154** 个
+共 **306** 个 · 常驻 **154** 个 · 有上游可检查更新 **154** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -59,7 +59,7 @@
 | `widgetkit` | WidgetKit API 离线镜像。widget 时间线(Timeline / TimelineEntry / TimelineProvi | `role/reference` `focus/widgets` `platform/apple` `stack/swiftui` `output/reference` |  | [github.com/Prisma-Labs-Dev/apple-skills](https://github.com/Prisma-Labs-Dev/apple-skills/tree/main/skills/widgetkit) |
 | `xcuitest` | XCUITest UI 自动化测试 API 离线镜像,19 个附件(元素查询、等待策略、权限弹窗处理、启动参数、截图、排错)。刚更新到上游最 | `role/reference` `focus/ui-testing` `platform/apple` `stack/xctest` `output/reference` |  | [github.com/Prisma-Labs-Dev/apple-skills](https://github.com/Prisma-Labs-Dev/apple-skills/tree/main/skills/xcuitest) |
 
-## 运营与内容 (`operations`，9 个)
+## 运营与内容 (`operations`，10 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
@@ -71,6 +71,7 @@
 | `human-writing` | 通用中文写作与改稿。动笔前先数手里有几件真材料,不够就研究、追问或缩短篇幅;再按知乎回答、论坛长帖、公众号、博客、人物稿、科普、评测、小说、 | `role/builder` `focus/copy-editing` `focus/long-form-writing` `focus/voice-tone` `output/article` | ● | [github.com/KKKKhazix/human-writing](https://github.com/KKKKhazix/human-writing) |
 | `khazix-writer` | 按数字生命卡兹克的写作方法产出公众号长文，可根据 brief、链接、PDF、语音转写或已有草稿完成撰写、扩写和续写。 | `role/builder` `focus/long-form-writing` `platform/wechat` `output/article` | ● | [github.com/KKKKhazix/khazix-skills](https://github.com/KKKKhazix/khazix-skills/tree/main/khazix-writer) |
 | `marketing-agi` | A complete marketing department in one skill. Website and landing-page | `role/workflow` `focus/aso` `focus/brand-strategy` `focus/copy-editing` |  | [github.com/holy-templar/marketing-agi](https://github.com/holy-templar/marketing-agi) |
+| `meme-image` | 咩咩梗图制作：中文化、加字、修改与原创画面，统一调用已有做图能力 | `role/builder` `focus/localization` `focus/visual-content` `output/image` |  | — |
 | `slides` | 策略性 HTML 演示:Chart.js 图表、design token、响应式布局、文案公式、按场景选幻灯片策略。 | `role/builder` `focus/data-visualization` `focus/presentation-design` `stack/html` `output/slides` |  | [github.com/nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill/tree/main/.claude/skills/slides) |
 
 ## 前端与 UI/UX (`frontend-uiux`，42 个)

@@ -3009,6 +3009,17 @@
         "output/reference"
       ]
     },
+    "skill:standalone/meme-image": {
+      "recommendation": 3,
+      "description": "咩咩梗图制作：中文化、加字、修改与原创画面，统一调用已有做图能力",
+      "trigger": "",
+      "tags": [
+        "role/builder",
+        "focus/localization",
+        "focus/visual-content",
+        "output/image"
+      ]
+    },
     "skill:standalone/minimalist-ui": {
       "recommendation": 3,
       "description": "编辑风极简界面:暖色单色调、靠排版对比而非装饰、扁平 bento 网格、低饱和粉彩。明令禁渐变、禁重阴影。",
