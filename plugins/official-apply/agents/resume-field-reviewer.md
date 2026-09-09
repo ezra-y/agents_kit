@@ -35,7 +35,7 @@
 
 ## 输出一份批次报告
 
-公共路径只在evidencePaths声明一次，后续用别名和字段路径引用。coverage说明实际核对的栏目、记录和范围；正确项目不重复抄录长文或逐条生成相同的完整路径。
+每批只使用index指定的同一report.json。初审一次写入，后续由主控追加items[].repairResults，保留初审结论；不再生成第二轮报告或另建返修目录。公共路径只在evidencePaths声明一次，后续用别名和字段路径引用。coverage说明实际核对的栏目、记录和范围；正确项目不重复抄录长文或逐条生成相同的完整路径。
 
 ```json
 {
@@ -50,10 +50,11 @@
     "saveState": "saved | unsaved | not_started",
     "evidencePaths": {"source": "原资料路径", "saved": "实际读回路径"},
     "coverage": [{"section": "项目经历", "records": 5, "scope": "名称、角色、日期与全部正文"}],
-    "issues": [{"record": "原记录ID", "field": "具体字段", "expected": "准确预期值", "saved": "实际值", "sourceRef": "source中的字段路径", "savedRef": "saved中的字段路径", "action": "明确的局部修复动作"}],
+    "issues": [{"id": "issue-1", "record": "原记录ID", "field": "具体字段", "expected": "准确预期值", "saved": "实际值", "sourceRef": "source中的字段路径", "savedRef": "saved中的字段路径", "action": "明确的局部修复动作"}],
     "acceptedExceptions": [],
     "siteLimits": [],
-    "missingEvidence": []
+    "missingEvidence": [],
+    "repairResults": []
   }]
 }
 ```
@@ -63,5 +64,5 @@ passed表示本次实际范围内容已核对，不代表整份保存或岗位�
 ## 返修交接
 
 一次将全批修复清单交Luna。清单中的准确预期值供现有填写和保存读回使用，不让执行者重新猜答案。
-默认没有第二轮AI审查。收到修复项已保存、实际值匹配且无清单外变化的结果，沿用本报告；不重复审查未变字段，不重新生成全批逐字段报告。
+默认没有第二轮AI审查。主控将修复项的issueId、实际读回值、证据位置和处理状态追加到同一报告；实际值匹配且无清单外变化时沿用初审结论；不重复审查未变字段，不重新生成全批逐字段报告。
 只有具体项读回失败、意外变化或新的语义问题时，处理被明确指出的这些项。明确是补证就只补证，已登记例外仍有效。不能以“返修过”为由自行重开整份审查。

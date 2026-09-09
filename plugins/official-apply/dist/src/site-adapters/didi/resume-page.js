@@ -64,6 +64,12 @@ function description(record) {
     const bullets = stringList(record.values['bullets']);
     return [base, ...bullets].filter((item) => item !== undefined).join('\n');
 }
+function sourceDescriptionParts(values) {
+    return [
+        text(values, 'description'),
+        ...stringList(values['bullets']),
+    ].filter((item) => item !== undefined);
+}
 function compact(record) {
     return Object.fromEntries(Object.entries(record).filter(([, value]) => value !== undefined));
 }
@@ -169,6 +175,208 @@ function resolvedResume(payload) {
         ? value
         : undefined;
 }
+function sourceFacts(payload) {
+    return asRecord(payload.resolved['sourceFacts']);
+}
+function sourceValues(facts, key) {
+    return asRows(facts[key]).map((record) => asRecord(record['values']));
+}
+function sourceDegreeCategory(value) {
+    const label = typeof value === 'string' ? value : '';
+    if (/博士|phd|doctor/i.test(label))
+        return '博士';
+    if (/硕士|master|mba/i.test(label))
+        return '硕士';
+    if (/本科|学士|bachelor/i.test(label))
+        return '本科';
+    if (/大专|专科|associate/i.test(label))
+        return '大专';
+    if (/高中|中专/.test(label))
+        return '高中';
+    return label === '' ? undefined : label;
+}
+function sourceDegreeRank(value) {
+    switch (sourceDegreeCategory(value)) {
+        case '博士': return 5;
+        case '硕士': return 4;
+        case '本科': return 3;
+        case '大专': return 2;
+        case '高中': return 1;
+        default: return 0;
+    }
+}
+function sourceDegreeMatches(actual, source) {
+    const expected = sourceDegreeCategory(source);
+    return expected === undefined
+        ? String(actual ?? '') === String(source ?? '')
+        : sourceDegreeCategory(actual) === expected;
+}
+function sourceIssue(issues, key, message) {
+    issues.push({ key, code: 'source_fact_mismatch', message, severity: 'error' });
+}
+function validateSourceFacts(facts, account, issues) {
+    let checked = 0;
+    const basicInfo = asRecord(account['basicInfo']);
+    const actualAcademicDegree = account['academicDegree'] ?? basicInfo['academicDegree'];
+    const education = sourceValues(facts, 'education');
+    const educationInfo = asRows(account['educationInfo']);
+    const highest = education.reduce((best, row) => best === undefined || sourceDegreeRank(row['degree']) > sourceDegreeRank(best['degree']) ? row : best, undefined);
+    if (highest !== undefined) {
+        checked += 1;
+        if (!sourceDegreeMatches(actualAcademicDegree, highest['degree'])) {
+            sourceIssue(issues, 'basicInfo.academicDegree', '最高学历与原始教育记录不一致');
+        }
+    }
+    const educationPairs = pairRows(education, educationInfo, (row) => text(row, 'school'), (row) => text(row, 'school'), (row) => ({
+        startDate: month(text(row, 'startDate', 'start_date')) ?? '',
+        endDate: month(text(row, 'endDate', 'end_date')) ?? '',
+        academicDegree: sourceDegreeCategory(row['degree']) ?? '',
+    }), (row) => ({
+        startDate: text(row, 'startDate') ?? '',
+        endDate: text(row, 'endDate') ?? '',
+        academicDegree: sourceDegreeCategory(row['academicDegree']) ?? '',
+    }));
+    for (const pair of educationPairs) {
+        const row = pair.expected;
+        const school = text(row, 'school');
+        if (school === undefined)
+            continue;
+        const actual = pair.actual;
+        if (actual === undefined) {
+            sourceIssue(issues, 'educationInfo', `服务器缺少或无法唯一配对原始教育记录：${school}`);
+            continue;
+        }
+        for (const [key, actualKey, expected] of [
+            ['major', 'speciality', text(row, 'major')],
+            ['startDate', 'startDate', month(text(row, 'startDate', 'start_date'))],
+            ['endDate', 'endDate', month(text(row, 'endDate', 'end_date'))],
+        ]) {
+            if (expected === undefined)
+                continue;
+            checked += 1;
+            if (String(actual[actualKey] ?? '') !== expected) {
+                sourceIssue(issues, `educationInfo.${key}`, `${school} 的 ${key} 与原始事实不一致`);
+            }
+        }
+        if (row['degree'] !== undefined) {
+            checked += 1;
+            if (!sourceDegreeMatches(actual['academicDegree'], row['degree'])) {
+                sourceIssue(issues, 'educationInfo.academicDegree', `${school} 的学历与原始事实不一致`);
+            }
+        }
+    }
+    for (const [sourceKey, accountKey] of [['experience', 'experienceInfo'], ['internship', 'practiceInfo']]) {
+        const rows = sourceValues(facts, sourceKey);
+        const actualRows = asRows(account[accountKey]);
+        const pairs = pairRows(rows, actualRows, (row) => text(row, 'company'), (row) => text(row, 'company'), (row) => ({
+            startDate: month(text(row, 'startDate', 'start_date')) ?? '',
+            endDate: endMonth(row) ?? '',
+            title: text(row, 'title', 'role') ?? '',
+        }), (row) => ({
+            startDate: text(row, 'startDate') ?? '',
+            endDate: text(row, 'endDate') ?? '',
+            title: text(row, 'title') ?? '',
+        }));
+        for (const pair of pairs) {
+            const row = pair.expected;
+            const company = text(row, 'company');
+            if (company === undefined)
+                continue;
+            const actual = pair.actual;
+            if (actual === undefined) {
+                sourceIssue(issues, accountKey, `服务器缺少或无法唯一配对原始经历记录：${company}`);
+                continue;
+            }
+            const title = text(row, 'title', 'role');
+            for (const [key, actualKey, expected] of [
+                ['title', 'title', title],
+                ['startDate', 'startDate', month(text(row, 'startDate', 'start_date'))],
+                ['endDate', 'endDate', endMonth(row)],
+            ]) {
+                if (expected === undefined)
+                    continue;
+                checked += 1;
+                if (String(actual[actualKey] ?? '') !== expected) {
+                    sourceIssue(issues, `${accountKey}.${key}`, `${company} 的 ${key} 与原始事实不一致`);
+                }
+            }
+            for (const part of sourceDescriptionParts(row)) {
+                checked += 1;
+                if (!String(actual['summary'] ?? '').includes(part)) {
+                    sourceIssue(issues, `${accountKey}.summary`, `${company} 的经历正文缺少原始段落`);
+                }
+            }
+        }
+    }
+    const projects = sourceValues(facts, 'projects');
+    const projectInfo = asRows(account['projectInfo']);
+    const projectPairs = pairRows(projects, projectInfo, (row) => text(row, 'name', 'label'), (row) => text(row, 'projectName'), (row) => ({
+        startDate: month(text(row, 'startDate', 'start_date')) ?? '',
+        endDate: endMonth(row) ?? '',
+        title: /solo builder/i.test(text(row, 'role') ?? '') ? '独立开发者' : text(row, 'role') ?? '',
+    }), (row) => ({
+        startDate: text(row, 'startDate') ?? '',
+        endDate: text(row, 'endDate') ?? '',
+        title: text(row, 'title') ?? '',
+    }));
+    for (const pair of projectPairs) {
+        const row = pair.expected;
+        const name = text(row, 'name', 'label');
+        if (name === undefined)
+            continue;
+        const actual = pair.actual;
+        if (actual === undefined) {
+            sourceIssue(issues, 'projectInfo', `服务器缺少或无法唯一配对原始项目记录：${name}`);
+            continue;
+        }
+        const role = text(row, 'role');
+        const expectedRole = role !== undefined && /solo builder/i.test(role) ? '独立开发者' : role;
+        for (const [key, actualKey, expected] of [
+            ['role', 'title', expectedRole],
+            ['startDate', 'startDate', month(text(row, 'startDate', 'start_date'))],
+            ['endDate', 'endDate', endMonth(row)],
+        ]) {
+            if (expected === undefined)
+                continue;
+            checked += 1;
+            if (String(actual[actualKey] ?? '') !== expected) {
+                sourceIssue(issues, `projectInfo.${key}`, `${name} 的 ${key} 与原始事实不一致`);
+            }
+        }
+        for (const part of fullProjectDescription(row).split('\n\n').filter(Boolean)) {
+            checked += 1;
+            if (!String(actual['projectDescription'] ?? '').includes(part)) {
+                sourceIssue(issues, 'projectInfo.projectDescription', `${name} 的项目正文缺少原始段落`);
+            }
+        }
+    }
+    const selfEvaluation = text(asRecord(facts['basic']), 'open_question.self_evaluation', 'profile.summary', 'person.summary');
+    const actualSelfEvaluation = account['personal'] ?? asRecord(account['selfDescription'])['personal'];
+    if (selfEvaluation !== undefined) {
+        checked += 1;
+        if (actualSelfEvaluation !== selfEvaluation)
+            sourceIssue(issues, 'basicInfo.personal', '自我评价与原始事实不一致');
+    }
+    const languages = sourceValues(facts, 'languages');
+    const languageInfo = asRows(account['languageInfo']);
+    for (const row of languages) {
+        const language = text(row, 'language', 'name');
+        if (language === undefined)
+            continue;
+        const actual = languageInfo.find((item) => text(item, 'language', 'name') === language);
+        if (actual === undefined) {
+            sourceIssue(issues, 'languageInfo', `服务器缺少原始语言记录：${language}`);
+            continue;
+        }
+        const level = text(row, 'proficiency', 'level');
+        if (level !== undefined) {
+            checked += 1;
+            if (text(actual, 'level', 'proficiency') !== level)
+                sourceIssue(issues, 'languageInfo', `${language} 的熟练程度与原始事实不一致`);
+        }
+    }
+    return checked;
+}
 function fillResult(fields) {
     return {
         attemptedCount: fields.length,
@@ -198,28 +406,62 @@ async function readAccount(page) {
 function expectedRows(resume, key) {
     return asRows(resume[key]);
 }
-function compareRows(issues, resume, account, section, identityKey, checkedKeys) {
+function rowSignals(row, keys) {
+    return Object.fromEntries(keys.flatMap((key) => {
+        const value = row[key];
+        return value === undefined || value === null || value === ''
+            ? []
+            : [[key, String(value)]];
+    }));
+}
+function pairRows(expectedRows, actualRows, expectedIdentity, actualIdentity, expectedSignals, actualSignals) {
+    const used = new Set();
+    return expectedRows.map((expected) => {
+        const identity = expectedIdentity(expected);
+        const candidates = actualRows.flatMap((actual, index) => !used.has(index) && identity !== undefined && actualIdentity(actual) === identity
+            ? [{ actual, index }]
+            : []);
+        if (candidates.length === 0)
+            return { expected };
+        const expectedSignalsValue = Object.fromEntries(Object.entries(expectedSignals(expected)).filter(([, value]) => value !== ''));
+        const matches = (candidate) => {
+            const actualSignalsValue = actualSignals(candidate.actual);
+            return Object.entries(expectedSignalsValue).every(([key, value]) => actualSignalsValue[key] === value);
+        };
+        const exact = candidates.filter(matches);
+        const selected = exact.length === 1
+            ? exact[0]
+            : candidates.length === 1
+                ? candidates[0]
+                : undefined;
+        if (selected === undefined)
+            return { expected };
+        used.add(selected.index);
+        return { expected, actual: selected.actual };
+    });
+}
+function compareRows(issues, resume, account, section, identityKey, checkedKeys, matchKeys) {
     const expected = expectedRows(resume, section);
     const actual = asRows(account[section]);
     let checked = 0;
-    for (const row of expected) {
-        const identity = row[identityKey];
-        const found = actual.find((candidate) => candidate[identityKey] === identity);
-        if (found === undefined) {
+    const pairs = pairRows(expected, actual, (row) => String(row[identityKey] ?? '') || undefined, (row) => String(row[identityKey] ?? '') || undefined, (row) => rowSignals(row, matchKeys), (row) => rowSignals(row, matchKeys));
+    for (const pair of pairs) {
+        const identity = pair.expected[identityKey];
+        if (pair.actual === undefined) {
             issues.push({
                 key: section,
                 code: 'server_readback_missing_record',
-                message: `Moka 服务器缺少${String(identity ?? section)}`,
+                message: `Moka 服务器缺少或无法唯一配对${String(identity ?? section)}`,
                 severity: 'error',
             });
             continue;
         }
         for (const key of checkedKeys) {
-            const expectedValue = row[key];
-            if (expectedValue === undefined)
+            const expectedValue = pair.expected[key];
+            if (expectedValue === undefined || expectedValue === '')
                 continue;
             checked += 1;
-            if (found[key] !== expectedValue) {
+            if (pair.actual[key] !== expectedValue) {
                 issues.push({
                     key: `${section}.${key}`,
                     code: 'server_readback_mismatch',
@@ -255,6 +497,7 @@ async function validateServer(page, payload) {
         severity: 'blocking',
     }));
     let checkedCount = 0;
+    checkedCount += validateSourceFacts(sourceFacts(payload), account, issues);
     const basic = asRecord(resume['basicInfo']);
     for (const key of [
         'name',
@@ -285,11 +528,11 @@ async function validateServer(page, payload) {
             });
         }
     }
-    checkedCount += compareRows(issues, resume, account, 'educationInfo', 'school', ['startDate', 'endDate', 'speciality', 'academicDegree']);
-    checkedCount += compareRows(issues, resume, account, 'experienceInfo', 'company', ['startDate', 'endDate', 'title', 'summary']);
-    checkedCount += compareRows(issues, resume, account, 'practiceInfo', 'company', ['startDate', 'endDate', 'title', 'summary']);
-    checkedCount += compareRows(issues, resume, account, 'projectInfo', 'projectName', ['startDate', 'endDate', 'title', 'projectDescription', 'responsibilities']);
-    checkedCount += compareRows(issues, resume, account, 'awardInfo', 'awardName', ['awardDate']);
+    checkedCount += compareRows(issues, resume, account, 'educationInfo', 'school', ['startDate', 'endDate', 'speciality', 'academicDegree'], ['startDate', 'endDate', 'academicDegree']);
+    checkedCount += compareRows(issues, resume, account, 'experienceInfo', 'company', ['startDate', 'endDate', 'title', 'summary'], ['startDate', 'endDate', 'title']);
+    checkedCount += compareRows(issues, resume, account, 'practiceInfo', 'company', ['startDate', 'endDate', 'title', 'summary'], ['startDate', 'endDate', 'title']);
+    checkedCount += compareRows(issues, resume, account, 'projectInfo', 'projectName', ['startDate', 'endDate', 'title', 'projectDescription', 'responsibilities'], ['startDate', 'endDate', 'title']);
+    checkedCount += compareRows(issues, resume, account, 'awardInfo', 'awardName', ['awardDate'], []);
     return { valid: issues.length === 0, checkedCount, issues };
 }
 export const didiResumePage = {
@@ -423,7 +666,21 @@ export const didiResumePage = {
             siteId: Number(facts.runtimeData?.['siteId'] ?? 96064),
         };
         return {
-            resolved: { apiResume: resume },
+            resolved: {
+                apiResume: resume,
+                sourceFacts: {
+                    basic: input.basic,
+                    education: input.education.map((record) => ({ values: record.values })),
+                    experience: input.experience
+                        .filter((record) => !/实习/.test(text(record.values, 'title', 'role') ?? ''))
+                        .map((record) => ({ values: record.values })),
+                    internship: input.experience
+                        .filter((record) => /实习/.test(text(record.values, 'title', 'role') ?? ''))
+                        .map((record) => ({ values: record.values })),
+                    projects: input.projects.map((record) => ({ values: record.values })),
+                    languages: input.languages ?? [],
+                },
+            },
             missing,
             conflicts: [],
             skipped: input.materials?.['attachment.resume'] === undefined
@@ -463,8 +720,6 @@ export const didiResumePage = {
     },
     async validate(page, payload) {
         const staged = await page.evaluate((key) => window[key] !== undefined, STAGED_KEY);
-        if (!staged)
-            return validateServer(page, payload);
         const issues = payload.missing.map((item) => ({
             key: item.key,
             code: 'required_missing',
@@ -472,13 +727,16 @@ export const didiResumePage = {
             severity: 'blocking',
         }));
         const resume = resolvedResume(payload) ?? {};
+        if (!staged)
+            return validateServer(page, payload);
         const checkedCount = asRows(resume['educationInfo']).length +
             asRows(resume['experienceInfo']).length +
             asRows(resume['practiceInfo']).length +
             asRows(resume['projectInfo']).length +
             asRows(resume['awardInfo']).length +
             3;
-        return { source: staged ? 'prepared' : 'server', valid: issues.length === 0, checkedCount, issues };
+        const sourceCheckedCount = validateSourceFacts(sourceFacts(payload), resume, issues);
+        return { source: 'prepared', valid: issues.length === 0, checkedCount: checkedCount + sourceCheckedCount, issues };
     },
     async saveDraft(page, payload) {
         const resume = resolvedResume(payload);

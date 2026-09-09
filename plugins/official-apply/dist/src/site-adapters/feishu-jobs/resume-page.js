@@ -1,4 +1,5 @@
 import { basename } from 'node:path';
+import { fullProjectDescription } from "../../materials/record-description.js";
 const HOST = '*.jobs.feishu.cn';
 const CREATE_PATH = '/api/v1/user/resumes/';
 const READ_PATH = '/api/v1/user/latest/resume';
@@ -27,7 +28,9 @@ function asRows(value) {
         : [];
 }
 function valuesOf(rows) {
-    return rows.map((row) => row.values);
+    return rows.map((row) => row.recordId === undefined
+        ? row.values
+        : { ...row.values, recordId: row.recordId });
 }
 function stringList(value) {
     if (typeof value === 'string' && value.trim() !== '')
@@ -59,16 +62,41 @@ function clipped(value, max) {
     return value.length <= max ? value : value.slice(0, max);
 }
 function recordDescription(record) {
-    const values = record.values;
+    return clipped(fullRecordDescription(record.values), 3_950);
+}
+function projectDescription(record) {
+    return clipped(fullProjectDescription(record.values).replaceAll('\n\n', '\n'), 3_950);
+}
+function fullRecordDescription(values) {
     const bullets = Array.isArray(values['bullets'])
         ? values['bullets'].filter((item) => typeof item === 'string')
         : [];
-    return clipped([
+    return [
         text(values, 'description'),
         ...bullets.map((item) => item.trim()).filter((item) => item !== ''),
     ]
         .filter((item) => item !== undefined && item !== '')
-        .join('\n'), 3_950);
+        .join('\n');
+}
+function projectDescriptionParts(values) {
+    const parts = [];
+    const append = (value) => {
+        if (typeof value === 'string') {
+            if (value.trim() !== '')
+                parts.push(value.trim());
+            return;
+        }
+        if (Array.isArray(value)) {
+            value.forEach(append);
+        }
+    };
+    append(values['description']);
+    append(values['bullets']);
+    append(values['responsibilities']);
+    return parts;
+}
+function projectDescriptionExpected(values) {
+    return projectDescriptionParts(values).join('\n\n');
 }
 function degree(value) {
     if (value === undefined)
@@ -79,13 +107,49 @@ function degree(value) {
         return 11;
     if (/硕士|master/i.test(value))
         return 7;
-    if (/本科|bachelor/i.test(value))
+    if (/本科|学士|bachelor/i.test(value))
         return 6;
     if (/大专|associate/i.test(value))
         return 5;
     if (/高中/.test(value))
         return 4;
     return 9;
+}
+function sourceDegreeSemantic(value) {
+    if (value === undefined)
+        return undefined;
+    if (/博士|phd|doctor/i.test(value))
+        return 'doctor';
+    if (/mba/i.test(value))
+        return 'mba';
+    if (/硕士|master/i.test(value))
+        return 'master';
+    if (/本科|学士|bachelor/i.test(value))
+        return 'bachelor';
+    if (/大专|associate/i.test(value))
+        return 'associate';
+    if (/高中/.test(value))
+        return 'high_school';
+    return 'other';
+}
+function serverDegreeSemantic(value) {
+    const code = typeof value === 'number' ? value : Number(value);
+    if (!Number.isFinite(code))
+        return undefined;
+    switch (code) {
+        case 8: return 'doctor';
+        case 11: return 'mba';
+        case 7: return 'master';
+        case 6: return 'bachelor';
+        case 5: return 'associate';
+        case 4: return 'high_school';
+        case 9: return 'other';
+        default: return undefined;
+    }
+}
+function educationDegreeMatches(actual, expected) {
+    const source = sourceDegreeSemantic(text(expected, 'degree'));
+    return source === undefined || serverDegreeSemantic(actual) === source;
 }
 function highestEducation(input) {
     const ranks = { 4: 1, 5: 2, 6: 3, 7: 4, 11: 4, 8: 5 };
@@ -148,7 +212,7 @@ function projectRows(input) {
             role: clipped(text(record.values, 'role') ?? '', 200),
             start_time: chinaMonthTimestamp(text(record.values, 'startDate', 'start_date')),
             end_time: chinaMonthTimestamp(text(record.values, 'endDate', 'end_date'), record.values['current'] === true),
-            description: recordDescription(record),
+            description: projectDescription(record),
             link: explicitLink ?? '',
             customized_data: [],
         });
@@ -170,13 +234,6 @@ function languageRows(input, settings) {
             row.proficiency = proficiencyCode;
         return [row];
     });
-}
-function resolvedProjectValues(input) {
-    return input.projects.map((record) => ({
-        ...record.values,
-        start_time: chinaMonthTimestamp(text(record.values, 'startDate', 'start_date')) ?? null,
-        end_time: chinaMonthTimestamp(text(record.values, 'endDate', 'end_date'), record.values['current'] === true) ?? null,
-    }));
 }
 function hasAwardYear(record) {
     const value = text(record.values, 'date');
@@ -750,69 +807,21 @@ async function uploadResumeAttachment(page, localPath) {
     if ((await input.count()) === 0) {
         throw new Error('feishu_jobs_resume_upload_not_found: 找不到附件简历上传控件');
     }
-    const exchangeResponse = page.waitForResponse((response) => response.url().includes('/api/v1/attachment/exchange/tokens') &&
-        response.request().method() === 'POST', { timeout: 120_000 });
-    let resolveParse;
-    let rejectParse;
-    const parseCompleted = new Promise((resolve, reject) => {
-        resolveParse = resolve;
-        rejectParse = reject;
-    });
-    let parseSettled = false;
-    const parseHandler = async (response) => {
-        if (response.request().method() !== 'GET' ||
-            !response.url().includes('/api/v1/attachment/resume/parse/tasks/')) {
-            return;
-        }
-        try {
-            const body = await response.json();
-            if (body?.code !== 0) {
-                parseSettled = true;
-                rejectParse(new Error(`feishu_jobs_resume_parse_failed: ${body?.code ?? 'unknown'}`));
-                return;
-            }
-            if (body?.data?.parse_result === 2) {
-                parseSettled = true;
-                resolveParse();
-            }
-        }
-        catch {
-            return;
-        }
-    };
-    page.on('response', parseHandler);
-    const parseTimer = setTimeout(() => {
-        if (!parseSettled) {
-            rejectParse(new Error('feishu_jobs_resume_parse_timeout'));
-        }
-    }, 120_000);
-    await input.setInputFiles(localPath, { timeout: 30_000 });
-    const response = await exchangeResponse;
-    const parseAndReplace = page.getByText('解析并覆盖', { exact: true }).last();
-    await parseAndReplace
-        .waitFor({ state: 'visible', timeout: 8_000 })
-        .catch(() => undefined);
-    if ((await parseAndReplace.count()) > 0 &&
-        (await parseAndReplace.isVisible().catch(() => false))) {
-        await parseAndReplace.click();
+    const [response] = await Promise.all([
+        page.waitForResponse((response) => response.url().includes('/api/v1/attachment/exchange/tokens') &&
+            response.request().method() === 'POST', { timeout: 120_000 }),
+        input.setInputFiles(localPath, { timeout: 30_000 }),
+    ]);
+    const body = await response.json();
+    const id = body?.data?.portal_attachment_id;
+    if (response.status() < 200 ||
+        response.status() >= 300 ||
+        body?.code !== 0 ||
+        typeof id !== 'string' ||
+        id === '') {
+        throw new Error(`feishu_jobs_attachment_exchange_failed: ${response.status()}:${body?.code ?? 'unknown'}`);
     }
-    try {
-        await parseCompleted;
-        const body = await response.json();
-        const id = body?.data?.portal_attachment_id;
-        if (response.status() < 200 ||
-            response.status() >= 300 ||
-            body?.code !== 0 ||
-            typeof id !== 'string' ||
-            id === '') {
-            throw new Error(`feishu_jobs_attachment_exchange_failed: ${response.status()}:${body?.code ?? 'unknown'}`);
-        }
-        return id;
-    }
-    finally {
-        clearTimeout(parseTimer);
-        page.off('response', parseHandler);
-    }
+    return id;
 }
 function setCustomPhoto(resume, photo) {
     resume['customized_data'] = {
@@ -878,6 +887,76 @@ function records(payload, key) {
     return Array.isArray(value)
         ? value.filter((item) => item !== null && typeof item === 'object' && !Array.isArray(item))
         : [];
+}
+function comparable(value) {
+    return value === undefined || value === null ? '' : String(value);
+}
+function valuesMatch(actual, expected) {
+    if (expected === undefined || expected === null || expected === '')
+        return true;
+    return comparable(actual) === comparable(expected);
+}
+function projectDescriptionMatches(actual, expected) {
+    const expectedParts = projectDescriptionParts(expected);
+    if (typeof actual !== 'string') {
+        return expectedParts.length === 0;
+    }
+    const actualText = actual.replace(/\s+/g, ' ').trim();
+    return expectedParts.every((paragraph) => actualText.includes(paragraph.replace(/\s+/g, ' ')));
+}
+function compareRowsByIdentity(actual, expected, spec, issues) {
+    if (actual.length !== expected.length) {
+        issues.push({
+            key: spec.key,
+            code: 'server_readback_count_mismatch',
+            message: `${spec.key} 服务器数量为 ${actual.length}，预期 ${expected.length}`,
+            severity: 'error',
+        });
+    }
+    const actualGroups = new Map();
+    const expectedGroups = new Map();
+    const add = (groups, row, field) => {
+        const key = text(row, field) ?? '';
+        const group = groups.get(key) ?? [];
+        group.push(row);
+        groups.set(key, group);
+    };
+    actual.forEach((row) => add(actualGroups, row, spec.actualIdentity));
+    expected.forEach((row) => add(expectedGroups, row, spec.expectedIdentity));
+    const identities = new Set([...actualGroups.keys(), ...expectedGroups.keys()]);
+    for (const identity of identities) {
+        const actualRows = actualGroups.get(identity) ?? [];
+        const expectedRows = expectedGroups.get(identity) ?? [];
+        const issueKey = identity === '' ? 'unknown' : identity;
+        if (actualRows.length !== 1 || expectedRows.length !== 1) {
+            issues.push({
+                key: `${spec.key}.identity.${issueKey}`,
+                code: 'server_readback_identity_ambiguous',
+                message: `${spec.key} 的身份“${issueKey}”无法唯一配对，未按数组位置猜测`,
+                severity: 'error',
+            });
+            continue;
+        }
+        const actualRow = actualRows[0];
+        const expectedRow = expectedRows[0];
+        if (actualRow === undefined || expectedRow === undefined)
+            continue;
+        const recordRef = text(expectedRow, 'recordId') ?? issueKey;
+        for (const field of spec.fields) {
+            const expectedValue = field.expected(expectedRow);
+            const matches = field.matches === undefined
+                ? valuesMatch(actualRow[field.actual], expectedValue)
+                : field.matches(actualRow[field.actual], expectedRow);
+            if (!matches) {
+                issues.push({
+                    key: `${spec.key}[${recordRef}].${field.name}`,
+                    code: 'server_readback_mismatch',
+                    message: `${spec.key}「${issueKey}」的 ${field.name} 服务器读回不一致`,
+                    severity: 'error',
+                });
+            }
+        }
+    }
 }
 function compareRows(actual, expected, spec, issues) {
     if (actual.length !== expected.length) {
@@ -1114,7 +1193,7 @@ export const feishuJobsResumePage = {
                 education: valuesOf(input.education),
                 career: valuesOf(input.experience.filter((record) => !isInternship(record))),
                 internship: valuesOf(input.experience.filter(isInternship)),
-                projects: resolvedProjectValues(input),
+                projects: valuesOf(input.projects),
                 languages: valuesOf(input.languages ?? []),
                 languageSkillRows: hasVisibleField(fields, 'language_list') ? languageRows(input, settings) : [],
                 awards: valuesOf(input.awards.filter((record) => !requireAwardYear || hasAwardYear(record))),
@@ -1277,33 +1356,103 @@ export const feishuJobsResumePage = {
                         });
                     }
                 }
-                compareRows(asRows(current['education_list']), records(payload, 'education'), {
+                compareRowsByIdentity(asRows(current['education_list']), records(payload, 'education'), {
                     key: 'education',
-                    actualName: 'school',
-                    expectedName: 'school',
-                    extras: [{ actual: 'major', expected: 'major' }],
+                    actualIdentity: 'school',
+                    expectedIdentity: 'school',
+                    fields: [
+                        { name: 'school', actual: 'school', expected: (row) => text(row, 'school') },
+                        { name: 'major', actual: 'major', expected: (row) => text(row, 'major') },
+                        {
+                            name: 'degree',
+                            actual: 'degree',
+                            expected: (row) => text(row, 'degree'),
+                            matches: educationDegreeMatches,
+                        },
+                        {
+                            name: 'start_time',
+                            actual: 'start_time',
+                            expected: (row) => chinaMonthTimestamp(text(row, 'startDate', 'start_date')),
+                        },
+                        {
+                            name: 'end_time',
+                            actual: 'end_time',
+                            expected: (row) => chinaMonthTimestamp(text(row, 'endDate', 'end_date')),
+                        },
+                    ],
                 }, issues);
-                compareRows(asRows(current['career_list']), records(payload, 'career'), {
+                compareRowsByIdentity(asRows(current['career_list']), records(payload, 'career'), {
                     key: 'career',
-                    actualName: 'company',
-                    expectedName: 'company',
-                    extras: [{ actual: 'title', expected: 'title' }],
+                    actualIdentity: 'company',
+                    expectedIdentity: 'company',
+                    fields: [
+                        { name: 'company', actual: 'company', expected: (row) => text(row, 'company') },
+                        { name: 'title', actual: 'title', expected: (row) => text(row, 'title', 'role') },
+                        {
+                            name: 'start_time',
+                            actual: 'start_time',
+                            expected: (row) => chinaMonthTimestamp(text(row, 'startDate', 'start_date')),
+                        },
+                        {
+                            name: 'end_time',
+                            actual: 'end_time',
+                            expected: (row) => chinaMonthTimestamp(text(row, 'endDate', 'end_date'), row['current'] === true),
+                        },
+                        {
+                            name: 'description',
+                            actual: 'description',
+                            expected: (row) => fullRecordDescription(row),
+                        },
+                    ],
                 }, issues);
-                compareRows(asRows(current['internship_list']), records(payload, 'internship'), {
+                compareRowsByIdentity(asRows(current['internship_list']), records(payload, 'internship'), {
                     key: 'internship',
-                    actualName: 'company',
-                    expectedName: 'company',
-                    extras: [{ actual: 'position', expected: 'title' }],
+                    actualIdentity: 'company',
+                    expectedIdentity: 'company',
+                    fields: [
+                        { name: 'company', actual: 'company', expected: (row) => text(row, 'company') },
+                        { name: 'title', actual: 'position', expected: (row) => text(row, 'title', 'role') },
+                        {
+                            name: 'start_time',
+                            actual: 'start_time',
+                            expected: (row) => chinaMonthTimestamp(text(row, 'startDate', 'start_date')),
+                        },
+                        {
+                            name: 'end_time',
+                            actual: 'end_time',
+                            expected: (row) => chinaMonthTimestamp(text(row, 'endDate', 'end_date'), row['current'] === true),
+                        },
+                        {
+                            name: 'description',
+                            actual: 'description',
+                            expected: (row) => fullRecordDescription(row),
+                        },
+                    ],
                 }, issues);
-                compareRows(asRows(current['project_list']), records(payload, 'projects'), {
+                compareRowsByIdentity(asRows(current['project_list']), records(payload, 'projects'), {
                     key: 'projects',
-                    actualName: 'name',
-                    expectedName: 'name',
-                    extras: [
-                        { actual: 'role', expected: 'role' },
-                        { actual: 'link', expected: 'projectLink' },
-                        { actual: 'start_time', expected: 'start_time' },
-                        { actual: 'end_time', expected: 'end_time' },
+                    actualIdentity: 'name',
+                    expectedIdentity: 'name',
+                    fields: [
+                        { name: 'name', actual: 'name', expected: (row) => text(row, 'name', 'label') },
+                        { name: 'role', actual: 'role', expected: (row) => text(row, 'role') },
+                        { name: 'link', actual: 'link', expected: (row) => text(row, 'projectLink', 'url') ?? '' },
+                        {
+                            name: 'start_time',
+                            actual: 'start_time',
+                            expected: (row) => chinaMonthTimestamp(text(row, 'startDate', 'start_date')),
+                        },
+                        {
+                            name: 'end_time',
+                            actual: 'end_time',
+                            expected: (row) => chinaMonthTimestamp(text(row, 'endDate', 'end_date'), row['current'] === true),
+                        },
+                        {
+                            name: 'description',
+                            actual: 'description',
+                            expected: (row) => projectDescriptionExpected(row),
+                            matches: projectDescriptionMatches,
+                        },
                     ],
                 }, issues);
                 compareRows(asRows(current['award_list']), records(payload, 'awards'), {
@@ -1417,7 +1566,7 @@ export const feishuJobsResumePage = {
             return {
                 attempted: false,
                 saved: false,
-                message: '附件简历上传或解析尚未完成，未调用飞书招聘保存接口',
+                message: '附件简历尚未上传成功，未调用飞书招聘保存接口',
                 evidence: [],
                 pageChanged: false,
             };
