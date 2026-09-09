@@ -67,8 +67,15 @@ function description(record) {
 function compact(record) {
     return Object.fromEntries(Object.entries(record).filter(([, value]) => value !== undefined));
 }
+function degreeLabel(value) {
+    if (value?.includes('博士'))
+        return '博士';
+    if (value?.includes('硕士'))
+        return '硕士';
+    return value;
+}
 function degreeRank(value) {
-    switch (value) {
+    switch (degreeLabel(value)) {
         case '博士':
             return 5;
         case '硕士':
@@ -95,7 +102,7 @@ function educationRows(input) {
         endDate: endMonth(record.values),
         school: text(record.values, 'school'),
         speciality: text(record.values, 'major'),
-        academicDegree: text(record.values, 'degree'),
+        academicDegree: degreeLabel(text(record.values, 'degree')),
     }));
 }
 function experienceRows(input, kind) {
@@ -384,7 +391,7 @@ export const didiResumePage = {
                 gender: text(input.basic, 'person.identity.gender') ??
                     text(account, 'gender'),
                 experience: account['experience'],
-                academicDegree: text(education?.values ?? {}, 'degree'),
+                academicDegree: degreeLabel(text(education?.values ?? {}, 'degree')),
                 location: text(input.basic, 'person.location.current_city') ??
                     text(account, 'location'),
                 lastSpeciality: text(education?.values ?? {}, 'major'),
