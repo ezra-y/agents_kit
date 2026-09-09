@@ -70,6 +70,9 @@ try {
 
     const finishedAt = new Date().toISOString();
     const elapsedMs = Math.round(performance.now() - started);
+    if (isSensitiveCommand(command)) {
+      result = { ok: result?.ok, errorCode: result?.errorCode, redacted: true };
+    }
     const name = `${String(number).padStart(3, '0')}-${slug(command?.tool ?? command?.operation ?? 'invalid')}.json`;
     const record = {
       command: redactCommand(command),
@@ -96,7 +99,7 @@ try {
     );
 
     const output = command?.brief === true
-      ? { ok: result?.ok, message: result?.message, errorCode: result?.errorCode, error: result?.error }
+      ? { ok: result?.ok, message: result?.message, errorCode: result?.errorCode, error: result?.error, redacted: result?.redacted }
       : result;
     process.stdout.write(`${JSON.stringify({ evidence: name, elapsedMs, result: output })}\n`);
   }
@@ -232,7 +235,7 @@ function resolveEvidenceDir(skillPaths, argv) {
 function redactCommand(command) {
   if (!isSensitiveCommand(command)) return command;
   const redacted = { ...command };
-  for (const key of ['args', 'arguments', 'argument', 'expression']) {
+  for (const key of ['args', 'arguments', 'argument', 'expression', 'url']) {
     if (key in redacted) redacted[key] = '[redacted]';
   }
   return redacted;
