@@ -87,9 +87,10 @@ try {
       { encoding: 'utf8', mode: 0o600 },
     );
 
-    process.stdout.write(
-      `${JSON.stringify({ evidence: name, elapsedMs, result })}\n`,
-    );
+    const output = command?.brief === true
+      ? { ok: result?.ok, message: result?.message, errorCode: result?.errorCode, error: result?.error }
+      : result;
+    process.stdout.write(`${JSON.stringify({ evidence: name, elapsedMs, result: output })}\n`);
   }
 } finally {
   restoreStdin();

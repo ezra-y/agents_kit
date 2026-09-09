@@ -1310,6 +1310,17 @@ export const feishuJobsResumePage = {
                     expectedName: 'name',
                     extras: [{ actual: 'desc', expected: 'level' }],
                 }, issues);
+                records(payload, 'awards').forEach((award, index) => {
+                    const expectedTime = awardTimestamp(text(award, 'date'));
+                    if (expectedTime !== undefined && asRows(current['award_list'])[index]?.['award_time'] !== expectedTime) {
+                        issues.push({
+                            key: `awards[${index}].award_time`,
+                            code: 'server_readback_mismatch',
+                            message: `awards[${index}] 的获奖年份服务器读回不一致`,
+                            severity: 'error',
+                        });
+                    }
+                });
                 compareRows(asRows(current['competition_list']), records(payload, 'competitions'), {
                     key: 'competitions',
                     actualName: 'name',

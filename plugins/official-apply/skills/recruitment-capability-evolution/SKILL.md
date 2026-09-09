@@ -38,7 +38,7 @@ description: 演进企业招聘自动化能力。真实站点暴露出重复人�
 | `recruitment-session` | `solve-overlay-rotation-captcha.py`、`overlay-rotation-login-session.mjs` | 对背景加透明圆片的旋转题读取当前图片，按验证码引擎的角度和轨道关系完成单次拖动并读取验证接口。 |
 | `recruitment-session` | `solve-jigsaw-captcha.py`、`jigsaw-captcha-session.mjs` | 按验证码引擎处理一类拼图题，识别亮/暗缺口、计算横向距离、单次拖动并监听验证接口；不计算角度。 |
 | `recruitment-session` | `migrate-moka-session.mjs` | 在 Moka 企业站之间只迁移五个已验证有用的会话 Cookie，自动备份目标状态，并要求在目标站重新验证登录。 |
-| `resume-fill-review` | 无 | 通过 MCP、共享核心和 PageScript 填写与审查。 |
+| `resume-fill-review` | `browser-session.mjs` | 在同一运行中执行 JSONL 工具及浏览器操作，保留完整证据，按需输出摘要。 |
 | `job-application-submit` | 无 | 通过 MCP 和提交核心完成预检、确认与单次提交。 |
 | 可选外部 `qiuzhao-feed` | 以外部 Skill 为准 | 用户明确找秋招且已安装时使用，不是主插件的内置依赖。 |
 
