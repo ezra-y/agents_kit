@@ -460,16 +460,16 @@ export const game4399ResumePage = {
             ]);
         }
         const fields = [
-            { key: 'basic', outcome: 'filled' },
-            { key: 'education', outcome: 'filled' },
-            { key: 'internship', outcome: 'filled' },
-            { key: 'projects', outcome: 'filled' },
+            { key: 'basic', outcome: 'prepared' },
+            { key: 'education', outcome: 'prepared' },
+            { key: 'internship', outcome: 'prepared' },
+            { key: 'projects', outcome: 'prepared' },
         ];
         const photoLocalPath = payload.resolved['photoLocalPath'];
         if (typeof photoLocalPath === 'string' && photoLocalPath !== '') {
             try {
                 asRecord(apiResume['base'])['avatar'] = await uploadAvatar(page, photoLocalPath);
-                fields.push({ key: 'attachment.photo', outcome: 'filled' });
+                fields.push({ key: 'attachment.photo', outcome: 'prepared' });
             }
             catch (error) {
                 fields.push({
@@ -492,7 +492,7 @@ export const game4399ResumePage = {
         if (typeof localPath === 'string' && localPath !== '') {
             try {
                 uploadResumeValue = await uploadResume(page, localPath);
-                fields.push({ key: 'attachment.resume', outcome: 'filled' });
+                fields.push({ key: 'attachment.resume', outcome: 'prepared' });
             }
             catch (error) {
                 fields.push({
@@ -522,6 +522,25 @@ export const game4399ResumePage = {
         return fillResult(fields);
     },
     async validate(page, payload) {
+        const staged = await page.evaluate((key) => window[key] !== undefined, STAGED_KEY);
+        if (staged) {
+            const expected = preparedResume(payload) ?? {};
+            return {
+                source: 'prepared',
+                valid: payload.missing.length === 0,
+                checkedCount: 1 +
+                    asRows(expected['education']).length +
+                    asRows(expected['internship']).length +
+                    asRows(expected['project']).length +
+                    (String(asRecord(expected['uploadResume'])['attachFileName'] ?? '') === '' ? 0 : 1),
+                issues: payload.missing.map((item) => ({
+                    key: item.key,
+                    code: 'required_missing',
+                    message: item.reason,
+                    severity: 'blocking',
+                })),
+            };
+        }
         return validateServer(page, payload);
     },
     async saveDraft(page) {

@@ -282,6 +282,15 @@ OFFICIAL_APPLY_PHONE=<phone> node \
 5. 按住滑块先移动 20 像素，读取拼图实际位移并校准页面缩放。
 6. 在同一次按压中移动剩余距离，松开后读取验证码接口和短信发送接口的结果。
 
+如果验证码已经在另一个正式 runId 页面中打开，不要再启动这个独立 CLI。改用
+skills/resume-fill-review/scripts/browser-session.mjs，在同一 JSONL 会话发送：
+
+```json
+{"operation":"solve_jigsaw","runId":"当前运行的 runId","maxAttempts":1}
+```
+
+它复用 server.pageOf(runId) 返回的活页面，继续使用本节同一套引擎检测、Python 求解、缩放校准、拖动轨迹和案例记录；不会另开浏览器或 profile。返回的 caseDirectory 仍应保留，失败时先读取其中的 case.json 和原图，再决定下一步。
+
 求解器同时识别变亮和变暗的缺口。验证码通过后，部分网站会自动发送短信；此时等待短信
 按钮倒计时，不得再次点击发送。脚本从页面打开时就监听验证码和短信接口；失败时先读取
 HTTP 状态、业务 `code` 和 `message`，再判断是超时、位置错误还是风控。脚本最多处理两道

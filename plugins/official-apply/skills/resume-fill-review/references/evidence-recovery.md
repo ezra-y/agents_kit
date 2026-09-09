@@ -64,6 +64,14 @@ node skills/resume-fill-review/scripts/browser-session.mjs \
 JSONL
 ```
 
+当前运行页面已经出现拼图验证码时，在同一 JSONL 会话中调用明确的求解操作：
+
+```json
+{"operation":"solve_jigsaw","runId":"上一步返回的 runId","maxAttempts":1}
+```
+
+该操作只复用这个 runId 的活页面，不会再启动浏览器或占用新的 profile。返回值中的 caseDirectory 指向本次取图、求解输入、拖动轨迹和验证结果；求解失败也会保留 case.json，不能把失败结果当成验证码通过。
+
 每行输出一条结果，截图会写入 `<dataRoot>` 并只返回 `screenshotPath`，不会把二进制 `Buffer`（二进制数据）打印或重复写进 JSON。`fill`、短信验证码等请求要加 `"sensitive":true`；手机号和履历内容可按正常证据保留，密码和验证码会从长期命令记录中去掉。输入结束后脚本会关闭 MCP 会话和浏览器；页面仍需用 `apply.close_run` 提前关闭时，照常发送该工具调用。
 
 已有完整来源、不需要把大结果再次打印时，在命令顶层加 `"brief":true`。终端只返回成功/错误摘要和 `evidence` 文件名，完整结果仍保存在该文件中。核对字段内容时读取完整证据，摘要不代替 `source.payload` 或服务器字段值。

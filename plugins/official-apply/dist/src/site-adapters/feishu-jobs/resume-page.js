@@ -474,13 +474,15 @@ function resolveRequiredCustomFields(input, fields) {
                 ? 'person.identity.birth_date'
                 : /籍贯/.test(label)
                     ? 'person.contact.native_place'
-                    : /驾驶证|驾照/.test(label)
-                        ? 'person.credential.has_driver_license'
-                        : /调配|调剂/.test(label)
-                            ? 'application.preference.accept_transfer'
-                            : /派遣|外派/.test(label)
-                                ? 'application.preference.accept_assignment'
-                                : undefined;
+                    : /家庭住址/.test(label)
+                        ? 'person.contact.address'
+                        : /驾驶证|驾照/.test(label)
+                            ? 'person.credential.has_driver_license'
+                            : /调配|调剂/.test(label)
+                                ? 'application.preference.accept_transfer'
+                                : /派遣|外派/.test(label)
+                                    ? 'application.preference.accept_assignment'
+                                    : undefined;
         if (canonicalKey === undefined) {
             missing.push({
                 key: customKey,
@@ -1153,12 +1155,12 @@ export const feishuJobsResumePage = {
         }
         const resume = asRecord(apiPayload.body['resume']);
         const fields = [
-            { key: 'basic', outcome: 'filled' },
-            { key: 'education', outcome: 'filled' },
-            { key: 'career', outcome: 'filled' },
-            { key: 'internship', outcome: 'filled' },
-            { key: 'projects', outcome: 'filled' },
-            { key: 'awards', outcome: 'filled' },
+            { key: 'basic', outcome: 'prepared' },
+            { key: 'education', outcome: 'prepared' },
+            { key: 'career', outcome: 'prepared' },
+            { key: 'internship', outcome: 'prepared' },
+            { key: 'projects', outcome: 'prepared' },
+            { key: 'awards', outcome: 'prepared' },
         ];
         const photoField = asRecord(payload.resolved['requiredCustomPhoto']);
         const photoParentId = photoField['parentId'];
@@ -1187,7 +1189,7 @@ export const feishuJobsResumePage = {
                         children: [{ object_id: photoChildId, value: [image] }],
                     };
                     setCustomPhoto(resume, stagedPhoto);
-                    fields.push({ key: 'attachment.photo', outcome: 'filled' });
+                    fields.push({ key: 'attachment.photo', outcome: 'prepared' });
                 }
                 catch (error) {
                     fields.push({
@@ -1215,7 +1217,7 @@ export const feishuJobsResumePage = {
             else {
                 try {
                     resume['portal_attachment_id'] = await uploadResumeAttachment(page, localPath);
-                    fields.push({ key: 'attachment.resume', outcome: 'filled' });
+                    fields.push({ key: 'attachment.resume', outcome: 'prepared' });
                 }
                 catch (error) {
                     fields.push({
@@ -1360,6 +1362,7 @@ export const feishuJobsResumePage = {
             }
         }
         return {
+            source: staged ? 'prepared' : 'server',
             valid: issues.length === 0,
             checkedCount: 3 +
                 records(payload, 'education').length +

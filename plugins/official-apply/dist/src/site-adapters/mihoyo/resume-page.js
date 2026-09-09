@@ -271,8 +271,8 @@ export const mihoyoResumePage = {
             window[key] = value;
         }, { key: STAGED_KEY, value: apiPayload });
         return fillResult([
-            { key: 'projects', outcome: 'filled' },
-            { key: 'awards', outcome: 'filled' },
+            { key: 'projects', outcome: 'prepared' },
+            { key: 'awards', outcome: 'prepared' },
             { key: 'preservedSections', outcome: 'unchanged' },
         ]);
     },
@@ -280,6 +280,7 @@ export const mihoyoResumePage = {
         const staged = await page.evaluate((key) => window[key] !== undefined, STAGED_KEY);
         if (staged) {
             return {
+                source: 'prepared',
                 valid: payload.missing.length === 0,
                 checkedCount: expectedNames(payload, 'projects').length +
                     expectedNames(payload, 'awards').length,

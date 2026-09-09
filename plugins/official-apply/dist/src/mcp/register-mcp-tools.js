@@ -98,6 +98,15 @@ function readStringArray(args, name) {
         ? value
         : undefined;
 }
+function readDraftAnswers(args) {
+    const value = args['draftAnswers'];
+    if (value === undefined)
+        return { provided: false };
+    if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+        return { provided: true };
+    }
+    return { provided: true, value };
+}
 /** 拿到这次运行的活会话。拿不到就明说，不偷偷再开一个。 */
 function requireSession(input) {
     const runId = readString(input.args, 'runId');
@@ -695,11 +704,17 @@ export function registerMcpTools() {
         },
         {
             name: 'apply.resolve_page',
-            description: '保存官网字段、映射到公共字段、找出答案和待处理问题。source.payload 返回本任务合并了有效用户回答的完整资料，供填写和审查共同使用。',
+            description: '保存官网字段、映射到公共字段、找出答案和待处理问题。source.payload 保留已保存资料，draftAnswers 只作本次基础字段暂选，不写入本地长期答案库或确认映射。',
             mutating: true,
             inputSchema: {
                 type: 'object',
-                properties: { runId: { type: 'string' } },
+                properties: {
+                    runId: { type: 'string' },
+                    draftAnswers: {
+                        type: 'object',
+                        description: '仅供当前会话的基础公共字段（basic）临时值，不支持教育、工作等条目字段。不写入本地长期答案库；可随保存写入网站，并保留在本次证据和不确定信息列。',
+                    },
+                },
                 required: ['runId'],
             },
             async handler(input) {
@@ -707,8 +722,18 @@ export function registerMcpTools() {
                 if (isToolResult(found)) {
                     return found;
                 }
+                const draft = readDraftAnswers(input.args);
+                if (draft.provided && draft.value === undefined) {
+                    return fail('mcp_invalid_argument', 'draftAnswers 必须是公共字段到答案的对象。');
+                }
                 const pageScript = asPageScript(found.run.pageScript);
+                if (pageScript === undefined && draft.provided) {
+                    return fail('mcp_draft_answers_unsupported', '临时答案当前只支持已命中的 PageScript 页面；通用页面不会静默使用它。');
+                }
                 if (pageScript !== undefined) {
+                    if (draft.value !== undefined) {
+                        found.run.draftAnswers = draft.value;
+                    }
                     const result = await resolveWithPageScript({
                         paths: input.paths,
                         page: found.page,
@@ -716,11 +741,15 @@ export function registerMcpTools() {
                         taskId: found.run.taskId,
                         profileRecordIds: found.run.profileRecordIds,
                         materialRefs: found.run.materialRefs,
+                        draftAnswers: found.run.draftAnswers,
                     });
                     found.run.lastPageScriptResult = toJson(result);
                     return ok(result, result.preparation.missing.length > 0
                         ? `已按 ${pageScript.id} 准备数据，还有 ${result.preparation.missing.length} 个缺失项。`
                         : `已按 ${pageScript.id} 准备数据，可以调用 apply.fill_page。`);
+                }
+                if (found.run.draftAnswers !== undefined) {
+                    return fail('mcp_draft_answers_unsupported', '当前页面没有 PageScript，不能继续使用本次运行的临时答案。');
                 }
                 found.run.executionRoute = 'generic_scan';
                 const source = buildCanonicalApplicationPayload({
@@ -898,6 +927,7 @@ export function registerMcpTools() {
                         taskId: found.run.taskId,
                         profileRecordIds: found.run.profileRecordIds,
                         materialRefs: found.run.materialRefs,
+                        draftAnswers: found.run.draftAnswers,
                     });
                     markPageMutated(found.run, 'page_script_fill', input.now);
                     found.run.lastPageScriptResult = toJson(result);
@@ -905,9 +935,17 @@ export function registerMcpTools() {
                         (found.run.fillDurationMs ?? 0) + Math.max(result.durationMs, Date.now() - fillStartedAt);
                     return (result.fill?.failed.length ?? 0) > 0 || result.failure !== undefined
                         ? fail('mcp_tool_failed', `${pageScript.id} 有 ${result.fill?.failed.length ?? 0} 个字段失败。`, result)
-                        : ok(result, result.outcome === 'partial'
-                            ? `${pageScript.id} 已填写确定字段，缺失项保持空白。`
-                            : `${pageScript.id} 填写和读回通过。`);
+                        : ok(result, result.fill?.fields.some((field) => field.outcome === 'prepared')
+                            ? (result.preparation?.missing.length ?? 0) > 0 ||
+                                (result.preparation?.conflicts.length ?? 0) > 0
+                                ? `${pageScript.id} 已准备待保存，缺失项保持空白。`
+                                : `${pageScript.id} 已准备待保存，尚未写入服务器。`
+                            : result.outcome === 'partial'
+                                ? `${pageScript.id} 已填写确定字段，缺失项保持空白。`
+                                : `${pageScript.id} 填写和页面校验通过。`);
+                }
+                if (found.run.draftAnswers !== undefined) {
+                    return fail('mcp_draft_answers_unsupported', '当前页面没有 PageScript，不能继续使用本次运行的临时答案。');
                 }
                 let schema = await currentSchema(found.session, found.page, found.run.runId, input.now, found.run);
                 // 沿用 resolve_page 那一轮的配方判定。同一页不重新判一次，
@@ -1147,11 +1185,19 @@ export function registerMcpTools() {
                         taskId: found.run.taskId,
                         profileRecordIds: found.run.profileRecordIds,
                         materialRefs: found.run.materialRefs,
+                        draftAnswers: found.run.draftAnswers,
                     });
                     found.run.lastPageScriptResult = toJson(result);
                     return ok(result, result.validation.valid
-                        ? `${pageScript.id} 读回校验通过。`
-                        : `${pageScript.id} 有 ${result.validation.issues.length} 个读回问题。`);
+                        ? result.validation.source === 'prepared'
+                            ? `${pageScript.id} 准备数据检查通过，尚未读回服务器。`
+                            : `${pageScript.id} 服务器读回校验通过。`
+                        : result.validation.source === 'prepared'
+                            ? `${pageScript.id} 准备数据有 ${result.validation.issues.length} 个问题。`
+                            : `${pageScript.id} 有 ${result.validation.issues.length} 个服务器读回问题。`);
+                }
+                if (found.run.draftAnswers !== undefined) {
+                    return fail('mcp_draft_answers_unsupported', '当前页面没有 PageScript，不能继续使用本次运行的临时答案。');
                 }
                 const schema = await currentSchema(found.session, found.page, found.run.runId, input.now, found.run);
                 // 用上一轮解析出来的答案当作「本来应该填什么」。
@@ -1289,6 +1335,7 @@ export function registerMcpTools() {
                         taskId: found.run.taskId,
                         profileRecordIds: found.run.profileRecordIds,
                         materialRefs: found.run.materialRefs,
+                        draftAnswers: found.run.draftAnswers,
                     });
                     markPageMutated(found.run, 'page_script_save', input.now);
                     found.run.lastPageScriptResult = toJson(result);
@@ -1299,6 +1346,9 @@ export function registerMcpTools() {
                     return result.saveDraft.saved
                         ? ok(result, `${pageScript.id} 已保存草稿并完成服务器读回。`)
                         : fail('mcp_tool_failed', result.saveDraft.message ?? '保存草稿没有强证据。', result);
+                }
+                if (found.run.draftAnswers !== undefined) {
+                    return fail('mcp_draft_answers_unsupported', '当前页面没有 PageScript，不能继续使用本次运行的临时答案。');
                 }
                 const schema = await currentSchema(found.session, found.page, found.run.runId, input.now, found.run);
                 const actionKind = (readString(input.args, 'actionKind') ??

@@ -272,15 +272,15 @@ export const kuaishouResumePage = {
             window[key] = true;
         }, STAGED_KEY);
         const fields = [
-            { key: 'basic', outcome: 'filled' },
-            { key: 'education', outcome: 'filled' },
-            { key: 'experience', outcome: 'filled' },
-            { key: 'projects', outcome: 'filled' },
-            { key: 'awards', outcome: 'filled' },
+            { key: 'basic', outcome: 'prepared' },
+            { key: 'education', outcome: 'prepared' },
+            { key: 'experience', outcome: 'prepared' },
+            { key: 'projects', outcome: 'prepared' },
+            { key: 'awards', outcome: 'prepared' },
         ];
         return {
             attemptedCount: fields.length,
-            filledCount: fields.length,
+            filledCount: 0,
             unchangedCount: 0,
             skippedCount: 0,
             failed: [],
@@ -326,6 +326,7 @@ export const kuaishouResumePage = {
             compareNames(asRows(server['canAwards']).map((item) => String(item['awardsName'] ?? '')), expectedAwardNames, 'awards', issues);
         }
         return {
+            source: staged ? 'prepared' : 'server',
             valid: issues.length === 0,
             checkedCount: 3 + records(payload, 'education').length +
                 records(payload, 'experience').length +

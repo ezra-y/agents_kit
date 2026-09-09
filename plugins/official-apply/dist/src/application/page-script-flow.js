@@ -2,6 +2,15 @@ import { buildCanonicalApplicationPayload } from "./build-canonical-application-
 import { loadPageScriptCandidates } from "../site-adapters/discovery/save-page-script-candidate.js";
 import { PageScriptRegistry, pageScriptRegistry } from "../site-adapters/registry.js";
 import { runPageScript } from "../site-adapters/runner.js";
+function applyDraftAnswers(payload, draftAnswers) {
+    if (draftAnswers === undefined || Object.keys(draftAnswers).length === 0) {
+        return payload;
+    }
+    return {
+        ...payload,
+        basic: { ...payload.basic, ...draftAnswers },
+    };
+}
 function preparationSummary(prepared) {
     return {
         resolvedKeys: Object.keys(prepared.resolved).sort(),
@@ -18,7 +27,7 @@ async function prepareContext(context) {
         taskId: context.taskId,
     });
     const facts = await context.script.inspect(context.page);
-    const prepared = context.script.prepare(built.payload, facts);
+    const prepared = context.script.prepare(applyDraftAnswers(built.payload, context.draftAnswers), facts);
     return { built, facts, prepared };
 }
 export function asPageScript(value) {
@@ -98,6 +107,7 @@ export async function resolveWithPageScript(context) {
             status: context.script.status,
         },
         source: built,
+        draftAnswers: context.draftAnswers ?? {},
         preparation: preparationSummary(prepared),
         missingProfileRecordIds: built.missingProfileRecordIds,
         missingMaterialIds: built.missingMaterialIds,
@@ -113,7 +123,7 @@ export async function fillWithPageScript(context) {
     return runPageScript({
         page: context.page,
         script: context.script,
-        input: built.payload,
+        input: applyDraftAnswers(built.payload, context.draftAnswers),
         saveDraft: false,
     });
 }

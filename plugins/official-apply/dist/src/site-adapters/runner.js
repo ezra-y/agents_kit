@@ -130,6 +130,8 @@ export async function runPageScript(request) {
     const partial = preparation.missing.length > 0 ||
         preparation.conflicts.length > 0 ||
         fill.failed.length > 0 ||
+        (fill.fields.some((field) => field.outcome === 'prepared') &&
+            saveDraft?.saved !== true) ||
         !validation.valid ||
         (saveDraft !== undefined && !saveDraft.saved) ||
         (postSaveValidation !== undefined && !postSaveValidation.valid);

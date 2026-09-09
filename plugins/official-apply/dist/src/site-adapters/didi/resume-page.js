@@ -445,13 +445,13 @@ export const didiResumePage = {
             window[key] = value;
         }, { key: STAGED_KEY, value: resume });
         return fillResult([
-            { key: 'basic', outcome: 'filled' },
-            { key: 'jobIntention', outcome: 'filled' },
-            { key: 'experience', outcome: 'filled' },
-            { key: 'education', outcome: 'filled' },
-            { key: 'projects', outcome: 'filled' },
-            { key: 'languages', outcome: 'filled' },
-            { key: 'awards', outcome: 'filled' },
+            { key: 'basic', outcome: 'prepared' },
+            { key: 'jobIntention', outcome: 'prepared' },
+            { key: 'experience', outcome: 'prepared' },
+            { key: 'education', outcome: 'prepared' },
+            { key: 'projects', outcome: 'prepared' },
+            { key: 'languages', outcome: 'prepared' },
+            { key: 'awards', outcome: 'prepared' },
         ]);
     },
     async validate(page, payload) {
@@ -471,7 +471,7 @@ export const didiResumePage = {
             asRows(resume['projectInfo']).length +
             asRows(resume['awardInfo']).length +
             3;
-        return { valid: issues.length === 0, checkedCount, issues };
+        return { source: staged ? 'prepared' : 'server', valid: issues.length === 0, checkedCount, issues };
     },
     async saveDraft(page, payload) {
         const resume = resolvedResume(payload);

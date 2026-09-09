@@ -3,8 +3,10 @@
 import { createInterface } from 'node:readline';
 import { appendFileSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { launch } from '../../../bin/launch.js';
+import { solveJigsawOnPage } from '../../../skills/recruitment-session/scripts/jigsaw-captcha-engine.mjs';
 
 const { getSkillPaths, isInsideLocalRoot } = await launch('src/config/paths.ts');
 const { createMcpServer } = await launch('src/mcp/create-mcp-server.ts');
@@ -57,7 +59,13 @@ try {
       command = JSON.parse(text);
       result = await execute(command, number);
     } catch (error) {
-      result = { ok: false, error: describeError(error) };
+      result = {
+        ok: false,
+        error: describeError(error),
+        ...(typeof error?.caseDirectory === 'string'
+          ? { caseDirectory: error.caseDirectory }
+          : {}),
+      };
     }
 
     const finishedAt = new Date().toISOString();
@@ -107,6 +115,17 @@ async function execute(command, number) {
   }
 
   const page = pageOf(command.runId);
+
+  if (command.operation === 'solve_jigsaw') {
+    return solveJigsawOnPage({
+      page,
+      evidenceDir,
+      runId: command.runId,
+      taskId: typeof command.taskId === 'string' ? command.taskId : undefined,
+      maxAttempts: command.maxAttempts ?? 1,
+      sessionScript: fileURLToPath(import.meta.url),
+    });
+  }
 
   if (command.operation === 'goto') {
     const response = await page.goto(command.url);

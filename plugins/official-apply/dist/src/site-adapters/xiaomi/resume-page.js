@@ -475,11 +475,11 @@ export const xiaomiResumePage = {
             ]);
         }
         const fields = [
-            { key: 'basic', outcome: 'filled' },
-            { key: 'education', outcome: 'filled' },
-            { key: 'experience', outcome: 'filled' },
-            { key: 'projects', outcome: 'filled' },
-            { key: 'awards', outcome: 'filled' },
+            { key: 'basic', outcome: 'prepared' },
+            { key: 'education', outcome: 'prepared' },
+            { key: 'experience', outcome: 'prepared' },
+            { key: 'projects', outcome: 'prepared' },
+            { key: 'awards', outcome: 'prepared' },
         ];
         if (typeof resume['portal_attachment_id'] !== 'string' ||
             resume['portal_attachment_id'] === '') {
@@ -511,7 +511,7 @@ export const xiaomiResumePage = {
             else {
                 try {
                     resume['portal_attachment_id'] = await uploadResumeAttachment(page, localPath);
-                    fields.push({ key: 'attachment.resume', outcome: 'filled' });
+                    fields.push({ key: 'attachment.resume', outcome: 'prepared' });
                 }
                 catch (error) {
                     fields.push({
@@ -553,6 +553,7 @@ export const xiaomiResumePage = {
             });
         }
         return {
+            source: staged ? 'prepared' : 'server',
             valid: issues.length === 0,
             checkedCount: expectedNames(resume, 'education_list').length +
                 expectedNames(resume, 'project_list').length +

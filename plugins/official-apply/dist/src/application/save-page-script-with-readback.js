@@ -82,6 +82,7 @@ export async function savePageScriptWithReadback(request) {
         taskId: request.taskId,
         profileRecordIds: request.profileRecordIds,
         materialRefs: request.materialRefs,
+        draftAnswers: request.draftAnswers,
     });
     if (!saved.saveDraft.attempted) {
         return saved;
@@ -117,6 +118,7 @@ export async function savePageScriptWithReadback(request) {
             taskId: request.taskId,
             profileRecordIds: request.profileRecordIds,
             materialRefs: request.materialRefs,
+            draftAnswers: request.draftAnswers,
         });
         const confirmed = readback.validation.valid;
         const result = await attachEvidencePath(request, {
