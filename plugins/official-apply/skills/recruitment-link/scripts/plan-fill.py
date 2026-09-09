@@ -85,7 +85,10 @@ def load_descriptor(data_root):
     field_map = descriptor.get("fieldMap")
     if not isinstance(field_map, dict):
         raise UserError("sources.fieldMap 缺失或不是对象")
-    for name in ("处理完成", "提交状态", "填写状态", "公司"):
+    checkbox_name = next((name for name in ("投递情况", "处理完成") if field_map.get(name)), None)
+    if not checkbox_name:
+        raise UserError("sources.fieldMap 缺少「投递情况」或「处理完成」字段 ID")
+    for name in (checkbox_name, "提交状态", "填写状态", "公司"):
         if not isinstance(field_map.get(name), str) or not field_map[name]:
             raise UserError(f"sources.fieldMap 缺少「{name}」字段 ID")
     url_name = next((name for name in ("来源链接", "岗位链接") if field_map.get(name)), None)
@@ -93,7 +96,7 @@ def load_descriptor(data_root):
         raise UserError("sources.fieldMap 缺少「来源链接」或「岗位链接」字段 ID")
     if not descriptor.get("baseToken") or not descriptor.get("tableId"):
         raise UserError("sources 描述缺少 baseToken 或 tableId")
-    return descriptor, url_name
+    return descriptor, url_name, checkbox_name
 
 
 def read_rows(snapshot):
@@ -196,10 +199,10 @@ def local_blocks(data_root, descriptor, rows):
 
 
 def plan(data_root, snapshot):
-    descriptor, url_name = load_descriptor(data_root)
+    descriptor, url_name, checkbox_name = load_descriptor(data_root)
     field_ids, rows = read_rows(snapshot)
     field_map = descriptor["fieldMap"]
-    required = [field_map[name] for name in ("处理完成", "提交状态", "公司", url_name)]
+    required = [field_map[name] for name in (checkbox_name, "提交状态", "公司", url_name)]
     if any(field_id not in field_ids for field_id in required):
         raise UserError("行快照缺少 fieldMap 指定的必需列")
     if len(set(required)) != len(required):
@@ -218,14 +221,14 @@ def plan(data_root, snapshot):
             url = url_value(cells[field_map["岗位链接"]])
         decision, reason, fill_mode = "eligible", "待填写，只补空字段", "empty_only"
         try:
-            checked = checkbox_value(cells[field_map["处理完成"]])
+            checked = checkbox_value(cells[field_map[checkbox_name]])
         except ValueError as error:
             decision, reason = "blocked", str(error)
         else:
             submission = text_value(cells[field_map["提交状态"]])
             fill = text_value(cells.get(fill_id)) if fill_id else ""
             if checked:
-                decision, reason = "skipped", "处理完成已勾选"
+                decision, reason = "skipped", f"{checkbox_name}已勾选"
             elif submission in FINISHED_SUBMISSION:
                 decision, reason = "skipped", f"提交状态为{submission}"
             elif submission not in ALLOWED_SUBMISSION:
@@ -240,6 +243,10 @@ def plan(data_root, snapshot):
                 decision, reason = "blocked", f"缺少有效{url_name}"
             elif fill in PARTIAL_FILL:
                 reason = "继续部分填写，只填空字段"
+            elif fill == "暂时无法填写":
+                reason = "重试此前未完成的填写，只补空字段"
+            elif fill == "填写中":
+                decision, reason = "skipped", "填写任务正在进行"
             elif fill not in ("", "未填写", "待填写"):
                 decision, reason = "blocked", f"未知填写状态：{fill}"
         items.append({

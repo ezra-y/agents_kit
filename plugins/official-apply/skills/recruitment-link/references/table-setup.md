@@ -3,7 +3,7 @@
 ## 1. 固定存放位置
 
 登记文件为 `<dataRoot>/tables/locations.json`。它只保存表格文件路径/链接及真实列映射，招聘内容、用户简历和登录态不进入插件包。
-`sources` 指招聘来源和本次公司范围；`candidates` 指具体岗位及后续进度。可以分别登记文件或链接，不要求两张表属于同一平台。
+`sources` 指招聘来源和本次公司范围；`candidates` 指具体岗位及后续进度。可以分别登记文件或链接，两者可以是同一张表的不同视图。登记同表视图时保留相同 tableId，分别记录 viewId 和带 view 参数的链接；写回仍更新同一 recordId。
 
 ```bash
 python3 skills/recruitment-link/scripts/table-locations.py --data-root <dataRoot> show
@@ -84,7 +84,7 @@ fields 是 JSON 数组本身，不是文件名；用 Python subprocess 参数数
 
 需要减少可见列时，用 `+view-create --json '{"name":"选岗位","type":"grid"}'` 创建视图，再用 `+view-set-visible-fields --json '{"visible_fields":["公司","岗位","岗位链接","用户选择","检查结果"]}'`，两者都传真实 base-token/table-id，后者加返回的 view-id。
 已有表优先保留原列和视图，用 fieldMap 适配；继续填写需要明确处理完成、填写状态、提交状态列，不能把未知列或不存在的列当作未完成。确实缺少当前功能所需字段且用户已要求该功能时，用 `+field-create --json '<模板中对应字段对象>'` 补列。不要把历史“处理”复选框当成“确认投递”。
-结果表使用模板中的“登录方式”单选列（手机/邮箱/其他/未确认）；已有表先 field-list 查重，仅缺少时 field-create，并把返回的字段 ID 登记到 candidates.fieldMap。旧本地 CSV 不会自动补模板列：备份原文件，用文件工具仅在表头末尾增加“登录方式”，旧行补空单元格，保留已有列和内容；xlsx 用表格工具做同样补列。
+用户明确需要登录方式等辅助列时才补列，已有视图优先按用户关注的信息显示。检查日志留在本地，阻塞原因保持一两句话。
 
 ## 4. 把外部数据或搜索结果放进表
 
@@ -109,4 +109,4 @@ python3 skills/recruitment-link/scripts/table-locations.py --data-root <dataRoot
 本地用该批原表路径及 keyField 读取后更新；默认位置仍相同时可直接 upsert-local。默认位置已变化时用文件工具更新批次原文件，不覆盖新默认登记。
 飞书用该批保存的 Base/表/行 ID 调用 record-upsert，只传必要结果；随后用 `+record-get --as user --base-token <id> --table-id <id> --record-id <id> --format json` 读回核对。
 验证码值和登录令牌不回写。更新失败保留本地结果并报告“表格待同步”，不能把网页操作成功说成表格已更新。
-继续填写的选行条件和两表完成顺序以 [表格筛选与收尾](fill-selection.md) 为准。这里由活跃 Agent 执行读写，没有后台同步服务；不需要用户再次提供已登记的位置。
+继续填写的选行条件和结果记录顺序以 [表格筛选与收尾](fill-selection.md) 为准。这里由活跃 Agent 执行读写，没有后台同步服务；不需要用户再次提供已登记的位置。
