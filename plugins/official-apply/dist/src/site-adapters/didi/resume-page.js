@@ -1,4 +1,5 @@
 import { fullProjectDescription } from "../../materials/record-description.js";
+import { mergeScopedRecord, normaliseWriteScope, parseWritePath, redactResumeValue, } from "../write-scope.js";
 const HOST = 'campus.didiglobal.com';
 const STAGED_KEY = '__officialApplyDidiResume';
 function asRecord(value) {
@@ -72,6 +73,113 @@ function sourceDescriptionParts(values) {
 }
 function compact(record) {
     return Object.fromEntries(Object.entries(record).filter(([, value]) => value !== undefined));
+}
+const MOKA_ROW_IDENTITY = {
+    educationInfo: 'school',
+    experienceInfo: 'company',
+    practiceInfo: 'company',
+    projectInfo: 'projectName',
+    awardInfo: 'awardName',
+    languageInfo: 'language',
+};
+const MOKA_ROW_SIGNALS = {
+    educationInfo: ['startDate', 'endDate', 'academicDegree'],
+    experienceInfo: ['startDate', 'endDate', 'title'],
+    practiceInfo: ['startDate', 'endDate', 'title'],
+    projectInfo: ['startDate', 'endDate', 'title'],
+    awardInfo: ['awardDate'],
+    languageInfo: ['level'],
+};
+function sameJson(left, right) {
+    const canonical = (value, parentKey) => {
+        if (Array.isArray(value)) {
+            const items = value.map((item) => canonical(item));
+            const identityKey = parentKey === undefined ? undefined : MOKA_ROW_IDENTITY[parentKey];
+            return identityKey !== undefined
+                ? items.sort((a, b) => {
+                    const leftIdentity = a !== null && typeof a === 'object' && !Array.isArray(a)
+                        ? String(a[identityKey] ?? '') : '';
+                    const rightIdentity = b !== null && typeof b === 'object' && !Array.isArray(b)
+                        ? String(b[identityKey] ?? '') : '';
+                    return `${leftIdentity}\u0000${JSON.stringify(a)}`.localeCompare(`${rightIdentity}\u0000${JSON.stringify(b)}`);
+                })
+                : items;
+        }
+        if (value !== null && typeof value === 'object') {
+            return Object.fromEntries(Object.entries(value)
+                .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
+                .map(([key, item]) => [key, canonical(item, key)]));
+        }
+        return value;
+    };
+    return JSON.stringify(canonical(left)) === JSON.stringify(canonical(right));
+}
+function currentMokaResume(account) {
+    const basicKeys = [
+        'name', 'phone', 'email', 'fullPhone', 'gender', 'experience',
+        'academicDegree', 'location', 'lastSpeciality', 'lastCompany',
+        'citizenId', 'certificateType', 'birthDate', 'nickname',
+    ];
+    const basicInfo = {
+        ...asRecord(account['basicInfo']),
+        ...Object.fromEntries(basicKeys
+            .filter((key) => account[key] !== undefined)
+            .map((key) => [key, account[key]])),
+    };
+    const jobKeys = ['salary', 'aimSalary', 'forwardLocation'];
+    const jobIntention = {
+        ...asRecord(account['jobIntention']),
+        ...Object.fromEntries(jobKeys
+            .filter((key) => account[key] !== undefined)
+            .map((key) => [key, account[key]])),
+    };
+    const rootKeys = new Set([...basicKeys, ...jobKeys, 'personal']);
+    return {
+        ...Object.fromEntries(Object.entries(account).filter(([key]) => !rootKeys.has(key))),
+        basicInfo,
+        jobIntention,
+        experienceInfo: account['experienceInfo'] ?? [],
+        educationInfo: account['educationInfo'] ?? [],
+        practiceInfo: account['practiceInfo'] ?? [],
+        projectInfo: account['projectInfo'] ?? [],
+        languageInfo: account['languageInfo'] ?? [],
+        awardInfo: account['awardInfo'] ?? [],
+        selfDescription: {
+            ...asRecord(account['selfDescription']),
+            ...(account['personal'] === undefined ? {} : { personal: account['personal'] }),
+        },
+    };
+}
+function expectedMokaAccount(account, resume, targetPaths) {
+    const expected = JSON.parse(JSON.stringify(account));
+    for (const path of targetPaths) {
+        const parsed = parseWritePath(path);
+        if (parsed === undefined)
+            continue;
+        const sectionValue = asRecord(resume[parsed.section]);
+        if (Object.keys(parsed.selectors).length > 0) {
+            expected[parsed.section] = asRows(resume[parsed.section]);
+            continue;
+        }
+        const value = sectionValue[parsed.field] ?? resume[parsed.section];
+        if (parsed.section === 'basicInfo' || parsed.section === 'jobIntention') {
+            expected[parsed.field] = value;
+            if (expected[parsed.section] !== undefined) {
+                expected[parsed.section] = { ...asRecord(expected[parsed.section]), [parsed.field]: value };
+            }
+        }
+        else if (parsed.section === 'selfDescription' && parsed.field === 'personal') {
+            expected['personal'] = value;
+            expected[parsed.section] = { ...asRecord(expected[parsed.section]), personal: value };
+        }
+        else if (parsed.section === 'resume') {
+            expected[parsed.field] = resume[parsed.field];
+        }
+        else {
+            expected[parsed.section] = value;
+        }
+    }
+    return expected;
 }
 function degreeLabel(value) {
     if (value?.includes('博士'))
@@ -497,7 +605,8 @@ async function validateServer(page, payload) {
         severity: 'blocking',
     }));
     let checkedCount = 0;
-    checkedCount += validateSourceFacts(sourceFacts(payload), account, issues);
+    const candidate = asRecord(payload.resolved['candidateResume']);
+    checkedCount += validateSourceFacts(sourceFacts(payload), payload.writePlan === undefined ? account : candidate, issues);
     const basic = asRecord(resume['basicInfo']);
     for (const key of [
         'name',
@@ -532,7 +641,20 @@ async function validateServer(page, payload) {
     checkedCount += compareRows(issues, resume, account, 'experienceInfo', 'company', ['startDate', 'endDate', 'title', 'summary'], ['startDate', 'endDate', 'title']);
     checkedCount += compareRows(issues, resume, account, 'practiceInfo', 'company', ['startDate', 'endDate', 'title', 'summary'], ['startDate', 'endDate', 'title']);
     checkedCount += compareRows(issues, resume, account, 'projectInfo', 'projectName', ['startDate', 'endDate', 'title', 'projectDescription', 'responsibilities'], ['startDate', 'endDate', 'title']);
-    checkedCount += compareRows(issues, resume, account, 'awardInfo', 'awardName', ['awardDate'], []);
+    checkedCount += compareRows(issues, resume, account, 'awardInfo', 'awardName', ['awardDate'], ['awardDate']);
+    const targetPaths = payload.writePlan?.targetPaths ?? [];
+    const expectedBaseline = payload.writePlan === undefined
+        ? account
+        : asRecord(payload.writePlan.baseline);
+    if (payload.writePlan !== undefined &&
+        !sameJson(redactResumeValue(account), redactResumeValue(expectedMokaAccount(expectedBaseline, resume, targetPaths)))) {
+        issues.push({
+            key: 'writeScope',
+            code: 'server_readback_scope_mismatch',
+            message: 'Moka 保存后服务器简历与本轮写入计划不一致，包含目标外字段变化或未知字段丢失',
+            severity: 'error',
+        });
+    }
     return { valid: issues.length === 0, checkedCount, issues };
 }
 export const didiResumePage = {
@@ -541,6 +663,7 @@ export const didiResumePage = {
     host: HOST,
     pageKind: 'resume_edit',
     status: 'verified',
+    supportsWriteScope: true,
     lastVerifiedAt: '2026-08-28T20:00:00.000+08:00',
     async match(page) {
         const initialUrl = new URL(page.url());
@@ -600,8 +723,9 @@ export const didiResumePage = {
             },
         };
     },
-    prepare(input, facts) {
+    prepare(input, facts, requestedScope) {
         const account = asRecord(facts.runtimeData?.['account']);
+        const writeScope = normaliseWriteScope(requestedScope);
         const education = highestEducation(input);
         const desiredCities = stringList(input.basic['application.preference.desired_city']);
         const phone = text(input.basic, 'person.contact.phone');
@@ -665,9 +789,17 @@ export const didiResumePage = {
             orgId: text(facts.runtimeData ?? {}, 'orgId') ?? 'didiglobal',
             siteId: Number(facts.runtimeData?.['siteId'] ?? 96064),
         };
+        const scoped = requestedScope === undefined
+            ? { resume, targetPaths: [], conflicts: [], availableFields: [] }
+            : mergeScopedRecord(currentMokaResume(account), resume, writeScope, {
+                identityKey: section => MOKA_ROW_IDENTITY[section],
+                signalKeys: section => MOKA_ROW_SIGNALS[section] ?? [],
+                mergeRowObjects: true,
+            });
         return {
             resolved: {
-                apiResume: resume,
+                apiResume: scoped.resume,
+                candidateResume: resume,
                 sourceFacts: {
                     basic: input.basic,
                     education: input.education.map((record) => ({ values: record.values })),
@@ -682,7 +814,7 @@ export const didiResumePage = {
                 },
             },
             missing,
-            conflicts: [],
+            conflicts: scoped.conflicts,
             skipped: input.materials?.['attachment.resume'] === undefined
                 ? []
                 : [
@@ -691,6 +823,20 @@ export const didiResumePage = {
                         reason: 'Moka 当前站内简历页没有附件上传栏',
                     },
                 ],
+            ...(requestedScope === undefined
+                ? {}
+                : {
+                    writePlan: {
+                        scope: writeScope,
+                        baseline: redactResumeValue(account) ?? {},
+                        targetPaths: scoped.targetPaths,
+                        availableFields: scoped.availableFields,
+                        siteContext: {
+                            orgId: String(facts.runtimeData?.['orgId'] ?? 'didiglobal'),
+                            siteId: Number(facts.runtimeData?.['siteId'] ?? 96064),
+                        },
+                    },
+                }),
         };
     },
     async fill(page, payload) {
@@ -735,10 +881,19 @@ export const didiResumePage = {
             asRows(resume['projectInfo']).length +
             asRows(resume['awardInfo']).length +
             3;
-        const sourceCheckedCount = validateSourceFacts(sourceFacts(payload), resume, issues);
+        const sourceCheckedCount = validateSourceFacts(sourceFacts(payload), asRecord(payload.resolved['candidateResume']), issues);
         return { source: 'prepared', valid: issues.length === 0, checkedCount: checkedCount + sourceCheckedCount, issues };
     },
     async saveDraft(page, payload) {
+        if (payload.conflicts.length > 0) {
+            return {
+                attempted: false,
+                saved: false,
+                message: `写入范围无法安全定位：${payload.conflicts.map((item) => item.reason).join('；')}`,
+                evidence: [],
+                pageChanged: false,
+            };
+        }
         const resume = resolvedResume(payload);
         if (resume === undefined) {
             return {

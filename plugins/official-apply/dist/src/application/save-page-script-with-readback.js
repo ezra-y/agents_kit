@@ -9,6 +9,10 @@ import { siteEvidenceDirectory } from "../site-adapters/inventory.js";
 function messageOf(error) {
     return error instanceof Error ? (error.message.split('\n')[0] ?? error.name) : String(error);
 }
+function withoutPrepared(value) {
+    const { prepared: _prepared, ...publicValue } = value;
+    return publicValue;
+}
 async function attachEvidencePath(request, result, reviewData) {
     if (!result.saveDraft.attempted)
         return result;
@@ -83,12 +87,14 @@ export async function savePageScriptWithReadback(request) {
         profileRecordIds: request.profileRecordIds,
         materialRefs: request.materialRefs,
         draftAnswers: request.draftAnswers,
+        writeScope: request.writeScope,
+        prepared: request.prepared,
     });
     if (!saved.saveDraft.attempted) {
-        return saved;
+        return withoutPrepared(saved);
     }
     if (!saved.saveDraft.saved) {
-        return attachEvidencePath(request, saved, reviewData);
+        return attachEvidencePath(request, withoutPrepared(saved), reviewData);
     }
     try {
         const reopened = await openResumePage({
@@ -119,6 +125,8 @@ export async function savePageScriptWithReadback(request) {
             profileRecordIds: request.profileRecordIds,
             materialRefs: request.materialRefs,
             draftAnswers: request.draftAnswers,
+            writeScope: request.writeScope,
+            prepared: saved.prepared,
         });
         const confirmed = readback.validation.valid;
         const result = await attachEvidencePath(request, {

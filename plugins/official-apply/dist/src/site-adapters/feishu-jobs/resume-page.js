@@ -1,5 +1,6 @@
 import { basename } from 'node:path';
 import { fullProjectDescription } from "../../materials/record-description.js";
+import { mergeScopedRecord, isEmptyWriteValue, normaliseWriteScope, redactResumeValue, } from "../write-scope.js";
 const HOST = '*.jobs.feishu.cn';
 const CREATE_PATH = '/api/v1/user/resumes/';
 const READ_PATH = '/api/v1/user/latest/resume';
@@ -678,6 +679,135 @@ function buildPayload(input, current, fields, settings, customValues, forceCreat
         },
     };
 }
+const FEISHU_ROW_IDENTITY = {
+    education_list: 'school',
+    career_list: 'company',
+    internship_list: 'company',
+    project_list: 'name',
+    award_list: 'title',
+    competition_list: 'name',
+    language_skill_list: 'language',
+    works_list: 'link',
+    sns_list: 'link',
+    basic_info_customized_data: 'object_id',
+};
+const FEISHU_ROW_SIGNALS = {
+    education_list: ['start_time', 'end_time', 'degree'],
+    career_list: ['start_time', 'end_time', 'title'],
+    internship_list: ['start_time', 'end_time', 'position'],
+    project_list: ['start_time', 'end_time', 'role'],
+    award_list: ['award_time', 'desc'],
+    competition_list: ['description'],
+    language_skill_list: ['proficiency'],
+    works_list: ['description'],
+    sns_list: ['sns_type'],
+    basic_info_customized_data: [],
+};
+const REQUEST_ONLY_RESUME_KEYS = new Set([
+    'code_type',
+    'formControlChangeFlag',
+    'application_preferred_city_list',
+    'accept_transfer_preferred_city',
+    'di_info_data',
+    'portal_attachment_id',
+]);
+const READBACK_METADATA_KEYS = new Set([
+    'id',
+    'biz_create_time',
+    'biz_modify_time',
+    'create_time',
+    'update_time',
+    'created_at',
+    'updated_at',
+]);
+function emptyArrayOrNullEqual(left, right) {
+    return (Array.isArray(left) && left.length === 0 && right === null) ||
+        (Array.isArray(right) && right.length === 0 && left === null);
+}
+function compareResumeValue(actual, expected) {
+    if (emptyArrayOrNullEqual(actual, expected))
+        return true;
+    if (isEmptyWriteValue(expected))
+        return isEmptyWriteValue(actual);
+    if (Array.isArray(expected)) {
+        if (!Array.isArray(actual) || actual.length !== expected.length)
+            return false;
+        return expected.every((item, index) => compareResumeValue(actual[index], item));
+    }
+    if (expected !== null && typeof expected === 'object') {
+        if (actual === null || typeof actual !== 'object' || Array.isArray(actual))
+            return false;
+        return Object.entries(expected).every(([key, value]) => compareResumeValue(actual[key], value));
+    }
+    return comparable(actual) === comparable(expected);
+}
+function scopedResumeMismatch(actual, expected) {
+    const compareRows = (section, expectedRows) => {
+        const actualRows = asRows(actual[section]);
+        if (expectedRows.length === 0 && (actual[section] === null || actual[section] === undefined))
+            return undefined;
+        if (actualRows.length !== expectedRows.length)
+            return section;
+        const identityKey = FEISHU_ROW_IDENTITY[section];
+        if (identityKey === undefined)
+            return compareResumeValue(actual[section], expectedRows) ? undefined : section;
+        const actualGroups = new Map();
+        const expectedGroups = new Map();
+        for (const row of actualRows) {
+            const key = String(row[identityKey] ?? '');
+            actualGroups.set(key, [...(actualGroups.get(key) ?? []), row]);
+        }
+        for (const row of expectedRows) {
+            const key = String(row[identityKey] ?? '');
+            expectedGroups.set(key, [...(expectedGroups.get(key) ?? []), row]);
+        }
+        if (actualGroups.size !== expectedGroups.size)
+            return `${section}.identity`;
+        for (const [identity, rows] of expectedGroups) {
+            const actualMatch = actualGroups.get(identity);
+            if (actualMatch === undefined || actualMatch.length !== rows.length)
+                return `${section}.identity.${identity}`;
+            const remaining = [...actualMatch];
+            for (const expectedRow of rows) {
+                const candidates = remaining.filter((actualRow) => (FEISHU_ROW_SIGNALS[section] ?? []).every((key) => isEmptyWriteValue(expectedRow[key]) || comparable(actualRow[key]) === comparable(expectedRow[key])));
+                if (candidates.length !== 1)
+                    return `${section}.identity.${identity}`;
+                const actualRow = candidates[0];
+                if (!compareResumeValue(actualRow, expectedRow))
+                    return `${section}[${identity}]`;
+                remaining.splice(remaining.indexOf(actualRow), 1);
+            }
+        }
+        return undefined;
+    };
+    for (const [key, expectedValue] of Object.entries(expected)) {
+        if (REQUEST_ONLY_RESUME_KEYS.has(key) || READBACK_METADATA_KEYS.has(key))
+            continue;
+        if (key === 'resume_attachment') {
+            const expectedId = asRecord(expectedValue)['id'];
+            if (expectedId !== undefined && comparable(asRecord(actual[key])['id']) !== comparable(expectedId))
+                return 'attachment.resume';
+            continue;
+        }
+        if (key === 'portal_attachment_id')
+            continue;
+        if (FEISHU_ROW_IDENTITY[key] !== undefined) {
+            const rowMismatch = compareRows(key, asRows(expectedValue));
+            if (rowMismatch !== undefined)
+                return rowMismatch;
+            continue;
+        }
+        if (!compareResumeValue(actual[key], expectedValue))
+            return key;
+    }
+    const expectedAttachmentId = expected['portal_attachment_id'];
+    if (!isEmptyWriteValue(expectedAttachmentId)) {
+        const actualAttachmentId = asRecord(actual['resume_attachment'])['id'];
+        if (comparable(actualAttachmentId) !== comparable(expectedAttachmentId))
+            return 'attachment.resume';
+    }
+    return undefined;
+}
 function resolvedPayload(payload) {
     const value = payload.resolved['apiPayload'];
     if (value === null || typeof value !== 'object' || Array.isArray(value)) {
@@ -888,6 +1018,11 @@ function records(payload, key) {
         ? value.filter((item) => item !== null && typeof item === 'object' && !Array.isArray(item))
         : [];
 }
+function scopeAllowsField(payload, key) {
+    const scope = payload.writePlan?.scope;
+    return scope === undefined || scope.mode === 'fill_missing' ||
+        scope.fields.some((field) => field === key || field.startsWith(`${key}.`));
+}
 function comparable(value) {
     return value === undefined || value === null ? '' : String(value);
 }
@@ -994,6 +1129,60 @@ function compareRows(actual, expected, spec, issues) {
         }
     }
 }
+function compareAwardRows(actual, expected, issues) {
+    if (actual.length !== expected.length) {
+        issues.push({
+            key: 'awards',
+            code: 'server_readback_count_mismatch',
+            message: `awards 服务器数量为 ${actual.length}，预期 ${expected.length}`,
+            severity: 'error',
+        });
+    }
+    const used = new Set();
+    expected.forEach((expectedRow) => {
+        const name = text(expectedRow, 'name', 'label') ?? '';
+        const expectedTime = awardTimestamp(text(expectedRow, 'date'));
+        const candidates = actual.flatMap((actualRow, index) => !used.has(index) && text(actualRow, 'title', 'name') === name
+            ? [{ actualRow, index }]
+            : []);
+        const datedCandidates = expectedTime === undefined
+            ? candidates
+            : candidates.filter(({ actualRow }) => String(actualRow['award_time'] ?? '') === String(expectedTime));
+        const selected = expectedTime === undefined
+            ? candidates.length === 1 ? candidates[0] : undefined
+            : datedCandidates.length === 1 ? datedCandidates[0] : undefined;
+        const recordRef = (text(expectedRow, 'recordId') ?? name) || 'unknown';
+        if (selected === undefined) {
+            issues.push({
+                key: `awards[${recordRef}]`,
+                code: 'server_readback_missing_record',
+                message: `awards 的“${name}”及年份无法唯一配对，未按数组位置猜测`,
+                severity: 'error',
+            });
+            return;
+        }
+        used.add(selected.index);
+        const actualLevel = text(selected.actualRow, 'desc', 'level');
+        const expectedLevel = text(expectedRow, 'level', 'description');
+        if (expectedLevel !== undefined && actualLevel !== expectedLevel) {
+            issues.push({
+                key: `awards[${recordRef}].level`,
+                code: 'server_readback_mismatch',
+                message: `awards 的“${name}”等级服务器读回不一致`,
+                severity: 'error',
+            });
+        }
+        if (expectedTime !== undefined &&
+            String(selected.actualRow['award_time'] ?? '') !== String(expectedTime)) {
+            issues.push({
+                key: `awards[${recordRef}].date`,
+                code: 'server_readback_mismatch',
+                message: `awards 的“${name}”年份服务器读回不一致`,
+                severity: 'error',
+            });
+        }
+    });
+}
 function fillResult(fields) {
     return {
         attemptedCount: fields.filter((field) => field.outcome !== 'skipped').length,
@@ -1012,6 +1201,7 @@ export const feishuJobsResumePage = {
     customDomainCompatible: true,
     pageKind: 'resume_edit',
     status: 'verified',
+    supportsWriteScope: true,
     lastVerifiedAt: '2026-08-25T20:06:00.000Z',
     async match(page) {
         const url = new URL(page.url());
@@ -1080,8 +1270,9 @@ export const feishuJobsResumePage = {
             },
         };
     },
-    prepare(input, facts) {
+    prepare(input, facts, requestedScope) {
         const current = serverResume(facts.runtimeData);
+        const writeScope = normaliseWriteScope(requestedScope);
         const fields = fieldFacts(facts.runtimeData);
         const settings = settingFacts(facts.runtimeData);
         const requiredCustom = resolveRequiredCustomFields(input, fields);
@@ -1187,6 +1378,30 @@ export const feishuJobsResumePage = {
             missing.push({ key: 'attachment.resume', reason: '飞书招聘缺少附件简历' });
         }
         const materials = Object.fromEntries(Object.entries(input.materials ?? {}).filter(([key]) => key !== 'attachment.resume' || existingAttachmentId === undefined));
+        const candidateApiPayload = buildPayload(input, payloadCurrent, fields, settings, requiredCustom.values, forceCreate, formRenderer);
+        const candidateResume = asRecord(candidateApiPayload.body['resume']);
+        const scopedCurrent = forceCreate
+            ? {}
+            : {
+                ...current,
+                ...(current['portal_attachment_id'] === undefined && attachmentId(current) === undefined
+                    ? {}
+                    : { portal_attachment_id: current['portal_attachment_id'] ?? attachmentId(current) }),
+            };
+        const scoped = requestedScope === undefined
+            ? { resume: candidateResume, targetPaths: [], conflicts: [], availableFields: [] }
+            : mergeScopedRecord(scopedCurrent, candidateResume, writeScope, {
+                identityKey: section => FEISHU_ROW_IDENTITY[section],
+                signalKeys: section => FEISHU_ROW_SIGNALS[section] ?? [],
+                mergeRowObjects: false,
+            });
+        const apiPayload = {
+            requestPath: candidateApiPayload.requestPath,
+            body: {
+                ...candidateApiPayload.body,
+                resume: scoped.resume,
+            },
+        };
         return {
             resolved: {
                 basic: input.basic,
@@ -1206,10 +1421,11 @@ export const feishuJobsResumePage = {
                     : {
                         requiredCustomPhoto: requiredCustom.photoField,
                     }),
-                apiPayload: buildPayload(input, payloadCurrent, fields, settings, requiredCustom.values, forceCreate, formRenderer),
+                apiPayload: apiPayload,
+                candidateApiPayload: candidateApiPayload,
             },
-            missing,
-            conflicts: [],
+            missing: requestedScope !== undefined && writeScope.mode === 'repair' ? [] : missing,
+            conflicts: scoped.conflicts,
             skipped: [
                 ...(input.languages !== undefined && input.languages.length > 0 && !hasVisibleField(fields, 'language_list')
                     ? [{ key: 'languages', reason: '官网当前未提供可编辑语言栏目，保留服务器已有语言数据' }]
@@ -1218,6 +1434,16 @@ export const feishuJobsResumePage = {
                     ? []
                     : [{ key: 'skills', reason: '官网没有独立技能栏目，保留在附件简历' }]),
             ],
+            ...(requestedScope === undefined
+                ? {}
+                : {
+                    writePlan: {
+                        scope: writeScope,
+                        baseline: redactResumeValue(forceCreate ? {} : current) ?? {},
+                        targetPaths: scoped.targetPaths,
+                        availableFields: scoped.availableFields,
+                    },
+                }),
         };
     },
     async fill(page, payload) {
@@ -1245,7 +1471,8 @@ export const feishuJobsResumePage = {
         const photoParentId = photoField['parentId'];
         const photoChildId = photoField['childId'];
         let stagedPhoto;
-        if (typeof photoParentId === 'string' &&
+        if (scopeAllowsField(payload, 'attachment.photo') &&
+            typeof photoParentId === 'string' &&
             typeof photoChildId === 'string') {
             const materials = asRecord(payload.resolved['materials']);
             const photoMaterial = asRecord(materials['attachment.photo']);
@@ -1280,8 +1507,9 @@ export const feishuJobsResumePage = {
                 }
             }
         }
-        if (typeof resume['portal_attachment_id'] !== 'string' ||
-            resume['portal_attachment_id'] === '') {
+        if (scopeAllowsField(payload, 'attachment.resume') &&
+            (typeof resume['portal_attachment_id'] !== 'string' ||
+                resume['portal_attachment_id'] === '')) {
             const materials = asRecord(payload.resolved['materials']);
             const material = asRecord(materials['attachment.resume']);
             const localPath = typeof material['localPath'] === 'string' ? material['localPath'] : undefined;
@@ -1308,7 +1536,7 @@ export const feishuJobsResumePage = {
                 }
             }
         }
-        else {
+        else if (typeof resume['portal_attachment_id'] === 'string' && resume['portal_attachment_id'] !== '') {
             fields.push({ key: 'attachment.resume', outcome: 'unchanged' });
         }
         const stagedAttachmentId = typeof resume['portal_attachment_id'] === 'string'
@@ -1338,6 +1566,42 @@ export const feishuJobsResumePage = {
                     message: '服务器没有返回站内简历',
                     severity: 'error',
                 });
+            }
+            else if (payload.writePlan !== undefined) {
+                const expectedPayload = resolvedPayload(payload);
+                const expectedResume = asRecord(expectedPayload?.body['resume']);
+                if (expectedPayload === undefined || Object.keys(expectedResume).length === 0) {
+                    issues.push({
+                        key: 'apiPayload',
+                        code: 'feishu_jobs_payload_missing',
+                        message: '没有生成飞书招聘局部保存数据',
+                        severity: 'blocking',
+                    });
+                }
+                else {
+                    const photoField = asRecord(payload.resolved['requiredCustomPhoto']);
+                    const comparisonExpected = typeof photoField['parentId'] === 'string'
+                        ? { ...expectedResume, basic_info_customized_data: current['basic_info_customized_data'] }
+                        : expectedResume;
+                    const scopeMismatch = scopedResumeMismatch(current, comparisonExpected);
+                    if (scopeMismatch !== undefined) {
+                        issues.push({
+                            key: scopeMismatch,
+                            code: 'server_readback_scope_mismatch',
+                            message: '飞书招聘保存后服务器简历与本轮写入计划不一致，包含目标外字段变化或未知字段丢失',
+                            severity: 'error',
+                        });
+                    }
+                    if (typeof photoField['parentId'] === 'string') {
+                        const customized = asRecord(current['customized_data']);
+                        const parent = asRows(customized[photoField['parentId']])[0];
+                        const child = asRows(parent?.['children'])
+                            .find(item => item['object_id'] === photoField['childId']);
+                        if (asRows(child?.['value']).length === 0) {
+                            issues.push({ key: 'attachment.photo', code: 'server_readback_mismatch', message: '个人照片未保存到服务器', severity: 'error' });
+                        }
+                    }
+                }
             }
             else {
                 const basic = asRecord(payload.resolved['basic']);
@@ -1455,23 +1719,7 @@ export const feishuJobsResumePage = {
                         },
                     ],
                 }, issues);
-                compareRows(asRows(current['award_list']), records(payload, 'awards'), {
-                    key: 'awards',
-                    actualName: 'title',
-                    expectedName: 'name',
-                    extras: [{ actual: 'desc', expected: 'level' }],
-                }, issues);
-                records(payload, 'awards').forEach((award, index) => {
-                    const expectedTime = awardTimestamp(text(award, 'date'));
-                    if (expectedTime !== undefined && asRows(current['award_list'])[index]?.['award_time'] !== expectedTime) {
-                        issues.push({
-                            key: `awards[${index}].award_time`,
-                            code: 'server_readback_mismatch',
-                            message: `awards[${index}] 的获奖年份服务器读回不一致`,
-                            severity: 'error',
-                        });
-                    }
-                });
+                compareAwardRows(asRows(current['award_list']), records(payload, 'awards'), issues);
                 compareRows(asRows(current['competition_list']), records(payload, 'competitions'), {
                     key: 'competitions',
                     actualName: 'name',
@@ -1524,6 +1772,15 @@ export const feishuJobsResumePage = {
         };
     },
     async saveDraft(page, payload) {
+        if (payload.conflicts.length > 0) {
+            return {
+                attempted: false,
+                saved: false,
+                message: `写入范围无法安全定位：${payload.conflicts.map((item) => item.reason).join('；')}`,
+                evidence: [],
+                pageChanged: false,
+            };
+        }
         if (payload.missing.length > 0) {
             return {
                 attempted: false,
@@ -1550,7 +1807,7 @@ export const feishuJobsResumePage = {
         if (typeof stagedPhoto['object_id'] === 'string') {
             setCustomPhoto(resume, stagedPhoto);
         }
-        else if (payload.resolved['requiredCustomPhoto'] !== undefined) {
+        else if (scopeAllowsField(payload, 'attachment.photo') && payload.resolved['requiredCustomPhoto'] !== undefined) {
             return { attempted: false, saved: false, message: '个人照片尚未上传，请先完成照片填写', evidence: [], pageChanged: false };
         }
         if ((typeof resume['portal_attachment_id'] !== 'string' ||
@@ -1560,7 +1817,8 @@ export const feishuJobsResumePage = {
         }
         const materials = asRecord(payload.resolved['materials']);
         const expectedResume = asRecord(materials['attachment.resume']);
-        if (typeof expectedResume['localPath'] === 'string' &&
+        if (scopeAllowsField(payload, 'attachment.resume') &&
+            typeof expectedResume['localPath'] === 'string' &&
             (typeof resume['portal_attachment_id'] !== 'string' ||
                 resume['portal_attachment_id'] === '')) {
             return {

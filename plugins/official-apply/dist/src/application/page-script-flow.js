@@ -2,6 +2,7 @@ import { buildCanonicalApplicationPayload } from "./build-canonical-application-
 import { loadPageScriptCandidates } from "../site-adapters/discovery/save-page-script-candidate.js";
 import { PageScriptRegistry, pageScriptRegistry } from "../site-adapters/registry.js";
 import { runPageScript } from "../site-adapters/runner.js";
+import { normaliseWriteScope } from "../site-adapters/write-scope.js";
 function applyDraftAnswers(payload, draftAnswers) {
     if (draftAnswers === undefined || Object.keys(draftAnswers).length === 0) {
         return payload;
@@ -26,8 +27,11 @@ async function prepareContext(context) {
         materialIds: context.materialRefs,
         taskId: context.taskId,
     });
+    if (context.prepared !== undefined) {
+        return { built, facts: undefined, prepared: context.prepared };
+    }
     const facts = await context.script.inspect(context.page);
-    const prepared = context.script.prepare(applyDraftAnswers(built.payload, context.draftAnswers), facts);
+    const prepared = context.script.prepare(applyDraftAnswers(built.payload, context.draftAnswers), facts, normaliseWriteScope(context.writeScope));
     return { built, facts, prepared };
 }
 export function asPageScript(value) {
@@ -100,7 +104,7 @@ export async function inspectWithPageScript(context) {
 }
 export async function resolveWithPageScript(context) {
     const { built, prepared } = await prepareContext(context);
-    return {
+    const result = {
         adapter: {
             id: context.script.id,
             version: context.script.version,
@@ -109,9 +113,17 @@ export async function resolveWithPageScript(context) {
         source: built,
         draftAnswers: context.draftAnswers ?? {},
         preparation: preparationSummary(prepared),
+        writeScope: prepared.writePlan === undefined
+            ? null
+            : {
+                mode: prepared.writePlan.scope.mode,
+                fields: prepared.writePlan.availableFields,
+                targetPaths: prepared.writePlan.targetPaths,
+            },
         missingProfileRecordIds: built.missingProfileRecordIds,
         missingMaterialIds: built.missingMaterialIds,
     };
+    return { ...result, prepared };
 }
 export async function fillWithPageScript(context) {
     const built = buildCanonicalApplicationPayload({
@@ -120,24 +132,40 @@ export async function fillWithPageScript(context) {
         materialIds: context.materialRefs,
         taskId: context.taskId,
     });
-    return runPageScript({
+    const writeScope = normaliseWriteScope(context.writeScope);
+    if (context.script.supportsWriteScope !== true) {
+        return runPageScript({
+            page: context.page,
+            script: context.script,
+            input: applyDraftAnswers(built.payload, context.draftAnswers),
+            saveDraft: false,
+            writeScope,
+        });
+    }
+    const facts = await context.script.inspect(context.page);
+    const prepared = context.prepared ?? context.script.prepare(applyDraftAnswers(built.payload, context.draftAnswers), facts, writeScope);
+    const result = await runPageScript({
         page: context.page,
         script: context.script,
         input: applyDraftAnswers(built.payload, context.draftAnswers),
         saveDraft: false,
+        writeScope,
+        prepared,
     });
+    return { ...result, prepared };
 }
 export async function validateWithPageScript(context) {
     const { prepared } = await prepareContext(context);
-    return {
+    const result = {
         preparation: preparationSummary(prepared),
         validation: await context.script.validate(context.page, prepared),
     };
+    return { ...result, prepared };
 }
 export async function saveWithPageScript(context) {
     const { prepared } = await prepareContext(context);
     if (context.script.saveDraft === undefined) {
-        return {
+        const result = {
             preparation: preparationSummary(prepared),
             saveDraft: {
                 attempted: false,
@@ -147,15 +175,17 @@ export async function saveWithPageScript(context) {
                 pageChanged: false,
             },
         };
+        return { ...result, prepared };
     }
     const saveDraft = await context.script.saveDraft(context.page, prepared);
     const validation = saveDraft.saved
         ? await context.script.validate(context.page, prepared)
         : undefined;
-    return {
+    const result = {
         preparation: preparationSummary(prepared),
         saveDraft,
         ...(validation === undefined ? {} : { validation }),
     };
+    return { ...result, prepared };
 }
 //# sourceMappingURL=page-script-flow.js.map

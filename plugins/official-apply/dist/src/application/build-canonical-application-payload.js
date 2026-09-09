@@ -5,6 +5,39 @@ import { openPrivateDatabase } from "../storage/open-private-database.js";
 function applicationRecord(id, values) {
     return { recordId: id, values };
 }
+function explicitAwardYears(record) {
+    const years = record.values['years'];
+    if (!Array.isArray(years))
+        return [];
+    const normalized = years.flatMap((year) => {
+        if (typeof year === 'number' && Number.isInteger(year))
+            return [String(year)];
+        if (typeof year === 'string' && /^\d{4}$/.test(year.trim()))
+            return [year.trim()];
+        return [];
+    });
+    return [...new Set(normalized)];
+}
+function removeMatchingAwardCount(value, count) {
+    if (typeof value !== 'string')
+        return value;
+    const suffix = new RegExp(`(?:\\s*[×xX*]\\s*${count}|\\s*${count}\\s*次)\\s*$`);
+    return suffix.test(value) ? value.replace(suffix, '').trimEnd() : value;
+}
+function expandAwardYears(record) {
+    const years = explicitAwardYears(record);
+    if (years.length < 2)
+        return [record];
+    return years.map((year) => {
+        const values = { ...record.values, date: year };
+        for (const key of ['label', 'name', 'level']) {
+            const value = values[key];
+            if (value !== undefined)
+                values[key] = removeMatchingAwardCount(value, years.length);
+        }
+        return { recordId: `${record.recordId}#year-${year}`, values };
+    });
+}
 function readMaterials(paths, materialIds) {
     if (materialIds.length === 0) {
         return { materials: [], missingIds: [] };
@@ -162,7 +195,7 @@ export function buildCanonicalApplicationPayload(request) {
                 payload.projects.push(converted);
                 break;
             case 'award':
-                payload.awards.push(converted);
+                payload.awards.push(...expandAwardYears(converted));
                 break;
             case 'other':
                 Object.assign(payload.basic, record.values);

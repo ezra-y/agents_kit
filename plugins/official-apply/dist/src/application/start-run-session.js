@@ -73,6 +73,7 @@ export async function startRunSession(request) {
         paths: request.paths,
         taskId: request.taskId,
         browserMode,
+        ...(request.forceNewRun === true ? { forceNewRun: true } : {}),
         ...(request.now === undefined ? {} : { now: request.now }),
     });
     invalidatePendingSubmissionApprovals({ paths: request.paths, runId: opened.runId });

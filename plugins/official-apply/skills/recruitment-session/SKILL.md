@@ -13,9 +13,9 @@ description: 为企业招聘官网准备登录状态并找到站内简历入口�
 
 已有 runId 先调用 `apply.get_status { runId }`，用 `apply.list_open_runs {}` 确认仍有活跃会话。
 新建浏览器默认 headless:true，可正常读取字段、填写、保存和截图；headless:false 的可见窗口也允许，按实际操作需要选择。接管用户已有窗口不改变其显示状态。
-没有活跃会话则调用 `apply.open_task { taskId, browserMode: "persistent", headless: true }`，保存返回的 runId。
-需要复用用户 Chrome/Edge 登录态时，在 open_task 中提供已确认的 `channel`、`loginStateSource`、`loginStateSourceProfile` 和目标 `loginStateDomains`。Edge 对应 msedge；不要假定所有用户都用 Edge、默认浏览器档案或 163 邮箱。
-`attach_existing` 仅在已有有效动态 `cdpEndpoint` 时使用；不编造地址，不关闭用户原来的浏览器窗口。
+没有活跃会话时，先按 [登录态清单与复用](references/login-verification.md#登录态清单与复用) 选择已有配置，必要时用已连接的浏览器来源导入并验证。随后调用 `apply.open_task { taskId, browserMode: "persistent", profileName: "选定配置", channel: "对应浏览器", headless: true }`，保存返回的 runId。
+优先使用已连接的 OpenCLI Browser Bridge（浏览器连接扩展）；动态 CDP 连接可用时也可直接复用，具体命令见参考文档。来源浏览器和配置以实际清单为准。
+源页面已登录、目标复用失败时，交能力演进查复用失败，保留源会话。`loginStateSource` 旧入口只复制 Cookie，不代表已完成登录验证。
 
 ### 1.2 检查真实登录结果
 
@@ -63,3 +63,35 @@ open_task 未成功打开页面、跳转异常或页面与工具读数矛盾时�
 
 Playwright 负责结构化页面和状态读回；Computer Use（电脑操作）负责当前宿主支持的视觉验证码或桌面短信界面。工具是否可用以实际环境为准。
 Moka 跨企业会话迁移按登录参考文档中的 `scripts/migrate-moka-session.mjs` 执行，迁移后再次 inspect；其他网站不套用 Moka 的 Cookie 规则。
+
+## 4. 统一登录态清单与活会话复用
+
+先用只读清单查看系统浏览器配置和项目隔离档案：
+
+```bash
+node bin/applyctl.js browser login-inventory --json
+```
+
+Cookie、Storage、IndexedDB 或 profile 文件存在，只能记为未验证状态。每次采用前仍须在
+目标招聘页调用 `apply.login inspect`。
+
+用户已有活 browser 登录态时，优先用动态 CDP 端点复用活 context：
+
+```bash
+node bin/applyctl.js browser login-reuse \
+  --cdp-endpoint <动态CDP地址> --from msedge --to <项目profile> \
+  --url <目标招聘页> --login-marker "个人中心" \
+  --domains <招聘域名[,登录域名]> --json
+```
+
+已有 Browser Bridge 连接时改用 `--bridge-session`、`--bridge-context`，目标浏览器默认为 Edge：
+
+```bash
+node bin/applyctl.js browser login-reuse --from bridge --bridge-session <session> --bridge-context <context> \
+  --to <项目profile> --channel msedge --url <目标招聘页> --login-marker "个人中心" \
+  --domains <招聘域名[,登录域名]> --json
+```
+
+命令只导出用户指定域名的 Cookie、localStorage、sessionStorage 和 Playwright 支持的
+IndexedDB，恢复到新的项目 profile 后重新检查登录标记。源浏览器不重启、不关闭，失败时
+保留源状态并报告原因。Firefox/Safari 当前只进清单，不把整档数据库复制器伪装成可用复用。

@@ -3,6 +3,53 @@
 登录全程复用 `apply.open_task` 返回的同一个 `runId` 和当前页面。登录成功以目标网址和
 登录后页面标志为准。
 
+## 登录态清单与复用
+
+批量任务由主控扫描一次，按本批目标域名选择来源和目标配置后交给执行者；已有明确来源时直接复用并验证，无需逐家重扫全部浏览器。
+
+先查看本机浏览器和项目配置的非敏感元数据：
+
+```bash
+node bin/applyctl.js browser login-inventory --json
+```
+
+清单会列出实际发现的 Chrome/Edge/Chromium 类配置、Ego、Codex browser、Firefox 档案、
+Safari 默认档案及容器 profile，以及已连接 OpenCLI Browser Bridge 的 context。`domainEnumeration` 为 `complete` 才表示 Cookie 域名已读到，
+`failed` 表示文件存在但当前只读查询失败，`unsupported` 表示文件已登记但没有可用域名枚举；
+Safari 的 `Cookies.binarycookies` 会被登记为状态文件，当前仍不能作为可复用登录态。
+
+文件存在只代表未验证。工具在本机传递登录数据；Agent 读取清单和验证结果，不把 Cookie、浏览器存储或认证凭据的具体值打印到报告。
+
+用户已经登录目标招聘站时，用明确提供的动态 CDP 端点和登录后页面标记：
+
+```bash
+node bin/applyctl.js browser login-reuse \
+  --cdp-endpoint <动态CDP地址> --from msedge --to <项目profile> \
+  --url <目标招聘页> --login-marker "个人中心" \
+  --domains <招聘域名[,登录域名]> --json
+```
+
+已有 OpenCLI Browser Bridge 连接时，使用连接名和 profile/context ID：
+
+```bash
+node bin/applyctl.js browser login-reuse --from bridge \
+  --bridge-session <session> --bridge-context <context-id> \
+  --to <项目profile> --channel msedge \
+  --url <目标招聘页> --login-marker "个人中心" \
+  --domains <招聘域名[,登录域名]> --json
+```
+
+流程先检查源页面，再导出指定域名的 Cookie 和当前页的 localStorage、sessionStorage；CDP 路径还通过 Playwright 原生接口导出 IndexedDB，Bridge 当前不导出 IndexedDB。
+恢复目标 profile 后重新打开页面检查同一标记。CDP 不存在、标签页无法唯一匹配或源页面未
+显示登录标记时暂停，不复制整份浏览器 profile；源浏览器不关闭。Firefox/Safari 当前只有
+元数据清单，没有受支持的活 context 导出路径。
+
+成功输出必须同时包含 `sourceLoginVerified: true` 和 `targetLoginVerified: true`，并有
+`sourceBackend`、`targetProfileDir`、`verifiedAt`。只有 Cookie 或状态文件存在时不能算成功。
+典型结果会是 `{"sourceBackend":"opencli_browser_bridge","sourceLoginVerified":true,"targetLoginVerified":true,"targetChannel":"msedge"}`；
+若任一标记为 `false`，命令失败且不能把 profile 当成已登录。
+登录标志应选已确认仅在登录后出现的内容，并结合目标私有页面核对；公共导航标题不能单独证明登录。已验证的目标配置由后续 `open_task` 通过 `profileName` 和 `channel` 复用。
+
 ## 验证码脚本的启动配置
 
 验证码会话脚本和 Moka 登录态迁移脚本共用主程序启动器，读取同一份 dataRoot 与 browserChannel 配置；Edge 的 channel 是 msedge，无须额外安装 Chrome。显式 --channel 优先于环境变量和配置。

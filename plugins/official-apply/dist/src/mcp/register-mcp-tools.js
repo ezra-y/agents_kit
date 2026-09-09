@@ -17,6 +17,7 @@ import { startRunSession } from "../application/start-run-session.js";
 import { openResumePage } from "../application/open-resume-page.js";
 import { rememberMokaLogin, reuseMokaLogin } from "../application/reuse-moka-login.js";
 import { savePageScriptWithReadback } from "../application/save-page-script-with-readback.js";
+import { loadPageScriptWritePlan, persistPageScriptWritePlan, } from "../application/page-script-write-plan.js";
 import { captureResumeReviewEvidence } from "../application/capture-resume-review-evidence.js";
 import { resolveCurrentPage } from "../application/resolve-current-page.js";
 import { resolvePageWithRecipe } from "../application/resolve-page-with-recipe.js";
@@ -107,6 +108,43 @@ function readDraftAnswers(args) {
     }
     return { provided: true, value };
 }
+function readWriteScope(args) {
+    const raw = args['writeScope'];
+    if (raw === undefined)
+        return { value: { mode: 'fill_missing' } };
+    if (raw === null || typeof raw !== 'object' || Array.isArray(raw)) {
+        return { error: 'writeScope 必须是 { mode, fields? } 对象。' };
+    }
+    const value = raw;
+    const mode = value['mode'];
+    if (mode === 'fill_missing')
+        return { value: { mode: 'fill_missing' } };
+    if (mode !== 'repair')
+        return { error: 'writeScope.mode 必须是 fill_missing 或 repair。' };
+    const fields = value['fields'];
+    if (!Array.isArray(fields) || fields.length === 0 || !fields.every((item) => typeof item === 'string' && item !== '')) {
+        return { error: 'repair 必须提供非空 fields 字段路径数组。' };
+    }
+    const stringFields = fields.filter((item) => typeof item === 'string');
+    return { value: { mode: 'repair', fields: [...new Set(stringFields)] } };
+}
+function withoutPrepared(value) {
+    const { prepared: _prepared, ...publicValue } = value;
+    return publicValue;
+}
+async function validatePageScriptPlanContext(input) {
+    const expected = input.prepared.writePlan?.siteContext;
+    if (expected === undefined)
+        return undefined;
+    const facts = await input.script.inspect(input.page);
+    const actual = facts.runtimeData ?? {};
+    for (const [key, value] of Object.entries(expected)) {
+        if (String(actual[key] ?? '') !== String(value)) {
+            return `page_script_write_plan_site_mismatch: ${key} 与当前页面不一致`;
+        }
+    }
+    return undefined;
+}
 /** 拿到这次运行的活会话。拿不到就明说，不偷偷再开一个。 */
 function requireSession(input) {
     const runId = readString(input.args, 'runId');
@@ -146,6 +184,9 @@ function runSummaryFacts(run) {
         ...(run.fillDurationMs === undefined ? {} : { fillDurationMs: run.fillDurationMs }),
         ...(run.saveStatus === undefined ? {} : { saveStatus: run.saveStatus }),
         ...(run.evidencePath === undefined ? {} : { evidencePath: run.evidencePath }),
+        ...(run.pageScriptWritePlanRef === undefined
+            ? {}
+            : { pageScriptWritePlanRef: run.pageScriptWritePlanRef }),
         ...(run.pageScriptCandidate === undefined
             ? {}
             : {
@@ -312,6 +353,10 @@ export function registerMcpTools() {
                 properties: {
                     taskId: { type: 'string', description: '任务 id' },
                     browserMode: { type: 'string', enum: ['persistent', 'attach_existing'] },
+                    forceNewRun: {
+                        type: 'boolean',
+                        description: '恢复旧 writePlanPath 时显式创建新的 runId；默认复用可继续的旧 run。',
+                    },
                     channel: { type: 'string', enum: ['chromium', 'chrome', 'msedge'] },
                     profileName: { type: 'string', description: 'persistent 模式使用的项目 profile 名。' },
                     headless: { type: 'boolean', description: '是否无头运行。真实测试可设为 true。' },
@@ -357,6 +402,7 @@ export function registerMcpTools() {
                     ...(typeof input.args['headless'] === 'boolean'
                         ? { headless: input.args['headless'] }
                         : {}),
+                    ...(input.args['forceNewRun'] === true ? { forceNewRun: true } : {}),
                     ...(typeof input.args['loginStateSource'] === 'string'
                         ? { loginStateSource: input.args['loginStateSource'] }
                         : {}),
@@ -549,6 +595,7 @@ export function registerMcpTools() {
                     found.run.pageScript = pageScript.script;
                     found.run.pageScriptMatch =
                         pageScript.match === undefined ? undefined : toJson(pageScript.match);
+                    found.run.pageScriptWritePlan = undefined;
                     rememberPageScriptRoute(found.run, pageScript.script, pageScript.source);
                     return ok({
                         ...login,
@@ -616,6 +663,7 @@ export function registerMcpTools() {
                 found.run.pageScript = pageScript.script;
                 found.run.pageScriptMatch =
                     pageScript.match === undefined ? undefined : toJson(pageScript.match);
+                found.run.pageScriptWritePlan = undefined;
                 rememberPageScriptRoute(found.run, pageScript.script, pageScript.source);
                 if (pageScript.script === undefined) {
                     const login = await manageLogin({
@@ -743,8 +791,35 @@ export function registerMcpTools() {
                         materialRefs: found.run.materialRefs,
                         draftAnswers: found.run.draftAnswers,
                     });
-                    found.run.lastPageScriptResult = toJson(result);
-                    return ok(result, result.preparation.missing.length > 0
+                    let planRef;
+                    if (result.prepared.writePlan !== undefined) {
+                        try {
+                            planRef = persistPageScriptWritePlan({
+                                paths: input.paths,
+                                runId: found.run.runId,
+                                taskId: found.run.taskId,
+                                siteHost: found.run.siteHost,
+                                pageScriptId: pageScript.id,
+                                prepared: result.prepared,
+                                now: input.now,
+                            });
+                        }
+                        catch (error) {
+                            return fail('mcp_write_plan_persist_failed', error instanceof Error ? error.message : String(error));
+                        }
+                    }
+                    found.run.pageScriptWritePlan = result.prepared;
+                    found.run.pageScriptWritePlanRef = planRef;
+                    const publicResult = withoutPrepared({
+                        ...result,
+                        writeScope: result.writeScope === null
+                            ? null
+                            : planRef === undefined
+                                ? result.writeScope
+                                : { ...result.writeScope, planRef },
+                    });
+                    found.run.lastPageScriptResult = toJson(publicResult);
+                    return ok(publicResult, publicResult.preparation.missing.length > 0
                         ? `已按 ${pageScript.id} 准备数据，还有 ${result.preparation.missing.length} 个缺失项。`
                         : `已按 ${pageScript.id} 准备数据，可以调用 apply.fill_page。`);
                 }
@@ -909,7 +984,17 @@ export function registerMcpTools() {
             mutating: true,
             inputSchema: {
                 type: 'object',
-                properties: { runId: { type: 'string' } },
+                properties: {
+                    runId: { type: 'string' },
+                    writeScope: {
+                        type: 'object',
+                        description: '默认 fill_missing；局部返修传 { mode: "repair", fields: [resolve_page 返回的字段路径] }。',
+                        properties: {
+                            mode: { type: 'string', enum: ['fill_missing', 'repair'] },
+                            fields: { type: 'array', items: { type: 'string' } },
+                        },
+                    },
+                },
                 required: ['runId'],
             },
             async handler(input) {
@@ -920,6 +1005,14 @@ export function registerMcpTools() {
                 const fillStartedAt = Date.now();
                 const pageScript = asPageScript(found.run.pageScript);
                 if (pageScript !== undefined) {
+                    const parsedScope = readWriteScope(input.args);
+                    if (parsedScope.error !== undefined || parsedScope.value === undefined) {
+                        return fail('mcp_invalid_argument', parsedScope.error ?? 'writeScope 参数无效。');
+                    }
+                    const prepared = found.run.pageScriptWritePlan;
+                    const writeScope = input.args['writeScope'] === undefined
+                        ? prepared?.writePlan?.scope ?? parsedScope.value
+                        : parsedScope.value;
                     const result = await fillWithPageScript({
                         paths: input.paths,
                         page: found.page,
@@ -928,21 +1021,49 @@ export function registerMcpTools() {
                         profileRecordIds: found.run.profileRecordIds,
                         materialRefs: found.run.materialRefs,
                         draftAnswers: found.run.draftAnswers,
+                        writeScope,
+                        ...(input.args['writeScope'] === undefined && prepared !== undefined
+                            ? { prepared }
+                            : {}),
                     });
+                    const nextPrepared = result.prepared;
+                    if (nextPrepared !== undefined) {
+                        found.run.pageScriptWritePlan = nextPrepared;
+                        if (nextPrepared.writePlan !== undefined) {
+                            try {
+                                found.run.pageScriptWritePlanRef = persistPageScriptWritePlan({
+                                    paths: input.paths,
+                                    runId: found.run.runId,
+                                    taskId: found.run.taskId,
+                                    siteHost: found.run.siteHost,
+                                    pageScriptId: pageScript.id,
+                                    prepared: nextPrepared,
+                                    now: input.now,
+                                });
+                            }
+                            catch (error) {
+                                return fail('mcp_write_plan_persist_failed', error instanceof Error ? error.message : String(error));
+                            }
+                        }
+                    }
+                    const publicResult = withoutPrepared(result);
                     markPageMutated(found.run, 'page_script_fill', input.now);
-                    found.run.lastPageScriptResult = toJson(result);
+                    found.run.lastPageScriptResult = toJson(publicResult);
                     found.run.fillDurationMs =
                         (found.run.fillDurationMs ?? 0) + Math.max(result.durationMs, Date.now() - fillStartedAt);
-                    return (result.fill?.failed.length ?? 0) > 0 || result.failure !== undefined
-                        ? fail('mcp_tool_failed', `${pageScript.id} 有 ${result.fill?.failed.length ?? 0} 个字段失败。`, result)
-                        : ok(result, result.fill?.fields.some((field) => field.outcome === 'prepared')
-                            ? (result.preparation?.missing.length ?? 0) > 0 ||
-                                (result.preparation?.conflicts.length ?? 0) > 0
+                    return (publicResult.fill?.failed.length ?? 0) > 0 || publicResult.failure !== undefined
+                        ? fail('mcp_tool_failed', `${pageScript.id} 有 ${result.fill?.failed.length ?? 0} 个字段失败。`, publicResult)
+                        : ok(publicResult, publicResult.fill?.fields.some((field) => field.outcome === 'prepared')
+                            ? (publicResult.preparation?.missing.length ?? 0) > 0 ||
+                                (publicResult.preparation?.conflicts.length ?? 0) > 0
                                 ? `${pageScript.id} 已准备待保存，缺失项保持空白。`
                                 : `${pageScript.id} 已准备待保存，尚未写入服务器。`
-                            : result.outcome === 'partial'
+                            : publicResult.outcome === 'partial'
                                 ? `${pageScript.id} 已填写确定字段，缺失项保持空白。`
                                 : `${pageScript.id} 填写和页面校验通过。`);
+                }
+                if (pageScript === undefined) {
+                    return fail('mcp_write_scope_unsupported', '当前页面没有支持写入范围的 PageScript；为避免整页覆盖，未执行通用填写。');
                 }
                 if (found.run.draftAnswers !== undefined) {
                     return fail('mcp_draft_answers_unsupported', '当前页面没有 PageScript，不能继续使用本次运行的临时答案。');
@@ -1168,7 +1289,13 @@ export function registerMcpTools() {
             mutating: false,
             inputSchema: {
                 type: 'object',
-                properties: { runId: { type: 'string' } },
+                properties: {
+                    runId: { type: 'string' },
+                    writePlanPath: {
+                        type: 'string',
+                        description: '新进程读回旧写入计划时传 resolve_page 返回的 writeScope.planRef。',
+                    },
+                },
                 required: ['runId'],
             },
             async handler(input) {
@@ -1178,6 +1305,28 @@ export function registerMcpTools() {
                 }
                 const pageScript = asPageScript(found.run.pageScript);
                 if (pageScript !== undefined) {
+                    const planReference = readString(input.args, 'writePlanPath');
+                    if (planReference !== undefined) {
+                        try {
+                            found.run.pageScriptWritePlan = loadPageScriptWritePlan({
+                                paths: input.paths,
+                                reference: planReference,
+                                taskId: found.run.taskId,
+                                siteHost: found.run.siteHost,
+                                pageScriptId: pageScript.id,
+                            });
+                            found.run.pageScriptWritePlanRef = planReference;
+                        }
+                        catch (error) {
+                            return fail('mcp_write_plan_load_failed', error instanceof Error ? error.message : String(error));
+                        }
+                    }
+                    const prepared = found.run.pageScriptWritePlan;
+                    if (prepared !== undefined) {
+                        const contextError = await validatePageScriptPlanContext({ page: found.page, script: pageScript, prepared });
+                        if (contextError !== undefined)
+                            return fail('mcp_write_plan_context_mismatch', contextError);
+                    }
                     const result = await validateWithPageScript({
                         paths: input.paths,
                         page: found.page,
@@ -1186,15 +1335,18 @@ export function registerMcpTools() {
                         profileRecordIds: found.run.profileRecordIds,
                         materialRefs: found.run.materialRefs,
                         draftAnswers: found.run.draftAnswers,
+                        ...(prepared === undefined ? {} : { prepared }),
                     });
-                    found.run.lastPageScriptResult = toJson(result);
-                    return ok(result, result.validation.valid
-                        ? result.validation.source === 'prepared'
+                    found.run.pageScriptWritePlan = result.prepared;
+                    const publicResult = withoutPrepared(result);
+                    found.run.lastPageScriptResult = toJson(publicResult);
+                    return ok(publicResult, publicResult.validation.valid
+                        ? publicResult.validation.source === 'prepared'
                             ? `${pageScript.id} 准备数据检查通过，尚未读回服务器。`
                             : `${pageScript.id} 服务器读回校验通过。`
-                        : result.validation.source === 'prepared'
-                            ? `${pageScript.id} 准备数据有 ${result.validation.issues.length} 个问题。`
-                            : `${pageScript.id} 有 ${result.validation.issues.length} 个服务器读回问题。`);
+                        : publicResult.validation.source === 'prepared'
+                            ? `${pageScript.id} 准备数据有 ${publicResult.validation.issues.length} 个问题。`
+                            : `${pageScript.id} 有 ${publicResult.validation.issues.length} 个服务器读回问题。`);
                 }
                 if (found.run.draftAnswers !== undefined) {
                     return fail('mcp_draft_answers_unsupported', '当前页面没有 PageScript，不能继续使用本次运行的临时答案。');
@@ -1315,6 +1467,10 @@ export function registerMcpTools() {
                         type: 'string',
                         enum: ['start_application', 'next', 'previous', 'save', 'review'],
                     },
+                    writePlanPath: {
+                        type: 'string',
+                        description: '新进程保存/读回旧写入计划时传 resolve_page 返回的 writeScope.planRef。',
+                    },
                 },
                 required: ['runId'],
             },
@@ -1326,6 +1482,57 @@ export function registerMcpTools() {
                 const pageScript = asPageScript(found.run.pageScript);
                 const requestedAction = readString(input.args, 'actionKind');
                 if (pageScript !== undefined && (requestedAction === undefined || requestedAction === 'save')) {
+                    if (pageScript.supportsWriteScope !== true) {
+                        return fail('mcp_write_scope_unsupported', `${pageScript.id} 不支持写入范围，已拒绝整页保存。`);
+                    }
+                    const planReference = readString(input.args, 'writePlanPath');
+                    if (planReference !== undefined) {
+                        try {
+                            found.run.pageScriptWritePlan = loadPageScriptWritePlan({
+                                paths: input.paths,
+                                reference: planReference,
+                                taskId: found.run.taskId,
+                                siteHost: found.run.siteHost,
+                                pageScriptId: pageScript.id,
+                            });
+                            found.run.pageScriptWritePlanRef = planReference;
+                        }
+                        catch (error) {
+                            return fail('mcp_write_plan_load_failed', error instanceof Error ? error.message : String(error));
+                        }
+                    }
+                    let prepared = found.run.pageScriptWritePlan;
+                    if (prepared === undefined) {
+                        const resolvedPlan = await resolveWithPageScript({
+                            paths: input.paths,
+                            page: found.page,
+                            script: pageScript,
+                            taskId: found.run.taskId,
+                            profileRecordIds: found.run.profileRecordIds,
+                            materialRefs: found.run.materialRefs,
+                            draftAnswers: found.run.draftAnswers,
+                            writeScope: { mode: 'fill_missing' },
+                        });
+                        prepared = resolvedPlan.prepared;
+                        found.run.pageScriptWritePlan = prepared;
+                        try {
+                            found.run.pageScriptWritePlanRef = persistPageScriptWritePlan({
+                                paths: input.paths,
+                                runId: found.run.runId,
+                                taskId: found.run.taskId,
+                                siteHost: found.run.siteHost,
+                                pageScriptId: pageScript.id,
+                                prepared,
+                                now: input.now,
+                            });
+                        }
+                        catch (error) {
+                            return fail('mcp_write_plan_persist_failed', error instanceof Error ? error.message : String(error));
+                        }
+                    }
+                    const contextError = await validatePageScriptPlanContext({ page: found.page, script: pageScript, prepared });
+                    if (contextError !== undefined)
+                        return fail('mcp_write_plan_context_mismatch', contextError);
                     const result = await savePageScriptWithReadback({
                         paths: input.paths,
                         session: found.session,
@@ -1336,6 +1543,8 @@ export function registerMcpTools() {
                         profileRecordIds: found.run.profileRecordIds,
                         materialRefs: found.run.materialRefs,
                         draftAnswers: found.run.draftAnswers,
+                        prepared,
+                        writeScope: prepared.writePlan?.scope,
                     });
                     markPageMutated(found.run, 'page_script_save', input.now);
                     found.run.lastPageScriptResult = toJson(result);
@@ -1346,6 +1555,9 @@ export function registerMcpTools() {
                     return result.saveDraft.saved
                         ? ok(result, `${pageScript.id} 已保存草稿并完成服务器读回。`)
                         : fail('mcp_tool_failed', result.saveDraft.message ?? '保存草稿没有强证据。', result);
+                }
+                if (pageScript === undefined && requestedAction === 'save') {
+                    return fail('mcp_write_scope_unsupported', '当前页面没有支持写入范围的 PageScript；为避免整页保存，未执行通用保存。');
                 }
                 if (found.run.draftAnswers !== undefined) {
                     return fail('mcp_draft_answers_unsupported', '当前页面没有 PageScript，不能继续使用本次运行的临时答案。');

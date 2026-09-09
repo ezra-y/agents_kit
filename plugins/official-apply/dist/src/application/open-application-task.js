@@ -96,7 +96,7 @@ export function openApplicationTask(request) {
             .prepare(`SELECT id, state, profile_record_ids_json FROM application_runs
          WHERE task_id = ? ORDER BY started_at DESC, rowid DESC LIMIT 1`)
             .get(taskId);
-        if (resumable !== undefined && !TERMINAL_RUN_STATES.has(resumable.state)) {
+        if (request.forceNewRun !== true && resumable !== undefined && !TERMINAL_RUN_STATES.has(resumable.state)) {
             const profileRecordIds = parseIdList(resumable.profile_record_ids_json);
             assertProfileRecordsExist(paths, profileRecordIds);
             runtime.db

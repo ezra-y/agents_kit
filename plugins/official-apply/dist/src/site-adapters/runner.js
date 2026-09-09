@@ -1,3 +1,4 @@
+import { normaliseWriteScope } from "./write-scope.js";
 function describeFailure(stage, error) {
     const message = error instanceof Error ? (error.message.split('\n')[0] ?? error.name) : String(error);
     const matched = /^([a-z][a-z0-9_]*):\s*/.exec(message);
@@ -37,6 +38,14 @@ export async function runPageScript(request) {
             durationMs: Date.now() - startedAt,
         };
     }
+    const writeScope = request.writeScope;
+    if (writeScope !== undefined && request.script.supportsWriteScope !== true) {
+        return failedResult(request, startedAt, {
+            stage: 'prepare',
+            code: 'page_script_write_scope_unsupported',
+            message: `${request.script.id} 不支持局部写入范围，已拒绝整页覆盖`,
+        }, { match });
+    }
     let facts;
     try {
         facts = await request.script.inspect(request.page);
@@ -46,7 +55,10 @@ export async function runPageScript(request) {
     }
     let prepared;
     try {
-        prepared = request.script.prepare(request.input, facts);
+        prepared = request.prepared ?? request.script.prepare(request.input, facts, writeScope === undefined ? undefined : normaliseWriteScope(writeScope));
+        if (writeScope !== undefined && prepared.writePlan === undefined) {
+            throw new Error('page_script_write_scope_plan_missing: 脚本没有生成写入计划');
+        }
     }
     catch (error) {
         return failedResult(request, startedAt, describeFailure('prepare', error), {
