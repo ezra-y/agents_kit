@@ -111,7 +111,22 @@ async function execute(command, number) {
   }
 
   if (typeof command.tool === 'string' && command.tool !== '') {
-    return server.callTool(command.tool, isRecord(command.args) ? command.args : {});
+    const args = isRecord(command.args) ? command.args : {};
+    let finalPage;
+    if (command.tool === 'apply.close_run' && typeof args.runId === 'string') {
+      const page = server.pageOf(args.runId);
+      if (page && !page.isClosed()) {
+        const screenshotPath = path.join(evidenceDir, `${String(number).padStart(3, '0')}-final-page.png`);
+        try {
+          await page.screenshot({ path: screenshotPath, fullPage: false, timeout: 5_000 });
+          finalPage = { screenshotPath };
+        } catch (error) {
+          finalPage = { error: describeError(error) };
+        }
+      }
+    }
+    const result = await server.callTool(command.tool, args);
+    return finalPage === undefined ? result : { ...result, finalPage };
   }
 
   const page = pageOf(command.runId);
