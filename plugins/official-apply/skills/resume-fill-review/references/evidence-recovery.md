@@ -40,16 +40,39 @@ serverReadback.reopened=false 表示未能重新打开，不能把当前页面�
 
 ## 独立审查清单与恢复
 
-填写者用文件工具维护 `<dataRoot>/reviews/<batchId>/index.json`，复用同一批清单，不新增数据库或后台服务：
+批次顺序和分工以 [批次执行合同](../SKILL.md#批次执行合同)为唯一依据。主控维护已有 `<dataRoot>/reviews/<batchId>/index.json`；填写者各自交付公司证据，审查者写独立报告，不并发改同一个index。复用文件，不新增数据库或后台服务。
+
+批前固定名单（通常10家）与运行版本。示意如下，items须包含本批完整名单：
 
 ```json
-{"batchId":"实际批次", "items":[{"taskId":"实际任务", "runId":"实际运行", "evidencePath":"绝对路径", "sourcePaths":[], "supplementalEvidence":[], "reviewStatus":"pending", "reportPath":null}]}
+{
+  "batchId": "实际批次",
+  "runtimeVersion": "本批固定版本",
+  "phase": "filling",
+  "items": [{
+    "taskId": "实际任务",
+    "runId": "实际运行或null",
+    "attemptRecorded": false,
+    "fillOutcome": null,
+    "evidencePath": null,
+    "sourcePaths": [],
+    "supplementalEvidence": [],
+    "acceptedExceptions": [],
+    "reviewStatus": "pending",
+    "reportPath": null,
+    "repairResults": []
+  }]
+}
 ```
 
-每次保存后立刻更新该项最新 evidencePath，并设 pending。一次只由填写者写清单；审查者写单独的 report-<轮次>.json。
-积累 10 家或遇到尾批/结束/提交前时，按 SKILL.md 第 5 步派独立 Agent 审查全部待审项。提示词位于插件根目录 agents/resume-field-reviewer.md，它是派发任务使用的提示词文件，不会仅因放入 agents/ 就自动运行。
-报告必须来自实际独立调用，并覆盖本轮每个 taskId 和最新 evidencePath。核对后写回 reviewStatus 和 reportPath；丢项、旧路径、报告未生成均保持 pending。
-修改材料或字段后，把原报告加入 supplementalEvidence，复审受影响项；全量保存还要比较其他字段是否变化。只有补截图时，保留已核对的保存结果并只补证据，核实同一内容版本后复审缺证部分。新报告引用沿用的旧报告和证据，任务恢复时读取清单中尚未解决的动作。
+- 首次处理结果为saved、partial或blocked；三种均计入处理家数。只有实际结果和证据齐全才设attemptRecorded=true。部分填写明确已填范围、是否保存；未登录仅附阻塞证据。
+- acceptedExceptions按具体字段记录允许的空值、暂填值或自由选项，以及两表记录ID/原文或用户授权。仅对应字段接受例外，不能豁免整份简历。
+- 全部items的attemptRecorded=true才进入reviewing并派一次整批审查。9/10家有结果时继续收集第10家，不提前派审。用户明确停止或真实尾批时记录结束原因，审实际范围；不要把暂时忙碌称为尾批。
+- 一份初审报告覆盖本批所有taskId，包括部分填写和未登录项。报告完成才进入repairing。每个真实问题对应一条修复项，包含字段、预期值和原证据位置。
+- repairResults只追加本次修改、实际保存值与结果证据。现有读回确认后沿用初审，不默认再生成整份AI审查报告；具体缺证或意外变化才交原审查者定点处理。
+- 全部修复项已明确处理、剩余外部阻塞已记录、两表已同步后，phase=closed。恢复任务先读该phase；前批仍在reviewing/repairing时，不派下一批，也不发版。
+
+原始源资料、初审结果和最新保存证据都保留引用；补证不覆盖原失败记录。仅补截图或字段值时复用原保存证明，不再填写或保存一次。填写状态与审查状态分开：部分内容可以核对通过，官网仍未保存时继续标部分填写。
 
 ## 批量浏览器会话脚本
 
