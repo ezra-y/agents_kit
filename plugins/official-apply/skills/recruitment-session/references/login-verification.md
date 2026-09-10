@@ -5,7 +5,7 @@
 
 ## 登录态清单与复用
 
-打开任务后先检查当前页面。底层登录状态检查只读取当前页面和已有正向账号证据，不调用 `prepare`、不发短信；当页面明确需要登录时，`apply.login` 流程可以按目标 host 和明确登录域名自动复用来源并再次检查。`login_unconfirmed` 会保留当前页面，不继续轮换来源；重复 inspect 已登录时不扫描、不导入。
+打开任务后先检查当前页面。底层登录状态检查只读取当前页面和已有正向账号证据，不调用 `prepare`、不发短信；页面明确显示登录入口，或适配器已有可靠的未登录/过期证据时，`apply.login` 流程可以按目标 host 和明确登录域名自动复用来源并再次检查。`login_unconfirmed` 会保留当前页面，不继续轮换来源；重复 inspect 已登录时不扫描、不导入。
 
 先查看本机浏览器和项目配置的非敏感元数据：
 
@@ -23,14 +23,16 @@ Safari 的 `Cookies.binarycookies` 会被登记为状态文件，当前仍不能
 
 文件存在只代表未验证。工具在本机传递登录数据；Agent 读取清单和验证结果，不把 Cookie、浏览器存储或认证凭据的具体值打印到报告。
 
-正式任务不需要先手工选择来源：`apply.login { runId, action: "inspect" }` 只在页面有明确登录入口时尝试来源复用。返回 `login_unconfirmed` 时，当前候选页会保留，结果带 `sourceId` 和证据；调用 `apply.inspect_page` 或已有 browser_action 检查账号/受保护简历，不要继续轮换来源或直接发短信。返回 `login_state_ambiguous` 时，把返回的 `sourceId` 原样传回同一个 `apply.login` 调用；复用失败会在结果中给出 `reuseFailureReason`。
+OpenCLI Bridge 继续使用 OpenCLI 的默认 profile、环境变量和 profile 配置。已配置默认来源时只尝试该 context；显式 `sourceId` 可以覆盖默认来源；没有默认来源且同时发现多个 context 时返回歧义。复制浏览器资料后必须为每个浏览器实例保留不同的 Bridge context 编号，不新增机器 ID 常量。
+
+正式任务不需要先手工选择来源：`apply.login { runId, action: "inspect" }` 在看到登录入口，或取得可靠的未登录、凭据过期证据后，尝试来源复用。返回 `login_unconfirmed` 时，当前候选页会保留，结果带 `sourceId` 和证据；调用 `apply.inspect_page` 或已有 browser_action 检查账号/受保护简历，不要继续轮换来源或直接发短信。返回 `login_state_ambiguous` 时，把返回的 `sourceId` 原样传回同一个 `apply.login` 调用；复用失败会在结果中给出 `reuseFailureReason`。
 
 用户已经登录目标招聘站时，用明确提供的动态 CDP 端点和登录后页面标记：
 
 ```bash
 node bin/applyctl.js browser login-reuse \
   --cdp-endpoint <动态CDP地址> --from msedge --to <项目profile> \
-  --url <目标招聘页> --login-marker "个人中心" \
+  --url <目标招聘页> --login-marker "<当前账号的专属页面标记>" \
   --domains <招聘域名[,登录域名]> --json
 ```
 
@@ -40,20 +42,23 @@ node bin/applyctl.js browser login-reuse \
 node bin/applyctl.js browser login-reuse --from bridge \
   --bridge-session <session> --bridge-context <context-id> \
   --to <项目profile> --channel msedge \
-  --url <目标招聘页> --login-marker "个人中心" \
+  --url <目标招聘页> --login-marker "<当前账号的专属页面标记>" \
   --domains <招聘域名[,登录域名]> --json
 ```
 
-流程先检查源页面，再导出指定域名的 Cookie 和当前页的 localStorage、sessionStorage；CDP 路径还通过 Playwright 原生接口导出 IndexedDB，Bridge 当前不导出 IndexedDB。
+流程先检查源页面，再将新建源 tab 绑定为当前 tab，确认 document 处于目标 origin 后才导出指定域名的 Cookie 和当前页的 localStorage、sessionStorage；CDP 路径还通过 Playwright 原生接口导出 IndexedDB，Bridge 当前不导出 IndexedDB。
 恢复目标 profile 后重新打开页面检查同一标记。CDP 不存在、标签页无法唯一匹配或源页面未
-显示登录标记时暂停，不复制整份浏览器 profile；源浏览器不关闭。Firefox/Safari 当前只有
-元数据清单，没有受支持的活 context 导出路径。
+显示登录标记时暂停，不复制整份浏览器 profile；源页面 redirect、未就绪或超时会保留
+`source_*` 阶段和脱敏失败原因。源浏览器不关闭。Firefox/Safari 当前只有元数据清单，
+没有受支持的活 context 导出路径。
 
 成功输出必须同时包含 `sourceLoginVerified: true` 和 `targetLoginVerified: true`，并有
 `sourceBackend`、`targetProfileDir`、`verifiedAt`。只有 Cookie 或状态文件存在时不能算成功。
 典型结果会是 `{"sourceBackend":"opencli_browser_bridge","sourceLoginVerified":true,"targetLoginVerified":true,"targetChannel":"msedge"}`；
 若任一标记为 `false`，命令失败且不能把 profile 当成已登录。
 登录标志应选已确认仅在登录后出现的内容，并结合目标私有页面核对；公共导航标题、没有登录按钮、Cookie 或 Storage 存在都不能单独证明登录。已验证的目标配置由后续 `open_task` 通过 `profileName` 和 `channel` 复用。候选来源未确认时会清掉目标档案旧的 `verifiedLogin`，避免旧账号证明跟着新 Cookie 保存。
+
+米哈游的 `Jobs-Token` 缺失、已过期或受保护接口明确拒绝时，返回需要登录并保留具体原因；表单已经打开时返回 `sms_ready`。只有页面或接口无法读取、返回结构未知时，才保持 `login_unconfirmed`。Token 存在本身不能算登录成功。
 
 ## 验证码脚本的启动配置
 
@@ -108,7 +113,7 @@ node skills/recruitment-session/scripts/import-captcha-case.mjs --type jigsaw --
 ```text
 apply.login { runId, action: "inspect" }
 → logged_in：返回用户要求的填写或检查阶段
-→ login_required（当前页面看见登录入口）或 sms_ready（当前页面看见短信表单）：
+→ login_required（当前页面看见登录入口或适配器确认未登录/过期）或 sms_ready（当前页面看见短信表单）：
   apply.login { runId, action: "begin_sms", phone: "<用户授权的手机号>" }
 → login_unconfirmed：
   保留当前 runId 和候选页，调用 apply.inspect_page 检查账号或受保护简历；不要发送短信

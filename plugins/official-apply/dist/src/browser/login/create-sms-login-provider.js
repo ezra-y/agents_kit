@@ -7,6 +7,8 @@ function result(config, page, input) {
     };
 }
 async function visible(locator) {
+    if (locator === undefined)
+        return false;
     return (await locator.count()) > 0 && locator.isVisible().catch(() => false);
 }
 async function sent(config, page) {
@@ -15,6 +17,8 @@ async function sent(config, page) {
         return true;
     const button = config.sendButton(page);
     if (!(await visible(button)))
+        return false;
+    if (button === undefined)
         return false;
     const text = (await button.innerText().catch(() => '')).trim();
     return (config.sentPattern ?? /重新发送|重新获取|\d+\s*(?:s|秒)/).test(text);
@@ -28,7 +32,6 @@ async function inspect(config, page) {
             evidence: loginCheck.evidence,
         });
     }
-    const loginUnconfirmed = loginCheck.status === 'unconfirmed';
     if (await config.hasCaptcha(page)) {
         return result(config, page, {
             stage: 'captcha_required',
@@ -51,13 +54,21 @@ async function inspect(config, page) {
             return result(config, page, {
                 stage: 'code_sent',
                 nextAction: 'read_sms',
-                evidence: ['短信登录页已打开', '验证码输入框或发送倒计时已出现'],
+                evidence: [
+                    ...(loginCheck.status === 'logged_out' ? loginCheck.evidence : []),
+                    '短信登录页已打开',
+                    '验证码输入框或发送倒计时已出现',
+                ],
             });
         }
         return result(config, page, {
             stage: 'sms_ready',
             nextAction: 'begin_sms',
-            evidence: ['短信登录页已打开', '可见手机号输入框已出现'],
+            evidence: [
+                ...(loginCheck.status === 'logged_out' ? loginCheck.evidence : []),
+                '短信登录页已打开',
+                '可见手机号输入框已出现',
+            ],
         });
     }
     const loginEntry = page
@@ -67,15 +78,23 @@ async function inspect(config, page) {
         return result(config, page, {
             stage: 'login_required',
             nextAction: 'begin_sms',
-            evidence: ['页面显示登录入口'],
+            evidence: loginCheck.status === 'logged_out'
+                ? loginCheck.evidence
+                : ['页面显示登录入口'],
+        });
+    }
+    if (loginCheck.status === 'logged_out') {
+        return result(config, page, {
+            stage: 'login_required',
+            nextAction: 'recover_entry',
+            evidence: loginCheck.evidence,
+            message: '当前会话已失效。请检查登录入口后再继续。',
         });
     }
     return result(config, page, {
         stage: 'login_unconfirmed',
         nextAction: 'recover_entry',
-        evidence: loginUnconfirmed
-            ? loginCheck.evidence
-            : ['服务端确认当前未登录，但页面没有可见登录控件'],
+        evidence: loginCheck.evidence,
         errorCode: 'login_state_unconfirmed',
         message: '登录状态暂未确认。请继续检查当前页面的登录入口，确认后再继续。',
     });
@@ -112,13 +131,38 @@ async function beginSms(config, page, input) {
             });
         }
         const prepared = await inspect(config, page);
-        if (prepared.stage !== 'sms_ready')
-            return prepared;
+        if (prepared.stage !== 'sms_ready') {
+            if (prepared.stage !== 'login_required' || (await visible(config.phoneInput(page))))
+                return prepared;
+            return result(config, page, {
+                stage: 'login_required',
+                nextAction: 'recover_entry',
+                evidence: [...prepared.evidence, '登录准备后仍没有可见手机号输入框'],
+                message: '登录页面已打开，但短信表单尚未就绪。请继续检查当前页面后再继续。',
+            });
+        }
+        if (!(await visible(config.phoneInput(page)))) {
+            return result(config, page, {
+                stage: 'login_required',
+                nextAction: 'recover_entry',
+                evidence: [...prepared.evidence, '登录准备后仍没有可见手机号输入框'],
+                message: '登录页面已打开，但短信表单尚未就绪。请继续检查当前页面后再继续。',
+            });
+        }
         ready = prepared;
     }
     if (ready.stage !== 'sms_ready')
         return ready;
-    await config.phoneInput(page).fill(input.phone);
+    const phoneInput = config.phoneInput(page);
+    if (phoneInput === undefined) {
+        return result(config, page, {
+            stage: 'login_required',
+            nextAction: 'recover_entry',
+            evidence: ['短信登录表单没有手机号输入框'],
+            message: '登录页面已打开，但短信表单尚未就绪。请继续检查当前页面后再继续。',
+        });
+    }
+    await phoneInput.fill(input.phone);
     await config.beforeSend?.(page);
     const agreement = config.agreement?.(page);
     if (agreement !== undefined &&
@@ -127,6 +171,14 @@ async function beginSms(config, page, input) {
         await agreement.check();
     }
     const sendButton = config.sendButton(page);
+    if (sendButton === undefined) {
+        return result(config, page, {
+            stage: 'login_required',
+            nextAction: 'recover_entry',
+            evidence: ['短信登录表单没有获取验证码按钮'],
+            message: '登录页面已打开，但短信表单尚未就绪。请继续检查当前页面后再继续。',
+        });
+    }
     await sendButton.waitFor({ state: 'visible', timeout: 10_000 });
     const sendDecisionPromise = config.waitForSendDecision?.(page);
     await sendButton.click();
@@ -211,11 +263,20 @@ async function submitSmsCode(config, page, input) {
             evidence: ['提交短信验证码前仍有安全验证'],
         });
     }
-    await config.codeInput(page).fill(input.code);
+    const codeInput = config.codeInput(page);
+    const submitButton = config.submitButton(page);
+    if (codeInput === undefined || submitButton === undefined) {
+        return result(config, page, {
+            stage: 'login_required',
+            nextAction: 'recover_entry',
+            evidence: ['短信登录表单没有完整验证码控件'],
+            message: '登录页面已打开，但验证码表单尚未就绪。请继续检查当前页面后再继续。',
+        });
+    }
+    await codeInput.fill(input.code);
     await config.beforeSubmit?.(page);
-    const submit = config.submitButton(page);
-    await submit.waitFor({ state: 'visible', timeout: 10_000 });
-    await submit.click();
+    await submitButton.waitFor({ state: 'visible', timeout: 10_000 });
+    await submitButton.click();
     const deadline = Date.now() + 20_000;
     while (Date.now() < deadline) {
         const loginCheck = await config.isLoggedIn(page);

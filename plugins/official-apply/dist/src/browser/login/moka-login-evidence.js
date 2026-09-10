@@ -1,20 +1,24 @@
 async function visible(locator) {
     return (await locator.count()) > 0 && locator.isVisible().catch(() => false);
 }
-function hasMokaAccountInPage() {
+export function readMokaAccountFromDom() {
     const data = window.TurboApply?.data;
-    const account = data?.candidateAccount;
-    const candidateId = account?.['id'] ?? account?.['candidateAccountId'];
-    return (typeof data?.csrfToken === 'string' &&
-        data.csrfToken !== '' &&
-        account !== undefined &&
-        ((typeof candidateId === 'string' && candidateId !== '') ||
-            (typeof candidateId === 'number' && Number.isFinite(candidateId))));
+    if (typeof data?.csrfToken !== 'string' || data.csrfToken === '')
+        return undefined;
+    const account = data.candidateAccount;
+    const id = account?.['id'] ?? account?.['candidateAccountId'];
+    if ((typeof id !== 'string' && typeof id !== 'number') || String(id) === '')
+        return undefined;
+    return {
+        accountId: String(id),
+        ...(typeof account?.['phone'] === 'string' ? { phone: account['phone'] } : {}),
+        ...(typeof account?.['email'] === 'string' ? { email: account['email'] } : {}),
+    };
 }
 /** Moka/Didi 共用的当前账号读取证据。页面无账号数据时保持未确认。 */
 export async function readMokaLoginEvidence(page) {
-    let confirmed = await page.evaluate(hasMokaAccountInPage).catch(() => false);
-    if (confirmed) {
+    let account = await page.evaluate(readMokaAccountFromDom).catch(() => undefined);
+    if (account !== undefined) {
         return {
             status: 'logged_in',
             evidence: ['Moka 页面返回当前 candidateAccount 与 csrfToken'],
@@ -27,10 +31,10 @@ export async function readMokaLoginEvidence(page) {
         };
     }
     await page
-        .waitForFunction(hasMokaAccountInPage, undefined, { timeout: 10_000 })
+        .waitForFunction(readMokaAccountFromDom, undefined, { timeout: 10_000 })
         .catch(() => undefined);
-    confirmed = await page.evaluate(hasMokaAccountInPage).catch(() => false);
-    if (confirmed) {
+    account = await page.evaluate(readMokaAccountFromDom).catch(() => undefined);
+    if (account !== undefined) {
         return {
             status: 'logged_in',
             evidence: ['Moka 页面返回当前 candidateAccount 与 csrfToken'],

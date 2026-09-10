@@ -545,7 +545,8 @@ export const xiaomiMiofficeLogin = createSmsLoginProvider({
     visibleError: (page) => bodyError(page, /请求异常|发送失败|操作频繁|验证码错误|验证码获取失败/),
 });
 function mihoyoLoginFrame(page) {
-    return page.frameLocator('iframe[name="mihoyo-login-platform-iframe"], iframe[src*="login-platform"]');
+    const frames = page.frames().filter((frame) => frame !== page.mainFrame());
+    return frames.find((frame) => frame.name() === 'mihoyo-login-platform-iframe' || frame.url().includes('login-platform'));
 }
 export const mihoyoCampusLogin = createSmsLoginProvider({
     id: 'mihoyo.campus.sms',
@@ -561,15 +562,18 @@ export const mihoyoCampusLogin = createSmsLoginProvider({
     async isLoggedIn(page) {
         return readMihoyoLoginEvidence(page);
     },
-    phoneInput: (page) => mihoyoLoginFrame(page).getByPlaceholder('手机号'),
-    codeInput: (page) => mihoyoLoginFrame(page).getByPlaceholder('验证码'),
-    sendButton: (page) => mihoyoLoginFrame(page).getByRole('button', {
+    phoneInput: (page) => mihoyoLoginFrame(page)?.getByPlaceholder('手机号'),
+    codeInput: (page) => mihoyoLoginFrame(page)?.getByPlaceholder('验证码'),
+    sendButton: (page) => mihoyoLoginFrame(page)?.getByRole('button', {
         name: '获取验证码',
         exact: true,
     }),
-    submitButton: (page) => mihoyoLoginFrame(page).getByRole('button', { name: '登录', exact: true }),
+    submitButton: (page) => mihoyoLoginFrame(page)?.getByRole('button', { name: '登录', exact: true }),
     async beforeSend(page) {
-        const checkbox = mihoyoLoginFrame(page).locator('input[type=checkbox]').last();
+        const frame = mihoyoLoginFrame(page);
+        if (frame === undefined)
+            return;
+        const checkbox = frame.locator('input[type=checkbox]').last();
         if ((await checkbox.count()) > 0 && !(await checkbox.isChecked().catch(() => false))) {
             await checkbox.evaluate((element) => {
                 const input = element;
@@ -580,11 +584,15 @@ export const mihoyoCampusLogin = createSmsLoginProvider({
     },
     async hasCaptcha(page) {
         const frame = mihoyoLoginFrame(page);
+        const independentCaptchaFrame = page.frames().some((candidate) => candidate !== page.mainFrame() &&
+            !candidate.url().includes('login-platform') &&
+            /verifycenter|geetest|captcha/i.test(candidate.url()));
+        if (frame === undefined)
+            return independentCaptchaFrame;
         return ((await frame
             .locator('.geetest_panel:visible, .yidun_panel:visible, [class*="slider"]:visible, canvas:visible')
             .count()) > 0 ||
-            page.frames().some((candidate) => !candidate.url().includes('login-platform') &&
-                /verifycenter|geetest|captcha/i.test(candidate.url())));
+            independentCaptchaFrame);
     },
     visibleError: (page) => bodyError(page, /请求异常|发送失败|操作频繁|验证码错误|验证码获取失败/),
 });

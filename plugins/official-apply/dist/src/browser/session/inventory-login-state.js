@@ -257,11 +257,11 @@ export function inventoryLoginState(paths, requestedDomains = []) {
 }
 export async function inventoryLoginStateAsync(paths, requestedDomains = []) {
     const entries = inventoryLoginState(paths, requestedDomains);
-    const bridge = await inventoryOpenCliBridge();
+    const bridge = await inventoryOpenCliBridge({ selection: 'all' });
     entries.push(...bridge.map((profile) => ({
         browser: 'opencli_bridge',
         source: 'bridge_profile',
-        profileName: profile.contextId,
+        profileName: profile.sourceId ?? `bridge:${profile.contextId}`,
         profileDir: '',
         stateFiles: [],
         recruitmentDomains: [],

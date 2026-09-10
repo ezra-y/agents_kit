@@ -2,6 +2,7 @@ import { readdirSync } from 'node:fs';
 import path from 'node:path';
 import { readPersistentWebState, savePersistentSessionStorage } from "../browser/session/persist-session-storage.js";
 import { mokaSharedLogin } from "../browser/login/recruitment-sms-providers.js";
+import { readMokaAccountFromDom } from "../browser/login/moka-login-evidence.js";
 import { buildCanonicalApplicationPayload } from "./build-canonical-application-payload.js";
 import { openRuntimeDatabase } from "../storage/open-runtime-database.js";
 function expectedContact({ session, runId }) {
@@ -26,22 +27,6 @@ function matchesAccount(account, expected) {
     return expected !== undefined && ((typeof expected.phone === 'string' && expected.phone !== '' && account.phone === expected.phone) ||
         (typeof expected.email === 'string' && expected.email !== '' && account.email?.toLowerCase() === expected.email.toLowerCase()));
 }
-async function readAccount(page) {
-    return page.evaluate(() => {
-        const root = window;
-        const data = root.TurboApply?.data;
-        if (typeof data?.csrfToken !== 'string' || data.csrfToken === '')
-            return undefined;
-        const account = data.candidateAccount;
-        const id = account?.['id'] ?? account?.['candidateAccountId'];
-        if ((typeof id !== 'string' && typeof id !== 'number') || String(id) === '')
-            return undefined;
-        return { accountId: String(id),
-            ...(typeof account?.['phone'] === 'string' ? { phone: account['phone'] } : {}),
-            ...(typeof account?.['email'] === 'string' ? { email: account['email'] } : {}),
-        };
-    });
-}
 function supported(input) {
     return input.session.mode === 'persistent' && input.session.profileDir !== undefined &&
         input.session.context !== undefined && new URL(input.page.url()).hostname === 'app.mokahr.com';
@@ -49,7 +34,7 @@ function supported(input) {
 export async function rememberMokaLogin(input) {
     if (!supported(input))
         return;
-    const account = await readAccount(input.page);
+    const account = await input.page.evaluate(readMokaAccountFromDom).catch(() => undefined);
     if (account === undefined || !matchesAccount(account, expectedContact(input)))
         return;
     const { context, profileDir } = input.session;
@@ -104,7 +89,9 @@ export async function reuseMokaLogin(input) {
             await replace([cookie]);
             await reload();
             const login = new URL(page.url()).origin === origin ? await mokaSharedLogin.inspect(page) : undefined;
-            const account = login?.stage === 'logged_in' ? await readAccount(page) : undefined;
+            const account = login?.stage === 'logged_in'
+                ? await page.evaluate(readMokaAccountFromDom).catch(() => undefined)
+                : undefined;
             if (account !== undefined && account.accountId === candidate.state.verifiedLogin?.accountId && matchesAccount(account, expected)) {
                 await rememberMokaLogin(input);
                 accepted = true;

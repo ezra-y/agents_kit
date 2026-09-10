@@ -1,6 +1,6 @@
 import { openRuntimeDatabase } from "../storage/open-runtime-database.js";
 import { capturePersistentBrowserState, exportPersistentWebState, restoreExactPersistentBrowserState, replacePersistentWebStateOnContextForDomains, prepareSessionStorageForNavigation, savePersistentSessionStorageForDomains, } from "../browser/session/persist-session-storage.js";
-import { exportCookiesFromOpenCliBridge, exportLoginStateFromOpenCliBridge, } from "../browser/session/opencli-bridge-login-state.js";
+import { exportCookiesFromOpenCliBridge, exportLoginStateFromOpenCliBridge, redactBridgeError, } from "../browser/session/opencli-bridge-login-state.js";
 import { discoverLoginStateCandidates, } from "../browser/session/discover-login-state.js";
 const REUSABLE_RUN_STATES = ['queued', 'opening', 'discovering', 'failed_recoverable'];
 function runState(paths, runId) {
@@ -62,6 +62,7 @@ export async function reuseLoginStateOnCurrentPage(input) {
         domains,
         currentProfileDir: input.session.profileDir,
         includeBridge: false,
+        sourceId: input.sourceId,
     };
     const originalUrl = input.page.url();
     const originalBrowserState = await capturePersistentBrowserState(input.session.context);
@@ -130,8 +131,7 @@ export async function reuseLoginStateOnCurrentPage(input) {
                         reason: lastFailure,
                     };
                 }
-                let verified = loginCheck.status === 'logged_in';
-                if (!verified && !fullExported && candidate.source === 'opencli_bridge' && candidate.bridgeSession !== undefined && candidate.bridgeContextId !== undefined) {
+                if (loginCheck.status === 'logged_out' && !fullExported && candidate.source === 'opencli_bridge' && candidate.bridgeSession !== undefined && candidate.bridgeContextId !== undefined) {
                     const full = await exportLoginStateFromOpenCliBridge({
                         session: `${candidate.bridgeSession}-${input.runId}`,
                         contextId: candidate.bridgeContextId,
@@ -151,19 +151,13 @@ export async function reuseLoginStateOnCurrentPage(input) {
                                 reason: lastFailure,
                             };
                         }
-                        verified = loginCheck.status === 'logged_in';
                     }
                     finally {
                         await full.cleanup();
                     }
                 }
-                if (!verified) {
-                    lastFailure = `${candidate.sourceId}:login_unverified`;
-                    await restoreOriginal(input, originalUrl, originalBrowserState, originalSnapshot);
-                    continue;
-                }
-                if (loginCheck.status !== 'logged_in') {
-                    lastFailure = `${candidate.sourceId}:login_unverified`;
+                if (loginCheck.status === 'logged_out') {
+                    lastFailure = `${candidate.sourceId}:login_unverified:${loginCheck.evidence.join('；')}`;
                     await restoreOriginal(input, originalUrl, originalBrowserState, originalSnapshot);
                     continue;
                 }
@@ -180,7 +174,7 @@ export async function reuseLoginStateOnCurrentPage(input) {
                 };
             }
             catch (error) {
-                lastFailure = `${candidate.sourceId}:${error instanceof Error ? error.message.split('\n')[0] : String(error)}`;
+                lastFailure = `${candidate.sourceId}:${redactBridgeError(error)}`;
                 await restoreOriginal(input, originalUrl, originalBrowserState, originalSnapshot);
                 continue;
             }

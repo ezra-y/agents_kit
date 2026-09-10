@@ -107,7 +107,7 @@ function bridgeCandidates(profiles) {
         .filter((profile) => profile.extensionConnected)
         .map((profile) => ({
         source: 'opencli_bridge',
-        sourceId: `bridge:${profile.contextId}`,
+        sourceId: profile.sourceId ?? `bridge:${profile.contextId}`,
         bridgeSession: DEFAULT_BRIDGE_SESSION,
         bridgeContextId: profile.contextId,
     }));
@@ -118,7 +118,12 @@ export async function discoverLoginStateCandidates(request) {
     const project = projectCandidates(request, domains);
     if (request.includeBridge !== true)
         return project;
-    const bridge = bridgeCandidates(await inventoryOpenCliBridge());
+    const explicitContextId = request.sourceId?.startsWith('bridge:')
+        ? request.sourceId.slice('bridge:'.length)
+        : undefined;
+    const bridge = bridgeCandidates(await inventoryOpenCliBridge(explicitContextId === undefined
+        ? { selection: 'default' }
+        : { contextId: explicitContextId }));
     return [...project, ...bridge];
 }
 //# sourceMappingURL=discover-login-state.js.map
