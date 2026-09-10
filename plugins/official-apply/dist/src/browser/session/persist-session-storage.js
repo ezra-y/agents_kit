@@ -4,11 +4,18 @@ const FILE_NAME = '.official-apply-web-state.json';
 function snapshotPath(profileDir) {
     return path.join(profileDir, FILE_NAME);
 }
-function hostMatches(host, domains) {
+function originMatchesDomains(host, domains) {
     const normalized = host.replace(/^\./, '').toLowerCase();
     return domains.some((domain) => {
         const wanted = domain.replace(/^\./, '').toLowerCase();
         return normalized === wanted || normalized.endsWith(`.${wanted}`);
+    });
+}
+function cookieDomainMatchesHosts(cookieDomain, hosts) {
+    const domain = cookieDomain.replace(/^\./, '').toLowerCase();
+    return hosts.some((host) => {
+        const normalized = host.replace(/^\./, '').toLowerCase();
+        return normalized === domain || normalized.endsWith(`.${domain}`);
     });
 }
 function originHost(origin) {
@@ -75,24 +82,51 @@ export function mergePersistentWebState(base, overlay) {
             : { verifiedLogin: overlay.verifiedLogin }),
     };
 }
-function sessionStorageOrigins(snapshot) {
-    return snapshot.origins;
-}
-async function restorePersistentWebStateOnContext(context, snapshot) {
+export async function restorePersistentWebStateOnContext(context, snapshot) {
     const current = await context.storageState({ indexedDB: true });
     const merged = mergeStorageState(current, snapshotToStorageState(snapshot));
     const setStorageState = context.setStorageState;
     if (typeof setStorageState !== 'function')
         throw new Error('browser_storage_state_restore_unsupported');
     await setStorageState.call(context, merged);
-    await context.addInitScript((origins) => {
-        const values = origins[window.location.origin];
-        if (values === undefined)
-            return;
-        for (const [key, value] of Object.entries(values.sessionStorage)) {
-            window.sessionStorage.setItem(key, value);
-        }
-    }, sessionStorageOrigins(snapshot));
+}
+export function replacePersistentWebStateForDomains(base, overlay, domains) {
+    const targetHosts = domains.map((domain) => domain.replace(/^\./, '').toLowerCase());
+    const retained = {
+        version: 2,
+        cookies: base.cookies.filter((cookie) => !cookieDomainMatchesHosts(cookie.domain, targetHosts)),
+        origins: Object.fromEntries(Object.entries(base.origins).filter(([origin]) => {
+            try {
+                const host = new URL(origin).hostname.replace(/^\./, '').toLowerCase();
+                return !targetHosts.some((target) => host === target || host.endsWith(`.${target}`) || target.endsWith(`.${host}`));
+            }
+            catch {
+                return true;
+            }
+        })),
+        ...(base.verifiedLogin === undefined ? {} : { verifiedLogin: base.verifiedLogin }),
+    };
+    return mergePersistentWebState(retained, overlay);
+}
+export async function replacePersistentWebStateOnContextForDomains(context, snapshot, domains) {
+    const current = await context.storageState({ indexedDB: true });
+    const targetHosts = domains.map((domain) => domain.replace(/^\./, '').toLowerCase());
+    const retained = {
+        cookies: current.cookies.filter((cookie) => !cookieDomainMatchesHosts(cookie.domain, targetHosts)),
+        origins: current.origins.filter((origin) => {
+            try {
+                const host = new URL(origin.origin).hostname.replace(/^\./, '').toLowerCase();
+                return !targetHosts.some((target) => host === target || host.endsWith(`.${target}`) || target.endsWith(`.${host}`));
+            }
+            catch {
+                return true;
+            }
+        }),
+    };
+    const setStorageState = context.setStorageState;
+    if (typeof setStorageState !== 'function')
+        throw new Error('browser_storage_state_restore_unsupported');
+    await setStorageState.call(context, mergeStorageState(retained, snapshotToStorageState(snapshot)));
 }
 export function readPersistentWebState(profileDir) {
     const file = snapshotPath(profileDir);
@@ -128,6 +162,46 @@ export async function restorePersistentSessionStorage(context, profileDir) {
 /** 在目标页导航前恢复 Cookie、Web Storage 和 IndexedDB。 */
 export async function restorePersistentWebStateOnPage(page, snapshot) {
     await restorePersistentWebStateOnContext(page.context(), snapshot);
+    await restoreSessionStorageOnPage(page, snapshot);
+}
+export async function restoreSessionStorageOnPage(page, snapshot) {
+    const values = snapshot.origins[new URL(page.url()).origin];
+    await page.evaluate((sessionStorageValues) => {
+        window.sessionStorage.clear();
+        for (const [key, value] of Object.entries(sessionStorageValues)) {
+            window.sessionStorage.setItem(key, value);
+        }
+    }, values?.sessionStorage ?? {});
+}
+/** 在下一次文档创建前临时注入 sessionStorage；导航完成后调用返回的清理函数。 */
+export async function prepareSessionStorageForNavigation(page, snapshot, targetOrigin) {
+    const values = Object.fromEntries(Object.entries(snapshot.origins).map(([origin, state]) => [origin, state.sessionStorage]));
+    if (targetOrigin !== undefined && values[targetOrigin] === undefined)
+        values[targetOrigin] = {};
+    if (Object.keys(values).length === 0)
+        return async () => undefined;
+    const client = await page.context().newCDPSession(page);
+    await client.send('Page.enable');
+    const source = `(() => {
+    const values = ${JSON.stringify(values)}[window.location.origin];
+    if (values === undefined) return;
+    window.sessionStorage.clear();
+    for (const [key, value] of Object.entries(values)) window.sessionStorage.setItem(key, value);
+  })();`;
+    const result = await client.send('Page.addScriptToEvaluateOnNewDocument', { source });
+    return async () => {
+        await client.send('Page.removeScriptToEvaluateOnNewDocument', { identifier: result.identifier }).catch(() => undefined);
+        await client.detach().catch(() => undefined);
+    };
+}
+export async function capturePersistentBrowserState(context) {
+    return context.storageState({ indexedDB: true });
+}
+export async function restoreExactPersistentBrowserState(context, state) {
+    const setStorageState = context.setStorageState;
+    if (typeof setStorageState !== 'function')
+        throw new Error('browser_storage_state_restore_unsupported');
+    await setStorageState.call(context, state);
 }
 export async function exportPersistentWebState(context, domains) {
     const allowed = domains?.map((domain) => domain.replace(/^\./, '').toLowerCase());
@@ -139,7 +213,7 @@ export async function exportPersistentWebState(context, domains) {
             const url = new URL(page.url());
             if (url.protocol !== 'https:' && url.protocol !== 'http:')
                 continue;
-            if (allowed !== undefined && !hostMatches(url.hostname, allowed))
+            if (allowed !== undefined && !originMatchesDomains(url.hostname, allowed))
                 continue;
             origin = url.origin;
             activeHosts.add(url.hostname);
@@ -161,7 +235,7 @@ export async function exportPersistentWebState(context, domains) {
         if (typeof originState.origin !== 'string')
             continue;
         const host = originHost(originState.origin);
-        if (host === undefined || (allowed !== undefined ? !hostMatches(host, allowed) : !activeHosts.has(host)))
+        if (host === undefined || (allowed !== undefined ? !originMatchesDomains(host, allowed) : !activeHosts.has(host)))
             continue;
         const current = snapshot.origins[originState.origin] ?? { localStorage: {}, sessionStorage: {} };
         if (Array.isArray(originState.indexedDB) && originState.indexedDB.length > 0) {
@@ -169,10 +243,8 @@ export async function exportPersistentWebState(context, domains) {
         }
         snapshot.origins[originState.origin] = current;
     }
-    const cookies = await context.cookies();
-    snapshot.cookies = cookies.filter((cookie) => allowed !== undefined
-        ? hostMatches(cookie.domain, allowed)
-        : [...activeHosts].some((host) => hostMatches(host, [cookie.domain])));
+    const cookieHosts = allowed === undefined ? [...activeHosts] : [...new Set([...activeHosts, ...allowed])];
+    snapshot.cookies = (await context.cookies()).filter((cookie) => cookieDomainMatchesHosts(cookie.domain, cookieHosts));
     return snapshot;
 }
 export function writePersistentWebState(profileDir, snapshot, verifiedLogin) {
@@ -190,5 +262,13 @@ export async function savePersistentSessionStorage(context, profileDir, verified
     if (verifiedLogin !== undefined)
         mergedSnapshot.verifiedLogin = verifiedLogin;
     writePersistentWebState(profileDir, mergedSnapshot);
+}
+export async function savePersistentSessionStorageForDomains(context, profileDir, domains, verifiedLogin) {
+    const previous = readPersistentWebState(profileDir);
+    const exported = await exportPersistentWebState(context, domains);
+    const snapshot = replacePersistentWebStateForDomains(previous, exported, domains);
+    if (verifiedLogin !== undefined)
+        snapshot.verifiedLogin = verifiedLogin;
+    writePersistentWebState(profileDir, snapshot);
 }
 //# sourceMappingURL=persist-session-storage.js.map

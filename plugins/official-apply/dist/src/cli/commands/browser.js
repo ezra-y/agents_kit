@@ -6,10 +6,12 @@ export const browserCommands = [
     {
         name: 'browser login-inventory',
         summary: '只读盘点系统浏览器和项目 profile 的登录态元数据，不读取凭据值。',
-        usage: 'applyctl browser login-inventory [--json]',
+        usage: 'applyctl browser login-inventory [--domains <host,...>] [--json]',
+        valueOptions: ['domains'],
         async handler(context) {
-            const entries = await inventoryLoginStateAsync(context.paths);
-            return ok({ entries }, `已盘点 ${entries.length} 个浏览器配置；有状态文件只代表未验证，不能直接当成已登录。`);
+            const domains = readList(context.args.options, 'domains');
+            const entries = await inventoryLoginStateAsync(context.paths, domains ?? []);
+            return ok({ entries, ...(domains === undefined ? {} : { requestedDomains: domains }) }, `已盘点 ${entries.length} 个浏览器配置；有状态文件只代表未验证，不能直接当成已登录。`);
         },
     },
     {

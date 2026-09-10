@@ -34,6 +34,13 @@ function isRecruitmentDomain(host) {
     const value = host.replace(/^\./, '').toLowerCase();
     return RECRUITMENT_WORDS.some((word) => value.includes(word));
 }
+function domainMatches(host, requested) {
+    const value = host.replace(/^\./, '').toLowerCase();
+    return requested.some((domain) => {
+        const wanted = domain.replace(/^\./, '').toLowerCase();
+        return value === wanted || value.endsWith(`.${wanted}`) || wanted.endsWith(`.${value}`);
+    });
+}
 function existingDirectories(root) {
     if (!existsSync(root))
         return [];
@@ -82,7 +89,7 @@ function cookieHosts(cookiePath, table = 'cookies', column = 'host_key') {
         return { hosts: [], failed: true };
     }
 }
-function snapshotMetadata(profileDir) {
+function snapshotMetadata(profileDir, requestedDomains = []) {
     const stateFiles = browserStateFiles(profileDir);
     const cookiePath = path.join(profileDir, 'Cookies');
     const cookieResult = cookieHosts(cookiePath);
@@ -117,6 +124,7 @@ function snapshotMetadata(profileDir) {
         stateFiles,
         recruitmentDomains,
         otherDomainCount,
+        matchingDomains: requestedDomains.length === 0 ? [] : [...domains].filter((domain) => domainMatches(domain, requestedDomains)).sort(),
         domainEnumeration: cookieResult.failed ? 'failed' : 'complete',
         status,
         ...(latestVerification === undefined ? {} : { latestVerification }),
@@ -177,7 +185,7 @@ function firefoxProfiles() {
     }
     return existingDirectories(root).map((dir) => ({ name: path.basename(dir), dir }));
 }
-function firefoxMetadata(profileDir) {
+function firefoxMetadata(profileDir, requestedDomains = []) {
     const stateFiles = ['cookies.sqlite', 'webappsstore.sqlite', 'storage', 'key4.db', 'prefs.js']
         .filter((name) => existsSync(path.join(profileDir, name)));
     const cookieResult = cookieHosts(path.join(profileDir, 'cookies.sqlite'), 'moz_cookies', 'host');
@@ -187,16 +195,17 @@ function firefoxMetadata(profileDir) {
         stateFiles,
         recruitmentDomains,
         otherDomainCount: domains.length - recruitmentDomains.length,
+        matchingDomains: requestedDomains.length === 0 ? [] : domains.filter((domain) => domainMatches(domain, requestedDomains)).sort(),
         domainEnumeration: cookieResult.failed ? 'failed' : 'complete',
         status: stateFiles.length > 0 ? 'unsupported' : 'no_state',
     };
 }
-export function inventoryLoginState(paths) {
+export function inventoryLoginState(paths, requestedDomains = []) {
     const entries = [];
     for (const { browser, root } of systemProfileRoots()) {
         const profiles = profileDirectories(root);
         for (const profile of profiles) {
-            const metadata = snapshotMetadata(profile.dir);
+            const metadata = snapshotMetadata(profile.dir, requestedDomains);
             entries.push({ browser, source: 'system_profile', profileName: profile.name, profileDir: profile.dir, ...metadata });
         }
         if (existsSync(root) && profiles.length === 0) {
@@ -213,6 +222,7 @@ export function inventoryLoginState(paths) {
                 profileDir: root,
                 stateFiles: browserStateFiles(root),
                 recruitmentDomains: [],
+                matchingDomains: [],
                 otherDomainCount: 0,
                 domainEnumeration: 'unsupported',
                 status: 'no_state',
@@ -220,7 +230,7 @@ export function inventoryLoginState(paths) {
         }
     }
     for (const profile of firefoxProfiles()) {
-        const metadata = firefoxMetadata(profile.dir);
+        const metadata = firefoxMetadata(profile.dir, requestedDomains);
         entries.push({ browser: 'firefox', source: 'system_profile', profileName: profile.name, profileDir: profile.dir, ...metadata });
     }
     const safariRoot = path.join(os.homedir(), 'Library', 'Safari');
@@ -233,20 +243,20 @@ export function inventoryLoginState(paths) {
     ];
     if (existsSync(safariRoot)) {
         const stateFiles = safariStateFiles(safariRoot);
-        entries.push({ browser: 'safari', source: 'system_profile', profileName: 'default', profileDir: safariRoot, stateFiles, recruitmentDomains: [], otherDomainCount: 0, domainEnumeration: 'unsupported', status: stateFiles.length > 0 ? 'unsupported' : 'no_state' });
+        entries.push({ browser: 'safari', source: 'system_profile', profileName: 'default', profileDir: safariRoot, stateFiles, recruitmentDomains: [], matchingDomains: [], otherDomainCount: 0, domainEnumeration: 'unsupported', status: stateFiles.length > 0 ? 'unsupported' : 'no_state' });
     }
     for (const profileDir of safariProfiles) {
         const stateFiles = safariStateFiles(profileDir);
-        entries.push({ browser: 'safari', source: 'system_profile', profileName: path.basename(profileDir), profileDir, stateFiles, recruitmentDomains: [], otherDomainCount: 0, domainEnumeration: 'unsupported', status: stateFiles.length > 0 ? 'unsupported' : 'no_state' });
+        entries.push({ browser: 'safari', source: 'system_profile', profileName: path.basename(profileDir), profileDir, stateFiles, recruitmentDomains: [], matchingDomains: [], otherDomainCount: 0, domainEnumeration: 'unsupported', status: stateFiles.length > 0 ? 'unsupported' : 'no_state' });
     }
     for (const dir of existingDirectories(paths.browserProfileDir)) {
-        const metadata = snapshotMetadata(dir);
+        const metadata = snapshotMetadata(dir, requestedDomains);
         entries.push({ browser: 'chromium', source: 'project_profile', profileName: path.basename(dir), profileDir: dir, ...metadata });
     }
     return entries.sort((left, right) => `${left.browser}/${left.source}/${left.profileName}`.localeCompare(`${right.browser}/${right.source}/${right.profileName}`));
 }
-export async function inventoryLoginStateAsync(paths) {
-    const entries = inventoryLoginState(paths);
+export async function inventoryLoginStateAsync(paths, requestedDomains = []) {
+    const entries = inventoryLoginState(paths, requestedDomains);
     const bridge = await inventoryOpenCliBridge();
     entries.push(...bridge.map((profile) => ({
         browser: 'opencli_bridge',
@@ -255,6 +265,7 @@ export async function inventoryLoginStateAsync(paths) {
         profileDir: '',
         stateFiles: [],
         recruitmentDomains: [],
+        matchingDomains: [],
         otherDomainCount: 0,
         domainEnumeration: 'unsupported',
         status: 'unverified_state_present',

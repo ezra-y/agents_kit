@@ -11,16 +11,16 @@ description: 为企业招聘官网准备登录状态并找到站内简历入口�
 
 ### 1.1 复用已有状态
 
-已有 runId 先调用 `apply.get_status { runId }`，用 `apply.list_open_runs {}` 确认仍有活跃会话。
-新建浏览器默认 headless:true，可正常读取字段、填写、保存和截图；headless:false 的可见窗口也允许，按实际操作需要选择。接管用户已有窗口不改变其显示状态。
-没有活跃会话时，先按 [登录态清单与复用](references/login-verification.md#登录态清单与复用) 选择已有配置，必要时用已连接的浏览器来源导入并验证。随后调用 `apply.open_task { taskId, browserMode: "persistent", profileName: "选定配置", channel: "对应浏览器", headless: true }`，保存返回的 runId。
-优先使用已连接的 OpenCLI Browser Bridge（浏览器连接扩展）；动态 CDP 连接可用时也可直接复用，具体命令见参考文档。来源浏览器和配置以实际清单为准。
-源页面已登录、目标复用失败时，交能力演进查复用失败，保留源会话。`loginStateSource` 旧入口只复制 Cookie，不代表已完成登录验证。
+已有 runId 先调用 `apply.get_status { runId }`，用 `apply.list_open_runs {}` 确认仍有活跃会话，并继续使用这条 run。
+没有活跃 run 时先调用 `apply.open_task { taskId, browserMode: "persistent", headless: true }`；它沿用任务记录的工作 profile 和浏览器配置。首次并行任务可显式传 `profileName: taskId`，不要覆盖正在恢复的 profile。
+open_task 后固定调用同一 run 的 `apply.login { runId, action: "inspect" }`。未登录时由流程按 direct target → Bridge → parent domain 发现来源，导入当前页面并再次 inspect；不要求模型先填写 source、channel 或 marker。
+登录来源当前有效但导入失败时，保留源会话并按 [登录态清单与复用](references/login-verification.md#登录态清单与复用) 排查；`loginStateSource` 旧入口只复制 Cookie，不代表已完成登录验证。
 
 ### 1.2 检查真实登录结果
 
 open_task 未成功打开页面、跳转异常或页面与工具读数矛盾时，先按 [入口与页面恢复](../recruitment-link/references/entry-recovery.md) 分流，拿到可用页面后继续本节。
 每次处理目标网站，都在本次实际会话调用 `apply.login { runId, action: "inspect" }`；不得只读历史 run、报告或 Cookie 文件判断已登录。已登录则进入第 3 步；需要登录则进入第 2 步。
+`inspect` 确认未登录后会按当前目标域名发现匹配来源，导入当前任务页面并再次检查；通常不需要模型提供来源、浏览器或登录标记参数。
 登录成功以当前目标网址和登录后页面标志为准。换域名、恢复会话或再次出现登录页时重新检查；历史测试成功只证明当时可用。清单按来源表选择，不按“哪些公司以前登录过”选择。
 
 ## 2. 完成能够自动处理的登录
@@ -66,16 +66,18 @@ Moka 跨企业会话迁移按登录参考文档中的 `scripts/migrate-moka-sess
 
 ## 4. 统一登录态清单与活会话复用
 
-先用只读清单查看系统浏览器配置和项目隔离档案：
+本节命令是查看和明确指定来源的诊断入口，常规任务不需要先手工运行它们：
 
 ```bash
 node bin/applyctl.js browser login-inventory --json
 ```
 
+需要预扫描具体来源时加 `--domains <目标域名[,登录域名]>`；清单中的状态文件即使没有验证元数据，也只能在当前页面再次检查后尝试。
+
 Cookie、Storage、IndexedDB 或 profile 文件存在，只能记为未验证状态。每次采用前仍须在
 目标招聘页调用 `apply.login inspect`。
 
-用户已有活 browser 登录态时，优先用动态 CDP 端点复用活 context：
+需要明确指定活 browser 来源做诊断时，才用动态 CDP 端点复用活 context：
 
 ```bash
 node bin/applyctl.js browser login-reuse \
@@ -84,7 +86,7 @@ node bin/applyctl.js browser login-reuse \
   --domains <招聘域名[,登录域名]> --json
 ```
 
-已有 Browser Bridge 连接时改用 `--bridge-session`、`--bridge-context`，目标浏览器默认为 Edge：
+需要明确指定 Browser Bridge 来源时改用 `--bridge-session`、`--bridge-context`：
 
 ```bash
 node bin/applyctl.js browser login-reuse --from bridge --bridge-session <session> --bridge-context <context> \

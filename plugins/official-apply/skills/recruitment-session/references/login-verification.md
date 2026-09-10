@@ -5,7 +5,7 @@
 
 ## 登录态清单与复用
 
-批量任务由主控扫描一次，按本批目标域名选择来源和目标配置后交给执行者；已有明确来源时直接复用并验证，无需逐家重扫全部浏览器。
+打开任务后先检查当前页面。只有当前页确认未登录，才按目标 host 和明确登录域名发现来源，并在同一个任务页面导入后再次调用登录 inspect；重复 inspect 已登录时不扫描、不导入。
 
 先查看本机浏览器和项目配置的非敏感元数据：
 
@@ -13,12 +13,17 @@
 node bin/applyctl.js browser login-inventory --json
 ```
 
+按目标预扫描时传 `--domains <目标域名[,登录域名]>`。项目 profile 的 `.official-apply-web-state.json`
+即使没有 `verifiedLogin`，只要域名和状态匹配仍会作为候选；最终是否采用由当前页面的登录适配器确认。
+
 清单会列出实际发现的 Chrome/Edge/Chromium 类配置、Ego、Codex browser、Firefox 档案、
 Safari 默认档案及容器 profile，以及已连接 OpenCLI Browser Bridge 的 context。`domainEnumeration` 为 `complete` 才表示 Cookie 域名已读到，
 `failed` 表示文件存在但当前只读查询失败，`unsupported` 表示文件已登记但没有可用域名枚举；
 Safari 的 `Cookies.binarycookies` 会被登记为状态文件，当前仍不能作为可复用登录态。
 
 文件存在只代表未验证。工具在本机传递登录数据；Agent 读取清单和验证结果，不把 Cookie、浏览器存储或认证凭据的具体值打印到报告。
+
+正式任务不需要先手工选择来源：`apply.login { runId, action: "inspect" }` 在当前页确认未登录后，按目标 host 先试项目 profile，再试已连接 Bridge，最后才考虑父域共享状态。返回 `login_state_ambiguous` 时，把返回的 `sourceId` 原样传回同一个 `apply.login` 调用；复用失败会在结果中给出 `reuseFailureReason`。
 
 用户已经登录目标招聘站时，用明确提供的动态 CDP 端点和登录后页面标记：
 

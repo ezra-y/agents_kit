@@ -16,6 +16,7 @@
 import { startRunSession } from "../application/start-run-session.js";
 import { openResumePage } from "../application/open-resume-page.js";
 import { rememberMokaLogin, reuseMokaLogin } from "../application/reuse-moka-login.js";
+import { reuseLoginStateOnCurrentPage } from "../application/reuse-login-state.js";
 import { savePageScriptWithReadback } from "../application/save-page-script-with-readback.js";
 import { loadPageScriptWritePlan, persistPageScriptWritePlan, } from "../application/page-script-write-plan.js";
 import { captureResumeReviewEvidence } from "../application/capture-resume-review-evidence.js";
@@ -426,6 +427,7 @@ export function registerMcpTools() {
                 const runSession = {
                     runId: started.runId,
                     taskId,
+                    targetUrl: started.targetUrl,
                     materialRefs: started.materialRefs,
                     profileRecordIds: started.profileRecordIds,
                     schemaCache: createPageSchemaCache(),
@@ -500,6 +502,15 @@ export function registerMcpTools() {
                         type: 'string',
                         description: 'submit_sms_code 使用。不会写入数据库、证据目录或工具结果。',
                     },
+                    domains: {
+                        type: 'array',
+                        description: '可选的明确登录域名；缺省只按当前任务页面 host 发现来源。',
+                        items: { type: 'string' },
+                    },
+                    sourceId: {
+                        type: 'string',
+                        description: '上次 inspect 报告多个来源时，指定要尝试的 sourceId。',
+                    },
                 },
                 required: ['runId', 'action'],
             },
@@ -514,6 +525,7 @@ export function registerMcpTools() {
                     action !== 'submit_sms_code') {
                     return fail('mcp_invalid_argument', 'action 必须是 inspect、begin_sms 或 submit_sms_code。');
                 }
+                const originalPageUrl = found.page.url();
                 let login = await manageLogin({
                     page: found.page,
                     action,
@@ -556,6 +568,41 @@ export function registerMcpTools() {
                     if (reusedFromProfile !== undefined) {
                         login = { ...await manageLogin({ page: found.page, action: 'inspect', now: input.now }), reusedFromProfile };
                         login.evidence.push(`已从档案 ${reusedFromProfile} 复用登录并在当前公司验证账号。`);
+                    }
+                }
+                if (action === 'inspect' &&
+                    login.providerId !== 'moka.shared.sms' &&
+                    (login.stage === 'sms_ready' || login.stage === 'login_required')) {
+                    const reused = await reuseLoginStateOnCurrentPage({
+                        session: found.session,
+                        page: found.page,
+                        runId: found.run.runId,
+                        targetUrl: found.run.targetUrl ?? originalPageUrl,
+                        domains: readStringArray(input.args, 'domains'),
+                        sourceId: readString(input.args, 'sourceId'),
+                        verifyLogin: async (page) => (await manageLogin({ page, action: 'inspect', now: input.now })).stage === 'logged_in',
+                    });
+                    if (reused.status === 'ambiguous') {
+                        syncHumanTakeover({ paths: input.paths, runId: found.run.runId, now: input.now,
+                            active: { runId: found.run.runId, reason: 'login',
+                                message: `发现多个无法区分的登录来源：${reused.sourceIds.join('、')}`,
+                                resumeCondition: '指定要复用的登录来源后继续。', currentUrl: found.page.url() } });
+                        return fail('login_state_ambiguous', '发现多个无法区分的登录来源，请指定来源后重试。', {
+                            ...login,
+                            candidates: reused.sourceIds,
+                            runId: found.run.runId,
+                        });
+                    }
+                    if (reused.status === 'reused') {
+                        login = {
+                            ...await manageLogin({ page: found.page, action: 'inspect', now: input.now }),
+                            reusedFromProfile: reused.sourceId,
+                        };
+                        login.evidence.push(`已从来源 ${reused.sourceId} 复用登录并在当前任务页面验证。`);
+                    }
+                    else if (reused.reason !== undefined) {
+                        login = { ...login, reuseFailureReason: reused.reason };
+                        login.evidence.push(`登录来源复用未成功：${reused.reason}`);
                     }
                 }
                 if (login.stage === 'logged_in') {

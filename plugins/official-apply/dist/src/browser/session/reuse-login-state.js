@@ -1,12 +1,11 @@
-import { randomUUID } from 'node:crypto';
-import { existsSync, rmSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { isInsideLocalRoot } from "../../config/paths.js";
 import { createBrowserContext } from "./create-browser-context.js";
 import { connectBrowser } from "./connect-browser.js";
 import { closeBrowserSession } from "./close-browser-session.js";
 import { selectAttachTargetFromBrowser } from "./select-attach-target.js";
-import { exportPersistentWebState, mergePersistentWebState, readPersistentWebState, writePersistentWebState, } from "./persist-session-storage.js";
+import { exportPersistentWebState, capturePersistentBrowserState, replacePersistentWebStateForDomains, replacePersistentWebStateOnContextForDomains, restoreExactPersistentBrowserState, prepareSessionStorageForNavigation, readPersistentWebState, savePersistentSessionStorageForDomains, writePersistentWebState, } from "./persist-session-storage.js";
 import { exportLoginStateFromOpenCliBridge } from "./opencli-bridge-login-state.js";
 function assertHttpsUrl(rawUrl) {
     const url = new URL(rawUrl);
@@ -38,41 +37,53 @@ async function restoreAndVerifyTarget(input) {
     if (existsSync(path.join(targetProfileDir, 'SingletonLock'))) {
         throw new Error('login_state_target_in_use');
     }
-    const targetState = mergePersistentWebState(readPersistentWebState(targetProfileDir), input.state);
-    const verificationProfileName = `${input.targetProfileName}.login-verify-${randomUUID().slice(0, 12)}`;
-    const verificationProfileDir = path.join(input.paths.browserProfileDir, verificationProfileName);
-    writePersistentWebState(verificationProfileDir, targetState);
+    const previousState = readPersistentWebState(targetProfileDir);
+    const targetState = replacePersistentWebStateForDomains(previousState, input.state, input.domains);
     let targetSession;
+    let previousBrowserState;
+    let verified = false;
     try {
         targetSession = await connectBrowser({
             paths: input.paths,
             mode: 'persistent',
-            profileName: verificationProfileName,
+            profileName: input.targetProfileName,
             channel: input.targetChannel,
             headless: true,
             timeoutMs: input.timeoutMs,
         });
         const targetContext = await createBrowserContext(targetSession);
+        previousBrowserState = await capturePersistentBrowserState(targetContext);
+        await replacePersistentWebStateOnContextForDomains(targetContext, input.state, input.domains);
         const targetPage = await targetContext.newPage();
-        await targetPage.goto(input.targetUrl, {
-            waitUntil: 'domcontentloaded',
-            timeout: input.timeoutMs ?? 60_000,
-        });
+        const removeSessionStorageScript = await prepareSessionStorageForNavigation(targetPage, targetState, new URL(input.targetUrl).origin);
+        try {
+            await targetPage.goto(input.targetUrl, {
+                waitUntil: 'domcontentloaded',
+                timeout: input.timeoutMs ?? 60_000,
+            });
+        }
+        finally {
+            await removeSessionStorageScript();
+        }
         const targetLoginVerified = await bodyHasMarker(targetPage, input.loginMarker, input.timeoutMs ?? 60_000);
         if (!targetLoginVerified)
             throw new Error('login_state_target_login_unverified');
         const verifiedAt = new Date().toISOString();
-        writePersistentWebState(targetProfileDir, targetState, {
+        await savePersistentSessionStorageForDomains(targetContext, targetProfileDir, input.domains, {
             origin: new URL(targetPage.url()).origin,
-            accountId: 'login-marker',
             verifiedAt,
         });
+        verified = true;
         return { targetProfileDir, targetLoginVerified, verifiedAt };
     }
     finally {
+        if (!verified && targetSession?.context !== undefined && previousBrowserState !== undefined) {
+            await restoreExactPersistentBrowserState(targetSession.context, previousBrowserState).catch(() => undefined);
+        }
         if (targetSession !== undefined)
             await closeBrowserSession(targetSession).catch(() => undefined);
-        rmSync(verificationProfileDir, { recursive: true, force: true });
+        if (!verified)
+            writePersistentWebState(targetProfileDir, previousState);
     }
 }
 export async function reuseLoginStateFromAttachedBrowser(request) {
@@ -119,6 +130,7 @@ export async function reuseLoginStateFromAttachedBrowser(request) {
             targetProfileName: request.targetProfileName,
             targetUrl: target.href,
             state,
+            domains: request.domains,
             loginMarker: request.loginMarker,
             targetChannel: request.targetChannel ?? request.sourceChannel,
             timeoutMs: request.timeoutMs,
@@ -162,6 +174,7 @@ export async function reuseLoginStateFromOpenCliBridge(request) {
             targetProfileName: request.targetProfileName,
             targetUrl: target.href,
             state: exported.state,
+            domains: request.domains,
             loginMarker: request.loginMarker,
             targetChannel,
             timeoutMs: request.timeoutMs,

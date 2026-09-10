@@ -140,12 +140,11 @@ async function bridgeBodyHasMarker(page, marker, timeoutMs) {
     } while (Date.now() < deadline);
     return false;
 }
-export async function exportLoginStateFromOpenCliBridge(request) {
+async function connectExistingBridge(request) {
     const resolved = await resolveBridge();
-    const timeoutMs = request.timeoutMs ?? 60_000;
     const health = await resolved.module.getDaemonHealth({
         contextId: request.contextId,
-        timeout: Math.min(timeoutMs, 3_000),
+        timeout: Math.min(request.timeoutMs, 3_000),
     });
     if (health.state !== 'ready')
         throw new Error(`opencli_browser_bridge_unavailable:${health.state}`);
@@ -154,12 +153,46 @@ export async function exportLoginStateFromOpenCliBridge(request) {
     }
     const bridge = new resolved.module.BrowserBridge();
     const page = await bridge.connect({
-        timeout: Math.max(1, Math.ceil(timeoutMs / 1_000)),
+        timeout: Math.max(1, Math.ceil(request.timeoutMs / 1_000)),
         session: request.session,
         contextId: request.contextId,
         windowMode: 'background',
         surface: 'browser',
         siteSession: 'persistent',
+    });
+    return { bridge, page };
+}
+function cookieUrls(targetUrl, domains) {
+    const target = new URL(targetUrl);
+    const urls = new Set([targetUrl]);
+    for (const domain of domains) {
+        const host = domain.replace(/^\.+/, '');
+        if (host !== '')
+            urls.add(`${target.protocol}//${host}${target.pathname}`);
+    }
+    return [...urls];
+}
+export async function exportCookiesFromOpenCliBridge(request) {
+    const timeoutMs = request.timeoutMs ?? 60_000;
+    const { bridge, page } = await connectExistingBridge({ ...request, timeoutMs });
+    try {
+        const cookieResults = await Promise.all([
+            ...cookieUrls(request.targetUrl, request.domains).map((url) => page.getCookies({ url })),
+            ...request.domains.map((domain) => page.getCookies({ domain })),
+        ]);
+        const cookies = dedupeCookies(cookieResults.flat().map(cookieToPlaywright).filter((cookie) => cookie !== undefined));
+        return { version: 2, origins: {}, cookies };
+    }
+    finally {
+        await bridge.close().catch(() => undefined);
+    }
+}
+export async function exportLoginStateFromOpenCliBridge(request) {
+    const timeoutMs = request.timeoutMs ?? 60_000;
+    const { bridge, page } = await connectExistingBridge({
+        session: request.session,
+        contextId: request.contextId,
+        timeoutMs,
     });
     let createdPage;
     try {
@@ -176,22 +209,21 @@ export async function exportLoginStateFromOpenCliBridge(request) {
             if (createdPage === undefined)
                 throw new Error('opencli_browser_bridge_new_tab_failed');
         }
-        const sourceLoginVerified = await bridgeBodyHasMarker(page, request.loginMarker, timeoutMs);
-        if (!sourceLoginVerified)
+        const sourceLoginVerified = request.loginMarker === undefined
+            ? false
+            : await bridgeBodyHasMarker(page, request.loginMarker, timeoutMs);
+        if (request.loginMarker !== undefined && !sourceLoginVerified) {
             throw new Error('login_state_source_login_unverified');
+        }
         const values = await page.evaluate(() => ({
             origin: window.location.origin,
             localStorage: Object.fromEntries(Object.entries(window.localStorage)),
             sessionStorage: Object.fromEntries(Object.entries(window.sessionStorage)),
         }));
-        const targetUrl = new URL(request.targetUrl);
-        const cookieUrls = new Set([request.targetUrl]);
-        for (const domain of request.domains) {
-            const host = domain.replace(/^\.+/, '');
-            if (host !== '')
-                cookieUrls.add(`${targetUrl.protocol}//${host}${targetUrl.pathname}`);
-        }
-        const cookieResults = await Promise.all([...cookieUrls].map((url) => page.getCookies({ url })));
+        const cookieResults = await Promise.all([
+            ...cookieUrls(request.targetUrl, request.domains).map((url) => page.getCookies({ url })),
+            ...request.domains.map((domain) => page.getCookies({ domain })),
+        ]);
         const cookies = dedupeCookies(cookieResults.flat().map(cookieToPlaywright).filter((cookie) => cookie !== undefined));
         return {
             state: {

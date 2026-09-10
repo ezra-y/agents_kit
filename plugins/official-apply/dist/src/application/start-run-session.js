@@ -7,6 +7,7 @@ import { openApplicationPage } from "../browser/session/open-application-page.js
 import { syncHumanTakeover } from "./sync-human-takeover.js";
 import { browserSessionIdForRun, prepareBrowserSession, setSessionPage, writeBrowserSessionStatus, } from "../browser/session/browser-session-lifecycle.js";
 import { observeNetwork } from "../browser/network/observe-network.js";
+import { prepareSessionStorageForNavigation, readPersistentWebState } from "../browser/session/persist-session-storage.js";
 import { migrateBrowserLoginState, } from "../browser/session/migrate-login-state.js";
 import { openRuntimeDatabase } from "../storage/open-runtime-database.js";
 import { invalidatePendingSubmissionApprovals } from "../submission/submission-approval.js";
@@ -169,13 +170,22 @@ export async function startRunSession(request) {
             : await activeContext.newPage();
         setSessionPage(session, blank);
         networkObserver = observeNetwork(blank);
+        const removeSessionStorageScript = session.mode === 'persistent' && session.profileDir !== undefined
+            ? await prepareSessionStorageForNavigation(blank, readPersistentWebState(session.profileDir))
+            : async () => undefined;
         // 这条任务放行过的域名。别的任务放行过的一律不算（修复清单 P2-7）。
         const allowedHosts = readApprovedHosts(request.paths, request.taskId);
-        const page = await openApplicationPage(session, {
-            runId: opened.runId,
-            url: opened.url,
-            ...(allowedHosts.length === 0 ? {} : { allowedHosts }),
-        });
+        let page;
+        try {
+            page = await openApplicationPage(session, {
+                runId: opened.runId,
+                url: opened.url,
+                ...(allowedHosts.length === 0 ? {} : { allowedHosts }),
+            });
+        }
+        finally {
+            await removeSessionStorageScript();
+        }
         const target = session.page;
         if (target === undefined) {
             throw new Error('browser_page_missing: 浏览器没有可用页面');
@@ -194,6 +204,7 @@ export async function startRunSession(request) {
         return {
             runId: opened.runId,
             taskId: request.taskId,
+            targetUrl: opened.url,
             session,
             page: target,
             siteHost: new URL(page.finalUrlRedacted).hostname,
