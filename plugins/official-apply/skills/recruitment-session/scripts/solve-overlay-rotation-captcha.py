@@ -45,8 +45,8 @@ def crop_target(
 ) -> Image.Image:
     cx = background.width / 2 if center_x is None else center_x
     cy = background.height / 2 if center_y is None else center_y
-    left = round(cx - size[0] / 2)
-    top = round(cy - size[1] / 2)
+    left = round(cx - (size[0] - 1) / 2)
+    top = round(cy - (size[1] - 1) / 2)
     right = left + size[0]
     bottom = top + size[1]
     if left < 0 or top < 0 or right > background.width or bottom > background.height:
@@ -73,13 +73,23 @@ def feature(image: Image.Image) -> list[float]:
     ]
 
 
-def mask_indices(piece: Image.Image) -> list[int]:
+def gray_values(image: Image.Image) -> list[int]:
+    gray = image.convert("L")
+    values = gray.get_flattened_data() if hasattr(gray, "get_flattened_data") else gray.getdata()
+    return list(values)
+
+
+def mask_indices(
+    piece: Image.Image,
+    inner_ratio: float = 0.12,
+    outer_ratio: float = 0.62,
+) -> list[int]:
     alpha = piece.getchannel("A")
     cx = (piece.width - 1) / 2
     cy = (piece.height - 1) / 2
     radius = min(piece.width, piece.height) / 2
-    inner = radius * 0.12
-    outer = radius * 0.62
+    inner = radius * inner_ratio
+    outer = radius * outer_ratio
     indices: list[int] = []
     for y in range(piece.height):
         for x in range(piece.width):
@@ -89,6 +99,12 @@ def mask_indices(piece: Image.Image) -> list[int]:
     if len(indices) < 1000:
         raise ValueError("overlay_mask_unreadable")
     return indices
+
+
+def target_is_white_hole(target: Image.Image, indices: list[int]) -> bool:
+    values = gray_values(target)
+    values = [values[index] for index in indices]
+    return bool(values) and min(values) >= 245 and max(values) - min(values) <= 10
 
 
 def correlation(left: list[float], right: list[float]) -> float:
@@ -111,14 +127,22 @@ def correlation(left: list[float], right: list[float]) -> float:
 def score(
     piece: Image.Image,
     target_feature: list[float],
+    target_gray: list[int],
     indices: list[int],
     counter_clockwise_degrees: float,
+    comparison_mask: str,
 ) -> float:
     rotated = piece.rotate(
         counter_clockwise_degrees,
         resample=Image.Resampling.BICUBIC,
         expand=False,
     )
+    if comparison_mask == "white_hole_outer_edge":
+        rotated_feature = gray_values(rotated)
+        return -sum(
+            abs(float(rotated_feature[index]) - float(target_gray[index]))
+            for index in indices
+        ) / len(indices) / 255
     rotated_feature = feature(rotated)
     return correlation(
         [rotated_feature[index] for index in indices],
@@ -151,16 +175,21 @@ def solve(args: argparse.Namespace) -> dict[str, object]:
         args.center_x,
         args.center_y,
     )
-    indices = mask_indices(piece)
     target_feature = feature(target)
+    indices = mask_indices(piece)
+    comparison_mask = "inner"
+    if target_is_white_hole(target, indices):
+        indices = mask_indices(piece, inner_ratio=0.90, outer_ratio=0.995)
+        comparison_mask = "white_hole_outer_edge"
+    target_gray = gray_values(target)
 
     coarse = [
-        (score(piece, target_feature, indices, angle), angle)
+        (score(piece, target_feature, target_gray, indices, angle, comparison_mask), angle)
         for angle in float_range(0, 360 - args.coarse_step, args.coarse_step)
     ]
     coarse_score, coarse_angle = max(coarse)
     fine = [
-        (score(piece, target_feature, indices, angle), angle)
+        (score(piece, target_feature, target_gray, indices, angle, comparison_mask), angle)
         for angle in float_range(
             coarse_angle - args.coarse_step,
             coarse_angle + args.coarse_step,
@@ -178,13 +207,22 @@ def solve(args: argparse.Namespace) -> dict[str, object]:
     clockwise_degrees = (-best_ccw_angle) % 360
     if math.isclose(clockwise_degrees, 360, abs_tol=args.fine_step):
         clockwise_degrees = 0.0
-    confidence = (
-        "high"
-        if best_score >= 0.55 and gap >= 0.08
-        else "medium"
-        if best_score >= 0.35 and gap >= 0.04
-        else "low"
-    )
+    if comparison_mask == "white_hole_outer_edge":
+        confidence = (
+            "high"
+            if best_score >= -0.20 and gap >= 0.08
+            else "medium"
+            if best_score >= -0.45 and gap >= 0.015
+            else "low"
+        )
+    else:
+        confidence = (
+            "high"
+            if best_score >= 0.55 and gap >= 0.08
+            else "medium"
+            if best_score >= 0.35 and gap >= 0.04
+            else "low"
+        )
     return {
         "clockwiseDegrees": round(clockwise_degrees, 1),
         "counterClockwiseImageRotation": round(best_ccw_angle % 360, 1),
@@ -197,6 +235,7 @@ def solve(args: argparse.Namespace) -> dict[str, object]:
             args.center_x if args.center_x is not None else background.width / 2,
             args.center_y if args.center_y is not None else background.height / 2,
         ],
+        "comparisonMask": comparison_mask,
     }
 
 

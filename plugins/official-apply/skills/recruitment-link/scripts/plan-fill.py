@@ -76,15 +76,25 @@ def checkbox_value(value):
     raise ValueError(f"无法识别复选框值：{value!r}")
 
 
-def load_descriptor(data_root):
-    path = Path(data_root) / "tables" / "locations.json"
-    registry = load_json(path)
-    descriptor = registry.get("tables", {}).get("sources") if isinstance(registry, dict) else None
+def _table_descriptor(registry, role, required=True):
+    descriptor = registry.get("tables", {}).get(role) if isinstance(registry, dict) else None
+    if descriptor is None and not required:
+        return None
     if not isinstance(descriptor, dict) or descriptor.get("kind") != "feishu":
-        raise UserError("locations.json 中缺少飞书 sources 表")
+        raise UserError(f"locations.json 中缺少飞书 {role} 表")
     field_map = descriptor.get("fieldMap")
     if not isinstance(field_map, dict):
-        raise UserError("sources.fieldMap 缺失或不是对象")
+        raise UserError(f"{role}.fieldMap 缺失或不是对象")
+    if not descriptor.get("baseToken") or not descriptor.get("tableId"):
+        raise UserError(f"{role} 描述缺少 baseToken 或 tableId")
+    return descriptor
+
+
+def load_descriptors(data_root):
+    path = Path(data_root) / "tables" / "locations.json"
+    registry = load_json(path)
+    descriptor = _table_descriptor(registry, "sources")
+    field_map = descriptor.get("fieldMap")
     checkbox_name = next((name for name in ("投递情况", "处理完成") if field_map.get(name)), None)
     if not checkbox_name:
         raise UserError("sources.fieldMap 缺少「投递情况」或「处理完成」字段 ID")
@@ -94,9 +104,7 @@ def load_descriptor(data_root):
     url_name = next((name for name in ("来源链接", "岗位链接") if field_map.get(name)), None)
     if not url_name:
         raise UserError("sources.fieldMap 缺少「来源链接」或「岗位链接」字段 ID")
-    if not descriptor.get("baseToken") or not descriptor.get("tableId"):
-        raise UserError("sources 描述缺少 baseToken 或 tableId")
-    return descriptor, url_name, checkbox_name
+    return descriptor, _table_descriptor(registry, "candidates", required=False), url_name, checkbox_name
 
 
 def read_rows(snapshot):
@@ -198,8 +206,78 @@ def local_blocks(data_root, descriptor, rows):
     return blocked
 
 
-def plan(data_root, snapshot):
-    descriptor, url_name, checkbox_name = load_descriptor(data_root)
+def _handled_fill(value):
+    return value in FINISHED_FILL or value == "填写中"
+
+
+def _candidate_rows(source_descriptor, candidates_descriptor, snapshot, source_snapshot):
+    if candidates_descriptor is None:
+        return None, set()
+    if snapshot is None:
+        if (
+            candidates_descriptor["baseToken"] == source_descriptor["baseToken"]
+            and candidates_descriptor["tableId"] == source_descriptor["tableId"]
+        ):
+            snapshot = source_snapshot
+        else:
+            raise UserError("locations.json 已登记独立 candidates 表，必须传 --candidate-rows 完整快照")
+    field_ids, rows = read_rows(snapshot)
+    field_map = candidates_descriptor.get("fieldMap", {})
+    checkbox_name = next((name for name in ("投递情况", "处理完成") if field_map.get(name)), None)
+    if checkbox_name is None:
+        raise UserError("candidates.fieldMap 缺少「投递情况」或「处理完成」字段 ID")
+    for name in ("公司", "填写状态", checkbox_name):
+        if not isinstance(field_map.get(name), str) or not field_map[name]:
+            raise UserError(f"candidates.fieldMap 缺少「{name}」字段 ID")
+        if field_map[name] not in field_ids:
+            raise UserError(f"候选行快照缺少 fieldMap 指定的「{name}」字段")
+
+    company_id = field_map["公司"]
+    fill_id = field_map["填写状态"]
+    checkbox_id = field_map[checkbox_name]
+    treated_by_company = set()
+    treated_by_record = set()
+    for row_id, cells in rows:
+        company = text_value(cells[company_id])
+        if not company:
+            continue
+        try:
+            applied = checkbox_value(cells[checkbox_id])
+        except ValueError as error:
+            raise UserError(f"候选行 {row_id} 的投递情况无效：{error}") from error
+        fill = text_value(cells.get(fill_id))
+        if applied or _handled_fill(fill):
+            treated_by_company.add(company)
+            treated_by_record.add(row_id)
+    return treated_by_company, treated_by_record
+
+
+def result_map_candidates(data_root, source_descriptor, candidates_descriptor):
+    path = Path(data_root) / "tables" / "source-result-map.json"
+    if not path.exists() or candidates_descriptor is None:
+        return {}
+    mapping = load_json(path)
+    if not isinstance(mapping, dict):
+        raise UserError("source-result-map.json 不是对象")
+    if (
+        mapping.get("baseToken") != source_descriptor.get("baseToken")
+        or mapping.get("baseToken") != candidates_descriptor.get("baseToken")
+        or mapping.get("sourceTableId") != source_descriptor.get("tableId")
+        or mapping.get("resultTableId") != candidates_descriptor.get("tableId")
+    ):
+        return {}
+    records = mapping.get("records")
+    if not isinstance(records, dict):
+        raise UserError("source-result-map.json 的 records 不是对象")
+    result = {}
+    for source_id, value in records.items():
+        if isinstance(value, dict) and isinstance(value.get("recordId"), str) and value["recordId"]:
+            result[source_id] = value["recordId"]
+    return result
+
+
+def plan(data_root, snapshot, candidate_snapshot=None):
+    descriptor, candidates_descriptor, url_name, checkbox_name = load_descriptors(data_root)
     field_ids, rows = read_rows(snapshot)
     field_map = descriptor["fieldMap"]
     required = [field_map[name] for name in (checkbox_name, "提交状态", "公司", url_name)]
@@ -213,6 +291,23 @@ def plan(data_root, snapshot):
     if fill_id in required:
         raise UserError("fieldMap 的「填写状态」不能复用其他必需列")
     local = local_blocks(data_root, descriptor, rows)
+    treated_candidates, treated_candidate_records = _candidate_rows(
+        descriptor, candidates_descriptor, candidate_snapshot, snapshot
+    )
+    mapped_candidates = result_map_candidates(data_root, descriptor, candidates_descriptor)
+    source_handled_by_company = set()
+    for source_row_id, source_cells in rows:
+        source_company = text_value(source_cells[field_map["公司"]])
+        if not source_company:
+            continue
+        try:
+            source_checked = checkbox_value(source_cells[field_map[checkbox_name]])
+        except ValueError:
+            continue
+        source_submission = text_value(source_cells[field_map["提交状态"]])
+        source_fill = text_value(source_cells.get(fill_id)) if fill_id else ""
+        if source_checked or source_submission in FINISHED_SUBMISSION or source_fill in FINISHED_FILL:
+            source_handled_by_company.add(source_company)
     items = []
     for row_id, cells in rows:
         company = text_value(cells[field_map["公司"]])
@@ -235,8 +330,18 @@ def plan(data_root, snapshot):
                 decision, reason = "blocked", f"未知提交状态：{submission}"
             elif fill in FINISHED_FILL:
                 decision, reason = "skipped", f"填写状态为{fill}"
+            elif company in source_handled_by_company:
+                decision, reason = "skipped", "同公司另一来源行已有完成标记"
             elif row_id in local:
                 decision, reason = "skipped", "本地运行记录表明该公司已填写、已提交或提交结果不确定"
+            elif (
+                treated_candidates is not None
+                and (
+                    company in treated_candidates
+                    or mapped_candidates.get(row_id) in treated_candidate_records
+                )
+            ):
+                decision, reason = "skipped", "候选表同名或已授权关联行已完成填写、正在填写或已投递"
             elif not company:
                 decision, reason = "blocked", "缺少公司"
             elif not url:
@@ -255,6 +360,11 @@ def plan(data_root, snapshot):
         })
     return {
         "source": {"baseToken": descriptor["baseToken"], "tableId": descriptor["tableId"]},
+        "candidates": (
+            None
+            if candidates_descriptor is None
+            else {"baseToken": candidates_descriptor["baseToken"], "tableId": candidates_descriptor["tableId"]}
+        ),
         "items": items,
         "summary": {name: sum(item["decision"] == name for item in items) for name in ("eligible", "skipped", "blocked")},
     }
@@ -264,9 +374,14 @@ def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-root", required=True)
     parser.add_argument("--rows", required=True)
+    parser.add_argument("--candidate-rows")
     args = parser.parse_args(argv)
     try:
-        result = plan(args.data_root, load_json(args.rows))
+        result = plan(
+            args.data_root,
+            load_json(args.rows),
+            load_json(args.candidate_rows) if args.candidate_rows else None,
+        )
     except (UserError, sqlite3.Error) as error:
         json.dump({"ok": False, "error": str(error)}, sys.stdout, ensure_ascii=False)
         sys.stdout.write("\n")

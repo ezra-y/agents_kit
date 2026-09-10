@@ -1,15 +1,12 @@
 #!/usr/bin/env node
 
-import { writeFile } from 'node:fs/promises';
-import path from 'node:path';
 import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
 
 import { launch } from '../../../bin/launch.js';
 import { createCaptchaCase } from './captcha-case.mjs';
+import { SOLVER, solveOverlayRotationOnPage } from './overlay-rotation-engine.mjs';
 
-const HERE = path.dirname(fileURLToPath(import.meta.url));
-const SOLVER = path.join(HERE, 'solve-overlay-rotation-captcha.py');
 
 function option(name, fallback) {
   const index = process.argv.indexOf(name);
@@ -57,135 +54,6 @@ function write(event, data) {
   process.stdout.write(`${event} ${JSON.stringify(data)}\n`);
 }
 
-function backgroundUrl(value) {
-  const match = value.match(/^url\(["']?(.*?)["']?\)$/);
-  if (!match?.[1]) throw new Error('overlay_background_url_not_found');
-  return match[1];
-}
-
-async function challengeFrame(page, timeoutMs = 8_000) {
-  const deadline = Date.now() + timeoutMs;
-  while (Date.now() < deadline) {
-    for (const frame of page.frames()) {
-      if ((await frame.locator('#img-back-div #img-rotate-div img').count()) > 0) {
-        return frame;
-      }
-    }
-    await page.waitForTimeout(50);
-  }
-  throw new Error('overlay_rotation_challenge_not_found');
-}
-
-async function downloadCurrentChallenge(frame) {
-  await frame.locator('#img-back-div').screenshot({ path: path.join(captchaCase.directory, 'challenge-rendered.png') });
-  const challenge = await frame.evaluate(() => {
-    const background = document.querySelector('#img-back-div');
-    const piece = document.querySelector('#img-rotate-div img');
-    if (!(background instanceof HTMLElement) || !(piece instanceof HTMLImageElement)) {
-      throw new Error('overlay_rotation_images_not_found');
-    }
-    return {
-      backgroundStyle: getComputedStyle(background).backgroundImage,
-      pieceSrc: piece.src,
-    };
-  });
-  const [pieceResponse, backgroundResponse] = await Promise.all([
-    fetch(challenge.pieceSrc),
-    fetch(backgroundUrl(challenge.backgroundStyle)),
-  ]);
-  if (!pieceResponse.ok || !backgroundResponse.ok) {
-    throw new Error(
-      `overlay_rotation_download_failed: piece=${pieceResponse.status}, background=${backgroundResponse.status}`,
-    );
-  }
-  const stamp = Date.now();
-  const pieceFile = path.join(captchaCase.directory, `overlay-rotation-${stamp}-piece.png`);
-  const backgroundFile = path.join(
-    captchaCase.directory,
-    `overlay-rotation-${stamp}-background.png`,
-  );
-  await Promise.all([
-    writeFile(pieceFile, Buffer.from(await pieceResponse.arrayBuffer())),
-    writeFile(backgroundFile, Buffer.from(await backgroundResponse.arrayBuffer())),
-  ]);
-  return { pieceFile, backgroundFile };
-}
-
-function solveCurrentChallenge(files) {
-  const solution = captchaCase.solve(['--piece', files.pieceFile, '--background', files.backgroundFile]);
-  if (!solution.ok || solution.confidence === 'low') {
-    throw new Error(`overlay_rotation_solution_unusable: ${JSON.stringify(solution)}`);
-  }
-  return solution;
-}
-
-async function dragToAngle(page, frame, clockwiseDegrees) {
-  const slider = frame.locator('#slider-div').first();
-  const track = frame.locator('.drag-box').first();
-  await slider.waitFor({ state: 'visible', timeout: 8_000 });
-  const [sliderBox, trackBox] = await Promise.all([
-    slider.boundingBox(),
-    track.boundingBox(),
-  ]);
-  if (!sliderBox || !trackBox) throw new Error('overlay_rotation_slider_not_visible');
-
-  const maxDistance = trackBox.width - sliderBox.width;
-  if (maxDistance <= 0) throw new Error('overlay_rotation_track_unusable');
-  const normalizedAngle = ((clockwiseDegrees % 360) + 360) % 360;
-  const targetDistance = (normalizedAngle / 360) * maxDistance;
-  captchaCase.record('drag_target', { sliderBox, trackBox, normalizedAngle, targetDistance, maxDistance });
-  const startX = sliderBox.x + sliderBox.width / 2;
-  const startY = sliderBox.y + sliderBox.height / 2;
-
-  await page.mouse.move(startX, startY, { steps: 10 });
-  await page.mouse.down();
-  await page.waitForTimeout(70);
-
-  if (targetDistance < 1) {
-    await page.mouse.move(startX + 8, startY + 0.8, { steps: 10 });
-    await page.waitForTimeout(80);
-  }
-  const steps = Math.max(36, Math.ceil(Math.max(targetDistance, 1) / 1.5));
-  for (let step = 1; step <= steps; step += 1) {
-    const progress = step / steps;
-    const eased = 0.5 - Math.cos(Math.PI * progress) / 2;
-    const jitterY = Math.sin(progress * Math.PI * 4.1) * 0.8;
-    await page.mouse.move(
-      startX + Math.max(targetDistance, 0.5) * eased,
-      startY + jitterY,
-      { steps: 1 },
-    );
-    await page.waitForTimeout(8 + (step % 5));
-  }
-  await page.waitForTimeout(100);
-  captchaCase.record('drag_observed', { sliderBox: await slider.boundingBox(),
-    pieceStyle: await frame.locator('#img-rotate-div').getAttribute('style') });
-  await page.mouse.up();
-  return { normalizedAngle, targetDistance, maxDistance };
-}
-
-async function readDecision(response) {
-  if (response === undefined) return undefined;
-  const body = await response.json().catch(() => ({}));
-  const safe = {};
-  for (const key of ['code', 'msg', 'message', 'success', 'status', 's_code']) {
-    const value = body?.[key];
-    if (
-      typeof value === 'boolean' ||
-      typeof value === 'number' ||
-      (typeof value === 'string' && value.length <= 200)
-    ) {
-      safe[key] = value;
-    }
-  }
-  safe.hasReplacementImage = body?.img !== undefined;
-  return {
-    httpStatus: response.status(),
-    url: `${new URL(response.url()).origin}${new URL(response.url()).pathname}`,
-    body: safe,
-  };
-}
-
 async function fast(page) {
   let status = await server.callTool('apply.login', {
     runId,
@@ -206,36 +74,16 @@ async function fast(page) {
     write('FAST_RESULT', { status, solved: true });
     return;
   }
-  const frame =
-    status.data?.stage === 'captcha_required'
-      ? await challengeFrame(page)
-      : await challengeFrame(page, 4_000).catch(() => undefined);
-  if (frame === undefined) {
-    throw new Error(`overlay_rotation_not_ready: ${JSON.stringify(status)}`);
-  }
   captchaCase = createCaptchaCase({ evidenceDir: paths.evidenceDir, pageUrl: page.url(),
-    runId, taskId, type: 'overlay_rotation', solver: SOLVER, sessionScript: fileURLToPath(import.meta.url) });
+    runId, taskId, type: 'overlay_rotation', solver: SOLVER,
+    sessionScript: fileURLToPath(import.meta.url) });
   write('CASE', { directory: captchaCase.directory });
   try {
-    const files = await downloadCurrentChallenge(frame);
-    const solution = solveCurrentChallenge(files);
-    write('SOLUTION', solution);
-    const verificationResponse = page
-      .waitForResponse((response) => {
-        const url = new URL(response.url());
-        return (
-          response.request().method() === 'POST' &&
-          url.pathname.endsWith('/cgi-bin/api/check')
-        );
-      }, { timeout: 10_000 })
-      .catch(() => undefined);
-    const drag = await dragToAngle(
+    const { solution, drag, verification } = await solveOverlayRotationOnPage({
       page,
-      frame,
-      Number(solution.clockwiseDegrees),
-    );
-    const verification = await readDecision(await verificationResponse);
-    captchaCase.record('verification_response', verification);
+      captchaCase,
+      onEvent: write,
+    });
     await page.waitForTimeout(1_500);
     status = await server.callTool('apply.login', {
       runId,

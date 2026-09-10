@@ -266,9 +266,10 @@ Computer Use 处理；仍无法完成才说明所需用户动作。
 
 ## 圆片覆盖旋转
 
-这类题的完整背景已经包含正确方向的圆形区域，页面再覆盖一张带透明边缘的旋转圆片。
-先按圆片在背景中的真实中心裁出目标区域，再比较圆片内部纹理；不要调用内外环接缝算法。
-识别到 JCAP 的 `#img-back-div`、`#img-rotate-div` 和 `#slider-div` 时，优先执行快速会话：
+这类题的背景可能已经包含正确方向的圆形区域，也可能把目标圆洞涂成白色，再覆盖一张带透明边缘的旋转圆片。
+先按圆片在背景中的真实中心裁出目标区域；白洞题比较洞外缘的连续纹理，普通题比较圆片内部纹理。
+JCAP 使用 `#img-back-div`、`#img-rotate-div` 和 `#slider-div`；Dingxiang 使用同页的
+`.dx_captcha_rotate_*` 控件。两者都优先执行快速会话：
 
 ```bash
 OFFICIAL_APPLY_PHONE=<phone> node \
@@ -278,9 +279,14 @@ OFFICIAL_APPLY_PHONE=<phone> node \
   --auto
 ```
 
-快速会话会读取当前题的背景和圆片、调用求解器、按官网滑轨宽度把角度换算成距离，在一次
-按压中完成拖动，并读取 `/cgi-bin/api/check` 和 `apply.login` 的结果。服务端换题后必须
-重新取图和求解。
+快速会话会读取当前题的背景和圆片、调用求解器、按当前控件的滑轨和 CSS 旋转变化完成一次
+按压，并读取对应验证码接口和 `apply.login` 的结果。JCAP 的验证路径是 `/cgi-bin/api/check`；
+Dingxiang 使用当前页面实际返回的验证路径。服务端换题后必须重新取图和求解。
+
+如果验证码已经在已有 `runId` 的页面中打开，优先在同一 JSONL 会话调用
+`{"operation":"solve_overlay_rotation","runId":"当前runId"}`。结果包含
+`loginStatus` 和 `caseDirectory`；只有 `loginStatus.data.stage` 为 `code_sent` 或
+`logged_in` 才算通过，验证码接口响应本身不能代替登录确认。没有可复用页面时，继续使用上面的独立会话命令。
 
 ```bash
 python3 skills/recruitment-session/scripts/solve-overlay-rotation-captcha.py \
@@ -305,7 +311,8 @@ JCAP 官方脚本使用：
 ```
 
 因此直接读取当前轨道和滑块宽度换算。`0°` 是轨道起点，接近 `360°` 才是轨道终点；不得把
-`0°` 自动改成拖满全程。其他引擎没有这个确定关系时，才在同一次按压内做小距离校准。
+`0°` 自动改成拖满全程。Dingxiang 先小幅移动并读取圆片 CSS 角度变化和实际滑块位置，再按
+这次题目的实测比例继续拖动，不能套用 JCAP 的比例。
 
 案例按站点放在 `.local/evidence/sites/<host>/captcha/`，包含原图、求解输入输出和验证结果；
 不保存短信验证码或完整手机号。

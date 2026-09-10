@@ -6,14 +6,21 @@
 先用 table-locations.py show 取得 sources、candidates。来源位置的 fieldMap 要明确“填写状态”“提交状态”“公司”“来源链接”，并按实际用途登记“投递情况”或“处理完成”复选框；飞书使用真实字段 ID。不同用户实际列名不同，不把某个复选框名称硬编码为所有人的字段。
 
 飞书用 `lark-cli base +record-list --as user --base-token <base> --table-id <table> --offset <offset> --limit 200 --format json`，按这些字段的真实 ID 重复传 --field-id（去重）；根据 has_more 读取所有页，把各页原始 JSON 信封数组存为本次私有 source-rows.json。
-只读清单命令：
+只读清单命令（登记了独立 candidates 表时必须同时传两张表的完整快照）：
 
 ```bash
-python3 skills/recruitment-link/scripts/plan-fill.py --data-root <dataRoot> --rows <source-rows.json>
+python3 skills/recruitment-link/scripts/plan-fill.py \
+  --data-root <dataRoot> \
+  --rows <source-rows.json> \
+  --candidate-rows <candidates-rows.json>
 ```
 
+如果 sources 和 candidates 的 `baseToken`、`tableId` 都相同，可以复用同一份快照；登记了不同的
+`baseToken` 或 `tableId` 却没有传 `--candidate-rows` 时命令报错，不能默默只查来源表。候选表不要求
+存在“提交状态”列，只按实际 fieldMap 读取“公司”“填写状态”“投递情况”。
+
 输出 items 中只有 decision=eligible 可以进入网页；skipped 表示已处理或已有结果，blocked 表示需要核实。不要把返回 ok:true 当成所有行都可以填写。
-程序排除投递情况或处理完成已勾选、表内已投递/流程已推进、已保存/已填写，以及原行或精确公司名关联的本地已完成/已投递/结果不确定记录；提交尝试表里的成功或未决结果优先于过时的任务状态。未知勾选值、字段缺失、缺少后续页不会放行。旧行身份带岗位后缀时按原行 ID 关联，不通过品牌别名猜公司。
+程序排除投递情况或处理完成已勾选、表内已投递/流程已推进、已保存/已填写，以及原行或精确公司名关联的本地已完成/已投递/结果不确定记录；提交尝试表里的成功或未决结果优先于过时的任务状态。候选表逐行读取，任一精确同名候选行已完成填写或已投递就跳过来源行；部分填写、暂时无法填写仍可继续重试。`source-result-map.json` 只有在 baseToken 同时匹配 sources 与 candidates、且 sources tableId、candidates tableId 全部匹配时，才按其 source recordId 到 candidate recordId 的关联补充判断。未知相近名称不模糊合并，也不创建别名框架。未知勾选值、字段缺失、缺少后续页不会放行。旧行身份带岗位后缀时按原行 ID 关联。
 同公司已有完成记录时默认保守跳过；用户明确要求更新该公司的特定简历时，另建明确范围的更新任务，不能悄悄取消原投递记录。
 
 本地 CSV 用 read-local 读取当前 rows：按实际配置列应用同样条件，只保留完成勾选为空/false且填写状态未完成、无已投递证据的行。plan-fill 当前仅解析飞书矩阵，不把 CSV 强行传给它；缺少状态列时先核实列映射，不自行当作未完成。

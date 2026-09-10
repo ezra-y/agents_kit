@@ -557,7 +557,16 @@ export const mihoyoCampusLogin = createSmsLoginProvider({
                 waitUntil: 'domcontentloaded',
                 timeout: 120_000,
             });
+            if ((await page.locator('iframe[src*="login-platform"]').count()) === 0) {
+                const loginEntry = page.getByText('登录', { exact: true }).first();
+                await loginEntry.waitFor({ state: 'visible', timeout: 30_000 });
+                await loginEntry.click();
+            }
         }
+        await page
+            .frameLocator('iframe[src*="login-platform"]')
+            .getByPlaceholder('手机号')
+            .waitFor({ state: 'visible', timeout: 30_000 });
     },
     async isLoggedIn(page) {
         return readMihoyoLoginEvidence(page);
@@ -590,7 +599,7 @@ export const mihoyoCampusLogin = createSmsLoginProvider({
         if (frame === undefined)
             return independentCaptchaFrame;
         return ((await frame
-            .locator('.geetest_panel:visible, .yidun_panel:visible, [class*="slider"]:visible, canvas:visible')
+            .locator('.geetest_panel:visible, .geetest_click:visible, .geetest_box:visible, .yidun_panel:visible, [class*="slider"]:visible, canvas:visible')
             .count()) > 0 ||
             independentCaptchaFrame);
     },

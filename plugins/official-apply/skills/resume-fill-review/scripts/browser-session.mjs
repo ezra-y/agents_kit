@@ -7,6 +7,11 @@ import { fileURLToPath } from 'node:url';
 
 import { launch } from '../../../bin/launch.js';
 import { solveJigsawOnPage } from '../../../skills/recruitment-session/scripts/jigsaw-captcha-engine.mjs';
+import { createCaptchaCase } from '../../../skills/recruitment-session/scripts/captcha-case.mjs';
+import {
+  SOLVER as OVERLAY_ROTATION_SOLVER,
+  solveOverlayRotationOnPage,
+} from '../../../skills/recruitment-session/scripts/overlay-rotation-engine.mjs';
 
 const { getSkillPaths, isInsideLocalRoot } = await launch('src/config/paths.ts');
 const { createMcpServer } = await launch('src/mcp/create-mcp-server.ts');
@@ -71,7 +76,12 @@ try {
     const finishedAt = new Date().toISOString();
     const elapsedMs = Math.round(performance.now() - started);
     if (isSensitiveCommand(command)) {
-      result = { ok: result?.ok, errorCode: result?.errorCode, redacted: true };
+      result = {
+        ok: result?.ok,
+        errorCode: result?.errorCode,
+        ...extractSensitiveTimeoutEvidence(result),
+        redacted: true,
+      };
     }
     const name = `${String(number).padStart(3, '0')}-${slug(command?.tool ?? command?.operation ?? 'invalid')}.json`;
     const record = {
@@ -99,7 +109,15 @@ try {
     );
 
     const output = command?.brief === true
-      ? { ok: result?.ok, message: result?.message, errorCode: result?.errorCode, error: result?.error, redacted: result?.redacted }
+      ? {
+        ok: result?.ok,
+        message: result?.message,
+        errorCode: result?.errorCode,
+        error: result?.error,
+        timeoutOperation: result?.timeoutOperation,
+        timeoutMs: result?.timeoutMs,
+        redacted: result?.redacted,
+      }
       : result;
     process.stdout.write(`${JSON.stringify({ evidence: name, elapsedMs, result: output })}\n`);
   }
@@ -145,6 +163,15 @@ async function execute(command, number) {
     });
   }
 
+  if (command.operation === 'solve_overlay_rotation') {
+    return solveOverlayRotationOnPageWithEvidence({
+      page,
+      evidenceDir,
+      runId: command.runId,
+      taskId: typeof command.taskId === 'string' ? command.taskId : undefined,
+    });
+  }
+
   if (command.operation === 'goto') {
     const response = await page.goto(command.url);
     return { url: page.url(), status: response?.status() };
@@ -183,6 +210,37 @@ async function execute(command, number) {
   }
 
   throw new Error(`未知操作：${String(command.operation)}`);
+}
+
+async function solveOverlayRotationOnPageWithEvidence({ page, evidenceDir, runId, taskId }) {
+  const captchaCase = createCaptchaCase({
+    evidenceDir,
+    pageUrl: page.url(),
+    runId,
+    taskId,
+    type: 'overlay_rotation',
+    solver: OVERLAY_ROTATION_SOLVER,
+    sessionScript: fileURLToPath(import.meta.url),
+  });
+  try {
+    const result = await solveOverlayRotationOnPage({
+      page,
+      captchaCase,
+      onEvent: (event, value) => captchaCase.recordEvent(event, value),
+    });
+    const loginStatus = await server.callTool('apply.login', { runId, action: 'inspect' });
+    const loginStage = loginStatus?.data?.stage;
+    const passed = loginStatus?.ok === true && (loginStage === 'code_sent' || loginStage === 'logged_in');
+    captchaCase.finish(passed ? 'passed' : 'not_confirmed', {
+      verification: result.verification,
+      loginStage,
+    });
+    return { ...result, loginStatus, caseDirectory: captchaCase.directory };
+  } catch (error) {
+    captchaCase.fail(error);
+    error.caseDirectory = captchaCase.directory;
+    throw error;
+  }
 }
 
 function pageOf(runId) {
@@ -262,6 +320,17 @@ function slug(value) {
 
 function describeError(error) {
   return error instanceof Error ? error.message.split('\n')[0] ?? error.name : String(error);
+}
+
+function extractSensitiveTimeoutEvidence(result) {
+  const message = [result?.message, result?.error].find((value) => typeof value === 'string');
+  if (typeof message !== 'string') return {};
+  const match = /^locator\.([A-Za-z][A-Za-z0-9]*)\s*:\s*Timeout\s+(\d+)ms exceeded\./.exec(message);
+  if (match === null) return {};
+  return {
+    timeoutOperation: `locator.${match[1]}`,
+    timeoutMs: Number(match[2]),
+  };
 }
 
 function nextSequence(dir) {

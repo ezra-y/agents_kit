@@ -94,6 +94,16 @@ JSONL
 
 该操作只复用这个 runId 的活页面，不会再启动浏览器或占用新的 profile。返回值中的 caseDirectory 指向本次取图、求解输入、拖动轨迹和验证结果；求解失败也会保留 case.json，不能把失败结果当成验证码通过。
 
+圆片覆盖旋转题也在同一个页面直接调用：
+
+```json
+{"operation":"solve_overlay_rotation","runId":"上一步返回的 runId"}
+```
+
+结果包含 `loginStatus` 和 `caseDirectory`。只有 `loginStatus.data.stage` 为 `code_sent` 或
+`logged_in` 才算登录已确认；验证码接口响应单独不能算成功。没有已有页面时，使用独立的
+`overlay-rotation-login-session.mjs` 会话命令。
+
 每行输出一条结果，截图会写入 `<dataRoot>` 并只返回 `screenshotPath`，不会把二进制 `Buffer`（二进制数据）打印或重复写进 JSON。包含密码、验证码或带凭据链接的请求要加 `"sensitive":true`；参数、表达式、网址和返回内容都会从终端及长期记录中省略，只保留成功标记、错误代码及 `redacted:true`。手机号和履历内容可按正常证据保留。需要判断敏感操作是否成功时，另读不含凭据的页面提示和字段状态。输入结束后脚本会关闭 MCP 会话和浏览器；页面仍需用 `apply.close_run` 提前关闭时，照常发送该工具调用。
 
 已有完整来源、不需要把大结果再次打印时，在命令顶层加 `"brief":true`。终端只返回成功/错误摘要和 `evidence` 文件名，非敏感结果仍完整保存在该文件中。核对字段内容时读取完整证据，摘要不代替 `source.payload` 或服务器字段值。
