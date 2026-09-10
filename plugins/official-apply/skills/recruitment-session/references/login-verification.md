@@ -1,11 +1,11 @@
 # 登录和验证码细节
 
-登录全程复用 `apply.open_task` 返回的同一个 `runId` 和当前页面。登录成功以目标网址和
-登录后页面标志为准。
+登录全程复用 `apply.open_task` 返回的同一个 `runId` 和当前页面。只有当前账号、受保护接口或
+已确认的登录后专有页面证据才算登录成功；目标网址、HTTP 200、没有登录按钮和页面标题都只能辅助判断。
 
 ## 登录态清单与复用
 
-打开任务后先检查当前页面。只有当前页确认未登录，才按目标 host 和明确登录域名发现来源，并在同一个任务页面导入后再次调用登录 inspect；重复 inspect 已登录时不扫描、不导入。
+打开任务后先检查当前页面。底层登录状态检查只读取当前页面和已有正向账号证据，不调用 `prepare`、不发短信；当页面明确需要登录时，`apply.login` 流程可以按目标 host 和明确登录域名自动复用来源并再次检查。`login_unconfirmed` 会保留当前页面，不继续轮换来源；重复 inspect 已登录时不扫描、不导入。
 
 先查看本机浏览器和项目配置的非敏感元数据：
 
@@ -23,7 +23,7 @@ Safari 的 `Cookies.binarycookies` 会被登记为状态文件，当前仍不能
 
 文件存在只代表未验证。工具在本机传递登录数据；Agent 读取清单和验证结果，不把 Cookie、浏览器存储或认证凭据的具体值打印到报告。
 
-正式任务不需要先手工选择来源：`apply.login { runId, action: "inspect" }` 在当前页确认未登录后，按目标 host 先试项目 profile，再试已连接 Bridge，最后才考虑父域共享状态。返回 `login_state_ambiguous` 时，把返回的 `sourceId` 原样传回同一个 `apply.login` 调用；复用失败会在结果中给出 `reuseFailureReason`。
+正式任务不需要先手工选择来源：`apply.login { runId, action: "inspect" }` 只在页面有明确登录入口时尝试来源复用。返回 `login_unconfirmed` 时，当前候选页会保留，结果带 `sourceId` 和证据；调用 `apply.inspect_page` 或已有 browser_action 检查账号/受保护简历，不要继续轮换来源或直接发短信。返回 `login_state_ambiguous` 时，把返回的 `sourceId` 原样传回同一个 `apply.login` 调用；复用失败会在结果中给出 `reuseFailureReason`。
 
 用户已经登录目标招聘站时，用明确提供的动态 CDP 端点和登录后页面标记：
 
@@ -53,7 +53,7 @@ node bin/applyctl.js browser login-reuse --from bridge \
 `sourceBackend`、`targetProfileDir`、`verifiedAt`。只有 Cookie 或状态文件存在时不能算成功。
 典型结果会是 `{"sourceBackend":"opencli_browser_bridge","sourceLoginVerified":true,"targetLoginVerified":true,"targetChannel":"msedge"}`；
 若任一标记为 `false`，命令失败且不能把 profile 当成已登录。
-登录标志应选已确认仅在登录后出现的内容，并结合目标私有页面核对；公共导航标题不能单独证明登录。已验证的目标配置由后续 `open_task` 通过 `profileName` 和 `channel` 复用。
+登录标志应选已确认仅在登录后出现的内容，并结合目标私有页面核对；公共导航标题、没有登录按钮、Cookie 或 Storage 存在都不能单独证明登录。已验证的目标配置由后续 `open_task` 通过 `profileName` 和 `channel` 复用。候选来源未确认时会清掉目标档案旧的 `verifiedLogin`，避免旧账号证明跟着新 Cookie 保存。
 
 ## 验证码脚本的启动配置
 
@@ -108,8 +108,10 @@ node skills/recruitment-session/scripts/import-captcha-case.mjs --type jigsaw --
 ```text
 apply.login { runId, action: "inspect" }
 → logged_in：返回用户要求的填写或检查阶段
-→ login_required：
+→ login_required（当前页面看见登录入口）或 sms_ready（当前页面看见短信表单）：
   apply.login { runId, action: "begin_sms", phone: "<用户授权的手机号>" }
+→ login_unconfirmed：
+  保留当前 runId 和候选页，调用 apply.inspect_page 检查账号或受保护简历；不要发送短信
 → code_sent：
   读取 requestedAt 之后最新验证码
   apply.login { runId, action: "submit_sms_code", code: "<验证码>" }
@@ -118,6 +120,7 @@ apply.login { runId, action: "inspect" }
 
 `begin_sms` 先点击网页上的“短信登录”，确认标签已经选中，再填写可见手机号框。
 用按钮倒计时、验证码挑战或页面错误判断发送结果。
+提交后若弱站点仍返回 `login_unconfirmed`，记录当前账号或受保护简历证据；已在简历页就调用 `apply.resolve_page`，需要入口就调用 `apply.open_resume`，不要重复登录检查或自行声明成功。
 
 ## Mac“信息”
 
@@ -170,8 +173,8 @@ node skills/recruitment-session/scripts/migrate-moka-session.mjs \
 
 脚本只复制 `connect.sid`、`moka-token`、`moka-apply`、`csrfCk` 和 `locale`，不复制分析
 Cookie、Local Storage 或其他企业数据；写入前自动备份目标状态，输出只包含 Cookie 名称，
-不包含值。迁移后必须打开目标站并调用 `apply.login inspect`。目标站没有显示登录入口，
-且 `apply.open_resume` 能进入简历页，才算迁移成功。
+不包含值。迁移后必须打开目标站并调用 `apply.login inspect`。目标站返回当前账号或受保护简历的可靠证据，
+才算迁移成功；没有登录入口或能进入简历页只能记为未确认。
 
 ## 图片、滑块和风控
 

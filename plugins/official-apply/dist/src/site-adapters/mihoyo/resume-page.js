@@ -1,5 +1,5 @@
+import { readMihoyoResumeResponse, } from "./read-resume-response.js";
 const HOST = 'jobs.mihoyo.com';
-const READ_URL = 'https://ats.openout.mihoyo.com/ats-portal/v2/resume/info';
 const SAVE_URL = 'https://ats.openout.mihoyo.com/ats-portal/v1/resume/add/or/update';
 const STAGED_KEY = '__officialApplyMihoyoResume';
 function asRecord(value) {
@@ -71,26 +71,7 @@ function hasAwardYear(record) {
     return year !== undefined && /^\d{4}$/.test(year);
 }
 async function readResume(page) {
-    const response = await page.evaluate(async ({ url }) => {
-        const token = window.localStorage.getItem('Jobs-Token') ?? '';
-        const result = await fetch(url, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'content-type': 'application/json',
-                ...(token === '' ? {} : { authorization: token }),
-            },
-            body: JSON.stringify({ channelDetailIds: [1], hireType: 1 }),
-        });
-        const body = await result.json();
-        return {
-            status: result.status,
-            code: body?.code,
-            success: body?.success,
-            message: body?.message,
-            data: body?.data,
-        };
-    }, { url: READ_URL });
+    const response = await readMihoyoResumeResponse(page);
     if (response.status < 200 ||
         response.status >= 300 ||
         response.code !== 0 ||

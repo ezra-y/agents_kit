@@ -29,32 +29,25 @@ async function hasCaptcha(page) {
     const body = (await page.locator('body').innerText().catch(() => '')).replace(/\s+/g, ' ');
     return /请完成验证|拖动滑块|安全验证/.test(body);
 }
-async function loggedIn(page) {
-    let host = '';
-    try {
-        host = new URL(page.url()).hostname;
-    }
-    catch {
-        return false;
-    }
-    if (host !== 'jobs.bilibili.com')
-        return false;
-    const login = page.getByText('登录', { exact: true }).first();
-    return !(await visible(login));
+async function loggedIn() {
+    return {
+        status: 'unconfirmed',
+        evidence: ['页面没有当前账号身份的正向证据'],
+    };
 }
 async function prepareSms(page) {
-    if (await loggedIn(page)) {
-        return result(page, {
-            stage: 'logged_in',
-            nextAction: 'continue_application',
-            evidence: ['已返回 B站招聘官网', '页面不再显示登录入口'],
-        });
-    }
     if (await hasCaptcha(page)) {
         return result(page, {
             stage: 'captcha_required',
             nextAction: 'confirm_captcha',
             evidence: ['页面出现安全验证控件'],
+        });
+    }
+    if (await visible(phoneInput(page))) {
+        return result(page, {
+            stage: 'sms_ready',
+            nextAction: 'begin_sms',
+            evidence: ['短信登录页已打开', '可见手机号输入框已出现'],
         });
     }
     const smsTab = page.getByText('短信登录', { exact: true }).first();
@@ -75,11 +68,12 @@ async function prepareSms(page) {
     });
 }
 async function inspect(page) {
-    if (await loggedIn(page)) {
+    const loginCheck = await loggedIn();
+    if (loginCheck.status === 'logged_in') {
         return result(page, {
             stage: 'logged_in',
             nextAction: 'continue_application',
-            evidence: ['已返回 B站招聘官网', '页面不再显示登录入口'],
+            evidence: loginCheck.evidence,
         });
     }
     if (await hasCaptcha(page)) {
@@ -105,6 +99,25 @@ async function inspect(page) {
             evidence: ['短信登录页已打开', '可见手机号输入框已出现'],
         });
     }
+    const loginEntry = page
+        .getByText(/^(?:登录|短信登录|登录\/注册)$/)
+        .first();
+    if (await visible(loginEntry)) {
+        return result(page, {
+            stage: 'login_required',
+            nextAction: 'begin_sms',
+            evidence: ['B站页面显示登录入口'],
+        });
+    }
+    if (loginCheck.status === 'unconfirmed') {
+        return result(page, {
+            stage: 'login_unconfirmed',
+            nextAction: 'recover_entry',
+            evidence: loginCheck.evidence,
+            errorCode: 'login_state_unconfirmed',
+            message: '登录状态暂未确认。请继续检查当前页面后再继续。',
+        });
+    }
     return result(page, {
         stage: 'login_required',
         nextAction: 'begin_sms',
@@ -122,13 +135,19 @@ async function beginSms(page, input) {
     }
     const current = await inspect(page);
     if (current.stage === 'logged_in' ||
+        current.stage === 'login_unconfirmed' ||
         current.stage === 'code_sent' ||
-        current.stage === 'captcha_required') {
+        current.stage === 'captcha_required' ||
+        current.stage === 'failed') {
         return current;
     }
-    const prepared = await prepareSms(page);
-    if (prepared.stage !== 'sms_ready')
-        return prepared;
+    if (current.stage === 'login_required') {
+        const prepared = await prepareSms(page);
+        if (prepared.stage !== 'sms_ready')
+            return prepared;
+    }
+    if (current.stage !== 'sms_ready')
+        return current;
     await phoneInput(page).fill(input.phone);
     const send = page.getByText('获取验证码', { exact: true }).first();
     await page.waitForFunction((element) => element?.getAttribute('disabled') !== 'disabled', await send.elementHandle(), { timeout: 10_000 });
@@ -183,11 +202,12 @@ async function submitSmsCode(page, input) {
     await submit.click();
     const deadline = Date.now() + 20_000;
     while (Date.now() < deadline) {
-        if (await loggedIn(page)) {
+        const loginCheck = await loggedIn();
+        if (loginCheck.status === 'logged_in') {
             return result(page, {
                 stage: 'logged_in',
                 nextAction: 'continue_application',
-                evidence: ['验证码已提交', '已返回 B站招聘岗位页'],
+                evidence: ['验证码已提交', ...loginCheck.evidence],
             });
         }
         if (await hasCaptcha(page)) {
@@ -200,10 +220,11 @@ async function submitSmsCode(page, input) {
         await page.waitForTimeout(250);
     }
     return result(page, {
-        stage: 'code_rejected',
-        nextAction: 'provide_sms_code',
-        evidence: ['验证码已提交，但没有回到招聘岗位页'],
-        errorCode: 'login_code_rejected',
+        stage: 'login_unconfirmed',
+        nextAction: 'recover_entry',
+        evidence: ['验证码已提交，但没有收到当前账号的正向登录证据'],
+        errorCode: 'login_state_unconfirmed',
+        message: '验证码已提交，但登录状态暂未确认。请继续检查当前页面后再继续。',
     });
 }
 export const bilibiliLogin = {

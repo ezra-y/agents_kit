@@ -1,4 +1,7 @@
 import { createSmsLoginProvider, } from "./create-sms-login-provider.js";
+import { readFeishuLoginEvidence } from "./feishu-login-evidence.js";
+import { readMihoyoLoginEvidence } from "./mihoyo-login-evidence.js";
+import { readMokaLoginEvidence } from "./moka-login-evidence.js";
 async function visible(locator) {
     return (await locator.count()) > 0 && locator.isVisible().catch(() => false);
 }
@@ -87,9 +90,11 @@ export const meituanLogin = createSmsLoginProvider({
             await page.waitForURL(/\/web\/login/, { timeout: 20_000 });
         }
     },
-    async isLoggedIn(page) {
-        const path = new URL(page.url()).pathname;
-        return !path.includes('/web/login') && !(await visible(page.getByText('登录', { exact: true }).first()));
+    async isLoggedIn() {
+        return {
+            status: 'unconfirmed',
+            evidence: ['页面没有当前账号身份的正向证据'],
+        };
     },
     phoneInput: (page) => page.getByPlaceholder('请输入11位手机号码').first(),
     codeInput: (page) => page.getByPlaceholder('验证码').first(),
@@ -106,8 +111,7 @@ export const didiLogin = createSmsLoginProvider({
         await clickLoginEntry(page);
     },
     async isLoggedIn(page) {
-        return (!(await visible(page.getByPlaceholder('请输入手机号').first())) &&
-            !(await visible(page.getByText('登录', { exact: true }).first())));
+        return readMokaLoginEvidence(page);
     },
     phoneInput: (page) => page.getByPlaceholder('请输入手机号').first(),
     codeInput: (page) => page.getByPlaceholder('请输入验证码').first(),
@@ -133,9 +137,11 @@ export const neteaseGamesLogin = createSmsLoginProvider({
             .first()
             .waitFor({ state: 'visible', timeout: 15_000 });
     },
-    async isLoggedIn(page) {
-        return ((await visible(page.getByText('1. 个人信息（必填）', { exact: true }).first())) &&
-            !(await visible(page.getByPlaceholder('请输入验证码').first())));
+    async isLoggedIn() {
+        return {
+            status: 'unconfirmed',
+            evidence: ['页面没有当前账号身份的正向证据'],
+        };
     },
     phoneInput: (page) => page.getByPlaceholder('请填写手机号码').first(),
     codeInput: (page) => page.getByPlaceholder('请输入验证码').first(),
@@ -182,30 +188,7 @@ export const mokaSharedLogin = createSmsLoginProvider({
             .waitFor({ state: 'visible', timeout: 15_000 });
     },
     async isLoggedIn(page) {
-        await page
-            .waitForFunction(() => {
-            const data = window.TurboApply?.data;
-            const account = data?.candidateAccount;
-            const candidateId = account?.['id'] ?? account?.['candidateAccountId'];
-            return (typeof data?.csrfToken === 'string' &&
-                data.csrfToken !== '' &&
-                account !== undefined &&
-                ((typeof candidateId === 'string' && candidateId !== '') ||
-                    (typeof candidateId === 'number' && Number.isFinite(candidateId))));
-        }, undefined, { timeout: 10_000 })
-            .catch(() => undefined);
-        return page
-            .evaluate(() => {
-            const data = window.TurboApply?.data;
-            const account = data?.candidateAccount;
-            const candidateId = account?.['id'] ?? account?.['candidateAccountId'];
-            return (typeof data?.csrfToken === 'string' &&
-                data.csrfToken !== '' &&
-                account !== undefined &&
-                ((typeof candidateId === 'string' && candidateId !== '') ||
-                    (typeof candidateId === 'number' && Number.isFinite(candidateId))));
-        })
-            .catch(() => false);
+        return readMokaLoginEvidence(page);
     },
     phoneInput: (page) => page.getByPlaceholder('请输入手机号').first(),
     codeInput: (page) => page.getByPlaceholder('请输入验证码').first(),
@@ -265,13 +248,11 @@ export const oppoCampusLogin = createSmsLoginProvider({
         if (await visible(consent))
             await consent.click();
     },
-    async isLoggedIn(page) {
-        const path = new URL(page.url()).pathname;
-        if (path === '/university/oppo/login' ||
-            path === '/university/oppo/campus') {
-            return false;
-        }
-        return !(await visible(page.getByPlaceholder('请输入你的账号').first()));
+    async isLoggedIn() {
+        return {
+            status: 'unconfirmed',
+            evidence: ['页面没有当前账号身份的正向证据'],
+        };
     },
     phoneInput: (page) => page.getByPlaceholder('请输入你的账号').first(),
     codeInput: (page) => page.getByPlaceholder('请输入你的验证码').first(),
@@ -302,9 +283,11 @@ export const bytedanceLogin = createSmsLoginProvider({
         if (await visible(later))
             await later.click();
     },
-    async isLoggedIn(page) {
-        const path = new URL(page.url()).pathname;
-        return !path.includes('/login') && !(await visible(page.getByText('登录', { exact: true }).first()));
+    async isLoggedIn() {
+        return {
+            status: 'unconfirmed',
+            evidence: ['页面没有当前账号身份的正向证据'],
+        };
     },
     phoneInput: (page) => page.getByPlaceholder('手机号码').first(),
     codeInput: (page) => page.getByPlaceholder('验证码').first(),
@@ -356,8 +339,7 @@ export const feishuJobsLogin = createSmsLoginProvider({
         });
     },
     async isLoggedIn(page) {
-        return (!new URL(page.url()).pathname.endsWith('/login') &&
-            !(await visible(page.getByText('登录', { exact: true }).first())));
+        return readFeishuLoginEvidence(page);
     },
     phoneInput: (page) => page.getByPlaceholder('手机号码').first(),
     codeInput: (page) => page.getByPlaceholder('验证码').first(),
@@ -383,9 +365,11 @@ export const pddCampusLogin = createSmsLoginProvider({
             });
         }
     },
-    async isLoggedIn(page) {
-        return (!(await visible(page.locator('#phone'))) &&
-            !(await visible(page.getByText('登录/注册', { exact: false }).first())));
+    async isLoggedIn() {
+        return {
+            status: 'unconfirmed',
+            evidence: ['页面没有当前账号身份的正向证据'],
+        };
     },
     phoneInput: (page) => page.locator('#phone'),
     codeInput: (page) => page.locator('#smsCode'),
@@ -433,9 +417,11 @@ export const unionsyRecruitmentLogin = createSmsLoginProvider({
             timeout: 120_000,
         });
     },
-    async isLoggedIn(page) {
-        return (new URL(page.url()).pathname.startsWith('/uc/person-center/') &&
-            !(await visible(page.getByPlaceholder('请输入手机号').first())));
+    async isLoggedIn() {
+        return {
+            status: 'unconfirmed',
+            evidence: ['页面没有当前账号身份的正向证据'],
+        };
     },
     phoneInput: (page) => page.getByPlaceholder('请输入手机号').first(),
     codeInput: (page) => page.getByPlaceholder('请输入验证码').first(),
@@ -473,11 +459,11 @@ export const lenovoTalentLogin = createSmsLoginProvider({
             .first()
             .waitFor({ state: 'visible', timeout: 20_000 });
     },
-    async isLoggedIn(page) {
-        const url = new URL(page.url());
-        return (url.hostname === 'talent.lenovo.com.cn' &&
-            url.pathname.startsWith('/account/resume') &&
-            !(await visible(page.locator('#loginInput1:visible').first())));
+    async isLoggedIn() {
+        return {
+            status: 'unconfirmed',
+            evidence: ['页面没有当前账号身份的正向证据'],
+        };
     },
     phoneInput: (page) => page.locator('#loginInput1:visible, #loginClass2Input2:visible').first(),
     codeInput: (page) => page.locator('#loginClass2Input2:visible').first(),
@@ -519,10 +505,11 @@ export const jdCampusLogin = createSmsLoginProvider({
             });
         }
     },
-    async isLoggedIn(page) {
-        return (!new URL(page.url()).pathname.startsWith('/passport/') &&
-            !(await visible(page.getByPlaceholder('请输入手机号'))) &&
-            !(await visible(page.getByText('登录', { exact: true }).first())));
+    async isLoggedIn() {
+        return {
+            status: 'unconfirmed',
+            evidence: ['页面没有当前账号身份的正向证据'],
+        };
     },
     phoneInput: (page) => page.getByPlaceholder('请输入手机号'),
     codeInput: (page) => page.getByPlaceholder('请输入验证码'),
@@ -542,17 +529,11 @@ export const xiaomiMiofficeLogin = createSmsLoginProvider({
             });
         }
     },
-    async isLoggedIn(page) {
-        if (new URL(page.url()).pathname.endsWith('/campus/login'))
-            return false;
-        const loginEntry = page
-            .locator('a:visible, button:visible')
-            .filter({ hasText: /^\s*登录\s*$/ })
-            .first();
-        await loginEntry
-            .waitFor({ state: 'visible', timeout: 5_000 })
-            .catch(() => undefined);
-        return (!(await visible(loginEntry)));
+    async isLoggedIn() {
+        return {
+            status: 'unconfirmed',
+            evidence: ['页面没有当前账号身份的正向证据'],
+        };
     },
     phoneInput: (page) => page.getByPlaceholder('手机号码').first(),
     codeInput: (page) => page.getByPlaceholder('验证码').first(),
@@ -578,11 +559,7 @@ export const mihoyoCampusLogin = createSmsLoginProvider({
         }
     },
     async isLoggedIn(page) {
-        const token = await page
-            .evaluate(() => window.localStorage.getItem('Jobs-Token') ?? '')
-            .catch(() => '');
-        return ((await page.locator('iframe[src*="login-platform"]').count()) === 0 &&
-            token !== '');
+        return readMihoyoLoginEvidence(page);
     },
     phoneInput: (page) => mihoyoLoginFrame(page).getByPlaceholder('手机号'),
     codeInput: (page) => mihoyoLoginFrame(page).getByPlaceholder('验证码'),

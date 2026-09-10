@@ -27,6 +27,8 @@ export function loginHumanTakeover(runId, flow) {
         case 'sms_ready':
             // 已经过去的一关：不产生卡点（调用方以 active 缺省解除旧 pending）。
             return undefined;
+        case 'login_unconfirmed':
+            return undefined;
         case 'login_required':
             return takeover(runId, flow, 'login');
         case 'captcha_required':

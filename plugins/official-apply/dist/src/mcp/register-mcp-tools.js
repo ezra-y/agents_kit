@@ -51,6 +51,7 @@ import { verifyVisualFallback } from "../browser/visual/verify-visual-fallback.j
 import { findActionTarget } from "../browser/locators/find-action-target.js";
 import { manageLogin } from "../browser/login/manage-login.js";
 import { loginHumanTakeover } from "../browser/login/login-human-takeover.js";
+import { redactLoginPageUrl } from "../browser/login/contracts.js";
 import { syncHumanTakeover } from "../application/sync-human-takeover.js";
 import { prepareSubmission } from "../submission/prepare-submission.js";
 import { buildCommitExecutors, checkCommitPreconditions, } from "../submission/commit-current-page.js";
@@ -580,7 +581,22 @@ export function registerMcpTools() {
                         targetUrl: found.run.targetUrl ?? originalPageUrl,
                         domains: readStringArray(input.args, 'domains'),
                         sourceId: readString(input.args, 'sourceId'),
-                        verifyLogin: async (page) => (await manageLogin({ page, action: 'inspect', now: input.now })).stage === 'logged_in',
+                        verifyLogin: async (page) => {
+                            const checked = await manageLogin({ page, action: 'inspect', now: input.now });
+                            if (checked.stage === 'logged_in') {
+                                return { status: 'logged_in', evidence: checked.evidence };
+                            }
+                            if (checked.stage === 'login_unconfirmed') {
+                                return { status: 'unconfirmed', evidence: checked.evidence };
+                            }
+                            if (checked.stage === 'login_required' || checked.stage === 'sms_ready') {
+                                return { status: 'logged_out', evidence: checked.evidence };
+                            }
+                            return {
+                                status: 'unconfirmed',
+                                evidence: [...checked.evidence, '当前页面没有明确的登录结果'],
+                            };
+                        },
                     });
                     if (reused.status === 'ambiguous') {
                         syncHumanTakeover({ paths: input.paths, runId: found.run.runId, now: input.now,
@@ -593,14 +609,30 @@ export function registerMcpTools() {
                             runId: found.run.runId,
                         });
                     }
+                    if (reused.status === 'unconfirmed') {
+                        login = {
+                            ...login,
+                            stage: 'login_unconfirmed',
+                            nextAction: 'recover_entry',
+                            pageUrlRedacted: redactLoginPageUrl(found.page.url()),
+                            sourceId: reused.sourceId,
+                            errorCode: 'login_state_unconfirmed',
+                            message: `来源 ${reused.sourceId} 已加载到当前页面，但账号证据暂未确认。当前页面已保留，未继续尝试其他来源。请调用 apply.inspect_page 检查账号或受保护简历后再继续。`,
+                        };
+                        login.evidence.push(...reused.evidence, `登录来源验证未确认：${reused.reason}`);
+                    }
                     if (reused.status === 'reused') {
                         login = {
-                            ...await manageLogin({ page: found.page, action: 'inspect', now: input.now }),
+                            providerId: login.providerId,
+                            stage: 'logged_in',
+                            pageUrlRedacted: redactLoginPageUrl(found.page.url()),
+                            nextAction: 'continue_application',
+                            evidence: reused.loginCheck.evidence,
                             reusedFromProfile: reused.sourceId,
                         };
                         login.evidence.push(`已从来源 ${reused.sourceId} 复用登录并在当前任务页面验证。`);
                     }
-                    else if (reused.reason !== undefined) {
+                    else if (reused.status === 'none' && reused.reason !== undefined) {
                         login = { ...login, reuseFailureReason: reused.reason };
                         login.evidence.push(`登录来源复用未成功：${reused.reason}`);
                     }
@@ -612,22 +644,32 @@ export function registerMcpTools() {
                 // logged_in / sms_ready 会解除旧 pending。MCP 层不写 SQL，
                 // 只调用共享函数。
                 const takeover = loginHumanTakeover(found.run.runId, login);
-                syncHumanTakeover({
-                    paths: input.paths,
-                    runId: found.run.runId,
-                    ...(takeover === undefined
-                        ? {
-                            resolveReasons: [
-                                'login',
-                                'captcha',
-                                'sms_code',
-                                'site_blocked',
-                                'tool_failure',
-                            ],
-                        }
-                        : { active: takeover }),
-                    now: input.now,
-                });
+                if (login.stage === 'login_unconfirmed') {
+                    syncHumanTakeover({
+                        paths: input.paths,
+                        runId: found.run.runId,
+                        resolveReasons: ['login'],
+                        now: input.now,
+                    });
+                }
+                else {
+                    syncHumanTakeover({
+                        paths: input.paths,
+                        runId: found.run.runId,
+                        ...(takeover === undefined
+                            ? {
+                                resolveReasons: [
+                                    'login',
+                                    'captcha',
+                                    'sms_code',
+                                    'site_blocked',
+                                    'tool_failure',
+                                ],
+                            }
+                            : { active: takeover }),
+                        now: input.now,
+                    });
+                }
                 if (action !== 'inspect' || login.reusedFromProfile !== undefined) {
                     markPageMutated(found.run, `login_${action}`, input.now);
                 }
@@ -664,9 +706,11 @@ export function registerMcpTools() {
                         ? '页面出现验证码。保留当前会话，按已有授权先用匹配脚本；脚本不适用或失败时转 Computer Use，验证通过后继续。'
                         : login.stage === 'code_rejected'
                             ? '验证码没有通过。当前窗口仍保留，可以读取新验证码后重试。'
-                            : login.stage === 'sms_ready'
-                                ? '短信登录页已明确打开。'
-                                : '当前需要登录。';
+                            : login.stage === 'login_unconfirmed'
+                                ? '登录状态暂未确认。当前页面仍保留，请继续检查登录入口或等待页面完成后再继续。'
+                                : login.stage === 'sms_ready'
+                                    ? '短信登录页已明确打开。'
+                                    : '当前需要登录。';
                 return ok(login, message);
             },
         },
@@ -718,6 +762,21 @@ export function registerMcpTools() {
                         action: 'inspect',
                         now: input.now,
                     });
+                    if (login.stage === 'login_unconfirmed') {
+                        syncHumanTakeover({
+                            paths: input.paths,
+                            runId: found.run.runId,
+                            resolveReasons: ['login'],
+                            now: input.now,
+                        });
+                        return fail('resume_login_unconfirmed', '已找到简历网址，但当前登录状态暂未确认。请在原 runId 调用 apply.inspect_page 检查当前页面，确认账号或受保护简历后继续。', {
+                            ...opened,
+                            login,
+                            checkedScriptIds: pageScript.checkedScriptIds,
+                            nextTool: 'apply.inspect_page',
+                            resumeWith: 'apply.resolve_page',
+                        });
+                    }
                     if (login.stage !== 'logged_in' && login.stage !== 'unsupported') {
                         syncHumanTakeover({ paths: input.paths, runId: found.run.runId,
                             active: loginHumanTakeover(found.run.runId, login) ?? {

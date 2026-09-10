@@ -119,7 +119,18 @@ export async function reuseLoginStateOnCurrentPage(input) {
                         await removeSessionStorageScript();
                     }
                 };
-                let verified = await verifyCandidate();
+                let loginCheck = await verifyCandidate();
+                if (loginCheck.status === 'unconfirmed') {
+                    lastFailure = `${candidate.sourceId}:login_unconfirmed`;
+                    await savePersistentSessionStorageForDomains(input.session.context, input.session.profileDir, domains, null);
+                    return {
+                        status: 'unconfirmed',
+                        sourceId: candidate.sourceId,
+                        evidence: loginCheck.evidence,
+                        reason: lastFailure,
+                    };
+                }
+                let verified = loginCheck.status === 'logged_in';
                 if (!verified && !fullExported && candidate.source === 'opencli_bridge' && candidate.bridgeSession !== undefined && candidate.bridgeContextId !== undefined) {
                     const full = await exportLoginStateFromOpenCliBridge({
                         session: `${candidate.bridgeSession}-${input.runId}`,
@@ -129,7 +140,18 @@ export async function reuseLoginStateOnCurrentPage(input) {
                     });
                     try {
                         snapshot = full.state;
-                        verified = await verifyCandidate();
+                        loginCheck = await verifyCandidate();
+                        if (loginCheck.status === 'unconfirmed') {
+                            lastFailure = `${candidate.sourceId}:login_unconfirmed`;
+                            await savePersistentSessionStorageForDomains(input.session.context, input.session.profileDir, domains, null);
+                            return {
+                                status: 'unconfirmed',
+                                sourceId: candidate.sourceId,
+                                evidence: loginCheck.evidence,
+                                reason: lastFailure,
+                            };
+                        }
+                        verified = loginCheck.status === 'logged_in';
                     }
                     finally {
                         await full.cleanup();
@@ -140,24 +162,34 @@ export async function reuseLoginStateOnCurrentPage(input) {
                     await restoreOriginal(input, originalUrl, originalBrowserState, originalSnapshot);
                     continue;
                 }
+                if (loginCheck.status !== 'logged_in') {
+                    lastFailure = `${candidate.sourceId}:login_unverified`;
+                    await restoreOriginal(input, originalUrl, originalBrowserState, originalSnapshot);
+                    continue;
+                }
                 await savePersistentSessionStorageForDomains(input.session.context, input.session.profileDir, domains, {
                     origin: new URL(input.page.url()).origin,
                     sourceId: candidate.sourceId,
                     ...(candidate.accountId === undefined ? {} : { accountId: candidate.accountId }),
                     verifiedAt: new Date().toISOString(),
                 });
-                return { status: 'reused', sourceId: candidate.sourceId };
+                return {
+                    status: 'reused',
+                    sourceId: candidate.sourceId,
+                    loginCheck,
+                };
             }
             catch (error) {
                 lastFailure = `${candidate.sourceId}:${error instanceof Error ? error.message.split('\n')[0] : String(error)}`;
                 await restoreOriginal(input, originalUrl, originalBrowserState, originalSnapshot);
+                continue;
             }
         }
         return { status: 'none', ...(lastFailure === undefined ? {} : { reason: lastFailure }) };
     }
     const project = await discoverLoginStateCandidates(discovery);
     const projectResult = await tryCandidates(project);
-    if (projectResult.status === 'reused' || projectResult.status === 'ambiguous')
+    if (projectResult.status !== 'none')
         return projectResult;
     if (input.sourceId !== undefined && !input.sourceId.startsWith('bridge:') &&
         project.some((candidate) => candidate.sourceId === input.sourceId))

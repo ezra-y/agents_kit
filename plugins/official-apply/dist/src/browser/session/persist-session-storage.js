@@ -267,8 +267,12 @@ export async function savePersistentSessionStorageForDomains(context, profileDir
     const previous = readPersistentWebState(profileDir);
     const exported = await exportPersistentWebState(context, domains);
     const snapshot = replacePersistentWebStateForDomains(previous, exported, domains);
-    if (verifiedLogin !== undefined)
+    if (verifiedLogin === null) {
+        delete snapshot.verifiedLogin;
+    }
+    else if (verifiedLogin !== undefined) {
         snapshot.verifiedLogin = verifiedLogin;
+    }
     writePersistentWebState(profileDir, snapshot);
 }
 //# sourceMappingURL=persist-session-storage.js.map
