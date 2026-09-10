@@ -189,7 +189,7 @@ async function bridgeBodyHasMarker(page, marker, timeoutMs) {
     return false;
 }
 async function readBridgeSourceState(page, expectedOrigin, timeoutMs) {
-    const deadline = Date.now() + Math.min(timeoutMs, 3_000);
+    const deadline = Date.now() + Math.min(timeoutMs, 30_000);
     for (;;) {
         try {
             const state = await page.evaluate(() => {
