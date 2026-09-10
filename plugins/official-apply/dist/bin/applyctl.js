@@ -13,6 +13,6 @@
  */
 import { runCli } from "../src/cli/run-cli.js";
 const result = await runCli({ argv: process.argv.slice(2) });
-process.stdout.write(result.stdout.endsWith('\n') ? result.stdout : `${result.stdout}\n`);
-process.exit(result.exitCode);
+const output = result.stdout.endsWith('\n') ? result.stdout : `${result.stdout}\n`;
+process.stdout.write(output, () => process.exit(result.exitCode));
 //# sourceMappingURL=applyctl.js.map
