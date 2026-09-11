@@ -10,6 +10,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { readCurrentLoginEvidenceFromDom } from "../login/current-login-evidence.js";
 import { redactUrl } from "./open-application-page.js";
 function commandPath() {
     try {
@@ -357,17 +358,21 @@ export async function exportLoginStateFromOpenCliBridge(request) {
             }
         }
         const expectedOrigin = new URL(request.targetUrl).origin;
-        let sourceLoginVerified = false;
+        await readBridgeSourceState(page, expectedOrigin, timeoutMs);
+        const sourceLoginCheck = await page.evaluate(readCurrentLoginEvidenceFromDom).catch(() => ({
+            status: 'unconfirmed',
+            evidence: ['源浏览器当前页面的账号信息读取未完成'],
+        }));
         if (request.loginMarker !== undefined) {
+            let markerVisible;
             try {
-                sourceLoginVerified = await bridgeBodyHasMarker(page, request.loginMarker, timeoutMs);
+                markerVisible = await bridgeBodyHasMarker(page, request.loginMarker, timeoutMs);
             }
             catch (error) {
                 throw bridgeError('opencli_bridge_source_marker_read', error);
             }
-        }
-        if (request.loginMarker !== undefined && !sourceLoginVerified) {
-            throw new Error('login_state_source_login_unverified');
+            if (!markerVisible)
+                throw new Error('login_state_source_login_unverified');
         }
         const values = await readBridgeSourceState(page, expectedOrigin, timeoutMs);
         let cookieResults;
@@ -393,7 +398,9 @@ export async function exportLoginStateFromOpenCliBridge(request) {
                 cookies,
             },
             sourcePageReused: matching !== undefined,
-            sourceLoginVerified,
+            sourceLoginVerified: sourceLoginCheck.status === 'logged_in',
+            sourceLoginCheck,
+            sourcePageUrl: redactUrl(values.href),
             cleanup: async () => {
                 if (createdPage !== undefined && page.closeTab !== undefined)
                     await page.closeTab(createdPage).catch(() => undefined);

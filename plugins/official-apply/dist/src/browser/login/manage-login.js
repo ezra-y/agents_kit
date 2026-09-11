@@ -1,5 +1,6 @@
 import { baiduTalentLogin } from "./baidu-login.js";
 import { bilibiliLogin } from "./bilibili-login.js";
+import { readCurrentLoginEvidence } from "./current-login-evidence.js";
 import { bytedanceLogin, didiLogin, feishuJobsLogin, jdCampusLogin, lenovoTalentLogin, meituanLogin, mihoyoCampusLogin, mokaSharedLogin, neteaseGamesLogin, oppoCampusLogin, pddCampusLogin, unionsyRecruitmentLogin, xiaomiMiofficeLogin, } from "./recruitment-sms-providers.js";
 import { redactLoginPageUrl, } from "./contracts.js";
 const providers = [
@@ -50,14 +51,28 @@ async function providerFor(page) {
     return undefined;
 }
 export async function manageLogin(input) {
+    if (input.action === 'inspect') {
+        const current = await readCurrentLoginEvidence(input.page);
+        if (current.status !== 'unconfirmed') {
+            return {
+                providerId: 'current_account',
+                stage: current.status === 'logged_in' ? 'logged_in' : 'login_required',
+                pageUrlRedacted: redactLoginPageUrl(input.page.url()),
+                nextAction: current.status === 'logged_in' ? 'continue_application' : 'recover_entry',
+                evidence: current.evidence,
+            };
+        }
+    }
     const provider = await providerFor(input.page);
     if (provider === undefined) {
         return {
             providerId: 'unsupported',
-            stage: 'unsupported',
+            stage: input.action === 'inspect' ? 'login_unconfirmed' : 'unsupported',
             pageUrlRedacted: redactLoginPageUrl(input.page.url()),
             nextAction: 'recover_entry',
-            evidence: ['当前网址没有已安装的登录适配器'],
+            evidence: [input.action === 'inspect'
+                    ? '当前账号尚未确认，此页没有对应的登录操作脚本'
+                    : '当前网址没有已安装的登录适配器'],
             errorCode: 'login_provider_not_found',
             message: '当前登录适配器未覆盖此页，继续在同一会话检查官网入口和可见登录控件。',
         };

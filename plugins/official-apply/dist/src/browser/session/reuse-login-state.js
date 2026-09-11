@@ -7,6 +7,7 @@ import { closeBrowserSession } from "./close-browser-session.js";
 import { selectAttachTargetFromBrowser } from "./select-attach-target.js";
 import { exportPersistentWebState, capturePersistentBrowserState, replacePersistentWebStateForDomains, replacePersistentWebStateOnContextForDomains, restoreExactPersistentBrowserState, prepareSessionStorageForNavigation, readPersistentWebState, savePersistentSessionStorageForDomains, writePersistentWebState, } from "./persist-session-storage.js";
 import { exportLoginStateFromOpenCliBridge } from "./opencli-bridge-login-state.js";
+import { readCurrentLoginEvidence } from "../login/current-login-evidence.js";
 function assertHttpsUrl(rawUrl) {
     const url = new URL(rawUrl);
     if (url.protocol !== 'https:')
@@ -14,6 +15,11 @@ function assertHttpsUrl(rawUrl) {
     return url;
 }
 async function bodyHasMarker(page, marker, timeoutMs) {
+    const account = await readCurrentLoginEvidence(page);
+    if (account.status !== 'logged_in')
+        return false;
+    if (marker === undefined)
+        return true;
     const deadline = Date.now() + timeoutMs;
     do {
         if ((await page.locator('body').innerText().catch(() => '')).includes(marker))
@@ -29,7 +35,7 @@ async function disconnectAttached(session) {
     session.context = undefined;
     session.closed = true;
 }
-async function restoreAndVerifyTarget(input) {
+export async function restoreAndVerifyTarget(input) {
     const targetProfileDir = path.join(input.paths.browserProfileDir, input.targetProfileName);
     if (!isInsideLocalRoot(input.paths, targetProfileDir)) {
         throw new Error('login_state_target_outside_local');

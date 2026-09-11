@@ -47,10 +47,10 @@ export const browserCommands = [
         name: 'browser login-reuse',
         summary: '从用户明确提供的活 browser CDP 或 Browser Bridge 会话导出指定域名登录态，并重新检查隔离 profile。',
         usage: 'applyctl browser login-reuse --to <profile> ' +
-            '--url <https-url> --login-marker <text> --domains <a.com,b.com> ' +
+            '--url <https-url> --domains <a.com,b.com> [--login-marker <text>] ' +
             '[--cdp-endpoint <url> --from chrome|msedge] ' +
             '[--from bridge --bridge-session <name> --bridge-context <id> --channel <chrome|msedge|chromium>] [--json]',
-        requiredOptions: ['to', 'url', 'login-marker', 'domains'],
+        requiredOptions: ['to', 'url', 'domains'],
         valueOptions: [
             'cdp-endpoint', 'to', 'url', 'login-marker', 'domains', 'from',
             'bridge-session', 'bridge-context', 'channel',
@@ -66,10 +66,10 @@ export const browserCommands = [
             const bridgeSession = readString(context.args.options, 'bridge-session');
             const bridgeContextId = readString(context.args.options, 'bridge-context');
             const targetChannel = readString(context.args.options, 'channel') ?? 'msedge';
-            if (targetProfileName === undefined || targetUrl === undefined || loginMarker === undefined ||
+            if (targetProfileName === undefined || targetUrl === undefined ||
                 domains === undefined ||
                 (targetChannel !== 'chrome' && targetChannel !== 'msedge' && targetChannel !== 'chromium')) {
-                return usageError('--channel 只支持 chrome、msedge 或 chromium；同时必须提供 --to、--url、--login-marker 和 --domains。');
+                return usageError('--channel 只支持 chrome、msedge 或 chromium；同时必须提供 --to、--url 和 --domains。');
             }
             if (source === 'bridge') {
                 if (bridgeSession === undefined || bridgeContextId === undefined || cdpEndpoint !== undefined) {
@@ -85,7 +85,7 @@ export const browserCommands = [
                     bridgeContextId,
                     targetChannel,
                 });
-                return ok(result, `已验证源 browser 和目标 profile 的登录标记，迁移 ${result.domains.length} 个域名。`);
+                return ok(result, `已保存 ${result.domains.length} 个域名的状态；源登录${result.sourceLoginVerified ? '已确认' : '待确认'}，恢复后登录${result.targetLoginVerified ? '已确认' : '待确认'}。`);
             }
             if ((source !== 'chrome' && source !== 'msedge') || cdpEndpoint === undefined) {
                 return usageError('--from 只支持 chrome、msedge 或 bridge；CDP 来源必须提供 --cdp-endpoint。');
