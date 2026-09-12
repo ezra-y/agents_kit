@@ -1,5 +1,5 @@
 import { fullProjectDescription } from "../../materials/record-description.js";
-import { mergeScopedRecord, normaliseWriteScope, parseWritePath, redactResumeValue, } from "../write-scope.js";
+import { isEmptyWriteValue, mergeScopedRecord, normaliseWriteScope, parseWritePath, redactResumeValue, } from "../write-scope.js";
 const HOST = 'campus.didiglobal.com';
 const STAGED_KEY = '__officialApplyDidiResume';
 function asRecord(value) {
@@ -93,7 +93,7 @@ const MOKA_ROW_SIGNALS = {
 function sameJson(left, right) {
     const canonical = (value, parentKey) => {
         if (Array.isArray(value)) {
-            const items = value.map((item) => canonical(item));
+            const items = value.map((item) => canonical(item, parentKey));
             const identityKey = parentKey === undefined ? undefined : MOKA_ROW_IDENTITY[parentKey];
             return identityKey !== undefined
                 ? items.sort((a, b) => {
@@ -107,6 +107,17 @@ function sameJson(left, right) {
         }
         if (value !== null && typeof value === 'object') {
             return Object.fromEntries(Object.entries(value)
+                .filter(([key, item]) => {
+                if (parentKey === undefined)
+                    return !['createdAt', 'updatedAt', 'TP_USER_TYPE'].includes(key);
+                if (MOKA_ROW_IDENTITY[parentKey] !== undefined && key === 'id')
+                    return false;
+                if (isEmptyWriteValue(item) &&
+                    ((parentKey === 'projectInfo' && key === 'responsibilities') ||
+                        (parentKey === 'languageInfo' && ['readAndWrite', 'listenAndSpeak'].includes(key))))
+                    return false;
+                return true;
+            })
                 .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
                 .map(([key, item]) => [key, canonical(item, key)]));
         }
@@ -152,6 +163,11 @@ function currentMokaResume(account) {
 }
 function expectedMokaAccount(account, resume, targetPaths) {
     const expected = JSON.parse(JSON.stringify(account));
+    if (account['orgId'] === undefined && account['candidateAccountId'] === undefined &&
+        account['id'] !== undefined && resume['orgId'] !== undefined) {
+        expected['orgId'] = resume['orgId'];
+        expected['candidateAccountId'] = account['id'];
+    }
     for (const path of targetPaths) {
         const parsed = parseWritePath(path);
         if (parsed === undefined)
@@ -161,7 +177,7 @@ function expectedMokaAccount(account, resume, targetPaths) {
             expected[parsed.section] = asRows(resume[parsed.section]);
             continue;
         }
-        const value = sectionValue[parsed.field] ?? resume[parsed.section];
+        const value = parsed.field in sectionValue ? sectionValue[parsed.field] : resume[parsed.section];
         if (parsed.section === 'basicInfo' || parsed.section === 'jobIntention') {
             expected[parsed.field] = value;
             if (expected[parsed.section] !== undefined) {
@@ -170,7 +186,9 @@ function expectedMokaAccount(account, resume, targetPaths) {
         }
         else if (parsed.section === 'selfDescription' && parsed.field === 'personal') {
             expected['personal'] = value;
-            expected[parsed.section] = { ...asRecord(expected[parsed.section]), personal: value };
+            if (expected[parsed.section] !== undefined) {
+                expected[parsed.section] = { ...asRecord(expected[parsed.section]), personal: value };
+            }
         }
         else if (parsed.section === 'resume') {
             expected[parsed.field] = resume[parsed.field];
@@ -500,9 +518,10 @@ async function readAccount(page) {
     await page
         .waitForFunction(() => {
         const root = window;
-        return root.TurboApply?.data?.candidateAccount !== undefined;
-    }, undefined, { timeout: 20_000 })
-        .catch(() => undefined);
+        const account = root.TurboApply?.data?.candidateAccount;
+        return account !== null && typeof account === 'object' &&
+            !Array.isArray(account);
+    }, undefined, { timeout: 20_000 });
     return page.evaluate(() => {
         const root = window;
         const value = root.TurboApply?.data?.candidateAccount;
@@ -761,7 +780,6 @@ export const didiResumePage = {
                 academicDegree: degreeLabel(text(education?.values ?? {}, 'degree')),
                 location: text(input.basic, 'person.location.current_city') ??
                     text(account, 'location'),
-                lastSpeciality: text(education?.values ?? {}, 'major'),
                 lastCompany: text(latestWork?.values ?? {}, 'company'),
                 citizenId: identificationNumber,
                 certificateType: text(account, 'certificateType') ?? '身份证',
@@ -789,16 +807,19 @@ export const didiResumePage = {
             orgId: text(facts.runtimeData ?? {}, 'orgId') ?? 'didiglobal',
             siteId: Number(facts.runtimeData?.['siteId'] ?? 96064),
         };
+        // Transport options are not candidate answers or readback targets.
+        const { uploadInfo, applyInfo, updateAccountResume, questionnaires, orgId, siteId, ...content } = resume;
         const scoped = requestedScope === undefined
-            ? { resume, targetPaths: [], conflicts: [], availableFields: [] }
-            : mergeScopedRecord(currentMokaResume(account), resume, writeScope, {
+            ? { resume: content, targetPaths: [], conflicts: [], availableFields: [] }
+            : mergeScopedRecord(currentMokaResume(account), content, writeScope, {
                 identityKey: section => MOKA_ROW_IDENTITY[section],
                 signalKeys: section => MOKA_ROW_SIGNALS[section] ?? [],
                 mergeRowObjects: true,
             });
         return {
             resolved: {
-                apiResume: scoped.resume,
+                apiResume: (requestedScope === undefined ? resume
+                    : { ...scoped.resume, uploadInfo, applyInfo, updateAccountResume, questionnaires, orgId, siteId }),
                 candidateResume: resume,
                 sourceFacts: {
                     basic: input.basic,

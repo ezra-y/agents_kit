@@ -103,6 +103,17 @@ export function mergeScopedRecord(current, candidate, requestedScope, adapter) {
                     for (const row of rows) {
                         const selectors = rowSelectors(key, row, rows);
                         for (const [field, fieldValue] of Object.entries(row)) {
+                            const nestedId = adapter.nestedRowIdentity?.(field);
+                            if (nestedId !== undefined && Array.isArray(fieldValue)) {
+                                const innerRows = fieldValue.filter((item) => item !== null && typeof item === 'object' && !Array.isArray(item));
+                                for (const innerRow of innerRows) {
+                                    const innerId = innerRow[nestedId];
+                                    if (isEmptyWriteValue(innerId))
+                                        continue;
+                                    fields.push(makeWritePath(key, selectors, `${field}[${encodeURIComponent(nestedId)}=${encodeURIComponent(String(innerId))}].value`));
+                                }
+                                continue;
+                            }
                             if (fieldValue !== null && typeof fieldValue === 'object')
                                 continue;
                             fields.push(makeWritePath(key, selectors, field));
@@ -154,6 +165,8 @@ export function mergeScopedRecord(current, candidate, requestedScope, adapter) {
                         ? candidateMatches
                         : [];
                 if (selectedCurrent.length === 1 && candidateSelected.length === 1) {
+                    if (candidateRow !== candidateSelected[0])
+                        continue;
                     selected = selectedCurrent[0];
                 }
                 else {
@@ -197,8 +210,51 @@ export function mergeScopedRecord(current, candidate, requestedScope, adapter) {
             const selectors = rowSelectors(section, selected.row, currentRows);
             const merged = output[selected.index] ?? { ...selected.row };
             for (const [key, value] of Object.entries(candidateRow)) {
-                if (isEmptyWriteValue(value) ||
-                    (value !== null && typeof value === 'object' && adapter.mergeRowObjects !== true))
+                if (isEmptyWriteValue(value))
+                    continue;
+                const nestedId = adapter.nestedRowIdentity?.(key);
+                if (nestedId !== undefined && Array.isArray(value)) {
+                    const existingRows = Array.isArray(selected.row[key])
+                        ? selected.row[key].filter((row) => row !== null && typeof row === 'object' && !Array.isArray(row))
+                        : [];
+                    const candidateRows = value.filter((row) => row !== null && typeof row === 'object' && !Array.isArray(row));
+                    if (candidateRows.length > 0) {
+                        const existingById = new Map(existingRows.map((row) => [String(row[nestedId]), row]));
+                        const out = existingRows.map((row) => ({ ...row }));
+                        const writtenPushed = [];
+                        for (const cand of candidateRows) {
+                            const id = String(cand[nestedId] ?? '');
+                            if (id === '' || isEmptyWriteValue(cand['value']))
+                                continue;
+                            const nestedPath = makeWritePath(section, selectors, `${key}[${encodeURIComponent(nestedId)}=${encodeURIComponent(id)}].value`);
+                            if (!scopeSelects(scope, nestedPath))
+                                continue;
+                            const existing = existingById.get(id);
+                            const keep = scope.mode !== 'repair' &&
+                                existing !== undefined && !isEmptyWriteValue(existing['value']);
+                            if (keep)
+                                continue;
+                            if (existing === undefined) {
+                                out.push({ ...cand });
+                                existingById.set(id, cand);
+                            }
+                            else {
+                                const idx = out.findIndex((row) => String(row[nestedId]) === id);
+                                if (idx < 0)
+                                    continue;
+                                out[idx] = { ...out[idx], value: cand['value'] };
+                            }
+                            if (writtenPushed.includes(id))
+                                continue;
+                            writtenPushed.push(id);
+                            addTarget(nestedPath);
+                        }
+                        if (out.length > 0)
+                            merged[key] = out;
+                        continue;
+                    }
+                }
+                if (value !== null && typeof value === 'object' && adapter.mergeRowObjects !== true)
                     continue;
                 const path = makeWritePath(section, selectors, key);
                 if (!scopeSelects(scope, path) || (scope.mode === 'fill_missing' && !isEmptyWriteValue(selected.row[key])))
@@ -213,7 +269,7 @@ export function mergeScopedRecord(current, candidate, requestedScope, adapter) {
     const mergeObject = (currentValue, candidateValue, prefix) => {
         const output = { ...currentValue };
         for (const [key, value] of Object.entries(candidateValue)) {
-            if (value === undefined)
+            if (value === undefined || (scope.mode === 'fill_missing' && isEmptyWriteValue(value)))
                 continue;
             const path = prefix === '' ? key : `${prefix}.${key}`;
             const existing = currentValue[key];

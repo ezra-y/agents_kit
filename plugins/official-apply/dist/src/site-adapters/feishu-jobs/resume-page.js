@@ -171,7 +171,19 @@ function settingValue(settings, key, label) {
     const normalized = label.replace(/\s+/g, '');
     return asRows(settings[key]).find((item) => String(item['val'] ?? '').replace(/\s+/g, '') === normalized)?.['key'];
 }
-function educationRows(input, includeEducationType, includeAcademicRanking, settings) {
+function isEducationProfileField(field, fields) {
+    return field['isCustomized'] === true && fieldIsVisible(fields, field) &&
+        /学院|院系|绩点|GPA/i.test(String(field['label'] ?? '')) &&
+        fields.some(parent => parent['id'] === field['parent'] && parent['name'] === 'education_list');
+}
+function educationProfileValue(record, field) {
+    if (/绩点|GPA/i.test(String(field['label'] ?? ''))) {
+        const gpa = text(record.values, 'gpa', 'profile.education[].gpa');
+        return gpa?.match(/^(\d+(?:\.\d+)?)(?:\s*\/\s*\d+(?:\.\d+)?)?$/)?.[1];
+    }
+    return text(record.values, 'college', 'profile.education[].college');
+}
+function educationRows(input, includeEducationType, includeAcademicRanking, settings, collegeFields) {
     return input.education.map((record) => compactObject({
         major: text(record.values, 'major') ?? '',
         start_time: chinaMonthTimestamp(text(record.values, 'startDate', 'start_date')),
@@ -184,7 +196,12 @@ function educationRows(input, includeEducationType, includeAcademicRanking, sett
                 academic_ranking: settingValue(settings, 'academic_ranking', text(record.values, 'rank', 'academic_ranking')),
             }
             : {}),
-        customized_data: [],
+        customized_data: collegeFields.flatMap(field => {
+            const value = normalizeCustomAnswer(educationProfileValue(record, field), asRows(field['options']));
+            return value === undefined ? [] : [{ object_id: String(field['id']),
+                    value: /绩点|GPA/i.test(String(field['label'] ?? '')) && asRows(field['options']).length === 0
+                        ? Number(value) : value }];
+        }),
     }));
 }
 function isInternship(record) {
@@ -272,6 +289,8 @@ const LEGACY_CITY_CODES = {
     广州市: 'CT_45',
     上海: 'CT_125',
     上海市: 'CT_125',
+    青岛: 'CT_119',
+    青岛市: 'CT_119',
 };
 function resolveHometownCityCode(input, fields, current) {
     const city = text(input.basic, 'person.location.hometown_city');
@@ -456,11 +475,21 @@ function resolveRequiredCustomFields(input, fields) {
             continue;
         }
         const customKey = `site.custom.${id}`;
+        if (isEducationProfileField(field, fields)) {
+            for (const record of input.education) {
+                if (normalizeCustomAnswer(educationProfileValue(record, field), options) === undefined) {
+                    missing.push({ key: `education.${record.recordId ?? text(record.values, 'school')}.${/绩点|GPA/i.test(label) ? 'gpa' : 'college'}`,
+                        reason: `${text(record.values, 'school') ?? '教育经历'}缺少已确认的${label}，不能使用其他学校的资料` });
+                }
+            }
+            continue;
+        }
         const customValue = input.basic[customKey];
-        if (/招聘信息(?:获取渠道|来源)/.test(label) &&
+        if (/招聘信息(?:获取渠道|来源)|何种方式.*获知.*校招信息/.test(label) &&
             input.basic['application.source.allow_available_option'] === true &&
             normalizeCustomAnswer(customValue, options) === undefined) {
-            const official = options.find((option) => /官网/.test(String(option['label'] ?? '')));
+            const official = options.find((option) => /官网|校招官方/.test(String(option['label'] ?? '')))
+                ?? options.find((option) => String(option['label'] ?? '') === '其他');
             if (official !== undefined) {
                 values.push({ object_id: id, value: String(official['value']) });
                 continue;
@@ -499,6 +528,15 @@ function resolveRequiredCustomFields(input, fields) {
                 continue;
             }
         }
+        if (/预计毕业月份/.test(label)) {
+            const end = highestEducation(input)?.values['endDate'];
+            const answer = typeof end === 'string' && /^\d{4}-\d{2}/.test(end)
+                ? normalizeCustomAnswer(`${Number(end.slice(5, 7))}月`, options) : undefined;
+            if (answer !== undefined) {
+                values.push({ object_id: id, value: answer });
+                continue;
+            }
+        }
         if (/毕业时间/.test(label)) {
             const latest = [...input.education]
                 .map((record) => text(record.values, 'endDate', 'end_date'))
@@ -528,19 +566,21 @@ function resolveRequiredCustomFields(input, fields) {
         }
         const canonicalKey = name === 'marital_status' || /婚姻/.test(label)
             ? 'person.identity.marital_status'
-            : /出生日期|生日/.test(label)
-                ? 'person.identity.birth_date'
-                : /籍贯/.test(label)
-                    ? 'person.contact.native_place'
-                    : /家庭住址/.test(label)
-                        ? 'person.contact.address'
-                        : /驾驶证|驾照/.test(label)
-                            ? 'person.credential.has_driver_license'
-                            : /调配|调剂/.test(label)
-                                ? 'application.preference.accept_transfer'
-                                : /派遣|外派/.test(label)
-                                    ? 'application.preference.accept_assignment'
-                                    : undefined;
+            : /证件号码/.test(label)
+                ? 'person.identity.identification_number'
+                : /出生日期|生日/.test(label)
+                    ? 'person.identity.birth_date'
+                    : /籍贯/.test(label)
+                        ? 'person.contact.native_place'
+                        : /家庭住址/.test(label)
+                            ? 'person.contact.address'
+                            : /驾驶证|驾照/.test(label)
+                                ? 'person.credential.has_driver_license'
+                                : /调配|调剂|调换工作地点/.test(label)
+                                    ? 'application.preference.accept_transfer'
+                                    : /派遣|外派/.test(label)
+                                        ? 'application.preference.accept_assignment'
+                                        : undefined;
         if (canonicalKey === undefined) {
             missing.push({
                 key: customKey,
@@ -632,7 +672,7 @@ function buildPayload(input, current, fields, settings, customValues, forceCreat
             : {}),
         portal_attachment_id: attachmentId(current),
         identification: current['identification'] ?? {},
-        education_list: attachCustomValues(educationRows(input, includeEducationType, includeAcademicRanking, settings), distributedCustomValues.sections.get('education_list')),
+        education_list: attachCustomValues(educationRows(input, includeEducationType, includeAcademicRanking, settings, fields.filter(field => isEducationProfileField(field, fields))), distributedCustomValues.sections.get('education_list')),
         career_list: attachCustomValues(careerRows(input, 'career'), distributedCustomValues.sections.get('career_list')),
         internship_list: attachCustomValues(careerRows(input, 'internship'), distributedCustomValues.sections.get('internship_list')),
         project_list: attachCustomValues(projectRows(input), distributedCustomValues.sections.get('project_list')),
@@ -724,7 +764,7 @@ function emptyArrayOrNullEqual(left, right) {
     return (Array.isArray(left) && left.length === 0 && right === null) ||
         (Array.isArray(right) && right.length === 0 && left === null);
 }
-function compareResumeValue(actual, expected) {
+function compareResumeValue(actual, expected, recordRow = false) {
     if (emptyArrayOrNullEqual(actual, expected))
         return true;
     if (isEmptyWriteValue(expected))
@@ -732,32 +772,65 @@ function compareResumeValue(actual, expected) {
     if (Array.isArray(expected)) {
         if (!Array.isArray(actual) || actual.length !== expected.length)
             return false;
-        return expected.every((item, index) => compareResumeValue(actual[index], item));
+        return expected.every((item, index) => compareResumeValue(actual[index], item, recordRow));
     }
     if (expected !== null && typeof expected === 'object') {
         if (actual === null || typeof actual !== 'object' || Array.isArray(actual))
             return false;
-        return Object.entries(expected).every(([key, value]) => compareResumeValue(actual[key], value));
+        return Object.entries(expected).every(([key, value]) => (recordRow && (READBACK_METADATA_KEYS.has(key) || key === 'parent_id')) ||
+            compareResumeValue(actual[key], value, key === 'customized_data'));
     }
     return comparable(actual) === comparable(expected);
 }
+export function normalizeLocationCodeList(value) {
+    if (!Array.isArray(value))
+        return undefined;
+    const codes = value.map((item) => {
+        if (typeof item === 'string')
+            return item;
+        if (item === null || typeof item !== 'object' || Array.isArray(item))
+            return undefined;
+        const code = item['code'];
+        return typeof code === 'string' ? code : undefined;
+    });
+    if (codes.some((code) => code === undefined))
+        return undefined;
+    return codes.toSorted();
+}
+function sameLocationCodes(actual, expected) {
+    const actualCodes = normalizeLocationCodeList(actual);
+    const expectedCodes = normalizeLocationCodeList(expected);
+    return actualCodes !== undefined && expectedCodes !== undefined &&
+        actualCodes.length === expectedCodes.length &&
+        actualCodes.every((code, index) => code === expectedCodes[index]);
+}
+function isRequestOnlyCustomRow(section, row) {
+    if (section !== 'basic_info_customized_data')
+        return false;
+    if (row['object_id'] !== 'identification')
+        return false;
+    const value = row['value'];
+    return value !== null && typeof value === 'object' && !Array.isArray(value) &&
+        Object.keys(value).length === 0;
+}
 function scopedResumeMismatch(actual, expected) {
     const compareRows = (section, expectedRows) => {
-        const actualRows = asRows(actual[section]);
-        if (expectedRows.length === 0 && (actual[section] === null || actual[section] === undefined))
+        const actualRows = asRows(actual[section]).filter((row) => !isRequestOnlyCustomRow(section, row));
+        const persistedExpectedRows = expectedRows.filter((row) => !isRequestOnlyCustomRow(section, row));
+        if (persistedExpectedRows.length === 0 && (actual[section] === null || actual[section] === undefined))
             return undefined;
-        if (actualRows.length !== expectedRows.length)
+        if (actualRows.length !== persistedExpectedRows.length)
             return section;
         const identityKey = FEISHU_ROW_IDENTITY[section];
         if (identityKey === undefined)
-            return compareResumeValue(actual[section], expectedRows) ? undefined : section;
+            return compareResumeValue(actualRows, persistedExpectedRows) ? undefined : section;
         const actualGroups = new Map();
         const expectedGroups = new Map();
         for (const row of actualRows) {
             const key = String(row[identityKey] ?? '');
             actualGroups.set(key, [...(actualGroups.get(key) ?? []), row]);
         }
-        for (const row of expectedRows) {
+        for (const row of persistedExpectedRows) {
             const key = String(row[identityKey] ?? '');
             expectedGroups.set(key, [...(expectedGroups.get(key) ?? []), row]);
         }
@@ -773,7 +846,7 @@ function scopedResumeMismatch(actual, expected) {
                 if (candidates.length !== 1)
                     return `${section}.identity.${identity}`;
                 const actualRow = candidates[0];
-                if (!compareResumeValue(actualRow, expectedRow))
+                if (!compareResumeValue(actualRow, expectedRow, true))
                     return `${section}[${identity}]`;
                 remaining.splice(remaining.indexOf(actualRow), 1);
             }
@@ -791,6 +864,11 @@ function scopedResumeMismatch(actual, expected) {
         }
         if (key === 'portal_attachment_id')
             continue;
+        if (key === 'preferred_city_list') {
+            if (!compareResumeValue(actual[key], expectedValue) && !sameLocationCodes(actual[key], expectedValue))
+                return key;
+            continue;
+        }
         if (FEISHU_ROW_IDENTITY[key] !== undefined) {
             const rowMismatch = compareRows(key, asRows(expectedValue));
             if (rowMismatch !== undefined)
@@ -1359,7 +1437,8 @@ export const feishuJobsResumePage = {
                 reason: '家乡为必填项，请在官网城市选项中选择资料中的家乡',
             });
         }
-        if (hasRequiredField(fields, 'preferred_city_list')) {
+        if (hasRequiredField(fields, 'preferred_city_list') &&
+            !(requestedScope?.mode === 'fill_missing' && (normalizeLocationCodeList(current['preferred_city_list'])?.length ?? 0) > 0)) {
             const desiredCities = stringList(input.basic['application.preference.desired_city']);
             const unresolved = desiredCities.filter((city) => resolveCityCode(fields, ['preferred_city_list', 'application_preferred_city_list'], city) === undefined);
             if (desiredCities.length === 0 || unresolved.length > 0) {
@@ -1394,12 +1473,20 @@ export const feishuJobsResumePage = {
                 identityKey: section => FEISHU_ROW_IDENTITY[section],
                 signalKeys: section => FEISHU_ROW_SIGNALS[section] ?? [],
                 mergeRowObjects: false,
+                nestedRowIdentity: key => key === 'customized_data' ? 'object_id' : undefined,
             });
+        const scopedPreferredCityCodes = normalizeLocationCodeList(scoped.resume['preferred_city_list']);
+        const requestResume = scopedPreferredCityCodes === undefined
+            ? scoped.resume
+            : {
+                ...scoped.resume,
+                preferred_city_list: scopedPreferredCityCodes,
+            };
         const apiPayload = {
             requestPath: candidateApiPayload.requestPath,
             body: {
                 ...candidateApiPayload.body,
-                resume: scoped.resume,
+                resume: requestResume,
             },
         };
         return {
