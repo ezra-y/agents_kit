@@ -27,6 +27,10 @@ function matchesAccount(account, expected) {
     return expected !== undefined && ((typeof expected.phone === 'string' && expected.phone !== '' && account.phone === expected.phone) ||
         (typeof expected.email === 'string' && expected.email !== '' && account.email?.toLowerCase() === expected.email.toLowerCase()));
 }
+export async function currentMokaAccountMatchesTask(input) {
+    const account = await input.page.evaluate(readMokaAccountFromDom).catch(() => undefined);
+    return account !== undefined && matchesAccount(account, expectedContact(input));
+}
 function supported(input) {
     return input.session.mode === 'persistent' && input.session.profileDir !== undefined &&
         input.session.context !== undefined && new URL(input.page.url()).hostname === 'app.mokahr.com';

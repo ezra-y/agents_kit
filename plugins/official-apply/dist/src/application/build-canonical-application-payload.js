@@ -84,11 +84,20 @@ function readApplicationAnswers(paths, taskId) {
     const priv = openPrivateDatabase({ paths });
     try {
         const rows = priv.db
-            .prepare(`SELECT canonical_key, value_json
-           FROM answer_values
-          WHERE scope_type = 'application'
-            AND scope_key = ?
-            AND status = 'active'`)
+            .prepare(`SELECT a.canonical_key, a.value_json
+           FROM answer_values a
+          WHERE a.scope_type = 'application'
+            AND a.scope_key = ? AND a.status = 'active'
+            AND NOT EXISTS (
+              SELECT 1 FROM answer_values g
+               WHERE g.canonical_key = a.canonical_key
+                 AND g.scope_type = 'global' AND g.scope_key = 'user'
+                 AND g.status = 'active' AND g.user_confirmed = 1
+                 AND (a.user_confirmed <> 1 OR
+                   julianday(COALESCE(g.last_confirmed_at, g.updated_at)) >
+                   julianday(COALESCE(a.last_confirmed_at, a.updated_at)))
+            )
+          ORDER BY a.updated_at, a.id`)
             .all(`application:${taskId}`);
         const answers = {};
         for (const row of rows) {

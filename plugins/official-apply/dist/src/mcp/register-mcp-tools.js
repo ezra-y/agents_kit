@@ -15,8 +15,9 @@
  */
 import { startRunSession } from "../application/start-run-session.js";
 import { openResumePage } from "../application/open-resume-page.js";
-import { rememberMokaLogin, reuseMokaLogin } from "../application/reuse-moka-login.js";
+import { currentMokaAccountMatchesTask, rememberMokaLogin, reuseMokaLogin } from "../application/reuse-moka-login.js";
 import { reuseLoginStateOnCurrentPage } from "../application/reuse-login-state.js";
+import { inventoryOpenCliBridge } from "../browser/session/opencli-bridge-login-state.js";
 import { savePageScriptWithReadback } from "../application/save-page-script-with-readback.js";
 import { loadPageScriptWritePlan, persistPageScriptWritePlan, } from "../application/page-script-write-plan.js";
 import { captureResumeReviewEvidence } from "../application/capture-resume-review-evidence.js";
@@ -555,6 +556,7 @@ export function registerMcpTools() {
                     });
                 }
                 if (action === 'inspect' && login.providerId === 'moka.shared.sms' &&
+                    !readString(input.args, 'sourceId')?.startsWith('bridge:') &&
                     (login.stage === 'sms_ready' || login.stage === 'login_required')) {
                     let reusedFromProfile;
                     try {
@@ -571,19 +573,30 @@ export function registerMcpTools() {
                         login.evidence.push(`已从档案 ${reusedFromProfile} 复用登录并在当前公司验证账号。`);
                     }
                 }
-                if (action === 'inspect' &&
-                    login.providerId !== 'moka.shared.sms' &&
-                    (login.stage === 'sms_ready' || login.stage === 'login_required')) {
+                let reuseSourceId = readString(input.args, 'sourceId');
+                const needsReuse = action === 'inspect' &&
+                    (login.stage === 'sms_ready' || login.stage === 'login_required');
+                if (needsReuse && login.providerId === 'moka.shared.sms' && reuseSourceId === undefined) {
+                    const sources = (await inventoryOpenCliBridge({ selection: 'default' }))
+                        .filter(source => source.extensionConnected);
+                    if (sources.length === 1)
+                        reuseSourceId = sources[0]?.sourceId;
+                }
+                if (needsReuse && (login.providerId !== 'moka.shared.sms' || reuseSourceId?.startsWith('bridge:'))) {
                     const reused = await reuseLoginStateOnCurrentPage({
                         session: found.session,
                         page: found.page,
                         runId: found.run.runId,
-                        targetUrl: found.run.targetUrl ?? originalPageUrl,
+                        targetUrl: login.providerId === 'moka.shared.sms' ? found.page.url() : found.run.targetUrl ?? originalPageUrl,
                         domains: readStringArray(input.args, 'domains'),
-                        sourceId: readString(input.args, 'sourceId'),
+                        sourceId: reuseSourceId,
                         verifyLogin: async (page) => {
                             const checked = await manageLogin({ page, action: 'inspect', now: input.now });
                             if (checked.stage === 'logged_in') {
+                                if (login.providerId === 'moka.shared.sms' && !await currentMokaAccountMatchesTask({
+                                    session: found.session, page, runId: found.run.runId,
+                                }))
+                                    return { status: 'logged_out', evidence: ['浏览器账号与任务资料不匹配，未采用该来源'] };
                                 return { status: 'logged_in', evidence: checked.evidence };
                             }
                             if (checked.stage === 'login_unconfirmed') {
@@ -1054,10 +1067,33 @@ export function registerMcpTools() {
                     answers: answers,
                     now: input.now,
                 });
-                const run = input.sessions.get(runId);
-                if (run !== undefined) {
+                const updates = answers;
+                for (const summary of input.sessions.list()) {
+                    const run = input.sessions.get(summary.runId);
+                    if (run === undefined)
+                        continue;
+                    const affected = updates.filter(({ scope }) => {
+                        const key = scope.key.replace(new RegExp(`^${scope.type}:`), '');
+                        switch (scope.type) {
+                            case 'global': return key === 'user';
+                            case 'application': return key === run.taskId;
+                            case 'profile_record': return run.profileRecordIds.includes(key);
+                            case 'company': return key === run.companyKey;
+                            case 'job': return key === [run.companyKey, run.jobKey].filter(Boolean).join(':');
+                            default: return false;
+                        }
+                    });
+                    if (affected.length === 0)
+                        continue;
                     run.lastResolutionState = undefined;
                     run.lastValidationState = undefined;
+                    run.lastResolvedAnswers = undefined;
+                    run.pageScriptWritePlan = undefined;
+                    run.pageScriptWritePlanRef = undefined;
+                    for (const answer of affected) {
+                        if (run.draftAnswers !== undefined)
+                            delete run.draftAnswers[answer.canonicalKey];
+                    }
                 }
                 // 用户对着某个字段给了答案，就等于确认了这个字段的含义。
                 // 不做这一步的话，低置信度映射永远停在「要人确认」，
@@ -1080,7 +1116,7 @@ export function registerMcpTools() {
                         confirmed.push(canonicalKey);
                     }
                 }
-                return ok({ ...result, confirmedMappings: confirmed }, `保存了 ${result.savedAnswerIds.length} 条回答` +
+                return ok({ ...result, confirmedMappings: confirmed, nextTool: 'apply.resolve_page' }, `保存了 ${result.savedAnswerIds.length} 条回答` +
                     (confirmed.length === 0 ? '。' : `，确认了 ${confirmed.length} 个字段映射。`));
             },
         },
