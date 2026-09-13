@@ -132,17 +132,16 @@ def sync(repo: Repository) -> dict[str, Any]:
                         raise RuntimeError("获取期间分支发生变化，已停止")
                     local = _run(repo, ["git", "rev-parse", "HEAD"])
                     remote = _run(repo, ["git", "rev-parse", "origin/main"])
-                    if (
-                        _run(repo, ["git", "merge-base", "HEAD", "origin/main"])
-                        != local
-                    ):
-                        raise RuntimeError("本地提交领先或分叉；请先审查提交，未覆盖")
-                    if local != remote:
+                    base = _run(repo, ["git", "merge-base", "HEAD", "origin/main"])
+                    if base not in {local, remote}:
+                        raise RuntimeError("本地与远端都有新提交；请先合并，未覆盖")
+                    if base == local and local != remote:
                         _run(
                             repo,
                             ["git", "merge", "--ff-only", "--quiet", "origin/main"],
                         )
-                result["revision"] = remote
+                        local = remote
+                result["revision"] = local
                 launcher = str(repo.root / "scripts/agents-kit")
                 for phase, args in [
                     ("插件索引", ["marketplace", "build", "--json"]),

@@ -19,9 +19,9 @@
    `agents-kit plugin remove <名称> --yes`。
 5. 全局安装是软链接，项目安装是副本；依赖由 `metadata.json` 和安装流程展开，
    不把依赖手工写入期望安装清单。`active.txt` 只保留一个兼容周期。
-6. 来源检查把合并状态和内容风险分开。只有无本地冲突的 License、Changelog
-   变化可用 `--auto-docs` 自动应用；README、Skill、Prompt、Manifest、Hook、
-   MCP、脚本、二进制和未知内容默认人工确认。
+6. 云端自动更新未做本地修改的登记来源。本地改动保留并进入审核；固定版本、
+   文件缺失或未通过候选检查的更新不覆盖。`--auto-docs` 只用于明确要求限制
+   为 License、Changelog 的更新。
 7. MCP 集中记录在 `mcps.json`；`npm`、`pypi` 和 `brew` 分发必须锁定版本。
    凭据只记录环境变量或安全命令来源，不把值写进仓库或客户端配置。
 8. 修改 `rules/`、`agents/`、`hooks/` 或 `prompts/` 前，先读取对应目录的
@@ -49,8 +49,8 @@
 - 模块边界、来源模型和安装语义：`docs/architecture.md`
 - 状态文件、本机 LaunchAgent 自动同步和日常操作：`README.md`
 
-本机每 60 分钟尝试把 `origin/main` fast-forward 到 `~/agents_kit`；工作区不干净、
-本地领先或分叉时会跳过。普通任务不要绕过这些保护，排障时再读取 README。
+本机每 60 分钟拉取 `origin/main` 并核对安装；工作区不干净或两边都有新提交时停止。
+本地仅有领先提交时保留提交并继续核对安装。普通任务不要绕过这些保护，排障时再读取 README。
 
 ## 生成文件
 
