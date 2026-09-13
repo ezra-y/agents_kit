@@ -1241,8 +1241,8 @@
     },
     "skill:plugin/pstack/typescript-best-practices": {
       "recommendation": 3,
-      "description": "TypeScript best practices. Use when reading or editing any .ts or .tsx file.",
-      "trigger": "",
+      "description": "TypeScript guidance for type design, coding conventions, and code review. Use when the task needs TypeScript-specific design or review guidance.",
+      "trigger": "TypeScript guidance for type design, coding conventions, and code review. Use when the task needs TypeScript-specific design or review guidance.",
       "tags": [
         "role/workflow",
         "focus/agent-instructions",
@@ -1255,8 +1255,8 @@
     },
     "skill:plugin/pstack/unslop": {
       "recommendation": 3,
-      "description": "Cut AI tells from any writing. Must always apply.",
-      "trigger": "",
+      "description": "Edit existing text to remove empty phrases and unnatural wording. Use when the user requests copy editing or removal of AI writing patterns.",
+      "trigger": "Edit existing text to remove empty phrases and unnatural wording. Use when the user requests copy editing or removal of AI writing patterns.",
       "tags": [
         "role/workflow",
         "focus/agent-instructions",
@@ -1660,8 +1660,8 @@
     },
     "skill:standalone/agent-reach": {
       "recommendation": 4,
-      "description": "为 Agent 提供网页、社交平台、视频、GitHub、RSS 与语义搜索的统一检索路由；根据 doctor 状态选择当前可用的上游 CLI、MCP 或网页后端。",
-      "trigger": "当用户要求联网搜索、调研或读取 URL，或点名 Twitter/X、Reddit、YouTube、B站、小红书、GitHub、V2EX、LinkedIn、雪球、RSS 等平台时使用；已有更专门的连接器时优先使用专门连接器。",
+      "description": "获取需要平台专用接口或登录状态的网页、社交帖子和视频内容，并选择可用后端。用于需要这些平台能力的检索；已有专用技能时使用专用技能。",
+      "trigger": "获取需要平台专用接口或登录状态的网页、社交帖子和视频内容，并选择可用后端。用于需要这些平台能力的检索；已有专用技能时使用专用技能。",
       "tags": [
         "role/researcher",
         "focus/web-research",
@@ -2180,6 +2180,16 @@
         "output/reference"
       ]
     },
+    "skill:standalone/ego-browser": {
+      "recommendation": 3,
+      "description": "Operate websites with the ego browser: open pages, fill forms, capture screenshots, and inspect web interfaces. Use when the task uses ego for browser interaction.",
+      "trigger": "Operate websites with the ego browser: open pages, fill forms, capture screenshots, and inspect web interfaces. Use when the task uses ego for browser interaction.",
+      "tags": [
+        "role/integration",
+        "focus/tool-integration",
+        "focus/ui-testing"
+      ]
+    },
     "skill:standalone/emil-design-eng": {
       "recommendation": 4,
       "description": "Emil Kowalski 的设计工程规范，覆盖 UI 打磨、组件细节、动画取舍、缓动时长与严格评审格式。",
@@ -2644,8 +2654,8 @@
     },
     "skill:standalone/lark-apps": {
       "recommendation": 2,
-      "description": "妙搭(Spark/Miaoda)应用开发托管:建应用、发 HTML 静态站、本地全栈开发、云端生成迭代、日志与监控查询、环境变量管理。",
-      "trigger": "说「在飞书上搭个小应用」。",
+      "description": "创建、修改、发布和运维妙搭应用，或为应用集成飞书能力。用于妙搭项目和明确需要飞书集成的应用任务。",
+      "trigger": "创建、修改、发布和运维妙搭应用，或为应用集成飞书能力。用于妙搭项目和明确需要飞书集成的应用任务。",
       "tags": [
         "role/builder",
         "focus/ai-apps",
@@ -3483,8 +3493,8 @@
     },
     "skill:standalone/smart-search": {
       "recommendation": 4,
-      "description": "基于本机 opencli 的智能搜索路由:指定站点、社交媒体、技术资料、新闻、购物、旅游、求职、金融、中文内容各走不同的源。含强制预检、单题预算和频率限制。",
-      "trigger": "说「搜一下 XXX」「查查小红书上关于 XXX 的」。依赖本机 opencli 二进制,模型不可能自己知道怎么调。",
+      "description": "使用 OpenCLI 检索指定网站。用于用户要求通过 OpenCLI 查询，或当前任务已经明确采用 OpenCLI 的情况。",
+      "trigger": "使用 OpenCLI 检索指定网站。用于用户要求通过 OpenCLI 查询，或当前任务已经明确采用 OpenCLI 的情况。",
       "tags": [
         "role/router",
         "focus/web-research",

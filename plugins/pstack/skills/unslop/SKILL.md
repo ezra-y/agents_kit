@@ -1,6 +1,7 @@
 ---
 name: unslop
-description: Cut AI tells from any writing. Must always apply.
+# 本地修改 2026-09-13：仅调整触发简介；维护记录见 docs/local-skill-descriptions.md。
+description: "Edit existing text to remove empty phrases and unnatural wording. Use when the user requests copy editing or removal of AI writing patterns."
 ---
 
 # Unslop

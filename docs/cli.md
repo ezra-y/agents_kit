@@ -100,7 +100,7 @@ options:
   --json
 
 $ agents-kit source check --help
-usage: agents-kit source check [-h] [--json] (--all | name)
+usage: agents-kit source check [-h] [--all] [--json] [name]
 
 positional arguments:
   name
@@ -111,7 +111,7 @@ options:
   --json
 
 $ agents-kit source update --help
-usage: agents-kit source update [-h] [--dry-run] [--safe] [--auto-docs] [--yes] [--repo-only] [--json] (--all | name)
+usage: agents-kit source update [-h] [--all] [--dry-run] [--safe] [--auto-docs] [--yes] [--repo-only] [--json] [name]
 
 positional arguments:
   name
@@ -396,7 +396,7 @@ options:
   --json
 
 $ agents-kit plugin update --help
-usage: agents-kit plugin update [-h] [--auto-docs] [--dry-run] [--yes] [--repo-only] [--json] (--all | name)
+usage: agents-kit plugin update [-h] [--all] [--auto-docs] [--dry-run] [--yes] [--repo-only] [--json] [name]
 
 positional arguments:
   name
@@ -553,7 +553,7 @@ options:
   --json
 
 $ agents-kit mcp apply --help
-usage: agents-kit mcp apply [-h] [--replace] [--dry-run] [--yes] [--json] (--all | name)
+usage: agents-kit mcp apply [-h] [--all] [--replace] [--dry-run] [--yes] [--json] [name]
 
 positional arguments:
   name
@@ -567,7 +567,7 @@ options:
   --json
 
 $ agents-kit mcp update --help
-usage: agents-kit mcp update [-h] [--dry-run] [--yes] [--json] (--all | name)
+usage: agents-kit mcp update [-h] [--all] [--dry-run] [--yes] [--json] [name]
 
 positional arguments:
   name

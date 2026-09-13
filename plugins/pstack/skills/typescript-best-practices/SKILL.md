@@ -1,6 +1,7 @@
 ---
 name: typescript-best-practices
-description: TypeScript best practices. Use when reading or editing any .ts or .tsx file.
+# 本地修改 2026-09-13：仅调整触发简介；维护记录见 docs/local-skill-descriptions.md。
+description: "TypeScript guidance for type design, coding conventions, and code review. Use when the task needs TypeScript-specific design or review guidance."
 ---
 
 # TypeScript best practices
