@@ -1007,8 +1007,8 @@
       "content_mode": "directory",
       "policy": "review",
       "resolved": {
-        "revision": "7fd6ef3c07182257ce776cdc5a614e122d5bd4b3",
-        "content_sha256": "2f3891b3adc66e1a326e291b6e04812029a7af5998af68992f4b74950c0ac003"
+        "revision": "39aaf9fca0e08825b51f6d8c6c617bf781db761b",
+        "content_sha256": "f90ef9c124848897c1d17265ba8bb4b5fbde412b3ed5b488473e956327eb062b"
       },
       "source_name": "lark-apps"
     },

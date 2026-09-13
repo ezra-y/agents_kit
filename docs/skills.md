@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **304** 个 · 常驻 **154** 个 · 有上游可检查更新 **153** 个
+共 **305** 个 · 常驻 **155** 个 · 有上游可检查更新 **153** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -134,7 +134,7 @@
 |---|---|---|:--:|---|
 | `reverse-skill-router` | 逆向工程与网络安全任务总路由：根据目标类型、用户意图和工具链选择 APK、二进制、前端 JS、恶意软件、固件、取证、渗透测试或安全报告工作流 | `role/router` `focus/reverse-engineering` `focus/security-assessment` `focus/tool-integration` `platform/multi-platform` `output/report` |  | [github.com/zhaoxuya520/reverse-skill](https://github.com/zhaoxuya520/reverse-skill) |
 
-## 通用工程 (`engineering`，89 个)
+## 通用工程 (`engineering`，90 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
@@ -152,6 +152,7 @@
 | `deslop` | Remove AI-generated code slop and clean up code style | `role/workflow` `focus/agent-instructions` `focus/codebase-navigation` `focus/workflow-automation` `platform/multi-platform` `output/code` | ● | [github.com/ericlitman/open-pstack](https://github.com/ericlitman/open-pstack) |
 | `diagnosing-bugs` | 诊断难缠的 bug 和性能回归,已更新到上游最新版(上游改名 diagnosing-bugs,134 行)。流程:建反馈回路 → 复现 →  | `role/workflow` `focus/debugging` `focus/performance` `output/code` `output/report` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills) |
 | `domain-modeling` | 领域建模:梳理业务概念、统一术语、产出领域词汇表,74 行。 | `role/workflow` `focus/domain-modeling` `focus/requirements-discovery` `output/domain-model` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills) |
+| `ego-browser` | Operate websites with the ego browser: open pages, fill forms, capture | `role/integration` `focus/tool-integration` `focus/ui-testing` | ● | — |
 | `figure-it-out` | Design an auditable playbook when no narrower one fits: a large migrat | `role/workflow` `focus/agent-instructions` `focus/codebase-navigation` `focus/workflow-automation` `platform/multi-platform` `output/code` | ● | [github.com/ericlitman/open-pstack](https://github.com/ericlitman/open-pstack) |
 | `fix-ci` | Find failing PR checks, inspect logs or external check links, and appl | `role/workflow` `focus/agent-instructions` `focus/codebase-navigation` `focus/workflow-automation` `platform/multi-platform` `output/code` | ● | [github.com/ericlitman/open-pstack](https://github.com/ericlitman/open-pstack) |
 | `fix-merge-conflicts` | Resolve merge conflicts non-interactively, validate build and tests, a | `role/workflow` `focus/agent-instructions` `focus/codebase-navigation` `focus/workflow-automation` `platform/multi-platform` `output/code` | ● | [github.com/ericlitman/open-pstack](https://github.com/ericlitman/open-pstack) |
@@ -218,8 +219,8 @@
 | `to-spec` | 把当前对话合成规格文档并发到 issue tracker。已更新到上游最新(上游改名 to-spec,75 行)。明确不访谈你,只综合已知信 | `role/builder` `focus/product-specification` `focus/requirements-synthesis` `output/prd` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills) |
 | `to-tickets` | 把计划/规格拆成可独立认领的 issue,用 tracer bullet 纵向切片。已更新到上游最新(上游改名 to-tickets,105 | `role/builder` `focus/delivery-planning` `focus/work-breakdown` `output/issues` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills) |
 | `triage` | 用状态机和五种 triage 角色流转 issue,要求每条评论带免责声明。 | `role/workflow` `focus/delivery-planning` `focus/issue-triage` `output/issues` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills) |
-| `typescript-best-practices` | TypeScript best practices. Use when reading or editing any .ts or .tsx | `role/workflow` `focus/agent-instructions` `focus/codebase-navigation` `focus/workflow-automation` `platform/multi-platform` `output/code` | ● | [github.com/ericlitman/open-pstack](https://github.com/ericlitman/open-pstack) |
-| `unslop` | Cut AI tells from any writing. Must always apply. | `role/workflow` `focus/agent-instructions` `focus/codebase-navigation` `focus/workflow-automation` `platform/multi-platform` `output/code` | ● | [github.com/ericlitman/open-pstack](https://github.com/ericlitman/open-pstack) |
+| `typescript-best-practices` | TypeScript guidance for type design, coding conventions, and code revi | `role/workflow` `focus/agent-instructions` `focus/codebase-navigation` `focus/workflow-automation` `platform/multi-platform` `output/code` | ● | [github.com/ericlitman/open-pstack](https://github.com/ericlitman/open-pstack) |
+| `unslop` | Edit existing text to remove empty phrases and unnatural wording. Use  | `role/workflow` `focus/agent-instructions` `focus/codebase-navigation` `focus/workflow-automation` `platform/multi-platform` `output/code` | ● | [github.com/ericlitman/open-pstack](https://github.com/ericlitman/open-pstack) |
 | `wait-what` | Stop. That last message did not land: re-pitch it. | `role/workflow` `focus/code-quality` `output/code` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills) |
 | `wayfinder` | Plan a huge chunk of work (more than one agent session can hold) as a  | `role/workflow` `focus/code-quality` `output/code` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills) |
 | `what-did-i-get-done` | Summarize authored commits over a user-specified time period into a co | `role/workflow` `focus/agent-instructions` `focus/codebase-navigation` `focus/workflow-automation` `platform/multi-platform` `output/code` | ● | [github.com/ericlitman/open-pstack](https://github.com/ericlitman/open-pstack) |
@@ -301,7 +302,7 @@
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
-| `agent-reach` | 为 Agent 提供网页、社交平台、视频、GitHub、RSS 与语义搜索的统一检索路由；根据 doctor 状态选择当前可用的上游 CLI | `role/researcher` `focus/web-research` `platform/social-media` `platform/web` `output/research` | ● | [github.com/Panniantong/Agent-Reach](https://github.com/Panniantong/Agent-Reach) |
+| `agent-reach` | 获取需要平台专用接口或登录状态的网页、社交帖子和视频内容，并选择可用后端。用于需要这些平台能力的检索；已有专用技能时使用专用技能。 | `role/researcher` `focus/web-research` `platform/social-media` `platform/web` `output/research` | ● | [github.com/Panniantong/Agent-Reach](https://github.com/Panniantong/Agent-Reach) |
 | `deep-dive` | 不依赖外部 API 的深度研究:把问题拆成 DAG、按依赖顺序并行跑子代理、按缺口迭代一轮。 | `role/researcher` `focus/deep-research` `focus/evidence-synthesis` `output/report` |  | [github.com/rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit/tree/main/skills/deep-dive) |
 | `deep-research-skill` | 论点驱动的深度调研工作流：优先一手源、交叉验证、反例分析，并输出带来源的判断型报告。 | `role/researcher` `focus/web-research` `output/research` | ● | — |
 | `eli5` | Explain a topic like I'm a 5 year old. Use when the user types /eli5 < | `role/builder` `focus/interactive-tools` `stack/html` `output/app` | ● | [github.com/anthropics/claude-plugins-community](https://github.com/anthropics/claude-plugins-community) |
@@ -339,7 +340,7 @@
 | `recruitment-link` | 准备招聘来源和工作表。用户给出岗位表、飞书链接、招聘数据文件、官网链接，或没有招聘来源、原招聘链接失效需要查找当前入口时使用。先读取已登记的 | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
 | `recruitment-session` | 为企业招聘官网准备登录状态并找到站内简历入口。用户要求登录招聘站、复用 Chrome/Edge 登录态、处理短信或图片验证码、进入个人中心或 | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
 | `resume-fill-review` | 在企业招聘官网填写、保存并检查站内简历。用户要求更新简历、补教育/工作/项目、上传 PDF、检查站内简历，或已经有 recruitment- | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
-| `smart-search` | 基于本机 opencli 的智能搜索路由:指定站点、社交媒体、技术资料、新闻、购物、旅游、求职、金融、中文内容各走不同的源。含强制预检、单题 | `role/router` `focus/web-research` `platform/opencli` `output/research` | ● | — |
+| `smart-search` | 使用 OpenCLI 检索指定网站。用于用户要求通过 OpenCLI 查询，或当前任务已经明确采用 OpenCLI 的情况。 | `role/router` `focus/web-research` `platform/opencli` `output/research` | ● | — |
 
 ## AI Building (`ai-building`，19 个)
 
@@ -353,7 +354,7 @@
 | `claude-md-improver` | 扫描仓库里所有 CLAUDE.md,做质量评估出报告,再做定向修改。 | `role/reviewer` `focus/agent-instructions` `focus/prompt-quality` `platform/claude` `output/report` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) |
 | `global-agent-guardrails` | 为多个 AI Agent 共用一套危险 shell 命令拦截规则和 PreToolUse 防护。 | `role/builder` `focus/hooks` `focus/tool-guardrails` `platform/multi-platform` `output/config` | ● | [github.com/davidondrej/skills](https://github.com/davidondrej/skills/tree/main/skills/ops-and-setup/global-agent-guardrails) |
 | `hook-development` | 写 hook,707 行。PreToolUse / PostToolUse / Stop 各类钩子、prompt 型(推荐)与命令型的取舍、 | `role/builder` `focus/hooks` `focus/tool-guardrails` `platform/claude` `output/code` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/plugin-dev/skills/hook-development) |
-| `lark-apps` | 妙搭(Spark/Miaoda)应用开发托管:建应用、发 HTML 静态站、本地全栈开发、云端生成迭代、日志与监控查询、环境变量管理。 | `role/builder` `focus/ai-apps` `focus/app-hosting` `platform/lark` `output/app` | ● | [github.com/larksuite/cli](https://github.com/larksuite/cli/tree/main/skills/lark-apps) |
+| `lark-apps` | 创建、修改、发布和运维妙搭应用，或为应用集成飞书能力。用于妙搭项目和明确需要飞书集成的应用任务。 | `role/builder` `focus/ai-apps` `focus/app-hosting` `platform/lark` `output/app` | ● | [github.com/larksuite/cli](https://github.com/larksuite/cli/tree/main/skills/lark-apps) |
 | `lark-skill-maker` | 把飞书 API 操作封装成可复用的自定义 Skill(包装原子 API 或编排多步流程)。 | `role/builder` `focus/api-integration` `focus/skill-authoring` `platform/lark` `output/skill` |  | [github.com/larksuite/cli](https://github.com/larksuite/cli/tree/main/skills/lark-skill-maker) |
 | `session-report` | 从 ~/.claude/projects 的会话记录生成可探索的 HTML 用量报告:token、缓存命中、子代理、技能调用、最贵的 pro | `role/researcher` `focus/agent-observability` `focus/usage-analysis` `platform/claude` `output/report` |  | [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/session-report/skills/session-report) |
 | `skill-creator` | 从零建技能、改进已有技能、衡量技能表现,481 行 + 17 个附件。含意图捕获、访谈调研、SKILL.md 写作指南。Anthropic  | `role/workflow` `focus/skill-authoring` `focus/skill-evaluation` `output/skill` | ● | [github.com/anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/skill-creator) |
