@@ -1,5 +1,7 @@
 import json
 import os
+import re
+import shlex
 import subprocess
 import tempfile
 import unittest
@@ -199,6 +201,29 @@ class CliTests(unittest.TestCase):
             "Rule 21",
             (self.root / "skills/tools/alpha/SKILL.md").read_text(encoding="utf-8"),
         )
+
+    def test_cloud_update_applies_upstream_changes_and_preserves_customizations(self):
+        workflow = (LAUNCHER.parents[1] / ".github/workflows/sync.yml").read_text()
+        command = re.search(r"scripts/agents-kit (source update [^>\n]+)", workflow)
+        self.assertIsNotNone(command)
+        args = shlex.split(command.group(1))
+        self.import_git_source()
+        source = self.source / "SKILL.md"
+        source.write_text(source.read_text() + "Upstream rule\n")
+        self.commit_source("upstream update")
+        payload = json.loads(self.run_cli(*args).stdout)
+        self.assertTrue(payload["results"][0]["applied"])
+        local = self.root / "skills/tools/alpha/SKILL.md"
+        self.assertEqual(local.read_text(), source.read_text())
+
+        local.write_text(local.read_text() + "Local customization\n")
+        source.write_text(source.read_text() + "Another upstream rule\n")
+        self.commit_source("another update")
+        before = local.read_text()
+        payload = json.loads(self.run_cli(*args).stdout)
+        self.assertFalse(payload["results"][0]["applied"])
+        self.assertEqual(payload["results"][0]["merge_state"], "diverged")
+        self.assertEqual(local.read_text(), before)
 
     def test_source_update_safe_does_not_apply_binary_tree(self):
         self.import_git_source(reference_text="Unique reference\n")

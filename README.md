@@ -184,24 +184,25 @@ agents-kit project install <技能名或分类> --project "<项目路径>"
 ```bash
 agents-kit source check --all
 agents-kit source update <技能名> --yes
-agents-kit source update --all --auto-docs --yes
+agents-kit source update --all --yes --repo-only
 agents-kit source detach <技能名>
 agents-kit plugin update --all --dry-run
 agents-kit plugin update <Plugin> --yes
 ```
 
-默认策略是 `review`。检查结果分别报告 `merge_state`、`risk_class` 和
-`decision`。只有 `upstream_only + docs_only` 可由 `--auto-docs` 自动应用。
-云端更新使用 `--repo-only`，只处理仓库文件，不尝试启动本机客户端。
-当前只有 License 和 Changelog 归入 `docs_only`；README、`SKILL.md`、Prompt、
-Manifest、Hook、MCP、脚本、二进制和未知文件即使没有本地冲突也要人工确认。
+云端每天检查登记来源。仓库内容未做本地修改时，自动应用上游更新；
+存在本地修改时保留当前内容，列入审核待办。固定版本和未通过候选检查的更新不覆盖。
+`--repo-only` 只处理仓库文件，不尝试启动本机客户端。
+检查结果仍分别报告合并状态、内容类型和实际应用结果。
+手动使用 `--auto-docs` 时，可把更新范围限制为无本地冲突的 License/Changelog。
 完整 Plugin 更新复制整个上游子树，再覆盖 sidecar 声明的本地 authority 路径；
 组件 Inventory 只用于识别和审核，不决定保留哪些文件。
 
 ### 本机自动同步
 
 macOS 每 60 分钟运行 `agents-kit sync`，入口是仓库内的
-`scripts/sync-local.zsh`。仅在干净的 `main` 上快进更新，不自动提交、推送或覆盖工作区。
+`scripts/sync-local.zsh`。在干净的 `main` 上拉取远端更新，不自动提交、推送或覆盖工作区。
+本地仅有领先提交时保留这些提交并继续核对安装；本地和远端都有新提交时停止，提示先合并。
 即使远端没有新提交，也会核对安装、版本和真实插件加载。
 
 完整流程：拉取仓库 → 更新插件索引与清单 → 同步安装副本 → 核验两端实际加载。

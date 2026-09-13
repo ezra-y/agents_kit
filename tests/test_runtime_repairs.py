@@ -287,6 +287,56 @@ class RuntimeRepairTests(unittest.TestCase):
         self.assertTrue(any(args[1:3] == ["global", "apply"] for args in commands))
         self.assertTrue(any("--runtime" in args for args in commands))
 
+    def test_sync_keeps_local_commits_and_stops_when_histories_diverge(self):
+        def git(*args):
+            return subprocess.run(
+                ["git", "-C", str(self.root), *args],
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+
+        git("init", "-q", "-b", "main")
+        git("config", "user.name", "Test")
+        git("config", "user.email", "test@example.com")
+        git("add", ".")
+        git("commit", "-qm", "initial")
+        base = git("rev-parse", "HEAD")
+        git("update-ref", "refs/remotes/origin/main", base)
+        git("commit", "--allow-empty", "-qm", "local work")
+        local = git("rev-parse", "HEAD")
+        commands = []
+        original_run = automation._run
+
+        def run(repo, args, timeout=120):
+            commands.append(args)
+            if args[0] == "git":
+                return "" if "fetch" in args else original_run(repo, args, timeout)
+            return json.dumps({"sections": {"runtime": {"ok": True}}})
+
+        with (
+            patch.dict(
+                os.environ,
+                {"AGENTS_KIT_STATE_HOME": str(self.root / ".git/sync-test-state")},
+            ),
+            patch.object(automation, "_run", side_effect=run),
+        ):
+            result = automation.sync(self.repo)
+            self.assertEqual(result["status"], "success", result)
+            self.assertEqual(result["revision"], local)
+            self.assertEqual(git("rev-parse", "HEAD"), local)
+            self.assertTrue(any(args[1:3] == ["global", "apply"] for args in commands))
+
+            remote = git(
+                "commit-tree", f"{base}^{{tree}}", "-p", base, "-m", "remote work"
+            )
+            git("update-ref", "refs/remotes/origin/main", remote)
+            commands.clear()
+            result = automation.sync(self.repo)
+            self.assertEqual(result["status"], "failed")
+            self.assertEqual(git("rev-parse", "HEAD"), local)
+            self.assertFalse(any(args[1:3] == ["global", "apply"] for args in commands))
+
     def test_failed_runtime_check_does_not_record_sync_success(self):
         def run(repo, args, timeout=120):
             if "--runtime" in args:

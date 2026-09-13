@@ -26,12 +26,7 @@ def render_source_review_markdown(
 ) -> str:
     results = list(report.get("results", []))
     failures = list(report.get("failures", []))
-    updated = [
-        row
-        for row in results
-        if (row.get("decision") == "auto_apply" or row.get("status") == "safe_update")
-        and row.get("applied")
-    ]
+    updated = [row for row in results if row.get("applied")]
     review = pending_updates(report)
     unchanged = sum(
         row.get("merge_state") in {"unchanged", "local_only"}

@@ -94,6 +94,13 @@ class UpstreamCompletionTests(unittest.TestCase):
         self.assertEqual(source_reports.review_fingerprint(report), fingerprint)
         self.assertEqual(len(source_reports.pending_updates(report)), 1)
 
+    def test_applied_instruction_update_is_counted_in_report(self):
+        report = self.report()
+        report["results"][0]["applied"] = True
+        rendered = source_reports.render_source_review_markdown(report, {})
+        self.assertIn("自动更新 | **1**", rendered)
+        self.assertEqual(source_reports.pending_updates(report), [])
+
     def test_resolved_issue_closes_once_without_comment(self):
         current = self.issue(self.report())
         report = {"results": [], "failures": []}

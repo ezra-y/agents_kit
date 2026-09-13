@@ -50,14 +50,6 @@
         {
           "ref": "plugin:ponytail",
           "distribution": "skills-dir"
-        },
-        {
-          "ref": "plugin:pstack",
-          "distribution": "skills-dir"
-        },
-        {
-          "ref": "plugin:thinking-skills",
-          "distribution": "skills-dir"
         }
       ]
     },
@@ -113,14 +105,6 @@
         },
         {
           "ref": "plugin:official-apply",
-          "distribution": "marketplace"
-        },
-        {
-          "ref": "plugin:pstack",
-          "distribution": "marketplace"
-        },
-        {
-          "ref": "plugin:thinking-skills",
           "distribution": "marketplace"
         }
       ]
