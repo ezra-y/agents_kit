@@ -1600,6 +1600,34 @@
         "content_sha256": "a7ea8d8317d5592a858eb61caaa7bcb2f94d99ae926fc478d049486412aa6cc5"
       }
     },
+    "skill:standalone/positioning-workshop": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/deanpeters/Product-Manager-Skills.git",
+        "ref": "",
+        "path": "skills/positioning-workshop"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "1b5a524ebb95e9497fa3f25002d8b8ec528d4444",
+        "content_sha256": "0e430b03ff702038a5ecbb94ed044d2a1f4f4c6d970f16b2b0ef579193073413"
+      }
+    },
+    "skill:standalone/product-brainstorming": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/anthropics/knowledge-work-plugins.git",
+        "ref": "",
+        "path": "product-management/skills/product-brainstorming"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "8f877b63d26c68c0c5528e82892fe32d016a8ddc",
+        "content_sha256": "3b1b5bb94edd10dbf6625997d9e323e39c95d17418044907f9a0dcdb8b4dd554"
+      }
+    },
     "skill:standalone/pubmed": {
       "provider": "http",
       "locator": {
@@ -2121,6 +2149,20 @@
       "resolved": {
         "revision": null,
         "content_sha256": "117836400a10b3548f73c10013df314ce32632e3b87a8a5b3414aa0c280af1d0"
+      }
+    },
+    "skill:standalone/workshop-facilitation": {
+      "provider": "git",
+      "locator": {
+        "url": "https://github.com/deanpeters/Product-Manager-Skills.git",
+        "ref": "",
+        "path": "skills/workshop-facilitation"
+      },
+      "content_mode": "directory",
+      "policy": "review",
+      "resolved": {
+        "revision": "1b5a524ebb95e9497fa3f25002d8b8ec528d4444",
+        "content_sha256": "509c393abc88a16a225a507e672007ae9483ed9c2b830e23a7d0c457a36cfc77"
       }
     },
     "skill:standalone/writing-rules": {

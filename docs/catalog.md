@@ -1,6 +1,6 @@
 # 收藏技能总目录
 
-全部收藏 **318** 个：未收录索引 **11** · 已收录 **307**（其中常驻 **75**）
+全部收藏 **321** 个：未收录索引 **11** · 已收录 **310**（其中常驻 **77**）
 
 匹配优先级：配置启用（实际加载用 `check --runtime` 核验）→ 已收录未常驻（启用即可，零下载）→
 未收录索引（从上游安装）。按描述匹配即可；描述拿不准、候选难取舍或任务
@@ -271,6 +271,7 @@ Emil Kowalski 的动效与 UI 设计技能合集
 | `thinking-thought-experiment` | 产品 | 思想实验。真实验太罕见、太大或不可逆时，做受控反事实：隔离单个变量、固定其余条件、追机制链，并界定这个结果能推出什么、不能推出什么。 |
 | `thinking-triz` | 产品 | TRIZ。两个设计要求看起来互斥时，先把矛盾本身说清楚，分离冲突的状态，再造一个不折中的具体解法。 |
 | `thinking-via-negativa` | 产品 | 减法思维。反射性想加功能、加层、加流程时，先删掉有害和非必要的部分，删之前过一道不可逆性检查。 |
+| `workshop-facilitation` | 产品 | 工作坊引导：通过逐步提问、选项和进度跟踪辅助互动式产品讨论 |
 | `dashi-ppt` | 研究与办公 | 从需求或文档生成可在浏览器编辑的 HTML 演示文稿，并支持导出 PPTX / PDF。 |
 | `deep-dive` | 研究与办公 | 不依赖外部 API 的深度研究:把问题拆成 DAG、按依赖顺序并行跑子代理、按缺口迭代一轮。 |
 | `lark-approval` | 研究与办公 | 审批:查处理待办已办实例、搜可发起的审批定义、看详情并发起原生审批实例。 |
@@ -299,4 +300,4 @@ Emil Kowalski 的动效与 UI 设计技能合集
 
 ## 三、常驻（会话里天然可见，此处仅备查）
 
-`agent-reach` · `agent-trajectory` · `ask-matt` · `banner-design` · `bro` · `code-review` · `codebase-design` · `deep-research-skill` · `diagnosing-bugs` · `domain-modeling` · `ego-browser` · `eli5` · `frontend-design` · `github-outside-sandbox` · `global-agent-guardrails` · `grill-me` · `grill-with-docs` · `grilling` · `gsap-core` · `gsap-performance` · `gsap-plugins` · `gsap-timeline` · `handoff` · `hig` · `human-writing` · `implement` · `improve-codebase-architecture` · `ios-liquid-glass` · `ios-motion-patterns-index` · `job-application-submit` · `khazix-writer` · `lark-apps` · `lark-doc` · `lark-drive` · `lark-event` · `lark-im` · `lark-markdown` · `lark-shared` · `last30days` · `minimalist-ui` · `official-apply` · `opencli-autofix` · `playground` · `ponytail` · `ponytail-audit` · `ponytail-debt` · `ponytail-gain` · `ponytail-help` · `ponytail-review` · `pp-agent-capture` · `prototype` · `recruitment-capability-evolution` · `recruitment-link` · `recruitment-session` · `research` · `resolving-merge-conflicts` · `resume-fill-review` · `setup-matt-pocock-skills` · `skill-creator` · `smart-search` · `speaking-head-teacher` · `speaking-learning-analyst` · `speaking-live-teacher` · `speaking-teaching-assistant` · `tdd` · `teach` · `to-questionnaire` · `to-spec` · `to-tickets` · `triage` · `ui-ux-pro-max` · `wait-what` · `wayfinder` · `wizard` · `writing-for-agents`
+`agent-reach` · `agent-trajectory` · `ask-matt` · `banner-design` · `bro` · `code-review` · `codebase-design` · `deep-research-skill` · `diagnosing-bugs` · `domain-modeling` · `ego-browser` · `eli5` · `frontend-design` · `github-outside-sandbox` · `global-agent-guardrails` · `grill-me` · `grill-with-docs` · `grilling` · `gsap-core` · `gsap-performance` · `gsap-plugins` · `gsap-timeline` · `handoff` · `hig` · `human-writing` · `implement` · `improve-codebase-architecture` · `ios-liquid-glass` · `ios-motion-patterns-index` · `job-application-submit` · `khazix-writer` · `lark-apps` · `lark-doc` · `lark-drive` · `lark-event` · `lark-im` · `lark-markdown` · `lark-shared` · `last30days` · `minimalist-ui` · `official-apply` · `opencli-autofix` · `playground` · `ponytail` · `ponytail-audit` · `ponytail-debt` · `ponytail-gain` · `ponytail-help` · `ponytail-review` · `positioning-workshop` · `pp-agent-capture` · `product-brainstorming` · `prototype` · `recruitment-capability-evolution` · `recruitment-link` · `recruitment-session` · `research` · `resolving-merge-conflicts` · `resume-fill-review` · `setup-matt-pocock-skills` · `skill-creator` · `smart-search` · `speaking-head-teacher` · `speaking-learning-analyst` · `speaking-live-teacher` · `speaking-teaching-assistant` · `tdd` · `teach` · `to-questionnaire` · `to-spec` · `to-tickets` · `triage` · `ui-ux-pro-max` · `wait-what` · `wayfinder` · `wizard` · `writing-for-agents`

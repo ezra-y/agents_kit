@@ -3233,6 +3233,18 @@
         "output/paper-metadata"
       ]
     },
+    "skill:standalone/positioning-workshop": {
+      "recommendation": 5,
+      "description": "产品定位工作坊：从目标用户、未满足需求、产品价值和竞品差异中找到营销主张",
+      "trigger": "产品定位,营销定位,宣传角度,用户为什么选择,竞品差异,价值主张",
+      "tags": [
+        "role/guide",
+        "focus/brand-strategy",
+        "focus/product-validation",
+        "focus/requirements-discovery",
+        "output/decision"
+      ]
+    },
     "skill:standalone/pp-agent-capture": {
       "recommendation": 5,
       "description": "使用 macOS ScreenCaptureKit 精确定位窗口或显示器并录制、截图、生成 GIF 与视觉证据包；要求先等录制就绪，再触发界面动作并校验成片。",
@@ -3244,6 +3256,18 @@
         "focus/workflow-automation",
         "platform/macos",
         "output/screenshot"
+      ]
+    },
+    "skill:standalone/product-brainstorming": {
+      "recommendation": 5,
+      "description": "产品头脑风暴：探索用户问题、机会空间、解决方案和关键假设",
+      "trigger": "头脑风暴,产品机会,用户意图,机会空间,解决方案,质疑假设",
+      "tags": [
+        "role/guide",
+        "focus/decision-making",
+        "focus/product-validation",
+        "focus/requirements-discovery",
+        "output/decision"
       ]
     },
     "skill:standalone/pubmed": {
@@ -3807,6 +3831,17 @@
         "platform/apple",
         "stack/swiftui",
         "output/reference"
+      ]
+    },
+    "skill:standalone/workshop-facilitation": {
+      "recommendation": 3,
+      "description": "工作坊引导：通过逐步提问、选项和进度跟踪辅助互动式产品讨论",
+      "trigger": "互动工作坊,逐步讨论,定位工作坊辅助",
+      "tags": [
+        "role/guide",
+        "focus/decision-making",
+        "focus/requirements-discovery",
+        "output/decision"
       ]
     },
     "skill:standalone/writing-rules": {

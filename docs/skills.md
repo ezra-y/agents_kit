@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **307** 个 · 常驻 **75** 个 · 有上游可检查更新 **154** 个
+共 **310** 个 · 常驻 **77** 个 · 有上游可检查更新 **157** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -230,10 +230,12 @@
 | `writing-for-agents` | Writing documents for agents. Use when creating or editing skills, or  | `role/workflow` `focus/code-quality` `output/code` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills) |
 | `zoom-out` | 让 agent 抬升一个抽象层,给出相关模块和调用方的地图。正文只有 2 行,标了仅手动调用。 | `role/researcher` `focus/codebase-navigation` `focus/software-architecture` `output/report` |  | — |
 
-## 产品 (`product`，28 个)
+## 产品 (`product`，31 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
+| `positioning-workshop` | 产品定位工作坊：从目标用户、未满足需求、产品价值和竞品差异中找到营销主张 | `role/guide` `focus/brand-strategy` `focus/product-validation` `focus/requirements-discovery` `output/decision` | ● | [github.com/deanpeters/Product-Manager-Skills](https://github.com/deanpeters/Product-Manager-Skills) |
+| `product-brainstorming` | 产品头脑风暴：探索用户问题、机会空间、解决方案和关键假设 | `role/guide` `focus/decision-making` `focus/product-validation` `focus/requirements-discovery` `output/decision` | ● | [github.com/anthropics/knowledge-work-plugins](https://github.com/anthropics/knowledge-work-plugins) |
 | `thinking-bounded-rationality` | 有限理性。搜索或调研可能无止境时，先定一个明确的“够用”阈值，遇到第一个达标的选项就收手，不追最优解。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` |  | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
 | `thinking-circle-of-competence` | 能力圈。判断某个断言自己有没有依据时，先划出证据边界，再估错判的代价，然后选择回答、去查还是明说不知道，不硬编。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` |  | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
 | `thinking-cynefin` | Cynefin 框架。不清楚该用哪种应对方式时，先把问题归到简单、繁杂、复杂或混乱域，混乱域先拆解再定策略。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` |  | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
@@ -262,6 +264,7 @@
 | `thinking-thought-experiment` | 思想实验。真实验太罕见、太大或不可逆时，做受控反事实：隔离单个变量、固定其余条件、追机制链，并界定这个结果能推出什么、不能推出什么。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/report` |  | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
 | `thinking-triz` | TRIZ。两个设计要求看起来互斥时，先把矛盾本身说清楚，分离冲突的状态，再造一个不折中的具体解法。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` |  | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
 | `thinking-via-negativa` | 减法思维。反射性想加功能、加层、加流程时，先删掉有害和非必要的部分，删之前过一道不可逆性检查。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` |  | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
+| `workshop-facilitation` | 工作坊引导：通过逐步提问、选项和进度跟踪辅助互动式产品讨论 | `role/guide` `focus/decision-making` `focus/requirements-discovery` `output/decision` |  | [github.com/deanpeters/Product-Manager-Skills](https://github.com/deanpeters/Product-Manager-Skills) |
 
 ## 学术研究 (`academic`，31 个)
 
