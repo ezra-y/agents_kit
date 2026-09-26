@@ -3878,6 +3878,17 @@
         "focus/software-architecture",
         "output/report"
       ]
+    },
+    "skill:plugin/official-apply/job-recommendation": {
+      "recommendation": 4,
+      "description": "根据简历推荐具体岗位，生成一致的飞书表格和岗位阅读文档，读取文档确认并继续投递。",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/workflow-automation",
+        "output/skill"
+      ],
+      "category": "research-office"
     }
   }
 }

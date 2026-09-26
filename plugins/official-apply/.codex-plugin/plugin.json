@@ -1,6 +1,6 @@
 {
   "name": "official-apply",
-  "version": "0.2.0+codex.20260912071822",
+  "version": "0.3.0",
   "description": "网申助手：准备私有资料、填写官网简历、按授权投递并记录进度。",
   "author": {
     "name": "Ezra"

@@ -170,6 +170,46 @@
             "name": "未确认"
           }
         ]
+      },
+      {
+        "name": "适配度",
+        "type": "number"
+      },
+      {
+        "name": "推荐顺序",
+        "type": "number"
+      },
+      {
+        "name": "工作地点",
+        "type": "text"
+      },
+      {
+        "name": "薪资",
+        "type": "text"
+      },
+      {
+        "name": "招聘类型",
+        "type": "text"
+      },
+      {
+        "name": "届别要求",
+        "type": "text"
+      },
+      {
+        "name": "截止日期",
+        "type": "text"
+      },
+      {
+        "name": "可投数量",
+        "type": "number"
+      },
+      {
+        "name": "已选数量",
+        "type": "number"
+      },
+      {
+        "name": "阅读文档",
+        "type": "text"
       }
     ]
   }

@@ -1,6 +1,6 @@
 ---
 name: official-apply
-description: 统一处理网申任务。用户要整理岗位来源、导入任务、登录招聘官网、填写或检查站内简历、继续上次任务、准备或确认最终投递时使用。根据用户目的和已有状态进入对应阶段，不要求用户选择阶段技能。
+description: 统一处理网申任务。用户要整理招聘来源、按简历选岗位、生成飞书岗位文档、按文档选择投递、登录招聘官网、填写或检查简历、继续任务时使用。根据已有状态进入对应阶段。
 ---
 
 # 网申助手
@@ -17,6 +17,7 @@ description: 统一处理网申任务。用户要整理岗位来源、导入任�
 | 用户目的或当前状态 | 读取并执行 |
 |---|---|
 | 整理来源、导入任务、检查或补充官网链接 | [recruitment-link](../recruitment-link/SKILL.md) |
+| 按简历推荐具体岗位、生成岗位云文档、读取文档投递选择 | [job-recommendation](../job-recommendation/SKILL.md) |
 | 登录、处理验证码、寻找站内简历入口 | [recruitment-session](../recruitment-session/SKILL.md) |
 | 填写、保存、上传材料、读回检查 | 准备好任务和运行后，读取 [resume-fill-review](../resume-fill-review/SKILL.md) |
 | 用户明确要求申请或提交具体岗位 | 完成填写和校验后，读取 [job-application-submit](../job-application-submit/SKILL.md) |
@@ -40,6 +41,9 @@ description: 统一处理网申任务。用户要整理岗位来源、导入任�
 验证码和普通处理范围勾选都不代表最终提交。填写请求停在保存和读回检查；已填写、已保存、已提交
 分开报告。第二张表中专用的“确认投递”勾选可以作为该行具体岗位和已展示材料摘要的最终授权，
 但只能由用户勾选。进入提交阶段后按 `job-application-submit` 核对摘要并走现有 `apply.submit` 路径。
+
+已经使用岗位阅读文档的批次，按 job-recommendation 读取文档中的具体岗位选择；表格确认字段由 AI
+同步。用户在文档确认后，沿用已展示材料交给提交流程。收集岗位、生成文档与最终提交分别报告。
 
 批量填写、审查、返修和工具版本更新统一按 [批次执行合同](../resume-fill-review/SKILL.md#批次执行合同)执行；单家公司步骤不能提前启动审查或分发新版本。
 

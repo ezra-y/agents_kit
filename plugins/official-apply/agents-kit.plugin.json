@@ -28,6 +28,13 @@
     }
   },
   "embedded_skills": {
+    "job-recommendation": {
+      "standalone": {
+        "claude": {"mode": "plugin_only", "reason": "使用网申助手的资料、表格与提交流程"},
+        "codex": {"mode": "plugin_only", "reason": "使用网申助手的资料、表格与提交流程"}
+      },
+      "dependencies": []
+    },
     "job-application-submit": {
       "standalone": {
         "claude": {
