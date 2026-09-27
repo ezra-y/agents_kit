@@ -103,7 +103,7 @@ def render(batch):
         limit = company.get("maxApplications")
         submitted = submitted_count(company)
         limit_text = company.get("limitText") or (str(limit) if limit is not None else "待核实")
-        text_node(root, "p", f"官网投递规则：{limit_text}　已选：{selected_count(company)}　已提交：{submitted if submitted is not None else '待核实'}")
+        text_node(root, "p", f"官网投递规则：{limit_text}　已选：{selected_count(company)}　当前入口已提交：{submitted if submitted is not None else '待核实'}")
         if not company["jobs"]:
             text_node(root, "p", "当前没有合适的岗位。")
         for job in company["jobs"]:
@@ -239,6 +239,7 @@ def records(batch):
                   "完整JD": job["jd"], "适配度": job.get("score"), "推荐顺序": rank,
                   "确认投递": job.get("selected", False), "提交状态": job.get("status", "待选择"),
                   "已选数量": selected_count(company), "可投数量": job.get("maxApplications", company.get("maxApplications")),
+                  "当前入口已投数量": submitted_count(company),
                   "投递规则": job.get("limitText") or company.get("limitText") or company.get("limitSource", ""),
                   "阅读文档": batch.get("document", {}).get("url", "")}
         for key, label in (("city", "工作地点"), ("salary", "薪资"), ("recruitmentType", "招聘类型"),
