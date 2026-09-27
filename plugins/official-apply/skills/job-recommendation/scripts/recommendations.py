@@ -102,7 +102,8 @@ def render(batch):
         text_node(root, "h1", company["name"], seq="auto")
         limit = company.get("maxApplications")
         submitted = submitted_count(company)
-        text_node(root, "p", f"官网投递名额：{limit if limit is not None else '待核实'}　已选：{selected_count(company)}　已提交：{submitted if submitted is not None else '待核实'}")
+        limit_text = company.get("limitText") or (str(limit) if limit is not None else "待核实")
+        text_node(root, "p", f"官网投递规则：{limit_text}　已选：{selected_count(company)}　已提交：{submitted if submitted is not None else '待核实'}")
         if not company["jobs"]:
             text_node(root, "p", "当前没有合适的岗位。")
         for job in company["jobs"]:
@@ -110,7 +111,7 @@ def render(batch):
             text_node(heading, "a", job["title"], href=job["url"])
             fields = [f"适配度 {job['score']}/100" if job.get("score") is not None else "适配度待核实"]
             for key, label in (("city", "地点"), ("salary", "薪资"), ("recruitmentType", "招聘类型"),
-                               ("eligibility", "申请条件"), ("deadline", "截止日期")):
+                               ("eligibility", "申请条件"), ("deadline", "截止日期"), ("limitText", "投递规则")):
                 if job.get(key):
                     fields.append(f"{label}：{job[key]}")
             text_node(root, "p", "　｜　".join(fields))
@@ -237,7 +238,8 @@ def records(batch):
         fields = {"公司": company["name"], "岗位": job["title"], "岗位链接": job["url"],
                   "完整JD": job["jd"], "适配度": job.get("score"), "推荐顺序": rank,
                   "确认投递": job.get("selected", False), "提交状态": job.get("status", "待选择"),
-                  "已选数量": selected_count(company), "可投数量": company.get("maxApplications"),
+                  "已选数量": selected_count(company), "可投数量": job.get("maxApplications", company.get("maxApplications")),
+                  "投递规则": job.get("limitText") or company.get("limitText") or company.get("limitSource", ""),
                   "阅读文档": batch.get("document", {}).get("url", "")}
         for key, label in (("city", "工作地点"), ("salary", "薪资"), ("recruitmentType", "招聘类型"),
                            ("eligibility", "届别要求"), ("deadline", "截止日期")):

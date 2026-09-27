@@ -8,9 +8,11 @@
 | `materialSummary` | 本批使用的简历名称与必要材料；只描述用户可辨认的版本 |
 | `orderPolicy` | 多志愿时的顺序规则，通常为用户选中岗位在文档中的顺序 |
 | `companies` | 公司数组 |
-| 公司 `name / maxApplications / submittedBefore` | 公司名、官网总投递上限（未知为 null）、本批以外已提交数量 |
+| 公司 `name / maxApplications / submittedBefore` | 公司名、本批岗位共同适用的确定投递上限（未知或分项目时为 null）、本批以外已提交数量 |
 | 公司 `limitSource / jobs` | 名额依据与按推荐顺序排列的岗位数组 |
+| 公司 `limitStatus / limitText / limitSourceUrl / limitCheckedAt` | 规则查询状态、包含项目和时间范围的展示文字、官网链接、核实时间，见官网投递规则参考 |
 | 岗位 `title / url / jd / score` | 官网名称、具体职位链接、完整 JD、0～100 适配度 |
+| 岗位 `limitText / maxApplications` | 岗位所属项目有独立限制时，记录具体规则和数量；未设置时沿用公司字段 |
 | 岗位 `city / salary / recruitmentType / eligibility / deadline` | 已核实的短字段，未知可省略 |
 | 岗位 `source / checkedAt` | 原文来源与核实时间 |
 | 岗位 `status / taskId / recordId` | 实际执行状态与已有任务、表格行关联 |
@@ -29,7 +31,7 @@ python3 skills/job-recommendation/scripts/recommendations.py records --batch <ba
 
 `render` 生成可读草稿，可根据内容调整版式。绑定文档后只作局部更新，生成器不重建已有确认项。已有文档的姓名、岗位、地点、材料等内容变更由代理核对并重新确认。
 
-表格字段包括公司、岗位、岗位链接、完整JD、适配度、推荐顺序、工作地点、薪资、招聘类型、届别要求、截止日期、可投数量、已选数量、确认投递、提交状态和阅读文档。`records` 返回逐岗位对象以及已知 recordId，不执行远端写入。
+表格字段包括公司、岗位、岗位链接、完整JD、适配度、推荐顺序、工作地点、薪资、招聘类型、届别要求、截止日期、可投数量、投递规则、已选数量、确认投递、提交状态和阅读文档。可投数量保存对应范围的上限，投递规则保留该数量的项目和时间条件。`records` 返回逐岗位对象以及已知 recordId，不执行远端写入。
 
 按 recruitment-link 的表格位置与创建参考，先读取实际字段，再补充缺少的当前功能字段；字段名字可以映射。已有记录按准确岗位链接关联，保存返回的 recordId。逐行或批量写入后读回。官网事实、评分、文档确认及执行结果各自更新，不覆盖无关字段。
 
