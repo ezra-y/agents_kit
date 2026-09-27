@@ -240,10 +240,11 @@ def records(batch):
                   "确认投递": job.get("selected", False), "提交状态": job.get("status", "待选择"),
                   "已选数量": selected_count(company), "可投数量": job.get("maxApplications", company.get("maxApplications")),
                   "当前入口已投数量": submitted_count(company),
+                  "剩余可投数量": job.get("remainingApplications", company.get("remainingApplications")),
                   "投递规则": job.get("limitText") or company.get("limitText") or company.get("limitSource", ""),
                   "阅读文档": batch.get("document", {}).get("url", "")}
         for key, label in (("city", "工作地点"), ("salary", "薪资"), ("recruitmentType", "招聘类型"),
-                           ("eligibility", "届别要求"), ("deadline", "截止日期")):
+                           ("eligibility", "届别要求"), ("deadline", "截止日期"), ("organization", "招聘单位/部门")):
             fields[label] = job.get(key, "")
         result.append({"recordId": job.get("recordId"), "fields": fields})
     return result

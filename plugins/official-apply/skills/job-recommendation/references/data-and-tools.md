@@ -12,9 +12,11 @@
 | 公司 `limitSource / jobs` | 名额依据与按推荐顺序排列的岗位数组 |
 | 公司 `limitStatus / limitText / limitSourceUrl / limitCheckedAt` | 规则查询状态、包含项目和时间范围的展示文字、官网链接、核实时间，见官网投递规则参考 |
 | 公司 `submittedScope / submittedSourceUrl / submittedCheckedAt / submittedEvidencePath` | 已有投递数量的查询范围、官网入口、核实时间及私有证据文件 |
+| 公司或岗位 `remainingApplications` | 官网已确认的剩余次数；分项目保存，不跨范围相减 |
 | 岗位 `title / url / jd / score` | 官网名称、具体职位链接、完整 JD、0～100 适配度 |
 | 岗位 `limitText / maxApplications` | 岗位所属项目有独立限制时，记录具体规则和数量；未设置时沿用公司字段 |
 | 岗位 `city / salary / recruitmentType / eligibility / deadline` | 已核实的短字段，未知可省略 |
+| 岗位 `organization` | 官网标注的招聘单位或部门，集团共用入口时尤其需要展示 |
 | 岗位 `source / checkedAt` | 原文来源与核实时间 |
 | 岗位 `status / taskId / recordId` | 实际执行状态与已有任务、表格行关联 |
 | `table` | 本批原表描述，沿用位置登记中的 baseToken、tableId、fieldMap |
