@@ -13,6 +13,7 @@
 | 公司 `limitStatus / limitText / limitSourceUrl / limitCheckedAt` | 规则查询状态、包含项目和时间范围的展示文字、官网链接、核实时间，见官网投递规则参考 |
 | 公司 `submittedScope / submittedSourceUrl / submittedCheckedAt / submittedEvidencePath` | 已有投递数量的查询范围、官网入口、核实时间及私有证据文件 |
 | 公司或岗位 `remainingApplications` | 官网已确认的剩余次数；分项目保存，不跨范围相减 |
+| 公司 `loginProfileName` | 本次验证成功的本机登录档案，交给后续 `open_task` 的 `profileName`；账号验证时间沿用该档案的 `verifiedLogin` |
 | 岗位 `title / url / jd / score` | 官网名称、具体职位链接、完整 JD、0～100 适配度 |
 | 岗位 `limitText / maxApplications` | 岗位所属项目有独立限制时，记录具体规则和数量；未设置时沿用公司字段 |
 | 岗位 `city / salary / recruitmentType / eligibility / deadline` | 已核实的短字段，未知可省略 |
