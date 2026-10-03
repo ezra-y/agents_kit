@@ -27,8 +27,8 @@ description: 在企业招聘官网完成已经明确岗位的申请和最终提�
    与当前批准摘要一致，或按上述文档选择流程核实了用户确认，或已有明确的来源范围、选择规则和材料批次委托时，调用
    `apply.submit { runId, confirm: true, approvalToken }`。
 7. 从成功页、提交接口和应聘记录读取结果，按任务保存证据。按 [原表回写](../recruitment-link/references/table-setup.md) 第 5 节更新对应行并读回；使用本批登记，不要求用户重复提供表格链接。
-8. 结果不确定时，请用户在官网应聘记录中核对。核对后调用
-   `apply.resolve_submission { runId, result, confirmedBy }`。这个工具只改本地结果，不再次点击。
+8. 结果不确定时，先按 [结果核对](references/confirmation-guard.md#结果核对) 只读检查官网应聘记录，保留本次请求和页面证据；只有当前岗位结果已明确，才调用
+   `apply.resolve_submission { runId, result, confirmedBy }`。这个工具只改本地结果，不再次点击。当前环境无法核实时再交用户核对。
 
 聊天确认无需固定句式。表格确认必须来自专用“确认投递”字段，AI 不得代勾；普通范围、验证码和
 状态复选框不能替代它。表格摘要不一致或当前环境不能读取该行时，展示当前摘要并等待后续确认。
@@ -59,12 +59,12 @@ description: 在企业招聘官网完成已经明确岗位的申请和最终提�
 ## MCP
 
 - `apply.inspect_page`：扫描岗位申请页的字段、按钮和当前状态。
-- `apply.resolve_page`：准备岗位专属字段需要的答案。
+- `apply.resolve_page`：按当前任务与字段的使用范围准备答案；未填写字段沿用 [填写流程](../resume-fill-review/SKILL.md#21-扫描和解析) 的原因处理顺序。
 - `apply.fill_page`：填写岗位申请页，但不执行最终提交。
 - `apply.validate_page`：检查页面报错、缺失字段和实际填写值。
 - `apply.advance`：执行开始申请、保存或换页，不点击最终提交。
 - `apply.submit`：先生成提交摘要和一次性令牌，确认后只提交一次。
-- `apply.resolve_submission`：用户核对官网后，把不确定结果确认为已提交或未提交。
+- `apply.resolve_submission`：在授权范围内核实当前岗位官网结果后，记录核对者、证据和提交结论。
 - `apply.get_status`：读取任务状态、提交结果和阻断原因。
 - `apply.close_run`：完成结果读取后关闭指定浏览器会话。
 

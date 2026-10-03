@@ -28,7 +28,7 @@ function regionAnchorOf(field) {
 }
 export function buildLocatorCandidates(input) {
     const { field } = input;
-    const candidates = [];
+    const candidates = [...field.locatorCandidates];
     const label = field.rawLabel.trim();
     const anchor = regionAnchorOf(field);
     // 配方候选最优先。它们是真实验证过的。

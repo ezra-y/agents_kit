@@ -1,6 +1,10 @@
+import { setTimeout as delay } from 'node:timers/promises';
 import { findActionTarget } from "../browser/locators/find-action-target.js";
 import { inspectPage } from "../browser/scan/inspect-page.js";
 import { collectSubmissionEvidence } from "./collect-submission-evidence.js";
+import { collectSubmissionNetworkEvidence } from "./collect-submission-network-evidence.js";
+import { observeNetwork, toUrlPattern } from "../browser/network/observe-network.js";
+import { genericCaptcha } from "../browser/login/recruitment-sms-providers.js";
 const CLICK_TIMEOUT_MS = 15_000;
 const SETTLE_TIMEOUT_MS = 15_000;
 function describeError(error) {
@@ -45,6 +49,54 @@ export function checkCommitPreconditions(input) {
 export function buildCommitExecutors(input) {
     const { session, page, pageSchema, runId } = input;
     let beforeState;
+    let observer;
+    const pendingRequests = new Set();
+    const diagnostics = [];
+    const consoleErrors = [];
+    let lastActivity = Date.now();
+    const onRequest = (request) => {
+        if (['xhr', 'fetch', 'document', 'script'].includes(request.resourceType())) {
+            pendingRequests.add(request);
+            lastActivity = Date.now();
+        }
+    };
+    const onFinished = (request) => {
+        if (pendingRequests.delete(request))
+            lastActivity = Date.now();
+    };
+    const onFailed = (request) => {
+        if (!pendingRequests.has(request))
+            return;
+        onFinished(request);
+        diagnostics.push({ kind: 'other', valueRedacted: `请求失败：${request.method()} ${toUrlPattern(request.url())}；${request.failure()?.errorText ?? '浏览器未提供原因'}`, confidence: 0 });
+    };
+    const onPageError = (error) => {
+        lastActivity = Date.now();
+        // 异常正文可能包含表单内容，只保存异常类别。
+        diagnostics.push({ kind: 'other', valueRedacted: `提交后页面 JavaScript 异常：${error.name}`, confidence: 0 });
+    };
+    const onConsole = (message) => {
+        if (message.type() !== 'error')
+            return;
+        const location = message.location();
+        const source = location.url ? `${toUrlPattern(location.url)}:${location.lineNumber + 1}` : '浏览器未提供代码位置';
+        // SDK 捕获的异常不会触发 pageerror，日志正文可能包含个人资料。
+        consoleErrors.push({ kind: 'other', valueRedacted: `提交后控制台错误：${source}`, confidence: 0 });
+    };
+    const onResponse = (response) => {
+        if (response.request().resourceType() === 'script' && response.status() >= 400) {
+            diagnostics.push({ kind: 'other', valueRedacted: `脚本加载失败：HTTP ${response.status()} ${toUrlPattern(response.url())}`, confidence: 0 });
+        }
+    };
+    const stop = () => {
+        observer?.stop();
+        page.off('request', onRequest);
+        page.off('requestfinished', onFinished);
+        page.off('requestfailed', onFailed);
+        page.off('pageerror', onPageError);
+        page.off('console', onConsole);
+        page.off('response', onResponse);
+    };
     return {
         async clickCommit() {
             beforeState = await readSubmissionPageState(page);
@@ -63,6 +115,13 @@ export function buildCommitExecutors(input) {
             if (found.target === undefined) {
                 return { clicked: false, message: '找不到最终提交按钮' };
             }
+            observer = observeNetwork(page, { jsonOnly: false });
+            page.on('request', onRequest);
+            page.on('requestfinished', onFinished);
+            page.on('requestfailed', onFailed);
+            page.on('pageerror', onPageError);
+            page.on('console', onConsole);
+            page.on('response', onResponse);
             try {
                 await found.target.locator.click({ timeout: CLICK_TIMEOUT_MS });
                 return { clicked: true };
@@ -73,25 +132,57 @@ export function buildCommitExecutors(input) {
             }
         },
         async collectEvidence() {
-            if (page.isClosed()) {
-                return [];
-            }
             // 单独调用 collectEvidence() 时采取保守处理：把当前状态当作基线，
             // 不把页面上原本就有的文字当成点击结果。
-            beforeState ??= await readSubmissionPageState(page);
-            await page.waitForLoadState('networkidle', { timeout: SETTLE_TIMEOUT_MS }).catch(() => undefined);
-            const after = await inspectPage(session, page, { runId, persist: false });
-            const afterState = await readSubmissionPageState(page);
-            return collectSubmissionEvidence({
-                pageSchema: after.schema,
-                bodyText: afterState.bodyText,
-                semanticTexts: afterState.semanticTexts,
-                previousBodyText: beforeState.bodyText,
-                previousSemanticTexts: beforeState.semanticTexts,
-                previousPageType: pageSchema.pageType,
-                finalUrlRedacted: afterState.urlRedacted,
-                previousUrlRedacted: beforeState.urlRedacted,
-            }).evidence;
+            try {
+                if (page.isClosed())
+                    return [...diagnostics, { kind: 'other', valueRedacted: '提交后原页面已关闭，无法读回结果', confidence: 0 }];
+                beforeState ??= await readSubmissionPageState(page);
+                const deadline = Date.now() + SETTLE_TIMEOUT_MS;
+                let state = await readSubmissionPageState(page);
+                const evidenceFor = (schema) => [
+                    ...collectSubmissionEvidence({
+                        pageSchema: schema, bodyText: state.bodyText, semanticTexts: state.semanticTexts,
+                        previousBodyText: beforeState.bodyText, previousSemanticTexts: beforeState.semanticTexts,
+                        previousPageType: pageSchema.pageType, finalUrlRedacted: state.urlRedacted,
+                        previousUrlRedacted: beforeState.urlRedacted,
+                    }).evidence,
+                    ...collectSubmissionNetworkEvidence(observer?.observations() ?? []),
+                    ...diagnostics,
+                    ...consoleErrors,
+                ];
+                while (Date.now() < deadline && !page.isClosed()) {
+                    state = await readSubmissionPageState(page);
+                    const current = evidenceFor(pageSchema);
+                    if (current.some((item) => item.confidence >= 0.85))
+                        break;
+                    if (await genericCaptcha(page)) {
+                        diagnostics.push({ kind: 'captcha_required', valueRedacted: '提交后出现验证码，需要在当前页面完成验证并核对结果', confidence: 0 });
+                        break;
+                    }
+                    if (pendingRequests.size === 0 && Date.now() - lastActivity >= 750 &&
+                        (diagnostics.length > 0 || current.some((item) => item.kind === 'network_response')))
+                        break;
+                    await delay(250);
+                }
+                if (page.isClosed())
+                    return [...diagnostics, { kind: 'other', valueRedacted: '提交后原页面已关闭，无法读回结果', confidence: 0 }];
+                const after = await inspectPage(session, page, { runId, persist: false, waitForContentMs: 0 });
+                if (observer !== undefined)
+                    await Promise.race([observer.settle(), delay(250)]);
+                state = await readSubmissionPageState(page);
+                const evidence = evidenceFor(after.schema);
+                if (!evidence.some((item) => item.confidence >= 0.85))
+                    evidence.push({
+                        kind: 'other', valueRedacted: pendingRequests.size > 0
+                            ? `提交结果等待结束，仍有 ${pendingRequests.size} 个请求没有完成`
+                            : '提交结果等待结束，未获得确认成功的证据', confidence: 0,
+                    });
+                return evidence;
+            }
+            finally {
+                stop();
+            }
         },
     };
 }

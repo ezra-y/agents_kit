@@ -1,5 +1,6 @@
 import { fillPage } from "./fill-page.js";
 import { buildActionPlan } from "./build-action-plan.js";
+import { rebindWriteScope } from "../../site-adapters/write-scope.js";
 /**
  * 同一页最多重扫几轮。
  *
@@ -46,6 +47,7 @@ export async function fillPageUntilStable(request) {
                 snapshotId: schema.snapshotId,
                 resolved,
                 pageSchema: schema,
+                ...(request.writeScope === undefined ? {} : { writeScope: rebindWriteScope(request.writeScope, request.pageSchema, schema, request.resolved) }),
                 unresolvedRuntimeRefs: unresolved,
                 now,
             }),

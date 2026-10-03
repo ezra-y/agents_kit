@@ -7,7 +7,7 @@
  * 1. **不要为了适配某个官网，把答案库改成该官网的格式。** 转换只发生在写入网页时。
  * 2. **最终选项必须来自当前官网。** 匹配不上就 `matched=false`，交给用户，不猜。
  */
-import { normalizeOptionText } from "../fields/normalize-field-option.js";
+import { matchFromCatalog, normalizeDegree, normalizeFieldOptions, normalizeOptionText } from "../fields/normalize-field-option.js";
 const OPTION_CONTROLS = new Set([
     'native_select',
     'combobox',
@@ -26,21 +26,16 @@ export function formatDate(value, controlKind, inputType) {
     if (inputType === 'month' || controlKind === 'month') {
         return `${year}-${month}`;
     }
-    if (inputType === 'date' || controlKind === 'date') {
+    if (inputType === 'date' || controlKind === 'date' || controlKind === 'date_picker') {
         return day === undefined ? `${year}-${month}-01` : value;
     }
     // 自定义日期框：给最常见的中文写法，具体网站可以在配方里覆盖。
     return day === undefined ? `${year}年${Number(month)}月` : `${year}年${Number(month)}月${Number(day)}日`;
 }
 /** 在官网选项里找对应项。找不到就是找不到，不返回近似值。 */
-export function matchSiteOption(value, options) {
+export function matchSiteOption(value, options, canonicalKey, optionNormalization) {
     if (options.length === 0) {
         return undefined;
-    }
-    // 1. 归一化值完全相等。
-    const byNormalized = options.find((option) => option.normalizedValue !== undefined && option.normalizedValue === value);
-    if (byNormalized !== undefined) {
-        return byNormalized;
     }
     const text = normalizeOptionText(String(value));
     if (text === '') {
@@ -52,6 +47,17 @@ export function matchSiteOption(value, options) {
     if (exact !== undefined) {
         return exact;
     }
+    const normalized = options.filter((option) => option.normalizedValue !== undefined && option.normalizedValue === value);
+    if (normalized.length > 0)
+        return normalized.length === 1 ? normalized[0] : undefined;
+    if (canonicalKey?.endsWith('degree')) {
+        const degree = normalizeDegree(String(value));
+        const matches = degree === undefined ? [] : options.filter((option) => (option.normalizedValue ?? normalizeDegree(option.rawLabel)) === degree);
+        if (matches.length === 1)
+            return matches[0];
+    }
+    if (optionNormalization !== undefined || options.some((option) => option.normalizedValue !== undefined))
+        return undefined;
     // 3. label 包含关系。只在唯一命中时采用，避免「北京」同时命中多项。
     const partial = options.filter((option) => {
         const label = normalizeOptionText(option.rawLabel);
@@ -60,9 +66,20 @@ export function matchSiteOption(value, options) {
     return partial.length === 1 ? partial[0] : undefined;
 }
 export function normalizeAnswerValue(input) {
-    const { value, controlKind, siteOptions, inputType } = input;
+    const { controlKind, siteOptions, inputType, canonicalKey } = input;
+    const value = matchFromCatalog(String(input.value), input.canonicalField?.optionNormalization) ?? input.value;
+    if (controlKind === 'month' && value === '至今' && inputType !== 'checkbox') {
+        return { formattedValue: value, matched: false, reason: '官网日期控件需要具体年月' };
+    }
+    if (controlKind === 'month' && typeof value === 'string' && /^\d{4}$/.test(value)) {
+        return { formattedValue: value, matched: false, reason: '官网需要年月，资料只包含年份' };
+    }
+    if (controlKind === 'month' && Array.isArray(value)) {
+        return { formattedValue: value, matched: false, reason: '资料包含多个日期，需要确认本条日期' };
+    }
     if (OPTION_CONTROLS.has(controlKind)) {
-        const option = matchSiteOption(value, siteOptions);
+        const canonical = input.canonicalField ?? (typeof value === 'boolean' ? { key: canonicalKey ?? '', valueType: 'boolean' } : undefined);
+        const option = matchSiteOption(value, normalizeFieldOptions(siteOptions, canonical), canonicalKey, input.canonicalField?.optionNormalization);
         if (option === undefined) {
             return {
                 formattedValue: value,

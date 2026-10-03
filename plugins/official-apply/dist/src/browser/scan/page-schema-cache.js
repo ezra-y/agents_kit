@@ -1,4 +1,7 @@
 import { CONTROL_SELECTOR } from "./control-selector.js";
+import { MOKA_SELECT } from "../controls/moka-select.js";
+import { MOKA_CHECKBOX } from "../controls/moka-checkbox.js";
+import { MOKA_DATE } from "../controls/moka-date.js";
 /**
  * 算一次页面摘要。
  *
@@ -18,8 +21,9 @@ export async function computePageDigest(page) {
 async function readFrameDigest(frame) {
     const frameKey = `${frame.name()}:${frame.url()}`;
     const digest = await frame
-        .evaluate((controlSelector) => {
-        const nodes = Array.from(document.querySelectorAll(`${controlSelector},option,[role=option],[aria-current],[role=alert],[aria-live=assertive],[aria-live=polite]`));
+        .evaluate(({ controlSelector, select, checkbox, date }) => {
+        const indices = new Map(Array.from(document.querySelectorAll('*')).map((node, index) => [node, index]));
+        const nodes = Array.from(document.querySelectorAll(`${controlSelector},option,[role=option],[aria-current],[role=alert],[aria-live=assertive],[aria-live=polite],label,legend,h1,h2,h3,${select.display},${select.label},${checkbox.checked},${date.required}`));
         const markers = nodes.map((node) => {
             const element = node;
             const html = node;
@@ -40,6 +44,7 @@ async function readFrameDigest(frame) {
                 style.opacity !== '0' &&
                 html.getClientRects().length > 0;
             return JSON.stringify([
+                indices.get(node),
                 node.tagName,
                 node.id,
                 html.getAttribute('name') ?? '',
@@ -75,7 +80,7 @@ async function readFrameDigest(frame) {
             controlCount: nodes.filter((node) => node.matches(controlSelector)).length,
             valueHash: markers.join('\n'),
         };
-    }, CONTROL_SELECTOR)
+    }, { controlSelector: CONTROL_SELECTOR, select: MOKA_SELECT, checkbox: MOKA_CHECKBOX, date: MOKA_DATE })
         .catch(() => undefined);
     return digest === undefined
         ? { frameKey, controlCount: -1, valueHash: 'unreadable' }

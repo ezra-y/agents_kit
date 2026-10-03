@@ -1,6 +1,6 @@
 {
   "name": "official-apply",
-  "version": "0.2.0",
+  "version": "0.3.2+codex.20261004",
   "private": true,
   "description": "网申助手：Codex 与 Claude Code 共用的官网填写、检查与授权投递程序。",
   "type": "module",

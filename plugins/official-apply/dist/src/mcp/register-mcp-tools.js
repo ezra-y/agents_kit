@@ -15,27 +15,27 @@
  */
 import { startRunSession } from "../application/start-run-session.js";
 import { openResumePage } from "../application/open-resume-page.js";
-import { currentMokaAccountMatchesTask, rememberMokaLogin, reuseMokaLogin } from "../application/reuse-moka-login.js";
+import { rememberMokaLogin, reuseMokaLogin } from "../application/reuse-moka-login.js";
 import { reuseLoginStateOnCurrentPage } from "../application/reuse-login-state.js";
-import { inventoryOpenCliBridge } from "../browser/session/opencli-bridge-login-state.js";
 import { savePageScriptWithReadback } from "../application/save-page-script-with-readback.js";
 import { loadPageScriptWritePlan, persistPageScriptWritePlan, } from "../application/page-script-write-plan.js";
 import { captureResumeReviewEvidence } from "../application/capture-resume-review-evidence.js";
-import { resolveCurrentPage } from "../application/resolve-current-page.js";
+import { resolveCurrentPageAnswers } from "../application/resolve-current-page.js";
 import { resolvePageWithRecipe } from "../application/resolve-page-with-recipe.js";
 import { buildCanonicalApplicationPayload } from "../application/build-canonical-application-payload.js";
 import { getRunStatus } from "../application/get-run-status.js";
+import { requireRunStateTransition } from "../application/run-state-machine.js";
 import { advancePage } from "../application/advance-page.js";
 import { fillProfileGroups } from "../application/fill-profile-groups.js";
 import { asPageScript, fillWithPageScript, inspectWithPageScript, resolvePageScriptForPage, resolveWithPageScript, validateWithPageScript, } from "../application/page-script-flow.js";
 import { confirmGenericSave } from "../application/confirm-generic-save.js";
+import { scopeAllowsField, rebindWriteScope } from "../site-adapters/write-scope.js";
 import { discoverPageScriptCandidate } from "../application/discover-page-script-candidate.js";
 import { captureLearning } from "../learning/capture-learning.js";
 import { buildRecipeCandidate, recipeVariantKey } from "../recipes/build-recipe-candidate.js";
 import { validatePageScriptCandidate, validatePageScriptSaveAction, } from "../site-adapters/discovery/save-page-script-candidate.js";
 import { writeRunSummary } from "../reporting/write-run-summary.js";
 import { writeSubmissionEvidence } from "../reporting/write-submission-evidence.js";
-import { collectSubmissionNetworkEvidence } from "../submission/collect-submission-network-evidence.js";
 import { resolveAnswers } from "../answers/resolve-answers.js";
 import { saveUserAnswers } from "../answers/save-user-answers.js";
 import { confirmFieldMapping } from "../fields/confirm-field-mapping.js";
@@ -47,6 +47,7 @@ import { computePageDigest, createPageSchemaCache, } from "../browser/scan/page-
 import { loadLocatorStats, recordLocatorAttempt, } from "../browser/locators/record-locator-attempt.js";
 import { uploadFiles } from "../browser/actions/upload-files.js";
 import { validatePage, expectedFieldStates } from "../browser/validation/validate-page.js";
+import { sameField } from "../browser/scan/diff-page.js";
 import { prepareVisualFallback } from "../browser/visual/prepare-visual-fallback.js";
 import { verifyVisualFallback } from "../browser/visual/verify-visual-fallback.js";
 import { findActionTarget } from "../browser/locators/find-action-target.js";
@@ -255,6 +256,8 @@ function generationOf(run) {
         0);
 }
 function recordResolutionState(run, schema, missingCount, unresolvedCount, now) {
+    const answers = run.lastResolvedAnswers ?? [];
+    run.lastExpectedFields = expectedFieldStates(schema.fields, new Map(answers.map((answer) => [answer.runtimeRef, answer.formattedValue])), new Map(answers.map((answer) => [answer.runtimeRef, answer.canonicalKey])));
     const revision = (run.lastResolutionState?.revision ?? 0) + 1;
     run.lastResolutionState = {
         revision,
@@ -454,6 +457,7 @@ export function registerMcpTools() {
                         requiresHuman: started.requiresHuman,
                     });
                 }
+                requireRunStateTransition({ paths: input.paths, runId: started.runId, to: 'discovering', reasonCode: 'mcp_page_opened', now: input.now });
                 return ok({
                     runId: started.runId,
                     taskId,
@@ -556,7 +560,6 @@ export function registerMcpTools() {
                     });
                 }
                 if (action === 'inspect' && login.providerId === 'moka.shared.sms' &&
-                    !readString(input.args, 'sourceId')?.startsWith('bridge:') &&
                     (login.stage === 'sms_ready' || login.stage === 'login_required')) {
                     let reusedFromProfile;
                     try {
@@ -573,30 +576,19 @@ export function registerMcpTools() {
                         login.evidence.push(`已从档案 ${reusedFromProfile} 复用登录并在当前公司验证账号。`);
                     }
                 }
-                let reuseSourceId = readString(input.args, 'sourceId');
-                const needsReuse = action === 'inspect' &&
-                    (login.stage === 'sms_ready' || login.stage === 'login_required');
-                if (needsReuse && login.providerId === 'moka.shared.sms' && reuseSourceId === undefined) {
-                    const sources = (await inventoryOpenCliBridge({ selection: 'default' }))
-                        .filter(source => source.extensionConnected);
-                    if (sources.length === 1)
-                        reuseSourceId = sources[0]?.sourceId;
-                }
-                if (needsReuse && (login.providerId !== 'moka.shared.sms' || reuseSourceId?.startsWith('bridge:'))) {
+                if (action === 'inspect' &&
+                    login.providerId !== 'moka.shared.sms' &&
+                    (login.stage === 'sms_ready' || login.stage === 'login_required')) {
                     const reused = await reuseLoginStateOnCurrentPage({
                         session: found.session,
                         page: found.page,
                         runId: found.run.runId,
-                        targetUrl: login.providerId === 'moka.shared.sms' ? found.page.url() : found.run.targetUrl ?? originalPageUrl,
+                        targetUrl: found.run.targetUrl ?? originalPageUrl,
                         domains: readStringArray(input.args, 'domains'),
-                        sourceId: reuseSourceId,
+                        sourceId: readString(input.args, 'sourceId'),
                         verifyLogin: async (page) => {
                             const checked = await manageLogin({ page, action: 'inspect', now: input.now });
                             if (checked.stage === 'logged_in') {
-                                if (login.providerId === 'moka.shared.sms' && !await currentMokaAccountMatchesTask({
-                                    session: found.session, page, runId: found.run.runId,
-                                }))
-                                    return { status: 'logged_out', evidence: ['浏览器账号与任务资料不匹配，未采用该来源'] };
                                 return { status: 'logged_in', evidence: checked.evidence };
                             }
                             if (checked.stage === 'login_unconfirmed') {
@@ -897,6 +889,7 @@ export function registerMcpTools() {
                 if (pageScript === undefined && draft.provided) {
                     return fail('mcp_draft_answers_unsupported', '临时答案当前只支持已命中的 PageScript 页面；通用页面不会静默使用它。');
                 }
+                requireRunStateTransition({ paths: input.paths, runId: found.run.runId, to: 'discovering', reasonCode: 'mcp_resolve_started', now: input.now });
                 if (pageScript !== undefined) {
                     if (draft.value !== undefined) {
                         found.run.draftAnswers = draft.value;
@@ -929,6 +922,9 @@ export function registerMcpTools() {
                     }
                     found.run.pageScriptWritePlan = result.prepared;
                     found.run.pageScriptWritePlanRef = planRef;
+                    requireRunStateTransition({ paths: input.paths, runId: found.run.runId,
+                        to: result.prepared.missing.length + result.prepared.conflicts.length > 0 ? 'collecting_answers' : 'filling',
+                        reasonCode: 'mcp_page_script_resolved', now: input.now });
                     const publicResult = withoutPrepared({
                         ...result,
                         writeScope: result.writeScope === null
@@ -1010,10 +1006,14 @@ export function registerMcpTools() {
                     .filter((field) => field.visible && field.required)
                     .map((field) => field.runtimeRef));
                 recordResolutionState(found.run, schema, answers.missing.filter((entry) => entry.required).length, resolved.requiresReviewRuntimeRefs.filter((runtimeRef) => requiredRuntimeRefs.has(runtimeRef)).length, input.now);
+                requireRunStateTransition({ paths: input.paths, runId: found.run.runId,
+                    to: found.run.lastResolutionState.missingCount + found.run.lastResolutionState.unresolvedCount > 0 ? 'collecting_answers' : 'filling',
+                    reasonCode: 'mcp_fields_resolved', now: input.now });
                 return ok({
                     source,
                     missingProfileRecordIds: source.missingProfileRecordIds,
                     missingMaterialIds: source.missingMaterialIds,
+                    snapshotId: schema.snapshotId,
                     mappings: resolved.mappings,
                     requiresReviewRuntimeRefs: resolved.requiresReviewRuntimeRefs,
                     resolved: answers.resolved,
@@ -1067,33 +1067,10 @@ export function registerMcpTools() {
                     answers: answers,
                     now: input.now,
                 });
-                const updates = answers;
-                for (const summary of input.sessions.list()) {
-                    const run = input.sessions.get(summary.runId);
-                    if (run === undefined)
-                        continue;
-                    const affected = updates.filter(({ scope }) => {
-                        const key = scope.key.replace(new RegExp(`^${scope.type}:`), '');
-                        switch (scope.type) {
-                            case 'global': return key === 'user';
-                            case 'application': return key === run.taskId;
-                            case 'profile_record': return run.profileRecordIds.includes(key);
-                            case 'company': return key === run.companyKey;
-                            case 'job': return key === [run.companyKey, run.jobKey].filter(Boolean).join(':');
-                            default: return false;
-                        }
-                    });
-                    if (affected.length === 0)
-                        continue;
+                const run = input.sessions.get(runId);
+                if (run !== undefined) {
                     run.lastResolutionState = undefined;
                     run.lastValidationState = undefined;
-                    run.lastResolvedAnswers = undefined;
-                    run.pageScriptWritePlan = undefined;
-                    run.pageScriptWritePlanRef = undefined;
-                    for (const answer of affected) {
-                        if (run.draftAnswers !== undefined)
-                            delete run.draftAnswers[answer.canonicalKey];
-                    }
                 }
                 // 用户对着某个字段给了答案，就等于确认了这个字段的含义。
                 // 不做这一步的话，低置信度映射永远停在「要人确认」，
@@ -1116,7 +1093,7 @@ export function registerMcpTools() {
                         confirmed.push(canonicalKey);
                     }
                 }
-                return ok({ ...result, confirmedMappings: confirmed, nextTool: 'apply.resolve_page' }, `保存了 ${result.savedAnswerIds.length} 条回答` +
+                return ok({ ...result, confirmedMappings: confirmed }, `保存了 ${result.savedAnswerIds.length} 条回答` +
                     (confirmed.length === 0 ? '。' : `，确认了 ${confirmed.length} 个字段映射。`));
             },
         },
@@ -1130,7 +1107,7 @@ export function registerMcpTools() {
                     runId: { type: 'string' },
                     writeScope: {
                         type: 'object',
-                        description: '默认 fill_missing；局部返修传 { mode: "repair", fields: [resolve_page 返回的字段路径] }。',
+                        description: '默认 fill_missing；局部返修传 { mode: "repair", fields: [...] }。网站脚本使用 resolve_page 的资料路径，通用页面使用本次 mappings 的 runtimeRef 或 canonicalKey。',
                         properties: {
                             mode: { type: 'string', enum: ['fill_missing', 'repair'] },
                             fields: { type: 'array', items: { type: 'string' } },
@@ -1155,6 +1132,7 @@ export function registerMcpTools() {
                     const writeScope = input.args['writeScope'] === undefined
                         ? prepared?.writePlan?.scope ?? parsedScope.value
                         : parsedScope.value;
+                    requireRunStateTransition({ paths: input.paths, runId: found.run.runId, to: 'filling', reasonCode: 'mcp_fill_started', now: input.now });
                     const result = await fillWithPageScript({
                         paths: input.paths,
                         page: found.page,
@@ -1204,52 +1182,37 @@ export function registerMcpTools() {
                                 ? `${pageScript.id} 已填写确定字段，缺失项保持空白。`
                                 : `${pageScript.id} 填写和页面校验通过。`);
                 }
-                if (pageScript === undefined) {
-                    return fail('mcp_write_scope_unsupported', '当前页面没有支持写入范围的 PageScript；为避免整页覆盖，未执行通用填写。');
-                }
+                const parsedScope = readWriteScope(input.args);
+                if (parsedScope.value === undefined)
+                    return fail('mcp_invalid_argument', parsedScope.error ?? 'writeScope 参数无效。');
+                const requestedWriteScope = parsedScope.value;
                 if (found.run.draftAnswers !== undefined) {
                     return fail('mcp_draft_answers_unsupported', '当前页面没有 PageScript，不能继续使用本次运行的临时答案。');
                 }
+                requireRunStateTransition({ paths: input.paths, runId: found.run.runId, to: 'filling', reasonCode: 'mcp_fill_started', now: input.now });
                 let schema = await currentSchema(found.session, found.page, found.run.runId, input.now, found.run);
                 // 沿用 resolve_page 那一轮的配方判定。同一页不重新判一次，
                 // 也不能因为换了个工具就退化成纯语义打分。
                 const recipeHints = found.run.lastRecipeDecision?.hints ?? [];
-                let resolved = resolveCurrentPage({
+                const resolveForSchema = (pageSchema) => resolveCurrentPageAnswers({
                     paths: input.paths,
                     runId: found.run.runId,
                     taskId: found.run.taskId,
                     siteHost: found.run.siteHost,
                     ...(found.run.companyKey === undefined ? {} : { companyKey: found.run.companyKey }),
-                    pageSchema: schema,
+                    pageSchema,
                     ...(recipeHints.length === 0 ? {} : { recipeHints }),
                     now: input.now,
-                });
-                let answers = resolveAnswers({
-                    paths: input.paths,
-                    runId: found.run.runId,
-                    taskId: found.run.taskId,
-                    ...(found.run.companyKey === undefined ? {} : { companyKey: found.run.companyKey }),
                     ...(found.run.jobKey === undefined ? {} : { jobKey: found.run.jobKey }),
-                    pageSchema: schema,
-                    mappings: resolved.mappings,
                     materialRefs: found.run.materialRefs,
                     profileRecordIds: found.run.profileRecordIds,
-                    now: input.now,
                 });
+                let { resolved, answers } = resolveForSchema(schema);
+                const initialScopeSchema = schema;
+                const initialScopeMappings = resolved.mappings;
+                let writeScope = rebindWriteScope(requestedWriteScope, initialScopeSchema, schema, initialScopeMappings);
                 found.run.lastResolvedAnswers = answers.resolved;
-                recordResolutionState(found.run, schema, answers.missing.length, resolved.requiresReviewRuntimeRefs.length, input.now);
-                // 2026-08-24 放宽（网易简历页实测，经用户批准）：
-                // 以前 missing > 0 直接拒绝整页填写。真实长表单上这会变成死锁——
-                // 比如「证件号」这类宿主不允许代填、但页面已有值的字段永远清不掉。
-                // 现在改为：只填 resolved 的字段，missing 原样带回给调用方去问人，
-                // 不再阻塞已经有答案的那部分。缺失字段本来就不会出现在填写计划里，
-                // 所以这不会让任何没有答案的字段被乱填。
-                if (answers.missing.length > 0 && answers.resolved.length === 0) {
-                    const detail = answers.missing
-                        .map((item) => `${item.rawQuestion}(${item.reason})`)
-                        .join('、');
-                    return fail('mcp_tool_failed', `没有任何已解出的答案可填；${answers.missing.length} 个问题待回答：${detail}。先调用 apply.save_answers。`, { missing: answers.missing });
-                }
+                recordResolutionState(found.run, schema, answers.missing.filter((entry) => entry.required).length, resolved.requiresReviewRuntimeRefs.filter((ref) => schema.fields.some((field) => field.runtimeRef === ref && field.required)).length, input.now);
                 const groupsFilled = await fillProfileGroups({
                     paths: input.paths,
                     runId: found.run.runId,
@@ -1257,6 +1220,8 @@ export function registerMcpTools() {
                     pageSchema: schema,
                     mappings: resolved.mappings,
                     profileRecordIds: found.run.profileRecordIds,
+                    writeScope,
+                    resolvedAnswers: answers.resolved,
                 });
                 const failedProfileFields = groupsFilled.results.filter((result) => result.outcome !== 'success');
                 if (failedProfileFields.length > 0) {
@@ -1266,44 +1231,21 @@ export function registerMcpTools() {
                     groupsFilled.results.some((result) => result.pageChanged)) {
                     markPageMutated(found.run, 'fill_profile_groups', input.now);
                     schema = await currentSchema(found.session, found.page, found.run.runId, input.now, found.run);
-                    resolved = resolveCurrentPage({
-                        paths: input.paths,
-                        runId: found.run.runId,
-                        taskId: found.run.taskId,
-                        siteHost: found.run.siteHost,
-                        ...(found.run.companyKey === undefined
-                            ? {}
-                            : { companyKey: found.run.companyKey }),
-                        pageSchema: schema,
-                        ...(recipeHints.length === 0 ? {} : { recipeHints }),
-                        now: input.now,
-                    });
-                    answers = resolveAnswers({
-                        paths: input.paths,
-                        runId: found.run.runId,
-                        taskId: found.run.taskId,
-                        ...(found.run.companyKey === undefined
-                            ? {}
-                            : { companyKey: found.run.companyKey }),
-                        ...(found.run.jobKey === undefined ? {} : { jobKey: found.run.jobKey }),
-                        pageSchema: schema,
-                        mappings: resolved.mappings,
-                        materialRefs: found.run.materialRefs,
-                        profileRecordIds: found.run.profileRecordIds,
-                        now: input.now,
-                    });
+                    ({ resolved, answers } = resolveForSchema(schema));
                     found.run.lastResolvedAnswers = answers.resolved;
-                    recordResolutionState(found.run, schema, answers.missing.length, resolved.requiresReviewRuntimeRefs.length, input.now);
+                    recordResolutionState(found.run, schema, answers.missing.filter((entry) => entry.required).length, resolved.requiresReviewRuntimeRefs.filter((ref) => schema.fields.some((field) => field.runtimeRef === ref && field.required)).length, input.now);
                 }
-                if (answers.missing.length > 0) {
-                    return fail('mcp_tool_failed', '填写履历后页面出现了新问题，先调用 apply.resolve_page。', { missing: answers.missing });
-                }
+                writeScope = rebindWriteScope(requestedWriteScope, initialScopeSchema, schema, initialScopeMappings);
                 // 先上传文件。上传常常会解锁后续字段，所以排在普通字段之前。
                 // 这一段和 runApplication() 用的是同一个 planUploads()/uploadFiles()，
                 // 不另写一遍。
                 const uploadPlan = planUploads({
                     paths: input.paths,
-                    pageSchema: schema,
+                    pageSchema: { ...schema, uploads: schema.uploads.filter((upload) => {
+                            const field = schema.fields.find((field) => field.runtimeRef === upload.fieldRuntimeRef);
+                            const canonical = resolved.mappings.find((mapping) => mapping.runtimeRef === upload.fieldRuntimeRef)?.canonicalKey;
+                            return field !== undefined && scopeAllowsField(writeScope, field, canonical);
+                        }) },
                     materialRefs: found.run.materialRefs,
                 });
                 const uploadRejections = [];
@@ -1321,6 +1263,9 @@ export function registerMcpTools() {
                     // 上传会改变页面：先让缓存失效，再重扫。
                     markPageMutated(found.run, 'upload_files', input.now);
                     schema = await currentSchema(found.session, found.page, found.run.runId, input.now, found.run);
+                    ({ resolved, answers } = resolveForSchema(schema));
+                    found.run.lastResolvedAnswers = answers.resolved;
+                    writeScope = rebindWriteScope(requestedWriteScope, initialScopeSchema, schema, initialScopeMappings);
                 }
                 const blockingUploads = uploadPlan.unmatched.filter((item) => item.required);
                 if (blockingUploads.length > 0) {
@@ -1337,8 +1282,8 @@ export function registerMcpTools() {
                 // 那条基础优先级在 rankLocatorCandidates() 里守着。
                 const siteId = resolved.siteId;
                 const stats = loadLocatorStats(input.paths, siteId);
-                let latestMissingCount = answers.missing.length;
-                let latestUnresolvedCount = resolved.requiresReviewRuntimeRefs.length;
+                let latestMissingCount = answers.missing.filter((entry) => entry.required).length;
+                let latestUnresolvedCount = resolved.requiresReviewRuntimeRefs.filter((ref) => schema.fields.some((field) => field.runtimeRef === ref && field.required)).length;
                 let latestResolutionSchema = schema;
                 const filled = await fillPageUntilStable({
                     session: found.session,
@@ -1357,43 +1302,20 @@ export function registerMcpTools() {
                     },
                     pageSchema: schema,
                     resolved: answers.resolved,
+                    writeScope,
                     unresolvedRuntimeRefs: resolved.requiresReviewRuntimeRefs,
                     now: input.now,
                     rescan: () => currentSchema(found.session, found.page, found.run.runId, input.now, found.run),
                     reresolve: async (next) => {
-                        const nextPage = resolveCurrentPage({
-                            paths: input.paths,
-                            runId: found.run.runId,
-                            taskId: found.run.taskId,
-                            siteHost: found.run.siteHost,
-                            ...(found.run.companyKey === undefined ? {} : { companyKey: found.run.companyKey }),
-                            ...(found.run.companyName === undefined
-                                ? {}
-                                : { companyName: found.run.companyName }),
-                            pageSchema: next,
-                            ...(recipeHints.length === 0 ? {} : { recipeHints }),
-                            now: input.now,
-                        });
-                        const nextAnswers = resolveAnswers({
-                            paths: input.paths,
-                            runId: found.run.runId,
-                            taskId: found.run.taskId,
-                            ...(found.run.companyKey === undefined ? {} : { companyKey: found.run.companyKey }),
-                            ...(found.run.jobKey === undefined ? {} : { jobKey: found.run.jobKey }),
-                            pageSchema: next,
-                            mappings: nextPage.mappings,
-                            materialRefs: found.run.materialRefs,
-                            profileRecordIds: found.run.profileRecordIds,
-                            now: input.now,
-                        });
-                        latestMissingCount = nextAnswers.missing.length;
-                        latestUnresolvedCount = nextPage.requiresReviewRuntimeRefs.length;
+                        const { resolved: nextPage, answers: nextAnswers } = resolveForSchema(next);
+                        latestMissingCount = nextAnswers.missing.filter((entry) => entry.required).length;
+                        latestUnresolvedCount = nextPage.requiresReviewRuntimeRefs.filter((ref) => next.fields.some((field) => field.runtimeRef === ref && field.required)).length;
                         latestResolutionSchema = next;
                         found.run.lastResolvedAnswers = nextAnswers.resolved;
                         return {
                             resolved: nextAnswers.resolved,
                             unresolvedRuntimeRefs: nextPage.requiresReviewRuntimeRefs,
-                            missingCount: nextAnswers.missing.length,
+                            missingCount: nextAnswers.missing.filter((entry) => entry.required).length,
                         };
                     },
                 });
@@ -1419,16 +1341,17 @@ export function registerMcpTools() {
                 if (filled.stoppedForQuestions) {
                     return fail('mcp_tool_failed', '条件字段带出了新问题，先调用 apply.resolve_page 看缺什么。', filled);
                 }
-                return ok({ ...filled, uploadRejections, profileBindings: groupsFilled.bindings }, `填了 ${filled.results.length} 项，全部成功（共 ${filled.rounds} 轮）` +
+                return ok({ ...filled, uploadRejections, profileBindings: groupsFilled.bindings, missing: answers.missing, writeScope }, `填了 ${filled.results.length} 项，全部成功（共 ${filled.rounds} 轮）` +
                     (uploadPlan.assignments.length === 0
                         ? '。'
-                        : `，上传 ${uploadPlan.assignments.length} 份材料。`));
+                        : `，上传 ${uploadPlan.assignments.length} 份材料。`) +
+                    (latestMissingCount === 0 ? '' : `仍有 ${latestMissingCount} 个必填问题待处理。`));
             },
         },
         {
             name: 'apply.validate_page',
             description: '重扫一次并统一校验：值写进去没有、有没有报错、有没有新出现的条件字段。',
-            mutating: false,
+            mutating: true,
             inputSchema: {
                 type: 'object',
                 properties: {
@@ -1445,6 +1368,7 @@ export function registerMcpTools() {
                 if (isToolResult(found)) {
                     return found;
                 }
+                requireRunStateTransition({ paths: input.paths, runId: found.run.runId, to: 'validating', reasonCode: 'mcp_validate_started', now: input.now });
                 const pageScript = asPageScript(found.run.pageScript);
                 if (pageScript !== undefined) {
                     const planReference = readString(input.args, 'writePlanPath');
@@ -1482,6 +1406,9 @@ export function registerMcpTools() {
                     found.run.pageScriptWritePlan = result.prepared;
                     const publicResult = withoutPrepared(result);
                     found.run.lastPageScriptResult = toJson(publicResult);
+                    requireRunStateTransition({ paths: input.paths, runId: found.run.runId,
+                        to: publicResult.validation.valid && publicResult.validation.source !== 'prepared' ? 'ready_for_review' : 'filling',
+                        reasonCode: 'mcp_page_script_validated', now: input.now });
                     return ok(publicResult, publicResult.validation.valid
                         ? publicResult.validation.source === 'prepared'
                             ? `${pageScript.id} 准备数据检查通过，尚未读回服务器。`
@@ -1497,11 +1424,10 @@ export function registerMcpTools() {
                 // 用上一轮解析出来的答案当作「本来应该填什么」。
                 // 以前这里传的是空表，所以校验永远说不出「哪个值没写进去」——
                 // 只能报页面自己的红字，填了没生效的字段一个都发现不了。
-                const expected = new Map((found.run.lastResolvedAnswers ?? []).map((answer) => [answer.runtimeRef, answer.formattedValue]));
                 const result = await validatePage(found.session, found.page, {
                     runId: found.run.runId,
                     snapshotId: schema.snapshotId,
-                    expectedFields: expectedFieldStates(schema.fields, expected),
+                    expectedFields: found.run.lastExpectedFields ?? [],
                     ...(found.run.lastPreFillSchema === undefined
                         ? { previousSchema: schema }
                         : { previousSchema: found.run.lastPreFillSchema }),
@@ -1588,8 +1514,12 @@ export function registerMcpTools() {
                     }
                 }
                 const mismatches = result.issues.filter((issue) => issue.code === 'value_mismatch');
+                const complete = found.run.lastResolutionState !== undefined && found.run.lastResolutionState.missingCount === 0 && found.run.lastResolutionState.unresolvedCount === 0;
+                requireRunStateTransition({ paths: input.paths, runId: found.run.runId,
+                    to: result.valid && result.readyForReview && complete ? (result.currentSchema.actions.some((action) => action.commitAction) ? 'ready_to_submit' : 'ready_for_review') : complete ? 'filling' : 'waiting_for_user',
+                    reasonCode: result.valid && complete ? 'mcp_validate_passed' : 'mcp_validate_needs_work', now: input.now });
                 return ok({ ...result, learning }, result.valid
-                    ? `校验通过（对比了 ${expected.size} 个预期值）。`
+                    ? `校验通过（对比了 ${(found.run.lastExpectedFields ?? []).filter((field) => field.expectedValue !== undefined).length} 个预期值）。`
                     : mismatches.length > 0
                         ? `有 ${mismatches.length} 个预期值没写进去：${mismatches
                             .map((issue) => issue.runtimeRef ?? '')
@@ -1853,9 +1783,6 @@ export function registerMcpTools() {
                     pageSchema: schema,
                     runId: found.run.runId,
                 });
-                const observer = found.run.networkObserver;
-                await observer?.settle?.();
-                const submissionObservationOffset = observer?.observations().length ?? 0;
                 const consumed = consumeSubmissionApproval({
                     paths: input.paths,
                     approvalToken: approvalToken,
@@ -1889,12 +1816,7 @@ export function registerMcpTools() {
                     },
                     clickCommit: executors.clickCommit,
                     readCurrentPageDigest: () => computePageDigest(found.page),
-                    collectEvidence: async () => {
-                        const pageEvidence = await executors.collectEvidence();
-                        await observer?.settle?.();
-                        const networkEvidence = collectSubmissionNetworkEvidence(observer?.observations().slice(submissionObservationOffset) ?? []);
-                        return [...pageEvidence, ...networkEvidence];
-                    },
+                    collectEvidence: executors.collectEvidence,
                     now: input.now,
                 });
                 // 点完之后页面已经不是刚才那一份了，再失效一次。
@@ -1967,7 +1889,7 @@ export function registerMcpTools() {
         },
         {
             name: 'apply.resolve_submission',
-            description: '人工核对一次提交结果不确定的运行。必须先由用户在官网确认结果；' +
+            description: '核对一次提交结果不确定的运行。必须先在授权范围内取得当前岗位的真实官网结果证据；' +
                 '这个工具只修正本地记录，绝不再次点击提交。',
             mutating: true,
             inputSchema: {
@@ -2086,6 +2008,7 @@ export function registerMcpTools() {
                     });
                 }
                 attempts[runtimeRef] = used + 1;
+                (found.run.visualTargetFields ??= {})[runtimeRef] = field;
                 found.run.visualAttemptCount = (found.run.visualAttemptCount ?? 0) + 1;
                 const request = prepared.request;
                 return ok({
@@ -2133,15 +2056,21 @@ export function registerMcpTools() {
                     return fail('mcp_missing_argument', '缺少 runtimeRef。');
                 }
                 // CU 动过页面，缓存一定作废——拿旧结构去读值就是自欺欺人。
+                const previousField = found.run.visualTargetFields?.[runtimeRef] ??
+                    found.run.lastExpectedFields?.find((state) => state.runtimeRef === runtimeRef)?.field;
                 markPageMutated(found.run, 'visual_fallback', input.now);
                 const schema = await currentSchema(found.session, found.page, found.run.runId, input.now, found.run);
-                const field = schema.fields.find((item) => item.runtimeRef === runtimeRef);
+                const matches = schema.fields.filter((item) => previousField === undefined
+                    ? item.runtimeRef === runtimeRef : sameField(item, previousField));
+                const field = matches.length === 1 ? matches[0] : undefined;
                 if (field === undefined) {
                     return fail('mcp_tool_failed', `重扫之后页面上没有 ${runtimeRef} 了。可能操作把页面改成了另一个样子，先 apply.inspect_page 看看。`);
                 }
                 const target = await findActionTarget(found.page.mainFrame(), field.locatorCandidates, { runId: found.run.runId, runtimeRef });
                 const expectClosedSelector = readString(input.args, 'expectClosedSelector');
                 const verification = await verifyVisualFallback({
+                    field,
+                    canonicalKey: found.run.lastExpectedFields?.find((state) => state.field !== undefined && sameField(state.field, field))?.canonicalKey,
                     ...(target.target === undefined ? {} : { locator: target.target.locator }),
                     ...(input.args['expectedValue'] === undefined
                         ? {}

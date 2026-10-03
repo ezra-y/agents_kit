@@ -1,7 +1,32 @@
+import { sameField } from "../browser/scan/diff-page.js";
 const SENSITIVE_KEY = /password|passwd|captcha|verification.?code|one.?time.?code|token|cookie|authorization|csrf|secret|session/i;
 export function isEmptyWriteValue(value) {
     return value === undefined || value === null ||
         (typeof value === 'string' && value.trim() === '');
+}
+export function scopeAllowsField(scope, field, canonicalKey) {
+    return scope.mode === 'fill_missing' ? isEmptyWriteValue(field.currentValue)
+        : scope.fields.includes(field.runtimeRef) || (canonicalKey !== undefined && scope.fields.includes(canonicalKey));
+}
+export function rebindWriteScope(scope, before, current, mappings) {
+    if (scope.mode === 'fill_missing')
+        return scope;
+    const targets = new Set();
+    for (const key of scope.fields) {
+        const matching = before.fields.filter((field) => field.runtimeRef === key ||
+            mappings.some((mapping) => mapping.runtimeRef === field.runtimeRef && mapping.canonicalKey === key));
+        if (matching.length === 0)
+            throw new Error(`write_scope_target_unknown: 找不到指定返修字段 ${key}`);
+        matching.forEach((field) => targets.add(field));
+    }
+    const fields = [];
+    for (const target of targets) {
+        const matching = current.fields.filter((field) => sameField(field, target));
+        if (matching.length !== 1)
+            throw new Error(`write_scope_target_changed: 无法唯一识别返修字段「${target.rawLabel}」`);
+        fields.push(matching[0].runtimeRef);
+    }
+    return { mode: 'repair', fields: [...new Set(fields)] };
 }
 export function redactResumeValue(value) {
     if (value === undefined)
@@ -151,29 +176,29 @@ export function mergeScopedRecord(current, candidate, requestedScope, adapter) {
             let repairFailure = false;
             if (scope.mode === 'repair') {
                 const selectedPaths = requestedRows.filter((parsed) => identityKey !== undefined && parsed.selectors[identityKey] === identity);
-                const selectedCurrent = currentRows.flatMap((row, index) => selectedPaths.some((parsed) => selectorsMatch(row, parsed.selectors))
-                    ? [{ row, index }]
-                    : []);
                 const candidateMatches = candidateRows.filter((row) => rowIdentity(section, row) === identity);
-                const targetFields = new Set(selectedPaths.map((parsed) => parsed.field));
-                const candidateExact = candidateMatches.filter((row) => selectedPaths.every((parsed) => Object.entries(parsed.selectors)
-                    .filter(([key]) => !targetFields.has(key))
-                    .every(([key, value]) => String(row[key] ?? '') === value)));
-                const candidateSelected = candidateExact.length === 1
-                    ? candidateExact
-                    : candidateMatches.length === 1
-                        ? candidateMatches
-                        : [];
-                if (selectedCurrent.length === 1 && candidateSelected.length === 1) {
-                    if (candidateRow !== candidateSelected[0])
-                        continue;
-                    selected = selectedCurrent[0];
+                const selections = currentRows.flatMap((row, index) => {
+                    const rowPaths = selectedPaths.filter((parsed) => selectorsMatch(row, parsed.selectors));
+                    if (rowPaths.length === 0)
+                        return [];
+                    const targetFields = new Set(rowPaths.map((parsed) => parsed.field));
+                    const exact = candidateMatches.filter((candidate) => rowPaths.every((parsed) => Object.entries(parsed.selectors)
+                        .filter(([key]) => !targetFields.has(key))
+                        .every(([key, value]) => String(candidate[key] ?? '') === value)));
+                    const source = exact.length === 1 ? exact[0]
+                        : candidateMatches.length === 1 ? candidateMatches[0] : undefined;
+                    return [{ row, index, source }];
+                });
+                const matches = selections.filter((item) => item.source === candidateRow && !used.has(item.index));
+                if (matches.length === 1) {
+                    selected = matches[0];
+                }
+                else if (matches.length === 0 && selections.length > 0 && selections.every((item) => item.source !== undefined)) {
+                    continue;
                 }
                 else {
                     repairFailure = true;
-                    if (selectedCurrent.length > 1 || candidateMatches.length > 1) {
-                        conflicts.push({ key: section, reason: `无法唯一配对 ${identity ?? '未命名'} 返修记录，未按网站数组顺序猜测` });
-                    }
+                    conflicts.push({ key: section, reason: `无法唯一配对 ${identity ?? '未命名'} 返修记录，未按网站数组顺序猜测` });
                 }
             }
             else if (candidates.length === 1) {

@@ -175,7 +175,9 @@ export async function submitApplication(request) {
     }));
     const clickMessage = clickResult.message;
     // 8. 收集证据。点没点成功不算数，页面怎么说才算数。
-    const evidence = await request.collectEvidence().catch(() => []);
+    const evidence = await request.collectEvidence().catch((error) => [{
+            kind: 'other', valueRedacted: `提交后证据读取失败：${error instanceof Error ? error.name : typeof error}`, confidence: 0,
+        }]);
     const confirmed = evidence.some((item) => item.confidence >= 0.85);
     const finalOutcome = confirmed ? 'confirmed' : 'uncertain';
     finalizeAttempt(request, attemptId, finalOutcome, evidence, clickMessage, now);
@@ -202,15 +204,16 @@ export async function submitApplication(request) {
         ? undefined
         : {
             runId: request.runId,
-            reason: 'submission_uncertain',
+            reason: evidence.some((item) => item.kind === 'captcha_required') ? 'captcha' : 'submission_uncertain',
             message: [
                 '已经点过一次最终提交，但没有拿到强证据。',
                 '系统不会再点第二次。请你到官网确认这次投递到底成没成。',
                 clickMessage === undefined ? '' : `执行信息：${clickMessage}`,
+                ...evidence.filter((item) => item.confidence < 0.85).map((item) => item.valueRedacted),
             ]
                 .filter((line) => line !== '')
                 .join('\n'),
-            resumeCondition: '你确认结果后，手动把任务状态改成成功或失败。',
+            resumeCondition: '核对官网结果后，通过提交结果核对入口记录结论。',
             currentUrl: request.pageSchema.url,
         };
     return {

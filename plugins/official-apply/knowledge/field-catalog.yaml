@@ -141,12 +141,15 @@ fields:
   aliases:
   - 出生日期
   - 出生年月
+  - 出生日期（年龄）
+  - 出生年月（年龄）
   - 生日
   - Date of Birth
   - Birth Date
   value_type: date
   common_controls:
   - date
+  - month
   - text
   - datepicker
   answer_policy: extract_or_ask
@@ -298,6 +301,40 @@ fields:
   status: verified
   answer_scope: global
   reuse_note: 只复用用户提供的明确值，不根据手机号或其他资料猜测。
+- key: person.contact.emergency_name
+  name: 紧急联系人
+  category: contact
+  aliases:
+  - 紧急联系人
+  - 紧急联系人姓名
+  - 紧急联系人名字
+  value_type: text
+  common_controls:
+  - text
+  - textbox
+  answer_policy: never_infer
+  sensitivity: personal
+  status: verified
+  answer_scope: global
+  reuse_note: 只复用用户提供的紧急联系人姓名，不把本人姓名填进去。
+- key: person.contact.emergency_phone
+  name: 紧急联系电话
+  category: contact
+  aliases:
+  - 紧急联系电话
+  - 紧急联系人电话
+  - 紧急联系人手机
+  - 紧急联系人手机号
+  value_type: phone
+  common_controls:
+  - tel
+  - text
+  - textbox
+  answer_policy: never_infer
+  sensitivity: personal
+  status: verified
+  answer_scope: global
+  reuse_note: 只复用用户提供的紧急联系电话，不把本人手机号填进去。
 - key: person.physical.height_cm
   name: 身高（厘米）
   category: physical
@@ -316,6 +353,40 @@ fields:
   status: verified
   answer_scope: global
   reuse_note: 只复用用户提供的厘米值，不根据其他资料猜测。
+- key: person.physical.blood_type
+  name: 血型
+  category: physical
+  aliases:
+  - 血型
+  value_type: enum
+  common_controls:
+  - select
+  - combobox
+  - radio
+  - text
+  answer_policy: never_infer
+  sensitivity: personal
+  option_normalization:
+    A:
+    - A型
+    - A
+    - A型血
+    B:
+    - B型
+    - B
+    - B型血
+    AB:
+    - AB型
+    - AB
+    - AB型血
+    O:
+    - O型
+    - O
+    - 0
+    - O型血
+  status: verified
+  answer_scope: global
+  reuse_note: 只复用用户明确说过的血型。官网选项按目录中的等价写法匹配。
 - key: person.contact.current_city
   name: 当前所在城市
   category: contact
@@ -817,6 +888,54 @@ fields:
   status: stable
   answer_scope: profile_record
   reuse_note: 值属于某一条教育、经历或项目记录；必须先绑定正确记录。
+- key: profile.project[].start_date
+  name: 项目开始时间
+  category: project
+  aliases:
+  - 开始时间
+  - 项目开始时间
+  value_type: month_or_date
+  common_controls:
+  - month
+  - date
+  - text
+  - datepicker
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
+- key: profile.project[].end_date
+  name: 项目结束时间
+  category: project
+  aliases:
+  - 结束时间
+  - 项目结束时间
+  value_type: month_or_date
+  common_controls:
+  - month
+  - date
+  - text
+  - datepicker
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
+- key: profile.award[].date
+  name: 获奖时间
+  category: award
+  aliases:
+  - 获奖时间
+  - 获奖日期
+  value_type: month_or_date
+  common_controls:
+  - month
+  - date
+  - text
+  - datepicker
+  answer_policy: extract_or_ask
+  sensitivity: normal
+  status: stable
+  answer_scope: profile_record
 - key: profile.project[].name
   name: 项目名称
   category: project
@@ -1121,6 +1240,8 @@ fields:
   name: 简历附件
   category: attachment
   aliases:
+  - 简历
+  - 简历文件
   - 上传简历
   - 简历附件
   - 个人简历

@@ -21,8 +21,9 @@ const SECTION_CONFLICT_PENALTY = 0.5;
  */
 const SECTION_HINTS = [
     ['profile.education', ['教育', '学历', 'education']],
-    ['profile.experience', ['实习', '工作', '经历', 'experience', 'internship']],
+    ['profile.experience', ['实习', '工作', 'experience', 'internship']],
     ['profile.project', ['项目', 'project']],
+    ['profile.award', ['获奖', '奖项', 'award']],
     ['person.family', ['家庭', '亲属', 'family']],
     ['person.contact', ['联系', '基本信息', '个人信息', 'contact']],
     ['person.identity', ['基本信息', '个人信息', 'identity', 'personal']],
@@ -122,8 +123,10 @@ export function scoreFieldMapping(input) {
     // 3. label 与公共别名。完全一致和部分包含分开算。
     const label = normalizeForMatch(siteField.rawLabel);
     const aliases = [canonical.name, ...canonical.aliases].map(normalizeForMatch);
+    const educationLabel = canonical.key.startsWith('profile.education[].')
+        ? label.replace(/^(最高学历|博士研究生|硕士研究生|博士|硕士|研究生|本科|学士|专科|大专)(阶段|期间)?的?/, '') : label;
     if (label !== '') {
-        if (aliases.includes(label)) {
+        if (aliases.includes(label) || (educationLabel !== '' && aliases.includes(educationLabel))) {
             add({
                 source: 'catalog_alias',
                 detail: `标签「${siteField.rawLabel}」与公共别名完全一致`,
@@ -139,7 +142,8 @@ export function scoreFieldMapping(input) {
         }
     }
     // 4. 控件类型。
-    if (canonical.commonControls.includes(siteField.controlKind)) {
+    if (canonical.commonControls.includes(siteField.controlKind) ||
+        (siteField.controlKind === 'month' && ['date', 'month_or_date'].includes(canonical.valueType) && canonical.commonControls.includes('date'))) {
         add({
             source: 'control_type',
             detail: `控件类型 ${siteField.controlKind} 属于该字段常见控件`,

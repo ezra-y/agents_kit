@@ -1,8 +1,12 @@
 import { CONTROL_SELECTOR } from "./control-selector.js";
+import { MOKA_SELECT } from "../controls/moka-select.js";
+import { MOKA_DATE } from "../controls/moka-date.js";
+import { MOKA_CHECKBOX } from "../controls/moka-checkbox.js";
+import { committedControlValue } from "../controls/read-control-value.js";
 const MAX_ELEMENTS = 3000;
 const MAX_TEXT = 200;
 export async function collectFrameNodes(frame, framePath, options = {}) {
-    const raw = await frame.evaluate(({ maxElements, maxText, rootSelector, rootIndex, controlSelector, }) => {
+    const raw = await frame.evaluate(({ maxElements, maxText, rootSelector, rootIndex, rootElement, controlSelector, selectSelectors, dateSelectors, checkboxSelectors, }) => {
         const all = Array.from(document.querySelectorAll('*'));
         const indexOf = new Map();
         all.forEach((element, i) => indexOf.set(element, i));
@@ -115,6 +119,26 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
             if (wrapping !== null) {
                 push('wrapping_label', labelTextOf(wrapping), 0.9);
             }
+            // 自定义控件的 label 可能只显示选中值，题目在控件外面。
+            if (element.tagName.toLowerCase() === 'input' &&
+                !evidence.some((item) => item.source === 'label_for') &&
+                clean(element.getAttribute('aria-label')) === '' &&
+                textOfIds(element.getAttribute('aria-labelledby')).length === 0 &&
+                !['checkbox', 'radio', 'hidden', 'file'].includes(element.getAttribute('type') ?? '')) {
+                let container = wrapping ?? element;
+                for (let depth = 0; container !== null && depth < 5; depth += 1) {
+                    const preceding = container.previousElementSibling;
+                    if (preceding !== null &&
+                        preceding.querySelector('input,select,textarea,button,[role=button]') === null) {
+                        const label = labelTextOf(preceding);
+                        if (label !== '' && label.length <= LABEL_MAX_CHARS) {
+                            push('nearby_text', label, 0.95);
+                            break;
+                        }
+                    }
+                    container = container.parentElement;
+                }
+            }
             for (const text of textOfIds(element.getAttribute('aria-labelledby'))) {
                 push('aria_labelledby', text, 0.85);
             }
@@ -197,11 +221,11 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
             while (ancestor !== null && ancestor !== document.body) {
                 const id = ancestor.getAttribute('id');
                 if (id !== null && id !== '') {
-                    return `#${CSS.escape(id)} > ${signature}`;
+                    return `#${CSS.escape(id)} ${signature}`;
                 }
                 const testId = ancestor.getAttribute('data-testid');
                 if (testId !== null && testId !== '') {
-                    return `${attributeSelector('data-testid', testId)} > ${signature}`;
+                    return `${attributeSelector('data-testid', testId)} ${signature}`;
                 }
                 const ariaLabel = ancestor.getAttribute('aria-label');
                 if (ariaLabel !== null && ariaLabel !== '') {
@@ -234,14 +258,26 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
                     const distinctNames = new Set(Array.from(current.querySelectorAll('input[name],select[name],textarea[name]'))
                         .map((control) => control.getAttribute('name') ?? '')
                         .filter((name) => name !== ''));
+                    const controls = current.querySelectorAll('input,select,textarea');
+                    const removalActions = Array.from(current.querySelectorAll('button,[role=button],a,span,div'))
+                        .filter((node) => node.children.length === 0 &&
+                        /^(删除(?:本条|此条|本段)?|移除(?:本条|此条|本段)?|remove|delete)$/i.test(clean(node.textContent)));
+                    const unnamedRecord = controls.length >= 2 && removalActions.length === 1;
                     const cardLike = current.tagName.toLowerCase() !== 'label' &&
-                        distinctNames.size >= 2 &&
-                        (twins.length >= 2 || hasIndexedRecordShape(current));
+                        ((distinctNames.size >= 2 && (twins.length >= 2 || hasIndexedRecordShape(current))) ||
+                            unnamedRecord);
                     if (cardLike) {
                         const index = indexOf.get(current);
                         if (index !== undefined) {
                             const css = collectionSelectorOf(current);
                             const locatorIndex = Array.from(document.querySelectorAll(css)).indexOf(current);
+                            const card = current.cloneNode(true);
+                            const selects = current.querySelectorAll('select');
+                            card.querySelectorAll('select').forEach((select, position) => {
+                                const selectedText = Array.from(selects[position].selectedOptions)
+                                    .map((option) => clean(option.textContent)).join(' ');
+                                select.replaceWith(document.createTextNode(selectedText));
+                            });
                             return {
                                 index,
                                 signature,
@@ -251,6 +287,9 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
                                 ariaLabel: current.getAttribute('aria-label'),
                                 role: current.getAttribute('role'),
                                 testId: current.getAttribute('data-testid'),
+                                label: clean(Array.from(parent.children).find((node) => node.querySelector('input,select,textarea') === null &&
+                                    clean(node.textContent).length <= LABEL_MAX_CHARS)?.textContent ?? '').replace(/(?:新增|添加)\s*$/, '').trim(),
+                                text: clean(card.textContent),
                             };
                         }
                     }
@@ -263,9 +302,9 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
         const ERROR_SELECTOR = '[role=alert],[aria-live=assertive],[aria-live=polite]';
         // 局部扫描时把搜索范围收到浮层内部，索引仍按整页计算，
         // 这样局部结果和整页结果里的 runtimeRef 可以对上。
-        const scopeRoot = rootSelector === null
+        const scopeRoot = rootElement ?? (rootSelector === null
             ? document
-            : (document.querySelectorAll(rootSelector)[rootIndex] ?? document);
+            : (document.querySelectorAll(rootSelector)[rootIndex] ?? document));
         /**
          * 这个元素是不是「属于另一个控件的浮层」。
          *
@@ -309,10 +348,39 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
             .map((element) => {
             const tag = element.tagName.toLowerCase();
             const type = element.getAttribute('type');
-            const rect = element.getBoundingClientRect();
+            const checkboxControl = element.closest(checkboxSelectors.control);
+            const rect = (checkboxControl ?? element).getBoundingClientRect();
             const asInput = element;
             const repeat = repeatContainerOf(element);
+            const sectionPath = sectionPathOf(element);
+            if (sectionPath.length === 0 && repeat?.label !== undefined && repeat.label !== '') {
+                sectionPath.push(repeat.label);
+            }
             const isErrorNode = element.matches(ERROR_SELECTOR);
+            const customSelect = tag === 'input'
+                ? element.closest(selectSelectors.control) : null;
+            const sdkField = element.closest(selectSelectors.field);
+            const sdkTitle = sdkField?.querySelector(selectSelectors.label) ?? null;
+            const sdkQuestionLabel = labelTextOf(sdkTitle);
+            const monthRange = element.closest(dateSelectors.monthRange);
+            const monthItem = monthRange === null ? null : element.closest(dateSelectors.monthItem)?.parentElement ?? null;
+            const monthInputs = Array.from(monthItem?.querySelectorAll('input') ?? []);
+            const monthItems = Array.from(monthRange?.querySelectorAll(dateSelectors.monthPair) ?? []);
+            const endpointCheckbox = monthRange?.querySelector('input[type=checkbox]') ?? null;
+            const isEndCheckbox = endpointCheckbox !== null && endpointCheckbox === element;
+            const monthControlIndex = isEndCheckbox ? 1 : monthItems.indexOf(monthItem);
+            const isMonthControl = isEndCheckbox || (monthInputs.length === 2 && monthInputs[0] === element && (endpointCheckbox === null || monthControlIndex === 0));
+            const selectedText = clean(customSelect?.querySelector(selectSelectors.display)?.textContent);
+            const labelEvidence = labelEvidenceOf(element);
+            if (sdkQuestionLabel !== '' && (isEndCheckbox || !['checkbox', 'radio'].includes(type ?? ''))) {
+                const label = isMonthControl && (monthItems.length === 2 || endpointCheckbox !== null)
+                    ? (monthControlIndex === 0 ? '开始时间' : '结束时间') : sdkQuestionLabel;
+                labelEvidence.unshift({ source: 'nearby_text', text: label, score: 1 });
+            }
+            // 复合手机号控件里的区号属于手机号的格式，不能再填入完整号码。
+            const isPhoneDialCode = customSelect !== null && /^\+\d{1,4}$/.test(selectedText) &&
+                labelEvidence.some((item) => /手机|电话|phone|mobile/i.test(item.text)) &&
+                (customSelect.parentElement?.parentElement?.parentElement?.querySelectorAll('input').length ?? 0) > 1;
             /**
              * 收集这个控件的选项。
              *
@@ -325,6 +393,9 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
             const optionsFromPopup = () => {
                 const ids = `${element.getAttribute('aria-controls') ?? ''} ${element.getAttribute('aria-owns') ?? ''}`;
                 const nodes = [];
+                if (['combobox', 'listbox'].includes(element.getAttribute('role') ?? '')) {
+                    nodes.push(...Array.from(element.querySelectorAll('[role=option]')));
+                }
                 for (const id of ids.split(/\s+/)) {
                     if (id === '') {
                         continue;
@@ -334,23 +405,28 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
                         nodes.push(...Array.from(popup.querySelectorAll('[role=option]')));
                     }
                 }
-                return nodes;
+                return [...new Set(nodes)];
             };
-            const options = tag === 'select'
-                ? Array.from(element.querySelectorAll('option')).map((option) => ({
-                    rawLabel: clean(option.textContent),
-                    rawValue: option.getAttribute('value') ?? '',
-                    disabled: option.hasAttribute('disabled'),
-                    selected: option.selected,
-                }))
-                : optionsFromPopup().map((option) => ({
-                    rawLabel: clean(option.textContent),
-                    rawValue: option.getAttribute('data-value') ??
-                        option.getAttribute('value') ??
-                        clean(option.textContent),
-                    disabled: option.getAttribute('aria-disabled') === 'true',
-                    selected: option.getAttribute('aria-selected') === 'true',
-                }));
+            const options = isMonthControl ? [] :
+                tag === 'select'
+                    ? Array.from(element.querySelectorAll('option')).map((option) => ({
+                        rawLabel: clean(option.textContent),
+                        rawValue: option.value,
+                        disabled: option.hasAttribute('disabled'),
+                        selected: option.selected,
+                    }))
+                    : (customSelect === null ? optionsFromPopup() : Array.from(customSelect.parentElement?.querySelectorAll(selectSelectors.option) ?? [])).map((option) => ({
+                        rawLabel: clean(option.textContent),
+                        rawValue: option.getAttribute('data-value') ??
+                            option.getAttribute('value') ??
+                            clean(option.textContent),
+                        disabled: option.getAttribute('aria-disabled') === 'true',
+                        selected: option.getAttribute('aria-selected') === 'true' ||
+                            (selectedText !== '' && clean(option.textContent) === selectedText),
+                    }));
+            if (!isMonthControl && selectedText !== '' && !options.some((option) => option.rawLabel === selectedText)) {
+                options.push({ rawLabel: selectedText, rawValue: selectedText, selected: true, disabled: false });
+            }
             const labelText = clean(document.querySelector(element.getAttribute('id') === null || element.getAttribute('id') === ''
                 ? '__none__'
                 : `label[for="${CSS.escape(element.getAttribute('id') ?? '')}"]`)?.textContent ?? '');
@@ -358,16 +434,17 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
                 index: indexOf.get(element) ?? -1,
                 tag,
                 type,
-                role: element.getAttribute('role') ?? implicitRole(element),
+                role: element.getAttribute('role') ?? (customSelect === null ? implicitRole(element) : 'combobox'),
                 htmlName: element.getAttribute('name'),
                 htmlId: element.getAttribute('id'),
                 autocomplete: element.getAttribute('autocomplete'),
                 required: element.hasAttribute('required') ||
                     element.getAttribute('aria-required') === 'true' ||
+                    (Boolean(sdkTitle?.querySelector(dateSelectors.required)) && (monthRange === null || isMonthControl)) ||
                     labelText.includes('*'),
                 disabled: element.hasAttribute('disabled') || element.getAttribute('aria-disabled') === 'true',
                 readonly: element.hasAttribute('readonly') || element.getAttribute('aria-readonly') === 'true',
-                visible: isVisible(element),
+                visible: isVisible(checkboxControl ?? element),
                 /**
                  * 当前值。
                  *
@@ -378,24 +455,38 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
                  * 读不出当前值的后果很实在：选完之后没法验证「到底选中没有」，
                  * 于是明明没选上也报成功，下一步点了没反应还查不出原因。
                  */
-                value: (() => {
-                    if ('value' in element) {
-                        return String(asInput.value ?? '');
-                    }
+                value: null,
+                valueSources: (() => {
+                    if (isMonthControl)
+                        return { customSelect: false,
+                            monthParts: Array.from((isEndCheckbox ? monthItems[1] : monthItem)?.querySelectorAll(selectSelectors.display) ?? []).map(node => clean(node.textContent)),
+                            ongoingMonth: isEndCheckbox && Boolean(element.closest(checkboxSelectors.control)?.querySelector(checkboxSelectors.checked)),
+                        };
+                    if (type === 'checkbox')
+                        return { customSelect: false, nativeValue: asInput.value };
+                    if (element.matches(dateSelectors.monthPickerInput))
+                        return { customSelect: false, calendarDisplay: asInput.value };
                     const role = element.getAttribute('role') ?? '';
-                    if (role !== 'combobox' && role !== 'listbox') {
-                        return null;
-                    }
-                    const activeId = element.getAttribute('aria-activedescendant');
-                    const active = activeId === null ? null : document.getElementById(activeId);
-                    if (active !== null) {
-                        return clean(active.textContent);
-                    }
-                    return (element.getAttribute('data-value') ??
-                        element.getAttribute('aria-valuetext') ??
-                        clean(element.textContent));
+                    const combo = tag !== 'select' && (role === 'combobox' || role === 'listbox');
+                    const nativeValue = type === 'file' ? Array.from(asInput.files ?? []).map((file) => file.name).join(', ') :
+                        'value' in element ? String(asInput.value ?? '') :
+                            element.getAttribute('contenteditable') === 'true' ? element.innerText : undefined;
+                    const copy = element.cloneNode(true);
+                    copy.querySelectorAll('[role=option],[role=listbox],[role=menu],option').forEach((option) => option.remove());
+                    const selected = combo ? options.find((option) => option.selected) : undefined;
+                    return {
+                        customSelect: customSelect !== null,
+                        ...(nativeValue === undefined ? {} : { nativeValue }),
+                        ...(selected === undefined ? {} : { selectedLabel: selected.rawLabel }),
+                        displayedValue: customSelect !== null ? selectedText : clean(copy.textContent),
+                        ...(combo && element.hasAttribute('aria-valuetext') ? { ariaValueText: clean(element.getAttribute('aria-valuetext')) } : {}),
+                        ...(combo && element.hasAttribute('data-value') ? { dataValue: element.getAttribute('data-value') } : {}),
+                    };
                 })(),
-                checked: type === 'checkbox' || type === 'radio' ? asInput.checked : null,
+                checked: type === 'checkbox' && element.closest(checkboxSelectors.control) !== null ?
+                    Boolean(element.closest(checkboxSelectors.control)?.querySelector(checkboxSelectors.checked)) :
+                    type === 'checkbox' || type === 'radio' ? asInput.checked :
+                        element.getAttribute('aria-checked') === 'true' ? true : element.getAttribute('aria-checked') === 'false' ? false : null,
                 multiple: element.hasAttribute('multiple'),
                 accept: element.getAttribute('accept'),
                 ariaInvalid: element.getAttribute('aria-invalid') === 'true',
@@ -403,8 +494,8 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
                 contentEditable: element.getAttribute('contenteditable') === 'true',
                 text: clean(element.textContent),
                 placeholder: element.getAttribute('placeholder'),
-                labelEvidence: labelEvidenceOf(element),
-                sectionPath: sectionPathOf(element),
+                labelEvidence,
+                sectionPath,
                 boundingBox: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
                 options,
                 describedByText: textOfIds(element.getAttribute('aria-describedby')),
@@ -416,9 +507,15 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
                 repeatContainerAriaLabel: repeat === null ? null : repeat.ariaLabel,
                 repeatContainerRole: repeat === null ? null : repeat.role,
                 repeatContainerTestId: repeat === null ? null : repeat.testId,
-                isFormControl: tag === 'input' || tag === 'textarea' || tag === 'select' ||
+                ...(repeat === null ? {} : { repeatContainerText: repeat.text }),
+                isFormControl: !isPhoneDialCode && (monthRange === null || isMonthControl) && (tag === 'input' || tag === 'textarea' || tag === 'select' ||
                     element.getAttribute('contenteditable') === 'true' ||
-                    ['textbox', 'combobox', 'checkbox', 'radio', 'listbox', 'switch', 'slider', 'spinbutton'].includes(element.getAttribute('role') ?? ''),
+                    ['textbox', 'combobox', 'checkbox', 'radio', 'listbox', 'switch', 'slider', 'spinbutton'].includes(element.getAttribute('role') ?? '')),
+                isCustomSelect: customSelect !== null,
+                isMonthPicker: element.matches(dateSelectors.monthPickerInput),
+                ...(sdkQuestionLabel === '' ? {} : { sdkQuestionLabel }),
+                ...(sdkField === null ? {} : { sdkControlIndex: Array.from(sdkField.querySelectorAll(controlSelector)).indexOf(element) }),
+                ...(isMonthControl ? { monthControlIndex } : {}),
                 isButtonLike: tag === 'button' ||
                     element.getAttribute('role') === 'button' ||
                     (tag === 'input' && ['button', 'submit', 'reset'].includes(type ?? '')),
@@ -457,9 +554,18 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
         maxText: MAX_TEXT,
         rootSelector: options.rootSelector ?? null,
         rootIndex: options.rootIndex ?? 0,
+        rootElement: options.rootElement ?? null,
         controlSelector: CONTROL_SELECTOR,
+        selectSelectors: MOKA_SELECT,
+        dateSelectors: MOKA_DATE,
+        checkboxSelectors: MOKA_CHECKBOX,
     });
-    return { framePath, ...raw };
+    const snapshot = { framePath, ...raw };
+    for (const element of snapshot.elements) {
+        element.value = committedControlValue(element.valueSources);
+        delete element.valueSources;
+    }
+    return snapshot;
 }
 /** label 取哪一条：按 `docs/04 §6` 的优先级取分数最高的一条。 */
 export function isCounterLikeLabel(value) {
@@ -516,6 +622,8 @@ export function isIgnoredControl(element) {
     return !element.visible;
 }
 export function normalizeControlKind(element) {
+    if (element.isMonthPicker || element.monthControlIndex !== undefined)
+        return 'month';
     if (element.isButtonLike) {
         return 'action_button';
     }
@@ -594,6 +702,16 @@ export function computeFieldFingerprint(parts) {
 function buildLocatorCandidates(element, label, sectionPath) {
     const candidates = [];
     const sectionAnchor = sectionPath.length > 0 ? sectionPath[sectionPath.length - 1] : undefined;
+    if (element.sdkQuestionLabel !== undefined && element.sdkControlIndex !== undefined && label !== '') {
+        const title = element.sdkQuestionLabel ?? label;
+        const control = element.monthControlIndex !== undefined && element.type === 'checkbox' ? `${MOKA_DATE.monthRange} input[type=checkbox]` : element.monthControlIndex === undefined ? `:is(${CONTROL_SELECTOR}) >> nth=${element.sdkControlIndex}` :
+            `${MOKA_DATE.monthRange} > span:has(> ${MOKA_DATE.monthItem}) >> nth=${element.monthControlIndex} >> input >> nth=0`;
+        const fieldSelector = `${MOKA_SELECT.field}:has(> ${MOKA_SELECT.label} :text-is(${JSON.stringify(title)})) ${control}`;
+        const prefix = element.repeatContainerCss === null || element.repeatContainerLocatorIndex === null ? '' :
+            `${element.repeatContainerCss} >> nth=${element.repeatContainerLocatorIndex} >> `;
+        candidates.push({ strategy: 'css_fallback', description: `在「${label}」题目内定位控件`,
+            target: { css: prefix + fieldSelector }, source: 'scanner', basePriority: 85, confidence: 0.9 });
+    }
     if (label !== '' && sectionAnchor !== undefined) {
         candidates.push({
             strategy: 'region_role_name',
@@ -770,7 +888,8 @@ function toField(snapshot, frame, element, context) {
         disabled: element.disabled,
         readonly: element.readonly,
         visible: element.visible,
-        ...(element.value === null || element.value === '' ? {} : { currentValue: element.value }),
+        ...(controlKind === 'checkbox' && element.checked !== null ? { currentValue: element.checked } :
+            element.value === null || element.value === '' ? {} : { currentValue: element.value }),
         options,
         errorTexts: element.describedByText,
         locatorCandidates: buildLocatorCandidates(element, label, element.sectionPath),

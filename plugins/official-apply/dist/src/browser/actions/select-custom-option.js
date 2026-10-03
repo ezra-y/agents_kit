@@ -1,7 +1,32 @@
+import { readControlValue } from "../controls/read-control-value.js";
+import { CUSTOM_OPTION_SELECTOR, MOKA_SELECT } from "../controls/moka-select.js";
+import { fieldValueMatches } from "../validation/validate-page.js";
 import { captureOverlaySignature, findNewOverlaySelector, scanChangedRegion, } from "../scan/scan-changed-region.js";
 import { findActionTarget } from "../locators/find-action-target.js";
-import { buildLocatorCandidates } from "../locators/build-locator-candidates.js";
 const DEFAULT_TIMEOUT_MS = 8_000;
+async function ownedPopup(locator) {
+    const handle = await locator.evaluateHandle((element, selectors) => {
+        const visible = (node) => {
+            const style = window.getComputedStyle(node);
+            return style.display !== 'none' && style.visibility !== 'hidden' && !node.classList.contains('sugar-popup-move-leave') && node.getClientRects().length > 0;
+        };
+        const ids = `${element.getAttribute('aria-controls') ?? ''} ${element.getAttribute('aria-owns') ?? ''}`;
+        if (element.getAttribute('aria-expanded') === 'false')
+            return null;
+        for (const id of ids.split(/\s+/)) {
+            const popup = document.getElementById(id);
+            if (popup !== null && visible(popup))
+                return popup;
+        }
+        const popup = element.closest(selectors.container)?.querySelector(selectors.overlay);
+        return popup !== null && popup !== undefined && visible(popup) ? popup : null;
+    }, MOKA_SELECT);
+    const popup = handle.asElement();
+    if (popup !== null)
+        return popup;
+    await handle.dispose();
+    return undefined;
+}
 function failure(request, errorCode, errorMessage) {
     return {
         actionPlanItemId: `custom_${request.fieldRuntimeRef}`,
@@ -14,20 +39,12 @@ function failure(request, errorCode, errorMessage) {
         errorMessage,
     };
 }
-/** 从控件上读回当前显示的值。自定义下拉通常把选中项写成文本。 */
-async function readControlText(page, locator) {
-    void page;
-    const value = await locator.inputValue().catch(() => undefined);
-    if (value !== undefined && value !== '') {
-        return value.trim();
-    }
-    return (await locator.innerText().catch(() => '')).replace(/\s+/g, ' ').trim();
-}
 export async function selectCustomOptionFromLocator(page, input) {
     const timeoutMs = input.timeoutMs ?? DEFAULT_TIMEOUT_MS;
     const frame = page.mainFrame();
-    const beforeValue = await readControlText(page, input.locator);
-    if (beforeValue.includes(input.requestedLabel)) {
+    const beforeValue = await readControlValue(input.locator, { combineMonthControls: false });
+    let popup = await ownedPopup(input.locator);
+    if (beforeValue === input.requestedLabel && popup === undefined) {
         return {
             ok: true,
             changed: false,
@@ -35,20 +52,33 @@ export async function selectCustomOptionFromLocator(page, input) {
             verifiedSelectedValue: beforeValue,
         };
     }
-    const before = await captureOverlaySignature(frame);
-    try {
-        await input.locator.click({ timeout: timeoutMs });
+    let overlaySelector = popup === undefined ? undefined : await popup.getAttribute('role');
+    overlaySelector = overlaySelector ? `[role="${overlaySelector}"]` : MOKA_SELECT.overlay;
+    if (popup === undefined) {
+        const before = await captureOverlaySignature(frame);
+        try {
+            await input.locator.click({ timeout: timeoutMs });
+        }
+        catch (error) {
+            return {
+                ok: false,
+                changed: false,
+                availableOptions: [],
+                reason: error instanceof Error ? (error.message.split('\n')[0] ?? '') : String(error),
+            };
+        }
+        popup = await ownedPopup(input.locator);
+        if (popup === undefined) {
+            const fresh = await findNewOverlaySelector(frame, before);
+            if (fresh !== null) {
+                overlaySelector = fresh;
+                const overlays = frame.locator(fresh).filter({ visible: true });
+                if (await overlays.count() === 1)
+                    popup = (await overlays.elementHandle());
+            }
+        }
     }
-    catch (error) {
-        return {
-            ok: false,
-            changed: false,
-            availableOptions: [],
-            reason: error instanceof Error ? (error.message.split('\n')[0] ?? '') : String(error),
-        };
-    }
-    const overlaySelector = await findNewOverlaySelector(frame, before);
-    if (overlaySelector === null) {
+    if (popup === undefined) {
         return {
             ok: false,
             changed: false,
@@ -56,49 +86,56 @@ export async function selectCustomOptionFromLocator(page, input) {
             reason: '点击后没有出现新的浮层',
         };
     }
-    const region = await scanChangedRegion(frame, { rootSelector: overlaySelector });
-    const availableOptions = region.optionLabels.map((label) => ({
-        rawLabel: label,
-        source: 'opened_overlay',
-    }));
-    const match = region.optionLabels.find((label) => label === input.requestedLabel);
-    if (match === undefined) {
-        await page.keyboard.press('Escape').catch(() => undefined);
-        return {
-            ok: false,
-            changed: false,
-            availableOptions,
-            overlaySelector,
-            reason: `官网选项里没有「${input.requestedLabel}」，现有：${region.optionLabels.join(' / ')}`,
-        };
-    }
-    const optionLocator = frame
-        .locator(overlaySelector)
-        .locator('[role=option],option,li')
-        .filter({ hasText: match })
-        .first();
     try {
-        await optionLocator.click({ timeout: timeoutMs });
-    }
-    catch (error) {
+        const region = await scanChangedRegion(frame, { rootSelector: overlaySelector }, popup);
+        const availableOptions = region.options;
+        const match = region.optionLabels.find((label) => label === input.requestedLabel);
+        if (match === undefined) {
+            await page.keyboard.press('Escape').catch(() => undefined);
+            return {
+                ok: false,
+                changed: false,
+                availableOptions,
+                overlaySelector,
+                reason: `官网选项里没有「${input.requestedLabel}」，现有：${region.optionLabels.join(' / ')}`,
+            };
+        }
+        const options = await popup.$$(CUSTOM_OPTION_SELECTOR);
+        let optionLocator;
+        for (const option of options) {
+            if ((await option.textContent())?.replace(/\s+/g, ' ').trim() === match) {
+                optionLocator = option;
+                break;
+            }
+        }
+        if (optionLocator === undefined)
+            throw new Error('custom_option_disappeared: 官网选项已变化，需要重新检查');
+        try {
+            await optionLocator.click({ timeout: timeoutMs });
+        }
+        catch (error) {
+            return {
+                ok: false,
+                changed: false,
+                availableOptions,
+                overlaySelector,
+                reason: error instanceof Error ? (error.message.split('\n')[0] ?? '') : String(error),
+            };
+        }
+        const verified = await readControlValue(input.locator, { combineMonthControls: false });
+        const ok = fieldValueMatches({ currentValue: verified, options: availableOptions, controlKind: 'combobox' }, { runtimeRef: 'selection', expectedValue: input.requestedLabel, required: false, controlKind: 'combobox' });
         return {
-            ok: false,
-            changed: false,
+            ok,
+            changed: verified !== beforeValue,
             availableOptions,
             overlaySelector,
-            reason: error instanceof Error ? (error.message.split('\n')[0] ?? '') : String(error),
+            ...(ok ? { verifiedSelectedValue: availableOptions.find((option) => option.rawLabel === match).rawLabel } : {}),
+            ...(ok ? {} : { reason: `点击后控件显示的是「${verified}」，与预期不符` }),
         };
     }
-    const verified = await readControlText(page, input.locator);
-    const ok = verified.includes(input.requestedLabel);
-    return {
-        ok,
-        changed: verified !== beforeValue,
-        availableOptions,
-        overlaySelector,
-        ...(ok ? { verifiedSelectedValue: verified } : {}),
-        ...(ok ? {} : { reason: `点击后控件显示的是「${verified}」，与预期不符` }),
-    };
+    finally {
+        await popup.dispose();
+    }
 }
 export async function selectCustomOption(page, request) {
     const timeoutMs = request.timeoutMs ?? DEFAULT_TIMEOUT_MS;
@@ -110,7 +147,7 @@ export async function selectCustomOption(page, request) {
             availableOptions: [],
         };
     }
-    const found = await findActionTarget(frame, buildLocatorCandidates({ field }), {
+    const found = await findActionTarget(frame, field.locatorCandidates, {
         runId: request.runId,
         runtimeRef: request.fieldRuntimeRef,
         actionKind: 'click',

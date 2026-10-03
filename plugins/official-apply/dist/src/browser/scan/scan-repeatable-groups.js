@@ -1,9 +1,9 @@
 const RECORD_TYPE_PATTERNS = [
     ['education', ['教育', '学历', 'education']],
-    ['experience', ['实习', '工作', '经历', 'experience', 'internship']],
     ['project', ['项目', 'project']],
     ['family_member', ['家庭', '亲属', 'family']],
-    ['award', ['奖项', '荣誉', 'award', 'honor']],
+    ['award', ['获奖', '奖项', '荣誉', 'award', 'honor']],
+    ['experience', ['实习', '工作', 'experience', 'internship']],
 ];
 function recordTypeOf(label) {
     const lower = label.toLowerCase();
@@ -12,7 +12,9 @@ function recordTypeOf(label) {
             return type;
         }
     }
-    return 'other';
+    return !lower.includes('在校') && !lower.includes('校园') && lower.includes('经历')
+        ? 'experience'
+        : 'other';
 }
 export function scanRepeatableGroups(snapshot, fields, actions) {
     // 先按「重复容器签名 + 所在区域」把卡片分组。
@@ -45,7 +47,7 @@ export function scanRepeatableGroups(snapshot, fields, actions) {
     for (const [key, bucket] of buckets) {
         const label = bucket.sectionPath[bucket.sectionPath.length - 1] ?? bucket.signature;
         const addAction = findAddAction(snapshot, actions, label, bucket.sectionPath);
-        if (bucket.containers.size < 2 && addAction === undefined) {
+        if (bucket.containers.size < 2 && addAction === undefined && recordTypeOf(label) === 'other') {
             continue;
         }
         if (addAction !== undefined) {
@@ -62,6 +64,9 @@ export function scanRepeatableGroups(snapshot, fields, actions) {
             ...(removeActions.length === 0 ? {} : { removeActions }),
             instanceRegionRefs: containers.map(([index]) => `${snapshot.framePath.join('>') || 'main'}#${index}`),
             instanceLocatorCandidates: containers.map(([, element]) => instanceLocatorsOf(element, label)),
+            ...(containers.every(([, element]) => element.repeatContainerText !== undefined)
+                ? { instanceTexts: containers.map(([, element]) => element.repeatContainerText) }
+                : {}),
             canonicalRecordType: recordTypeOf(label),
         });
     }

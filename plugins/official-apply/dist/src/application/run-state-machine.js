@@ -24,6 +24,7 @@ export const ALLOWED_TRANSITIONS = {
     queued: ['opening', 'cancelled', 'failed_terminal'],
     opening: ['discovering', 'waiting_for_user', 'failed_recoverable', 'failed_terminal', 'cancelled'],
     discovering: [
+        'validating',
         'collecting_answers',
         'filling',
         'waiting_for_user',
@@ -32,6 +33,7 @@ export const ALLOWED_TRANSITIONS = {
         'cancelled',
     ],
     collecting_answers: [
+        'validating',
         'waiting_for_user',
         'filling',
         'discovering',
@@ -40,6 +42,7 @@ export const ALLOWED_TRANSITIONS = {
         'cancelled',
     ],
     waiting_for_user: [
+        'validating',
         'collecting_answers',
         'filling',
         'discovering',
@@ -66,6 +69,7 @@ export const ALLOWED_TRANSITIONS = {
         'cancelled',
     ],
     ready_for_review: [
+        'validating',
         'ready_to_submit',
         'filling',
         'discovering',
@@ -74,7 +78,7 @@ export const ALLOWED_TRANSITIONS = {
         'failed_terminal',
     ],
     // 提交只能从这里出发。
-    ready_to_submit: ['submitting', 'filling', 'validating', 'waiting_for_user', 'cancelled'],
+    ready_to_submit: ['submitting', 'discovering', 'filling', 'validating', 'waiting_for_user', 'cancelled'],
     // 进入提交后只有三条出路，没有「回去再点一次」。
     submitting: ['submitted_confirmed', 'submission_uncertain', 'failed_terminal'],
     submitted_confirmed: [],
@@ -182,5 +186,10 @@ export function transitionRunState(request) {
     finally {
         runtime.close();
     }
+}
+export function requireRunStateTransition(request) {
+    const result = transitionRunState(request);
+    if (!result.allowed)
+        throw new Error(result.reason);
 }
 //# sourceMappingURL=run-state-machine.js.map

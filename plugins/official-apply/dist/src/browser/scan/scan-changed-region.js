@@ -1,8 +1,9 @@
+import { CUSTOM_OPTION_SELECTOR, MOKA_SELECT } from "../controls/moka-select.js";
 import { collectFrameNodes, scanControls } from "./scan-controls.js";
 import { scanActions } from "./scan-actions.js";
 import { scanRegions } from "./scan-regions.js";
 /** 可能承载浮层的角色。点开下拉后新出现的通常是其中之一。 */
-const OVERLAY_SELECTOR = '[role=listbox],[role=menu],[role=dialog],[role=tree],[role=grid]';
+const OVERLAY_SELECTOR = `[role=listbox],[role=menu],[role=dialog],[role=tree],[role=grid],${MOKA_SELECT.overlay}`;
 function scanError(code, detail) {
     return new Error(`${code}: ${detail}`);
 }
@@ -22,7 +23,7 @@ export async function captureOverlaySignature(frame) {
         return Array.from(document.querySelectorAll(selector))
             .filter(visible)
             .map((element) => {
-            const role = element.getAttribute('role') ?? '';
+            const role = element.getAttribute('role') ?? 'moka_select';
             const label = (element.getAttribute('aria-label') ?? '').trim();
             const text = (element.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 40);
             return `${role}|${label}|${text}`;
@@ -43,40 +44,47 @@ export async function findNewOverlaySelector(frame, before) {
         return null;
     }
     const [role = '', label = ''] = fresh.split('|');
+    if (role === 'moka_select')
+        return MOKA_SELECT.overlay;
     if (role === '') {
         return null;
     }
     return label === '' ? `[role="${role}"]` : `[role="${role}"][aria-label="${label}"]`;
 }
-export async function scanChangedRegion(frame, options) {
+export async function scanChangedRegion(frame, options, rootElement) {
     const framePath = options.framePath ?? [];
     const rootIndex = options.rootIndex ?? 0;
-    const exists = await frame
+    const exists = rootElement === undefined ? await frame
         .locator(options.rootSelector)
         .nth(rootIndex)
         .isVisible()
-        .catch(() => false);
+        .catch(() => false) : await rootElement.isVisible();
     if (!exists) {
         throw scanError('changed_region_not_found', `找不到可见的 ${options.rootSelector}`);
     }
     const snapshot = await collectFrameNodes(frame, framePath, {
         rootSelector: options.rootSelector,
         rootIndex,
+        ...(rootElement === undefined ? {} : { rootElement }),
     });
-    const optionLabels = await frame.evaluate(({ selector, index }) => {
-        const root = document.querySelectorAll(selector)[index];
+    const choices = await frame.evaluate(({ selector, index, optionSelector, element }) => {
+        const root = element ?? document.querySelectorAll(selector)[index];
         if (root === undefined)
             return [];
-        return Array.from(root.querySelectorAll('[role=option],option,li'))
-            .map((element) => (element.textContent ?? '').replace(/\s+/g, ' ').trim())
-            .filter((text) => text !== '');
-    }, { selector: options.rootSelector, index: rootIndex });
+        return Array.from(root.querySelectorAll(optionSelector))
+            .map((element) => ({ rawLabel: (element.textContent ?? '').replace(/\s+/g, ' ').trim(),
+            rawValue: element.getAttribute('data-value') ?? element.getAttribute('value') ?? (element.textContent ?? '').replace(/\s+/g, ' ').trim(),
+            disabled: element.getAttribute('aria-disabled') === 'true' || element.hasAttribute('disabled'),
+            source: 'opened_overlay' }))
+            .filter((option) => option.rawLabel !== '');
+    }, { selector: options.rootSelector, index: rootIndex, optionSelector: CUSTOM_OPTION_SELECTOR, element: rootElement ?? null });
     return {
         snapshot,
         fields: scanControls(snapshot),
         actions: scanActions(snapshot),
         regions: scanRegions(snapshot),
-        optionLabels,
+        optionLabels: choices.map((option) => option.rawLabel),
+        options: choices,
     };
 }
 //# sourceMappingURL=scan-changed-region.js.map

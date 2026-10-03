@@ -19,6 +19,10 @@
 import { openPrivateDatabase } from "../storage/open-private-database.js";
 import { bindPageGroupToProfileRecord } from "../browser/actions/bind-page-group-to-profile-record.js";
 import { fillRepeatableGroup } from "../browser/actions/fill-repeatable-group.js";
+import { scopeAllowsField } from "../site-adapters/write-scope.js";
+import { canonicalProfileValue } from "../answers/extract-material-facts.js";
+import { loadFieldCatalog } from "../fields/map-site-fields.js";
+import { normalizeAnswerValue } from "../answers/normalize-answer-value.js";
 /** 读出用户的履历记录。 */
 export function readProfileRecords(paths, recordIds) {
     const selected = recordIds ?? [];
@@ -101,7 +105,8 @@ export function instanceLabelsOf(schema, group) {
             .join(' ');
         // 值里没有就退回卡片所在区域的标题。
         const fromSection = inThisInstance[0]?.sectionPath.at(-1) ?? '';
-        labels.push(fromValues !== '' ? fromValues : fromSection);
+        const cardText = group.instanceTexts?.[index] ?? '';
+        labels.push([fromValues, cardText, fromSection].filter((value) => value !== '').join(' '));
     }
     return labels;
 }
@@ -132,10 +137,16 @@ export async function fillProfileGroups(request) {
     }
     const allRecords = readProfileRecords(request.paths, request.profileRecordIds)
         .filter(record => record.values['includeInApplications'] !== false);
-    const fieldLabels = labelByCanonicalKey(request.mappings, request.pageSchema);
+    const scope = request.writeScope;
+    const canonicalByRef = new Map(request.mappings.map((mapping) => [mapping.runtimeRef, mapping.canonicalKey]));
+    const catalog = new Map(loadFieldCatalog(request.paths).map((field) => [field.key, field]));
     for (const group of groups) {
+        if (scope?.mode === 'repair' && !request.pageSchema.fields.some((field) => field.repeatGroupKey === group.groupKey && scopeAllowsField(scope, field, canonicalByRef.get(field.runtimeRef))))
+            continue;
         // 只拿这个组要的那一类记录。教育卡片不该被实习记录填进去。
         const wantedType = group.canonicalRecordType;
+        if (wantedType === 'other')
+            continue;
         const records = wantedType === undefined
             ? allRecords
             : allRecords.filter((record) => record.recordType === wantedType);
@@ -160,17 +171,36 @@ export async function fillProfileGroups(request) {
             continue;
         }
         const recordById = new Map(records.map((record) => [record.id, record]));
-        const assignments = bound.bindings.map((item) => ({
-            profileRecordId: item.profileRecordId,
-            instanceIndex: item.instanceIndex,
-            values: recordById.get(item.profileRecordId)?.values ?? {},
-        }));
+        const assignments = bound.bindings.map((item) => {
+            const record = recordById.get(item.profileRecordId);
+            const fields = request.pageSchema.fields.filter(field => field.repeatGroupKey === group.groupKey &&
+                field.repeatInstanceIndex === (item.instanceIndex >= group.currentCount ? 0 : item.instanceIndex));
+            const keys = [...new Set(request.mappings.filter(mapping => !mapping.requiresReview && mapping.canonicalKey?.startsWith(`profile.${record.recordType}[].`) &&
+                    fields.some(field => field.runtimeRef === mapping.runtimeRef && (scope === undefined || scopeAllowsField(scope, field, mapping.canonicalKey)))).map(mapping => mapping.canonicalKey))];
+            const values = {};
+            for (const key of keys) {
+                const resolved = request.resolvedAnswers?.find((answer) => answer.canonicalKey === key && answer.scope.type === 'profile_record' && answer.scope.key === `profile_record:${record.id}`);
+                if (resolved === undefined && catalog.get(key)?.answerPolicy === 'never_infer')
+                    continue;
+                const value = resolved?.formattedValue ?? canonicalProfileValue(record.recordType, record.values, key);
+                if (value === undefined || value === null || value === '')
+                    continue;
+                const field = fields.find(field => request.mappings.some(mapping => mapping.runtimeRef === field.runtimeRef && mapping.canonicalKey === key));
+                const normalized = resolved === undefined ? normalizeAnswerValue({ canonicalKey: key, canonicalField: catalog.get(key), value,
+                    controlKind: field.controlKind, inputType: field.inputType, siteOptions: field.options }) : { matched: true, formattedValue: value };
+                if (normalized.matched)
+                    values[key] = normalized.formattedValue;
+            }
+            return { profileRecordId: item.profileRecordId, instanceIndex: item.instanceIndex, values };
+        }).filter((assignment) => Object.keys(assignment.values).length > 0 && (scope?.mode !== 'repair' || request.pageSchema.fields.some((field) => field.repeatGroupKey === group.groupKey && field.repeatInstanceIndex === assignment.instanceIndex && scopeAllowsField(scope, field, canonicalByRef.get(field.runtimeRef)))));
         const filled = await fillRepeatableGroup(request.page, {
             runId: request.runId,
             group,
             assignments,
             pageSchema: request.pageSchema,
-            fieldLabelByCanonicalKey: fieldLabels,
+            ...(request.writeScope === undefined ? {} : { writeScope: request.writeScope }),
+            fieldLabelByCanonicalKey: labelByCanonicalKey(request.mappings.filter(mapping => request.pageSchema.fields.some(field => field.runtimeRef === mapping.runtimeRef && field.repeatGroupKey === group.groupKey)), request.pageSchema),
+            fieldMappings: request.mappings,
             paths: request.paths,
             ...(request.timeoutMs === undefined ? {} : { timeoutMs: request.timeoutMs }),
         });

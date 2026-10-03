@@ -27,10 +27,12 @@ function matchBoolean(text) {
         return false;
     return undefined;
 }
-function matchDegree(text) {
+export function normalizeDegree(text) {
     const normalized = normalizeText(text);
     for (const [key, patterns] of DEGREE_MAP) {
-        if (patterns.some((pattern) => normalized.includes(normalizeText(pattern)))) {
+        if (patterns.some((pattern) => /[a-z]/i.test(pattern)
+            ? new RegExp(`\\b${pattern.replaceAll(' ', '\\s+')}\\b`, 'i').test(text)
+            : normalized.includes(normalizeText(pattern)))) {
             return key;
         }
     }
@@ -42,13 +44,13 @@ function matchDegree(text) {
  * `field-catalog.yaml` 里可以写 `option_normalization: { true: [是, 接受], false: [否] }`。
  * 有表就用表，没有表才落到内置规则。
  */
-function matchFromCatalog(text, optionNormalization) {
+export function matchFromCatalog(text, optionNormalization) {
     if (optionNormalization === undefined) {
         return undefined;
     }
     const normalized = normalizeText(text);
     for (const [value, aliases] of Object.entries(optionNormalization)) {
-        if (aliases.some((alias) => normalizeText(alias) === normalized)) {
+        if (aliases.some((alias) => normalizeText(String(alias)) === normalized)) {
             if (value === 'true')
                 return true;
             if (value === 'false')
@@ -60,25 +62,26 @@ function matchFromCatalog(text, optionNormalization) {
     return undefined;
 }
 export function normalizeFieldOption(option, canonical) {
+    const { normalizedValue: previous, ...raw } = option;
     const text = option.rawLabel !== '' ? option.rawLabel : (option.rawValue ?? '');
     const fromCatalog = matchFromCatalog(text, canonical?.optionNormalization);
     if (fromCatalog !== undefined) {
-        return { ...option, normalizedValue: fromCatalog };
+        return { ...raw, normalizedValue: fromCatalog };
     }
-    if (canonical?.valueType === 'boolean' || canonical === undefined) {
+    if (canonical?.valueType.startsWith('boolean') === true) {
         const asBoolean = matchBoolean(text);
         if (asBoolean !== undefined) {
-            return { ...option, normalizedValue: asBoolean };
+            return { ...raw, normalizedValue: asBoolean };
         }
     }
-    if (canonical?.valueType === 'enum' || canonical?.key.includes('degree') === true) {
-        const degree = matchDegree(text);
+    if (canonical?.key.endsWith('degree') === true) {
+        const degree = normalizeDegree(text);
         if (degree !== undefined) {
-            return { ...option, normalizedValue: degree };
+            return { ...raw, normalizedValue: degree };
         }
     }
     // 认不出来就不写 normalizedValue。宁可留空，也不硬塞一个可能错的值。
-    return { ...option };
+    return raw;
 }
 export function normalizeFieldOptions(options, canonical) {
     return options.map((option) => normalizeFieldOption(option, canonical));

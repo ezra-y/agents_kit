@@ -1,8 +1,10 @@
 /** 学历高低。网页卡片按时间倒序还是正序都有，靠这个对齐更稳。 */
 const DEGREE_RANK = [
+    ['博士研究生', 4],
     ['博士', 4],
     ['phd', 4],
     ['doctor', 4],
+    ['硕士研究生', 3],
     ['硕士', 3],
     ['研究生', 3],
     ['master', 3],
@@ -15,14 +17,23 @@ const DEGREE_RANK = [
 function normalize(text) {
     return text.replace(/\s+/g, '').toLowerCase();
 }
-export function degreeRankOf(text) {
-    const normalized = normalize(text);
+export function degreeRanksOf(text) {
+    let normalized = normalize(text);
+    const ranks = new Set();
     for (const [keyword, rank] of DEGREE_RANK) {
         if (normalized.includes(normalize(keyword))) {
-            return rank;
+            ranks.add(rank);
+            normalized = normalized.replaceAll(normalize(keyword), '');
         }
     }
-    return undefined;
+    return [...ranks];
+}
+export function degreeRankOf(text) {
+    const ranks = degreeRanksOf(text);
+    return ranks.length === 1 ? ranks[0] : undefined;
+}
+export function degreeRankOfRecord(record) {
+    return degreeRankOf(recordLabelOf(record));
 }
 /**
  * 把一条履历记录里所有能表明学历的文字拼起来。
@@ -56,16 +67,39 @@ export function bindPageGroupToProfileRecord(input) {
     const bindings = [];
     const usedRecords = new Set();
     const usedInstances = new Set();
+    const schoolEvidenceInstances = new Set();
+    input.instanceLabels.forEach((label, instanceIndex) => {
+        const schoolMatches = input.records.filter((record) => {
+            const school = record.values['profile.education[].school'] ?? record.values['school'];
+            return typeof school === 'string' && school !== '' && normalize(label).includes(normalize(school));
+        });
+        if (schoolMatches.length === 0)
+            return;
+        schoolEvidenceInstances.add(instanceIndex);
+        const pageRank = degreeRankOf(label);
+        const matches = schoolMatches.filter((record) => !usedRecords.has(record.id) &&
+            (pageRank === undefined || degreeRankOf(recordLabelOf(record)) === pageRank));
+        if (matches.length !== 1)
+            return;
+        const match = matches[0];
+        usedRecords.add(match.id);
+        usedInstances.add(instanceIndex);
+        bindings.push({ profileRecordId: match.id, instanceIndex, confidence: 0.98,
+            reason: `网页学校与履历「${match.label}」一致，学历没有冲突` });
+    });
     // 第一轮：按学历对齐。网页写「硕士」，就绑硕士那条记录。
     input.instanceLabels.forEach((label, instanceIndex) => {
+        if (usedInstances.has(instanceIndex) || schoolEvidenceInstances.has(instanceIndex))
+            return;
         const pageRank = degreeRankOf(label);
         if (pageRank === undefined) {
             return;
         }
-        const match = input.records.find((record) => !usedRecords.has(record.id) && degreeRankOf(recordLabelOf(record)) === pageRank);
-        if (match === undefined) {
+        const matches = input.records.filter((record) => !usedRecords.has(record.id) && degreeRankOf(recordLabelOf(record)) === pageRank);
+        if (matches.length !== 1) {
             return;
         }
+        const match = matches[0];
         usedRecords.add(match.id);
         usedInstances.add(instanceIndex);
         bindings.push({

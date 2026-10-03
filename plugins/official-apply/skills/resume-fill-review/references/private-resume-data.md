@@ -42,11 +42,15 @@ node bin/applyctl.js resume show --id resume_xxx
 
 同一批次准备一次资料，后续公司复用。先将用户新确认的通用事实通过现有 `profile import` 或 `apply.save_answers` 写入正式资料；`preferences.json` 用于选项含义，不单独保存一份只供审核读取的新事实。已有 confirmedFacts 时，将适用值同步到正式字段后再填写。填写者和审核者使用同一份已合并资料及来源，新增回答只更新受影响字段。任务绑定不同时补读差异记录，不重新提取整份 PDF。
 
-先读取任务绑定的材料、`profile_records` 和已确认答案，再结合当前任务和
-`knowledge/field-catalog.yaml` 找缺项。不要把答案表当成全部私有资料。把本批适用的必填项和常见项
-集中问一次。除婚姻状况、驾照等目录字段外，真实批次还可能需要学院、成绩排名、部门和任职性质、面试方式、英语
-证书或成绩、是否接受调剂或调动、微信、身高等类别。只询问当前任务适用的内容，不要求用户提供
-无关敏感信息。`site.custom.*` 只有字段编号时不猜含义，等读取真实表单后再问。
+先读取任务绑定的材料、`profile_records` 和已确认答案，再结合当前任务和 `knowledge/field-catalog.yaml` 找缺项。履历内容按任务绑定的记录读取，答案按字段的使用范围和确认要求读取。教育绩点、排名和日期属于具体教育记录，通过学历、学校或日期对应到真实履历记录编号；数组位置不作为记录身份。
+
+把本批适用且确实缺少的必填事实集中问一次。真实表单可能需要学院、成绩排名、部门和任职性质、面试方式、英语证书或成绩、调剂或调动偏好、微信、身高等类别。只询问当前任务适用的内容。`site.custom.*` 只有字段编号时，先读取真实表单的题意。
+
+证书名称、考试成绩和熟练程度分别使用各自已确认的字段。证书的文字值与上传文件分别检查；已有文字答案却无法匹配官网选项时，说明具体选项差异。上传控件需要对应真实文件。
+
+### 未填写字段处理
+
+逐项保留问题名称、`canonicalKey`、`reason` 和 `suggestedScope`。`no_mapping` 先识别题意与控件；`scope_mismatch` 先匹配使用范围及具体履历记录；`format_conflict` 核对官网选项；需要确认的原因按原文说明。`no_answer` 先核对本任务的 `source.payload` 和已确认答案；已有资料却未匹配时进入能力演进，确认必填事实确实缺少后再集中询问用户。
 
 技能等级只记录用户明确给出的程度，不把技能名或项目经历自动换成“精通”。技能可以保存为字符串，或 `{ "name": "技能名", "level": "已确认的等级" }`。学习形式也只复用有明确来源的记录。
 
@@ -56,7 +60,7 @@ node bin/applyctl.js resume show --id resume_xxx
 还没有 `runId` 时，只把 `src/materials/import-profile.ts` 已支持的通用资料和偏好写入现有
 `profile.json`，再运行 `node bin/applyctl.js profile import --file <profile.json>`。当前支持的类别
 包括身份和联系资料、婚姻与驾照、地区、英语、目标城市和岗位、面试方式、调剂或调动偏好、作品链接。
-微信使用 `basic.wechat`，身高厘米数使用 `basic.heightCm`。学院和成绩等履历内容写回对应教育记录。
+`profile.json` 的基本资料使用 `basic.wechat`、`basic.heightCm`、`basic.englishCertificate`；导入后对应 `person.contact.wechat`、`person.physical.height_cm`、`qualification.english.certificate`。学院和成绩等履历内容写回对应教育记录。
 `site.custom.*` 只有字段编号时不假装已经保存。
 
 已有 `runId` 且真实表单问到字段时，才使用 `apply.save_answers`，每条回答带上正确 scope。 履历回答使用 `{ "type": "profile_record", "key": "<真实履历记录ID>" }`，保存接口统一处理前缀；其他范围优先沿用工具返回的 `suggestedScope`。scope 形状为 `{ "type": "global", "key": "user" }`；公司、岗位、单次申请分别使用 company/job/application 与真实范围 key。已有
@@ -64,6 +68,10 @@ node bin/applyctl.js resume show --id resume_xxx
 仍可能出现新的必填问题。
 
 ## 私有答案表示含义
+
+只有年份的资料不能补造月份，多个年份不能任选一个。最高学历、本科或硕士限定的问题只读取唯一对应的已绑定记录；无法唯一确定时保持待核实。
+
+校验使用控件实际选中值：自定义菜单的搜索输入框为空仍可能已有选项；年月范围和“至今”按完整日期状态读取。日期比较按官网精度，学历按层级和真实选项匹配。遇到 `value_mismatch` 时核对实际控件、原资料和官网选项，修复对应字段后重新读回。上传使用任务已登记的材料；重新扫描附件引起的字段变化后继续填写。
 
 私有资料保存事实、偏好、可接受范围和优先级。填写前一并读取 `<dataRoot>/preferences.json`（存在时）的 fieldOptions；它按 canonicalKey 保存用户确认的选项选择范围、含义和限制，与履历一起交给审查者。没有该文件就沿用已确认资料，不新造默认偏好。
 填写时先读官网实际选项，再按字段对应的授权范围选择。已有近似档位或非关键渠道选择授权时，使用该授权完成匹配并记录所选值，无需再次要求字面一致；授权只作用于指定字段，不扩展到证书、分数、学历等事实。

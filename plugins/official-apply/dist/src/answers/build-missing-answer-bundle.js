@@ -20,7 +20,7 @@ function defaultIdFactory(prefix) {
 const REASON_TEXT = {
     no_mapping: '系统看不懂这道题的含义',
     no_answer: '答案库里没有可用的答案',
-    scope_mismatch: '已有答案属于别的公司或岗位，不能跨范围复用',
+    scope_mismatch: '已有答案的使用范围或履历记录与当前字段尚未匹配',
     multiple_answers: '找到多个不一致的值，需要你选一个',
     policy_requires_confirmation: '这类问题每次申请都要你确认',
     format_conflict: '官网选项里没有与已有答案对应的项',
@@ -58,7 +58,7 @@ function renderPrompt(input, requests) {
         return '当前页面没有缺失的答案。';
     }
     const header = [input.companyName ?? '当前公司', input.stepLabel ?? '当前步骤'].join('｜');
-    const lines = [`${header}`, `以下 ${requests.length} 个问题需要你补充：`, ''];
+    const lines = [`${header}`, `以下 ${requests.length} 个问题尚未完成填写：`, ''];
     requests.forEach((request, index) => {
         lines.push(`${index + 1}. ${request.rawQuestion || '（官网未给出题目文字）'}`);
         if (request.sectionPath.length > 0) {

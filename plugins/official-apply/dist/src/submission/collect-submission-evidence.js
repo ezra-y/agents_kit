@@ -6,7 +6,7 @@ const APPLICATION_ID_PATTERNS = [
     /application\s*(?:id|no\.?|number)[：: ]\s*([A-Za-z0-9-]{4,})/i,
 ];
 /** 弱证据的文字特征。看到这些**不能**算成功。 */
-const WEAK_TEXT_PATTERNS = ['处理中', '提交中', '请稍候', 'processing', 'submitting'];
+const WEAK_TEXT_PATTERNS = ['处理中', '提交中', '投递中', '请稍候', 'processing', 'submitting'];
 /** 申请编号是个人标识，只保留形状，不回显完整值。 */
 export function redactApplicationId(value) {
     if (value.length <= 4) {

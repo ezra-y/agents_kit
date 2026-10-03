@@ -1,5 +1,7 @@
 # 局部写入
 
+通用页面也支持 `writeScope`，以本次 `resolve_page` 的 `mappings[].runtimeRef` 选择具体返修控件，以 `canonicalKey` 选择同类全部字段。`snapshotId` 指向这次解析的已保存快照；页面新增控件或附件上传后，工具重新扫描并按原字段身份更新引用。只有网站脚本分支使用下文的资料路径和 `writePlanPath`。
+
 网站脚本在 `resolve_page` 时读取服务器原始简历，生成本轮写入计划。计划只在同一个 `runId` 的当前会话中复用，不把页面 runtime 数据、Cookie 或认证 token 写入工具结果或长期记录。
 
 ## 默认补空
@@ -39,4 +41,4 @@ career_list[company=Example].description
 
 `resolve_page` 或 `fill_page` 返回的 `writeScope.planRef` 指向私有 `<dataRoot>/runs/<sourceRunId>/write-plan.json`。如果进程重启或重新打开了同一份简历，调用 `apply.open_task { "taskId": "...", "forceNewRun": true }` 创建新的 runId，再进入同一网站页面，把这个引用传给 `apply.validate_page` 或 `apply.advance { "actionKind": "save" }` 的 `writePlanPath`。工具会检查计划的任务、网站身份和 PageScript 身份，允许新的 runId 继续读回；不会自动用当前页面重建基线。计划文件权限为私有文件权限，只保留脱敏简历字段和实际写入载荷，不包含页面 runtime 数据、Cookie 或认证 token。
 
-没有支持写入范围的其他 PageScript 或通用页面会返回 `mcp_write_scope_unsupported`，调用方应记录阻塞并转视觉操作或能力演进，不调用整页填写碰运气。
+不支持写入范围的 PageScript 不参与本次范围填写，工具继续使用通用流程。通用控件无法操作时，记录具体失败字段并转视觉操作或能力演进。

@@ -1,12 +1,5 @@
-export async function readControlValue(locator) {
-    const isEditable = await locator
-        .evaluate((element) => element.getAttribute('contenteditable') === 'true')
-        .catch(() => false);
-    if (isEditable) {
-        return (await locator.innerText().catch(() => '')).trim();
-    }
-    return (await locator.inputValue().catch(() => '')).trim();
-}
+import { readControlValue } from "../controls/read-control-value.js";
+export { readControlValue } from "../controls/read-control-value.js";
 export async function fillTextControl(locator, value, options = {}) {
     const timeout = options.timeoutMs ?? 5_000;
     const beforeValue = await readControlValue(locator);

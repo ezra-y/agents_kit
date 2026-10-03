@@ -5,6 +5,7 @@ import { scanRepeatableGroups } from "../scan/scan-repeatable-groups.js";
 import { findActionTarget } from "../locators/find-action-target.js";
 import { actionKindFor } from "./build-action-plan.js";
 import { executeFieldAction } from "./fill-page.js";
+import { scopeAllowsField } from "../../site-adapters/write-scope.js";
 const DEFAULT_TIMEOUT_MS = 8_000;
 function failure(runtimeRef, errorCode, errorMessage) {
     return {
@@ -136,23 +137,24 @@ export async function fillRepeatableGroup(page, request) {
         }
         const card = locatedCard.target.locator;
         for (const [canonicalKey, value] of Object.entries(assignment.values)) {
-            const field = findFieldInCard(workingSchema, workingGroup, fieldsByInstance, assignment.instanceIndex, canonicalKey);
+            const field = findFieldInCard(workingSchema, workingGroup, fieldsByInstance, assignment.instanceIndex, canonicalKey, request.fieldLabelByCanonicalKey?.[canonicalKey], request.fieldMappings);
             const label = resolveFieldLabel(request, canonicalKey, field);
             const runtimeRef = field?.runtimeRef ?? `${workingGroup.groupKey}#${assignment.instanceIndex}`;
+            if (field !== undefined && request.writeScope !== undefined && !scopeAllowsField(request.writeScope, field, canonicalKey))
+                continue;
             if (field === undefined || label === undefined) {
                 results.push(failure(runtimeRef, 'repeat_instance_not_found', `不知道公共字段 ${canonicalKey} 在这个网站上叫什么，无法定位`));
                 continue;
             }
-            const control = field.htmlName === null || field.htmlName === undefined || field.htmlName === ''
-                ? card.getByLabel(label, { exact: false })
-                : card.locator(`[name="${cssAttributeValue(field.htmlName)}"]`);
-            const count = await control.count().catch(() => 0);
-            if (count === 0 || (count > 1 && field.controlKind !== 'radio_group')) {
-                results.push(failure(runtimeRef, 'repeat_instance_not_found', count === 0 ? `卡片里找不到「${label}」` : `卡片里「${label}」命中 ${count} 个`));
+            const located = await findActionTarget(frame, field.locatorCandidates, {
+                runId: request.runId, runtimeRef, actionKind: actionKindFor(field.controlKind, value), timeoutMs,
+            }, card);
+            if (located.target === undefined) {
+                results.push(failure(runtimeRef, 'repeat_instance_not_found', `卡片里无法唯一定位「${label}」`));
                 continue;
             }
             const item = actionItemFor(field, canonicalKey, value);
-            const outcome = await executeFieldAction(item, field, control.first(), timeoutMs, {
+            const outcome = await executeFieldAction(item, field, located.target.locator, timeoutMs, {
                 page,
                 pageSchema: workingSchema,
                 runId: request.runId,
@@ -164,7 +166,7 @@ export async function fillRepeatableGroup(page, request) {
                 outcome: outcome.ok ? 'success' : 'failed',
                 ...(outcome.beforeValue === undefined ? {} : { beforeValue: outcome.beforeValue }),
                 ...(outcome.afterValue === undefined ? {} : { afterValue: outcome.afterValue }),
-                locatorAttemptIds: [],
+                locatorAttemptIds: located.attempts.map(attempt => attempt.id),
                 pageChanged: outcome.changed,
                 ...(outcome.ok ? {} : { errorCode: 'repeat_fill_failed', errorMessage: outcome.reason ?? '' }),
             });
@@ -178,8 +180,19 @@ export async function fillRepeatableGroup(page, request) {
     };
 }
 /** 在快照里找这张卡片上的对应字段，用来拿准确的 label。 */
-function findFieldInCard(pageSchema, group, fieldsByInstance, instanceIndex, canonicalKey) {
+function findFieldInCard(pageSchema, group, fieldsByInstance, instanceIndex, canonicalKey, label, mappings) {
     const token = keyToken(canonicalKey);
+    const scopedFields = fieldsByInstance.get(instanceIndex) ?? pageSchema.fields.filter((field) => field.repeatGroupKey === group.groupKey && field.repeatInstanceIndex === instanceIndex);
+    const mapped = scopedFields.filter(field => mappings?.some(mapping => mapping.runtimeRef === field.runtimeRef && mapping.canonicalKey === canonicalKey));
+    if (mapped.length > 0)
+        return mapped.length === 1 ? mapped[0] : undefined;
+    if (label !== undefined) {
+        const matching = scopedFields.filter((field) => field.rawLabel === label);
+        if (matching.length === 1)
+            return matching[0];
+        if (matching.length > 1)
+            return undefined;
+    }
     return (fieldsByInstance.get(instanceIndex)?.find((field) => (field.htmlName ?? '').includes(token)) ??
         pageSchema.fields.find((field) => field.repeatGroupKey === group.groupKey &&
             field.repeatInstanceIndex === instanceIndex &&
@@ -257,8 +270,5 @@ function actionItemFor(field, canonicalKey, value) {
         expectedChanges: [{ kind: 'field_value_changed', target: field.runtimeRef }],
         sensitive: false,
     };
-}
-function cssAttributeValue(value) {
-    return value.replace(/["\\]/g, '\\$&');
 }
 //# sourceMappingURL=fill-repeatable-group.js.map

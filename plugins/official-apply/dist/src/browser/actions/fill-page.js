@@ -99,8 +99,8 @@ export async function executeFieldAction(item, field, locator, timeoutMs, custom
     const value = item.value;
     switch (item.actionKind) {
         case 'fill_text': {
-            if (field.controlKind === 'date' || field.controlKind === 'month') {
-                const result = await fillDateControl(locator, String(value ?? ''), options);
+            if (field.controlKind === 'date' || field.controlKind === 'month' || field.controlKind === 'date_picker') {
+                const result = await fillDateControl(locator, String(value ?? ''), { ...options, page: custom.page });
                 return { ...result };
             }
             const result = await fillTextControl(locator, String(value ?? ''), options);

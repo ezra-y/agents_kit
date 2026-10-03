@@ -65,15 +65,6 @@ export async function manageLogin(input) {
     }
     const provider = await providerFor(input.page);
     if (provider === undefined) {
-        const entry = input.page.locator('a,button,[role="button"]')
-            .filter({ hasText: /^\s*(?:登录|登录\/注册|注册\/登录|立即登录|Sign in)\s*$/i }).filter({ visible: true });
-        if (input.action === 'inspect' && await entry.count() > 0) {
-            return {
-                providerId: 'current_account', stage: 'login_required',
-                pageUrlRedacted: redactLoginPageUrl(input.page.url()), nextAction: 'recover_entry',
-                evidence: ['页面显示可见登录入口，先检查可复用的浏览器状态'],
-            };
-        }
         return {
             providerId: 'unsupported',
             stage: input.action === 'inspect' ? 'login_unconfirmed' : 'unsupported',

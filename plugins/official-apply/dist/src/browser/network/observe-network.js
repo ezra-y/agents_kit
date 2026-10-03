@@ -67,10 +67,18 @@ export function responseIndicatesSuccess(value) {
         return false;
     }
     const record = value;
+    if (record['success'] === false || record['ok'] === false)
+        return false;
     return (record['success'] === true ||
         record['ok'] === true ||
         record['code'] === 0 ||
         record['status'] === 0);
+}
+export function responseIndicatesFailure(value) {
+    if (value === null || typeof value !== 'object' || Array.isArray(value))
+        return false;
+    const record = value;
+    return record['success'] === false || record['ok'] === false;
 }
 export function observeNetwork(page, options = {}) {
     const jsonOnly = options.jsonOnly ?? true;
@@ -85,6 +93,8 @@ export function observeNetwork(page, options = {}) {
         }
         // 只看 content-type 这一个响应头，且不保存它以外的任何头。
         const contentType = response.headers()['content-type'] ?? '';
+        if (!contentType.includes('json') && !['xhr', 'fetch', 'document'].includes(response.request().resourceType()))
+            return;
         if (jsonOnly && !contentType.includes('json')) {
             return;
         }
@@ -125,6 +135,7 @@ export function observeNetwork(page, options = {}) {
                     observation.detectedKeys = collectKeys(parsed);
                     observation.redactedSample = redactStructure(parsed);
                     observation.responseIndicatesSuccess = responseIndicatesSuccess(parsed);
+                    observation.responseIndicatesFailure = responseIndicatesFailure(parsed);
                 }
                 catch {
                     // 不是合法 JSON 就只留元数据。

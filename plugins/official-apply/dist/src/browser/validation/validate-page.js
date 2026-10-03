@@ -12,16 +12,42 @@
  */
 import { randomUUID } from 'node:crypto';
 import { inspectPage } from "../scan/inspect-page.js";
-import { diffPage } from "../scan/diff-page.js";
+import { diffPage, sameField } from "../scan/diff-page.js";
+import { normalizeDegree } from "../../fields/normalize-field-option.js";
 import { openRuntimeDatabase } from "../../storage/open-runtime-database.js";
 function defaultIdFactory(prefix) {
     return `${prefix}_${randomUUID().replaceAll('-', '').slice(0, 16)}`;
 }
-function sameValue(actual, expected) {
-    if (expected === undefined) {
+function calendarDate(value) {
+    const match = /^(\d{4})[-/年](\d{1,2})(?:[-/月](\d{1,2})日?|月)?$/.exec(value);
+    if (match === null)
+        return undefined;
+    const [, year = '', month = '', day] = match;
+    const date = `${year}-${month.padStart(2, '0')}${day === undefined ? '' : `-${day.padStart(2, '0')}`}`;
+    const parsed = new Date(`${date}${day === undefined ? '-01' : ''}T00:00:00Z`);
+    return Number.isNaN(parsed.getTime()) || !parsed.toISOString().startsWith(date) ? undefined : date;
+}
+export function fieldValueMatches(actual, expected) {
+    if (expected.expectedValue === undefined) {
         return true;
     }
-    return String(actual ?? '') === String(expected);
+    const current = String(actual.currentValue ?? '');
+    const planned = String(expected.expectedValue);
+    if (current === planned)
+        return true;
+    if (actual.options.some((option) => (option.rawLabel === current || option.rawValue === current) &&
+        (option.rawLabel === planned || option.rawValue === planned)))
+        return true;
+    if (expected.canonicalKey?.endsWith('degree')) {
+        const degree = normalizeDegree(current);
+        return degree !== undefined && degree === normalizeDegree(planned);
+    }
+    if (actual.controlKind === 'date' || actual.controlKind === 'month' ||
+        /(?:date|_month)$/.test(expected.canonicalKey ?? '')) {
+        const date = calendarDate(current);
+        return date !== undefined && date === calendarDate(planned);
+    }
+    return false;
 }
 export async function validatePage(session, page, request) {
     const now = request.now ?? new Date().toISOString();
@@ -46,10 +72,15 @@ export async function validatePage(session, page, request) {
     }
     // 1. 期望字段：值是不是真的写进去了。
     for (const expected of request.expectedFields) {
-        const actual = currentByRef.get(expected.runtimeRef);
+        if (expected.expectedValue === undefined && expected.controlKind !== 'file_upload')
+            continue;
+        const matches = expected.field === undefined ? [] :
+            current.fields.filter((field) => sameField(field, expected.field));
+        const actual = expected.field === undefined ? currentByRef.get(expected.runtimeRef) :
+            matches.length === 1 ? matches[0] : undefined;
         if (actual === undefined) {
             issues.push({
-                severity: 'warning',
+                severity: expected.expectedValue === undefined ? 'warning' : 'error',
                 code: 'unresolved_field',
                 message: '填写后这个字段在页面上不见了，可能被页面重绘或条件规则隐藏',
                 runtimeRef: expected.runtimeRef,
@@ -69,7 +100,7 @@ export async function validatePage(session, page, request) {
             }
             continue;
         }
-        if (!sameValue(actual.currentValue, expected.expectedValue)) {
+        if (!fieldValueMatches(actual, expected)) {
             issues.push({
                 severity: 'error',
                 code: 'value_mismatch',
@@ -90,6 +121,7 @@ export async function validatePage(session, page, request) {
         }
         const empty = field.currentValue === undefined ||
             field.currentValue === '' ||
+            (field.controlKind === 'checkbox' && field.currentValue === false) ||
             (Array.isArray(field.currentValue) && field.currentValue.length === 0);
         if (empty) {
             issues.push({
@@ -180,13 +212,15 @@ function persistValidation(paths, request, result, now) {
     }
 }
 /** 从计划和已解析答案推出期望状态，供 `validatePage()` 使用。 */
-export function expectedFieldStates(fields, values) {
+export function expectedFieldStates(fields, values, canonicalKeys = new Map()) {
     return fields
         .filter((field) => field.controlKind !== 'action_button')
         .map((field) => ({
         runtimeRef: field.runtimeRef,
+        field,
         required: field.required,
         controlKind: field.controlKind,
+        ...(canonicalKeys.has(field.runtimeRef) ? { canonicalKey: canonicalKeys.get(field.runtimeRef) } : {}),
         ...(values.has(field.runtimeRef) ? { expectedValue: values.get(field.runtimeRef) } : {}),
     }));
 }

@@ -51,6 +51,16 @@ export function redactFactValue(canonicalKey, value) {
     }
     return text.length <= 2 ? '***' : `${text.slice(0, 1)}***`;
 }
+export function canonicalProfileValue(recordType, values, key) {
+    const prefix = `profile.${recordType}[].`;
+    const alias = key.startsWith(prefix) ? key.slice(prefix.length) : key;
+    const value = values[key] !== undefined ? values[key]
+        : values[alias] ?? values[alias.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())];
+    if ((value === undefined || value === null || value === '') && recordType === 'award' && alias === 'date' && Array.isArray(values['years']) && values['years'].length > 0) {
+        return values['years'].length === 1 ? String(values['years'][0]) : values['years'];
+    }
+    return (value === undefined || value === null || value === '') && alias === 'end_date' && values['current'] === true ? '至今' : value;
+}
 export function extractMaterialFacts(request) {
     const now = request.now ?? new Date().toISOString();
     const newId = request.idFactory ?? defaultIdFactory;
@@ -76,8 +86,9 @@ export function extractMaterialFacts(request) {
             catch {
                 continue;
             }
-            for (const [key, value] of Object.entries(values)) {
-                if (!wanted.has(key)) {
+            for (const key of wanted) {
+                const value = canonicalProfileValue(String(record['record_type']), values, key);
+                if (value === undefined || value === null || value === '') {
                     continue;
                 }
                 facts.push({

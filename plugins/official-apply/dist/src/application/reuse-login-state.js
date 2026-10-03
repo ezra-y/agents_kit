@@ -41,9 +41,7 @@ async function restoreOriginal(context, originalUrl, originalBrowserState, origi
     await restoreExactPersistentBrowserState(context.session.context, originalBrowserState).catch(() => undefined);
     const removeSessionStorageScript = await prepareSessionStorageForNavigation(context.page, originalSnapshot, new URL(originalUrl).origin).catch(() => async () => undefined);
     try {
-        await (context.page.url() === originalUrl
-            ? context.page.reload({ waitUntil: 'domcontentloaded' })
-            : context.page.goto(originalUrl, { waitUntil: 'domcontentloaded' })).catch(() => undefined);
+        await context.page.goto(originalUrl, { waitUntil: 'domcontentloaded' }).catch(() => undefined);
     }
     finally {
         await removeSessionStorageScript();
@@ -115,13 +113,7 @@ export async function reuseLoginStateOnCurrentPage(input) {
                     await replacePersistentWebStateOnContextForDomains(input.session.context, snapshot, domains);
                     const removeSessionStorageScript = await prepareSessionStorageForNavigation(input.page, snapshot, new URL(input.targetUrl).origin);
                     try {
-                        // A same-URL fragment navigation may keep the old document and account view.
-                        if (input.page.url() === input.targetUrl) {
-                            await input.page.reload({ waitUntil: 'domcontentloaded' });
-                        }
-                        else {
-                            await input.page.goto(input.targetUrl, { waitUntil: 'domcontentloaded' });
-                        }
+                        await input.page.goto(input.targetUrl, { waitUntil: 'domcontentloaded' });
                         return input.verifyLogin(input.page);
                     }
                     finally {

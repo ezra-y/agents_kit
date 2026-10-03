@@ -117,7 +117,7 @@ function cssEscape(value) {
  * 每次尝试都记录策略、命中数量、耗时和失败原因，
  * 供以后统计「哪种策略真的更稳」（`docs/08 §8.1`）。
  */
-export async function findActionTarget(frame, candidates, options) {
+export async function findActionTarget(frame, candidates, options, within) {
     const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
     const ranked = rankLocatorCandidates({
         candidates,
@@ -127,7 +127,8 @@ export async function findActionTarget(frame, candidates, options) {
     let sawAmbiguous = false;
     for (const { descriptor } of ranked) {
         const startedAt = performance.now();
-        const locator = toPlaywrightLocator(frame, descriptor);
+        const found = toPlaywrightLocator(frame, descriptor);
+        const locator = within === undefined ? found : found?.and(within.locator('*'));
         if (locator === undefined) {
             attempts.push(makeAttempt(options, descriptor, 0, 'not_actionable', startedAt, '这条候选无法翻译成定位表达式'));
             continue;

@@ -10,7 +10,7 @@ async function bodyError(page, pattern) {
     const match = text.match(pattern);
     return match?.[0];
 }
-async function genericCaptcha(page) {
+export async function genericCaptcha(page) {
     const controls = page.locator([
         'iframe[src*="captcha"]:visible',
         'iframe[src*="verify"]:visible',

@@ -3,7 +3,7 @@ import { computePageDigest } from "../browser/scan/page-schema-cache.js";
 import { buildRecipeCandidate, recipeVariantKey } from "../recipes/build-recipe-candidate.js";
 import { captureLearning } from "../learning/capture-learning.js";
 import { resolvePageWithRecipe } from "./resolve-page-with-recipe.js";
-import { resolveCurrentPage } from "./resolve-current-page.js";
+import { resolveCurrentPage, resolveCurrentPageAnswers } from "./resolve-current-page.js";
 import { resolveAnswers } from "../answers/resolve-answers.js";
 import { persistMissingAnswerRequests } from "../answers/save-user-answers.js";
 import { buildActionPlan } from "../browser/actions/build-action-plan.js";
@@ -142,7 +142,7 @@ export async function runApplication(context, request) {
             now,
         });
         const recipeDecision = withRecipe.decision;
-        const resolvedPage = withRecipe.resolved;
+        let resolvedPage = withRecipe.resolved;
         recipeUsage.recipeHintFieldCount += resolvedPage.recipeHintFieldCount;
         recipeUsage.scoredFieldCount += resolvedPage.scoredFieldCount;
         recipeUsage.scoreCallCount += resolvedPage.scoreCallCount;
@@ -194,6 +194,15 @@ export async function runApplication(context, request) {
         //
         // 上传常常会让页面插入「已上传」提示或解锁后续字段，所以放在普通字段之前，
         // 这样后面那一轮扫描看到的就是上传之后的样子。
+        const refreshResolution = async () => {
+            schema = (await inspectPage(context.session, context.page, { runId: request.runId, persist: false, now })).schema;
+            ({ resolved: resolvedPage, answers } = resolveCurrentPageAnswers({
+                paths: request.paths, runId: request.runId, taskId: request.taskId, siteHost: context.siteHost,
+                companyKey: context.companyKey, companyName: context.companyName, jobKey: context.jobKey,
+                pageSchema: schema, recipeHints: recipeDecision.hints, materialRefs: context.materialRefs,
+                profileRecordIds: context.profileRecordIds, now,
+            }));
+        };
         const uploadPlan = planUploads({
             paths: request.paths,
             pageSchema: schema,
@@ -210,6 +219,7 @@ export async function runApplication(context, request) {
                 paths: request.paths,
             });
             uploadRejections.push(...uploaded.rejected.map((item) => item.reason));
+            await refreshResolution();
         }
         // 必填的上传控件没配到材料，就别往下走了——交上去也是缺材料。
         const blockingUploads = uploadPlan.unmatched.filter((item) => item.required);
@@ -236,18 +246,13 @@ export async function runApplication(context, request) {
                 pageSchema: schema,
                 mappings: resolvedPage.mappings,
                 profileRecordIds: context.profileRecordIds,
+                resolvedAnswers: answers.resolved,
             });
             groupBindings.push(...groupsFilled.bindings);
             unboundRecords.push(...groupsFilled.unbound.map((item) => item.profileRecordId));
             // 新增过卡片就重扫一次，后面的普通字段要用新的 runtimeRef。
-            if (groupsFilled.addedInstances > 0) {
-                const rescanned = await inspectPage(context.session, context.page, {
-                    runId: request.runId,
-                    persist: false,
-                    now,
-                });
-                schema = rescanned.schema;
-            }
+            if (groupsFilled.addedInstances > 0 || groupsFilled.results.some((result) => result.pageChanged))
+                await refreshResolution();
         }
         // 5c. 填普通字段。
         //
@@ -354,7 +359,7 @@ export async function runApplication(context, request) {
         const validation = await validatePage(context.session, context.page, {
             runId: request.runId,
             snapshotId: schema.snapshotId,
-            expectedFields: expectedFieldStates(schema.fields, expectedValues),
+            expectedFields: expectedFieldStates(schema.fields, expectedValues, new Map(answers.resolved.map((answer) => [answer.runtimeRef, answer.canonicalKey]))),
             previousSchema: schema,
             paths: request.paths,
             now,

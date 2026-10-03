@@ -22,6 +22,9 @@ function classifyRole(observation) {
     const tokens = normalizedTokens(observation);
     const url = observation.requestUrlPattern.toLowerCase();
     const reasons = [];
+    if (includesAny(url, ['/personal-center/applications', '/search/user/applications', '/application/list', '/deliveryrecord'])) {
+        return { role: 'unknown', confidence: 0.98, reasons: ['申请记录查询，不能作为最终提交接口'] };
+    }
     if (write &&
         includesAny(url, [
             '/submit',

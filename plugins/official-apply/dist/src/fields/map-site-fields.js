@@ -56,6 +56,7 @@ const CATALOG_CONTROL_ALIASES = {
     phone: 'phone',
     number: 'number',
     date: 'date',
+    month: 'month',
     datepicker: 'date_picker',
     date_picker: 'date_picker',
     select: 'native_select',

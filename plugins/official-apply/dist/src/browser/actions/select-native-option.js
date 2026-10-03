@@ -9,7 +9,7 @@ export async function selectNativeOption(locator, targetValue, options = {}) {
     const siteOptions = await locator
         .locator('option')
         .evaluateAll((nodes) => nodes.map((node) => ({
-        value: node.getAttribute('value') ?? '',
+        value: node.value,
         label: (node.textContent ?? '').replace(/\s+/g, ' ').trim(),
     })))
         .catch(() => []);

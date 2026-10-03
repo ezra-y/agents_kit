@@ -50,13 +50,19 @@ export function resolveAnswerScope(input) {
     }
 }
 /**
- * 判断一条已保存答案的 scope 能不能用在当前场景。
- *
- * 只有 type 和 key **完全一致**才算可复用。
- * 不做任何「差不多就行」的放宽。
+ * 同一条 global 用户答案在库里有两种 `scope_key`：现行写入是 `user`，
+ * 已确认的历史行是 `global:user`。读取和取代都认这两种。
+ * 公司和岗位范围仍然必须 type 和 key 完全一致。
  */
+export function equivalentScopeKeys(scope) {
+    if (scope.type === 'global' && (scope.key === 'user' || scope.key === 'global:user')) {
+        return ['user', 'global:user'];
+    }
+    return [scope.key];
+}
+/** 判断一条已保存答案的 scope 能不能用在当前场景。 */
 export function isScopeUsable(saved, current) {
-    return saved.type === current.type && saved.key === current.key;
+    return saved.type === current.type && equivalentScopeKeys(current).includes(saved.key);
 }
 /** session 范围的值绝不进长期答案库（`docs/05 §4.6`）。 */
 export function isPersistableScope(scope) {

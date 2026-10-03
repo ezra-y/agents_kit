@@ -47,7 +47,7 @@ export function asPageScript(value) {
         : undefined;
 }
 export async function resolvePageScriptForPage(request) {
-    const registered = await pageScriptRegistry.resolve(request.page);
+    const registered = await pageScriptRegistry.resolve(request.page, { mode: 'fill_missing' });
     if (registered.selected !== undefined) {
         return {
             script: registered.selected,
@@ -62,7 +62,7 @@ export async function resolvePageScriptForPage(request) {
     }
     const local = loadPageScriptCandidates(request.paths, request.host);
     const localRegistry = new PageScriptRegistry(local.scripts);
-    const resolved = await localRegistry.resolve(request.page);
+    const resolved = await localRegistry.resolve(request.page, { mode: 'fill_missing' });
     return {
         ...(resolved.selected === undefined
             ? {}

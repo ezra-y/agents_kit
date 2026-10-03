@@ -162,7 +162,7 @@ function reconcileTruth(request) {
             runtime.db
                 .prepare(`UPDATE human_takeover_requests
               SET status = 'resolved', resolved_at = ?
-            WHERE run_id = ? AND status = 'pending' AND reason = 'submission_uncertain'`)
+            WHERE run_id = ? AND status = 'pending' AND reason IN ('submission_uncertain','captcha')`)
                 .run(now, request.runId);
             runtime.db.exec('COMMIT');
             return {

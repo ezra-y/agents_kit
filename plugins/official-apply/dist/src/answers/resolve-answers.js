@@ -24,6 +24,10 @@ import { normalizeAnswerValue } from "./normalize-answer-value.js";
 import { detectAnswerConflicts } from "./detect-answer-conflicts.js";
 import { extractMaterialFacts } from "./extract-material-facts.js";
 import { buildMissingAnswerBundle } from "./build-missing-answer-bundle.js";
+import { readProfileRecords, instanceLabelsOf } from "../application/fill-profile-groups.js";
+import { bindPageGroupToProfileRecord, degreeRankOf, degreeRankOfRecord, degreeRanksOf } from "../browser/actions/bind-page-group-to-profile-record.js";
+import { planUploads } from "../browser/actions/plan-uploads.js";
+import path from 'node:path';
 /**
  * 官网自己的问题用的键。
  *
@@ -77,13 +81,14 @@ export function resolveAnswers(request) {
     const missingEntries = [];
     const priv = openPrivateDatabase({ paths: request.paths });
     try {
-        const profileHandledRefs = profileHandledRuntimeRefs(priv, request);
+        const { recordIds: profileRecordIds, handledRefs } = profileRecordBindingsForPage(request);
+        const uploads = planUploads({ paths: request.paths, pageSchema: request.pageSchema, materialRefs: request.materialRefs });
         for (const mapping of request.mappings) {
             const field = fieldByRef.get(mapping.runtimeRef);
             if (field === undefined) {
                 continue;
             }
-            if (profileHandledRefs.has(field.runtimeRef)) {
+            if (handledRefs.has(field.runtimeRef) && !profileRecordIds.has(field.runtimeRef)) {
                 continue;
             }
             // 1. 认不出含义：当成「官网自己的问题」。
@@ -104,6 +109,7 @@ export function resolveAnswers(request) {
                     const saved = collectSiteQuestionAnswer(priv, siteKey, siteScope, now);
                     if (saved !== undefined) {
                         const normalized = normalizeAnswerValue({
+                            canonicalKey: siteKey,
                             value: saved,
                             controlKind: field.controlKind,
                             siteOptions: field.options,
@@ -145,6 +151,20 @@ export function resolveAnswers(request) {
                 });
                 continue;
             }
+            if (field.controlKind === 'file_upload') {
+                const assigned = uploads.assignments.find((assignment) => assignment.runtimeRef === field.runtimeRef);
+                if (assigned === undefined) {
+                    missingEntries.push({ field, canonicalKey: canonical.key, reason: 'no_answer', siteFieldId: mapping.siteFieldId });
+                }
+                else {
+                    const filename = path.basename(assigned.localPath);
+                    resolved.push({ runtimeRef: field.runtimeRef, siteFieldId: mapping.siteFieldId, canonicalKey: canonical.key,
+                        value: assigned.materialId, formattedValue: filename, sourceType: 'attachment_metadata',
+                        scope: request.taskId === undefined ? { type: 'session', key: `session:${request.runId}` } : { type: 'application', key: `application:${request.taskId}` },
+                        confidence: 1, requiresConfirmation: false, warnings: [] });
+                }
+                continue;
+            }
             // 2. 先把这个字段该存到哪个 scope 算出来。
             //
             // 提前算是为了让**每一条**要问的问题都能带上建议 scope。
@@ -159,9 +179,9 @@ export function resolveAnswers(request) {
                     ...(request.jobKey === undefined ? {} : { jobKey: request.jobKey }),
                     ...(request.taskId === undefined ? {} : { taskId: request.taskId }),
                     ...(request.sessionId === undefined ? {} : { sessionId: request.sessionId }),
-                    ...(field.repeatGroupKey === undefined
+                    ...(profileRecordIds.get(field.runtimeRef) === undefined
                         ? {}
-                        : { profileRecordKey: `${field.repeatGroupKey}#${field.repeatInstanceIndex ?? 0}` }),
+                        : { profileRecordKey: profileRecordIds.get(field.runtimeRef) }),
                 });
             }
             catch (error) {
@@ -195,10 +215,13 @@ export function resolveAnswers(request) {
             // 4. 收集候选：私有答案库 + 本次材料提取。
             const candidates = collectCandidates(priv, canonical, scope, facts, now);
             if (candidates.length === 0) {
+                // 资料已有答案时，未识别教育卡片属于页面匹配问题。
+                const hasProfileAnswer = canonical.answerScope === 'profile_record' && (facts.some((fact) => fact.canonicalKey === canonical.key) ||
+                    (request.profileRecordIds ?? []).some((recordId) => collectCandidates(priv, canonical, { type: 'profile_record', key: `profile_record:${recordId}` }, facts, now).length > 0));
                 missingEntries.push({
                     field,
                     canonicalKey: canonical.key,
-                    reason: 'no_answer',
+                    reason: hasProfileAnswer ? 'scope_mismatch' : 'no_answer',
                     suggestedScope: scope,
                     ...(mapping.siteFieldId === undefined ? {} : { siteFieldId: mapping.siteFieldId }),
                 });
@@ -248,7 +271,7 @@ export function resolveAnswers(request) {
                 });
                 continue;
             }
-            // 7. `reuse_if_explicit` 不接受从材料推断出来的值。
+            // 7. `reuse_if_explicit` 不接受从简历正文或附件元数据推断出来的值。
             if (canonical.answerPolicy === 'reuse_if_explicit' &&
                 (chosen.sourceType === 'resume' || chosen.sourceType === 'attachment_metadata')) {
                 missingEntries.push({
@@ -262,6 +285,8 @@ export function resolveAnswers(request) {
             }
             // 8. 转成官网要的格式。选项对不上就问，不猜。
             const normalized = normalizeAnswerValue({
+                canonicalKey: canonical.key,
+                canonicalField: canonical,
                 value: chosen.value,
                 controlKind: field.controlKind,
                 siteOptions: field.options,
@@ -305,23 +330,54 @@ export function resolveAnswers(request) {
     });
     return { resolved, missing: bundle.requests, conflicts, bundle };
 }
-function profileHandledRuntimeRefs(priv, request) {
-    const ids = request.profileRecordIds ?? [];
-    if (ids.length === 0) {
-        return new Set();
+function profileRecordBindingsForPage(request) {
+    const records = readProfileRecords(request.paths, request.profileRecordIds)
+        .filter((record) => record.values['includeInApplications'] !== false);
+    const recordIds = new Map();
+    const handledRefs = new Set();
+    for (const group of request.pageSchema.repeatableGroups) {
+        if (group.canonicalRecordType === 'other')
+            continue;
+        const groupRecords = records.filter((record) => record.recordType === group.canonicalRecordType);
+        if (groupRecords.length === 0)
+            continue;
+        const groupFields = request.pageSchema.fields.filter((field) => field.repeatGroupKey === group.groupKey);
+        for (const field of groupFields) {
+            const populated = groupFields.some((item) => item.repeatInstanceIndex === field.repeatInstanceIndex &&
+                ((typeof item.currentValue === 'string' && item.currentValue.trim() !== '') ||
+                    typeof item.currentValue === 'number'));
+            // 已有经历填写器负责工作、项目及尚未填入内容的教育卡片。
+            if (group.canonicalRecordType !== 'education' || !populated)
+                handledRefs.add(field.runtimeRef);
+        }
+        const bound = bindPageGroupToProfileRecord({
+            group,
+            instanceLabels: instanceLabelsOf(request.pageSchema, group),
+            records: groupRecords,
+        });
+        for (const binding of bound.bindings.filter((item) => item.confidence >= 0.8)) {
+            for (const field of request.pageSchema.fields.filter((field) => field.repeatGroupKey === group.groupKey && field.repeatInstanceIndex === binding.instanceIndex)) {
+                recordIds.set(field.runtimeRef, binding.profileRecordId);
+            }
+        }
     }
-    const rows = priv.db
-        .prepare(`SELECT DISTINCT record_type FROM profile_records
-        WHERE active = 1 AND id IN (${ids.map(() => '?').join(', ')})`)
-        .all(...ids);
-    const recordTypes = new Set(rows.map((row) => row.record_type));
-    const handledGroups = new Set(request.pageSchema.repeatableGroups
-        .filter((group) => group.canonicalRecordType !== undefined &&
-        recordTypes.has(group.canonicalRecordType))
-        .map((group) => group.groupKey));
-    return new Set(request.pageSchema.fields
-        .filter((field) => field.repeatGroupKey !== undefined && handledGroups.has(field.repeatGroupKey))
-        .map((field) => field.runtimeRef));
+    const education = records.filter((record) => record.recordType === 'education');
+    for (const field of request.pageSchema.fields) {
+        const mapping = request.mappings.find((item) => item.runtimeRef === field.runtimeRef);
+        if (!mapping?.canonicalKey?.startsWith('profile.education[].') || field.repeatGroupKey !== undefined)
+            continue;
+        const context = [field.rawLabel, ...field.sectionPath].join(' ');
+        if (degreeRanksOf(context).length > 1)
+            continue;
+        const rank = degreeRankOf(context);
+        const highest = /最高学历|highest\s+(education|degree)/i.test(context);
+        const ranks = education.map(degreeRankOfRecord);
+        const wanted = highest && ranks.every((value) => value !== undefined) ? Math.max(...ranks) : rank;
+        const matches = wanted === undefined ? (education.length === 1 ? education : []) : education.filter((record) => degreeRankOfRecord(record) === wanted);
+        if (matches.length === 1)
+            recordIds.set(field.runtimeRef, matches[0].id);
+    }
+    return { recordIds, handledRefs };
 }
 function collectCandidates(priv, canonical, scope, facts, now) {
     const rows = priv.db
@@ -355,16 +411,19 @@ function collectCandidates(priv, canonical, scope, facts, now) {
         });
     }
     // 材料提取只作为 global 范围的候选。公司和岗位问题不能从简历推断。
-    if (scope.type === 'global') {
+    if (scope.type === 'global' || scope.type === 'profile_record') {
         for (const fact of facts) {
             if (fact.canonicalKey !== canonical.key) {
+                continue;
+            }
+            if (scope.type === 'profile_record' && fact.sourceRef !== scope.key) {
                 continue;
             }
             candidates.push({
                 canonicalKey: canonical.key,
                 value: fact.value,
                 scope,
-                sourceType: fact.sourceType,
+                sourceType: fact.sourceRef.startsWith('profile_record:') ? 'profile_record' : fact.sourceType,
                 sourceRef: fact.sourceRef,
                 confidence: fact.confidence,
                 userConfirmed: false,

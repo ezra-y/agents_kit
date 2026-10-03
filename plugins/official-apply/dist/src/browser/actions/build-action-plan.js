@@ -12,6 +12,7 @@
  */
 import { randomUUID } from 'node:crypto';
 import { buildLocatorCandidates } from "../locators/build-locator-candidates.js";
+import { scopeAllowsField } from "../../site-adapters/write-scope.js";
 function defaultIdFactory(prefix) {
     return `${prefix}_${randomUUID().replaceAll('-', '').slice(0, 16)}`;
 }
@@ -67,9 +68,11 @@ export function buildActionPlan(request) {
         if (field.controlKind === 'action_button') {
             continue;
         }
-        if (field.disabled || field.readonly) {
+        if (field.disabled || (field.readonly && !['date', 'month', 'date_picker'].includes(field.controlKind))) {
             continue;
         }
+        if (request.writeScope !== undefined && !scopeAllowsField(request.writeScope, field, answer.canonicalKey))
+            continue;
         const kind = actionKindFor(field.controlKind, answer.formattedValue);
         const materialId = request.materialAssignments?.[answer.runtimeRef];
         items.push({

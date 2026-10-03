@@ -12,7 +12,7 @@
 import { randomUUID } from 'node:crypto';
 import { openPrivateDatabase } from "../storage/open-private-database.js";
 import { openRuntimeDatabase } from "../storage/open-runtime-database.js";
-import { isPersistableScope } from "./resolve-answer-scope.js";
+import { equivalentScopeKeys, isPersistableScope } from "./resolve-answer-scope.js";
 function defaultIdFactory(prefix) {
     return `${prefix}_${randomUUID().replaceAll('-', '').slice(0, 16)}`;
 }
@@ -35,11 +35,17 @@ export function saveUserAnswers(request) {
                     : answer.scope.key;
                 const scopeKey = answer.scope.type === 'profile_record'
                     ? `profile_record:${recordKey}`
-                    : answer.scope.key;
+                    : equivalentScopeKeys(answer.scope)[0];
+                const lookupKeys = [
+                    ...new Set([
+                        ...equivalentScopeKeys({ type: answer.scope.type, key: scopeKey }),
+                        recordKey,
+                    ]),
+                ];
                 const previous = priv.db
                     .prepare(`SELECT id FROM answer_values
-             WHERE canonical_key = ? AND scope_type = ? AND scope_key IN (?, ?) AND status = 'active'`)
-                    .all(answer.canonicalKey, answer.scope.type, scopeKey, recordKey);
+             WHERE canonical_key = ? AND scope_type = ? AND scope_key IN (${lookupKeys.map(() => '?').join(', ')}) AND status = 'active'`)
+                    .all(answer.canonicalKey, answer.scope.type, ...lookupKeys);
                 const answerId = newId('answer');
                 priv.db
                     .prepare(`INSERT INTO answer_values

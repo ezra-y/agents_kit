@@ -807,7 +807,7 @@ export const didiResumePage = {
             orgId: text(facts.runtimeData ?? {}, 'orgId') ?? 'didiglobal',
             siteId: Number(facts.runtimeData?.['siteId'] ?? 96064),
         };
-        // Transport options are not candidate answers or readback targets.
+        // 请求参数只用于发送数据，不参与简历答案的回读比较。
         const { uploadInfo, applyInfo, updateAccountResume, questionnaires, orgId, siteId, ...content } = resume;
         const scoped = requestedScope === undefined
             ? { resume: content, targetPaths: [], conflicts: [], availableFields: [] }

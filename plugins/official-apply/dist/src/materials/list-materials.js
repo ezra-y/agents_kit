@@ -16,6 +16,8 @@ export function resolveStoredMaterialPath(paths, storedPath) {
         return path.join(paths.materialsDir, storedPath.slice(MATERIAL_PATH_PREFIX.length));
     }
     if (storedPath.startsWith('<skill-root>/')) {
+        if (storedPath.startsWith('<skill-root>/.local/'))
+            return path.join(paths.localRoot, storedPath.slice('<skill-root>/.local/'.length));
         return path.join(paths.root, storedPath.slice('<skill-root>/'.length));
     }
     return path.isAbsolute(storedPath) ? storedPath : path.join(paths.materialsDir, storedPath);

@@ -10,16 +10,22 @@ function valueSignature(field) {
 function errorKey(error) {
     return `${error.severity}|${error.text}|${error.fieldRuntimeRef ?? ''}`;
 }
+export function sameField(actual, expected) {
+    return actual.rawLabel === expected.rawLabel && actual.controlKind === expected.controlKind &&
+        actual.htmlName === expected.htmlName &&
+        actual.repeatGroupKey === expected.repeatGroupKey &&
+        actual.repeatInstanceIndex === expected.repeatInstanceIndex &&
+        JSON.stringify(actual.frame.path) === JSON.stringify(expected.frame.path) &&
+        JSON.stringify(actual.sectionPath) === JSON.stringify(expected.sectionPath);
+}
 export function diffPage(before, after) {
-    const beforeFields = new Map(before.fields.map((field) => [field.fieldFingerprint, field]));
-    const afterFields = new Map(after.fields.map((field) => [field.fieldFingerprint, field]));
     const addedFieldRefs = [];
     const removedFieldRefs = [];
     const changedFieldRefs = [];
     // 条件字段常常一直在 DOM 里，只是从 hidden 变成可见。
     // 对填写逻辑来说那就是「新出现」，所以按可见性判断，而不是按是否在 DOM 里。
-    for (const [fingerprint, field] of afterFields) {
-        const previous = beforeFields.get(fingerprint);
+    for (const field of after.fields) {
+        const previous = before.fields.find((candidate) => sameField(candidate, field));
         if (previous === undefined) {
             if (field.visible) {
                 addedFieldRefs.push(field.runtimeRef);
@@ -38,8 +44,8 @@ export function diffPage(before, after) {
             changedFieldRefs.push(field.runtimeRef);
         }
     }
-    for (const [fingerprint, field] of beforeFields) {
-        if (!afterFields.has(fingerprint) && field.visible) {
+    for (const field of before.fields) {
+        if (!after.fields.some((candidate) => sameField(candidate, field)) && field.visible) {
             removedFieldRefs.push(field.runtimeRef);
         }
     }

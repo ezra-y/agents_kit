@@ -58,7 +58,7 @@ export class PageScriptRegistry {
             .map(descriptorOf)
             .sort((left, right) => left.id.localeCompare(right.id));
     }
-    async resolve(page) {
+    async resolve(page, writeScope) {
         const hostname = new URL(page.url()).hostname;
         const candidates = [...this.#scripts.values()].filter((script) => (hostMatches(script.host, hostname) ||
             script.customDomainCompatible === true) &&
@@ -67,6 +67,10 @@ export class PageScriptRegistry {
         const errors = [];
         const matched = [];
         for (const script of candidates) {
+            if (writeScope !== undefined && script.supportsWriteScope !== true) {
+                errors.push({ scriptId: script.id, message: '脚本尚未支持指定写入范围' });
+                continue;
+            }
             try {
                 const match = await script.match(page);
                 if (match.matched) {

@@ -17,6 +17,7 @@
 import { persistSiteFields } from "../fields/persist-site-fields.js";
 import { mapSiteFields, importFieldCatalog } from "../fields/map-site-fields.js";
 import { createFieldCandidate } from "../fields/create-field-candidate.js";
+import { resolveAnswers } from "../answers/resolve-answers.js";
 export function resolveCurrentPage(request) {
     const now = request.now ?? new Date().toISOString();
     // 公共目录是 YAML，运行期缓存要跟着它更新，映射的外键才有效。
@@ -79,5 +80,15 @@ export function resolveCurrentPage(request) {
         scoredFieldCount: mapped.scoredFieldCount,
         scoreCallCount: mapped.scoreCallCount,
     };
+}
+export function resolveCurrentPageAnswers(request) {
+    const resolved = resolveCurrentPage(request);
+    const answers = resolveAnswers({
+        paths: request.paths, runId: request.runId, taskId: request.taskId,
+        companyKey: request.companyKey, jobKey: request.jobKey, pageSchema: request.pageSchema,
+        mappings: resolved.mappings, materialRefs: request.materialRefs, profileRecordIds: request.profileRecordIds,
+        now: request.now, idFactory: request.idFactory,
+    });
+    return { resolved, answers };
 }
 //# sourceMappingURL=resolve-current-page.js.map
