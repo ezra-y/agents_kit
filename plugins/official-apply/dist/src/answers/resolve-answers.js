@@ -22,7 +22,8 @@ import { loadFieldCatalog } from "../fields/map-site-fields.js";
 import { resolveAnswerScope, isScopeUsable } from "./resolve-answer-scope.js";
 import { normalizeAnswerValue } from "./normalize-answer-value.js";
 import { detectAnswerConflicts } from "./detect-answer-conflicts.js";
-import { extractMaterialFacts } from "./extract-material-facts.js";
+import { extractMaterialFacts, canonicalProfileValue } from "./extract-material-facts.js";
+import { normalizeForMatch } from "../fields/score-field-mapping.js";
 import { buildMissingAnswerBundle } from "./build-missing-answer-bundle.js";
 import { readProfileRecords, instanceLabelsOf } from "../application/fill-profile-groups.js";
 import { bindPageGroupToProfileRecord, degreeRankOf, degreeRankOfRecord, degreeRanksOf } from "../browser/actions/bind-page-group-to-profile-record.js";
@@ -113,6 +114,7 @@ export function resolveAnswers(request) {
                             value: saved,
                             controlKind: field.controlKind,
                             siteOptions: field.options,
+                            optionsComplete: field.optionsComplete,
                             ...(field.inputType === undefined ? {} : { inputType: field.inputType }),
                         });
                         if (normalized.matched) {
@@ -290,6 +292,7 @@ export function resolveAnswers(request) {
                 value: chosen.value,
                 controlKind: field.controlKind,
                 siteOptions: field.options,
+                optionsComplete: field.optionsComplete,
                 inputType: field.inputType ?? null,
             });
             if (!normalized.matched) {
@@ -373,7 +376,11 @@ function profileRecordBindingsForPage(request) {
         const highest = /最高学历|highest\s+(education|degree)/i.test(context);
         const ranks = education.map(degreeRankOfRecord);
         const wanted = highest && ranks.every((value) => value !== undefined) ? Math.max(...ranks) : rank;
-        const matches = wanted === undefined ? (education.length === 1 ? education : []) : education.filter((record) => degreeRankOfRecord(record) === wanted);
+        const schools = request.pageSchema.fields.filter((item) => item.repeatGroupKey === undefined &&
+            item.sectionPath.join('>') === field.sectionPath.join('>') && item.currentValue !== undefined &&
+            request.mappings.some((mapping) => mapping.runtimeRef === item.runtimeRef && mapping.canonicalKey === 'profile.education[].school'));
+        const schoolMatches = education.filter((record) => schools.some((school) => normalizeForMatch(String(school.currentValue)) === normalizeForMatch(String(canonicalProfileValue('education', record.values, 'profile.education[].school') ?? ''))));
+        const matches = wanted === undefined ? (education.length === 1 ? education : schoolMatches) : education.filter((record) => degreeRankOfRecord(record) === wanted);
         if (matches.length === 1)
             recordIds.set(field.runtimeRef, matches[0].id);
     }

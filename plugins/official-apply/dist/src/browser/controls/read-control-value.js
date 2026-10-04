@@ -1,6 +1,7 @@
 import { MOKA_SELECT } from "./moka-select.js";
 import { MOKA_DATE } from "./moka-date.js";
 import { MOKA_CHECKBOX } from "./moka-checkbox.js";
+import { PHOENIX } from "./phoenix-controls.js";
 export function committedControlValue(source) {
     if (source.checkboxState !== undefined)
         return String(source.checkboxState);
@@ -28,8 +29,10 @@ export function committedControlValue(source) {
     return source.nativeValue ?? '';
 }
 export async function readControlValue(locator, options = {}) {
-    const sources = await locator.evaluate((element, { select: selectors, date, checkbox, combineMonthControls }) => {
+    const sources = await locator.evaluate((element, { select: selectors, date, checkbox, phoenix, combineMonthControls }) => {
         const clean = (value) => (value ?? '').replace(/\s+/g, ' ').trim();
+        if (element.matches(phoenix.radioGroup))
+            return { customSelect: false, selectedLabel: clean(element.querySelector(phoenix.checkedRadio)?.textContent) };
         const range = element.closest(date.monthRange);
         const isEnd = range !== null && element.matches('input[type=checkbox]');
         const monthItem = range === null ? null : isEnd ? range.querySelectorAll(date.monthPair)[1] ?? null : element.closest(date.monthItem)?.parentElement ?? null;
@@ -45,7 +48,7 @@ export async function readControlValue(locator, options = {}) {
             return { customSelect: false, checkboxState: element.closest(checkbox.control) === null ? element.checked : checked };
         if (element.matches(date.monthPickerInput))
             return { customSelect: false, calendarDisplay: element.value };
-        const select = element.closest(selectors.control) ??
+        const select = element.closest(`${selectors.control},${phoenix.select}`) ??
             (element.querySelectorAll(selectors.control).length === 1 ? element.querySelector(selectors.control) : null);
         const role = element.getAttribute('role');
         const combo = element.tagName !== 'SELECT' && (role === 'combobox' || role === 'listbox');
@@ -73,11 +76,11 @@ export async function readControlValue(locator, options = {}) {
             customSelect: select !== null,
             ...(nativeValue === undefined ? {} : { nativeValue }),
             ...(selectedLabel === undefined ? {} : { selectedLabel }),
-            displayedValue: select === null ? clean(copy.textContent) : clean(select.querySelector(selectors.display)?.textContent),
+            displayedValue: select === null ? clean(copy.textContent) : clean(select.querySelector(`${selectors.display},${phoenix.display}`)?.textContent),
             ...(combo && element.hasAttribute('aria-valuetext') ? { ariaValueText: clean(element.getAttribute('aria-valuetext')) } : {}),
             ...(combo && element.hasAttribute('data-value') ? { dataValue: element.getAttribute('data-value') } : {}),
         };
-    }, { select: MOKA_SELECT, date: MOKA_DATE, checkbox: MOKA_CHECKBOX, combineMonthControls: options.combineMonthControls ?? true });
+    }, { select: MOKA_SELECT, date: MOKA_DATE, checkbox: MOKA_CHECKBOX, phoenix: PHOENIX, combineMonthControls: options.combineMonthControls ?? true });
     return committedControlValue(sources);
 }
 //# sourceMappingURL=read-control-value.js.map

@@ -15,6 +15,8 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { createHash, randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { collectFrameNodes, scanControls } from "./scan-controls.js";
+import { CONTROL_SELECTOR } from "./control-selector.js";
+import { PHOENIX } from "../controls/phoenix-controls.js";
 import { scanFrames } from "./scan-frames.js";
 import { scanRegions } from "./scan-regions.js";
 import { scanActions } from "./scan-actions.js";
@@ -33,7 +35,7 @@ function scanError(code, detail) {
     return new Error(`${code}: ${detail}`);
 }
 /** 扫描前默认等多久，等单页应用把表单渲染出来。 */
-const DEFAULT_CONTENT_WAIT_MS = 8_000;
+const DEFAULT_CONTENT_WAIT_MS = 30_000;
 /**
  * 等到页面上真的出现可交互内容再扫。
  *
@@ -51,7 +53,17 @@ async function waitForInteractiveContent(page, timeoutMs) {
         return;
     }
     try {
-        await page.waitForFunction(() => document.querySelector('input, select, textarea, button, [role="textbox"], [role="combobox"], [contenteditable="true"]') !== null, undefined, { timeout: timeoutMs, polling: 250 });
+        await page.waitForFunction(({ selector, phoenix }) => Array.from(document.querySelectorAll(selector)).some(element => {
+            if (element.closest('header,nav,[role="banner"],.print-nav') !== null)
+                return false;
+            if (document.querySelector(phoenix.formRoot) !== null && element.closest(`${phoenix.field},${phoenix.staticField}`) === null)
+                return false;
+            if (element.getAttribute('type') === 'search' || element.getAttribute('role') === 'searchbox' ||
+                /(?:搜索|查找).*(?:职位|岗位|关键词)|(?:输入|请输入).*(?:职位|岗位).*(?:关键词|关键字)/.test(element.getAttribute('placeholder') ?? ''))
+                return false;
+            const style = window.getComputedStyle(element);
+            return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0' && element.getClientRects().length > 0;
+        }), { selector: CONTROL_SELECTOR, phoenix: PHOENIX }, { timeout: timeoutMs, polling: 250 });
     }
     catch {
         // 等不到就算了。空页面也是一种如实的扫描结果。

@@ -36,6 +36,7 @@ export async function fillPageUntilStable(request) {
         rounds = round + 1;
         const filled = await fillPage({
             page: request.page,
+            paths: request.session.paths,
             ...(request.stats === undefined ? {} : { stats: request.stats }),
             ...(request.recordAttempts === undefined
                 ? {}

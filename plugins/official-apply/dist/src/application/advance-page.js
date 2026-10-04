@@ -148,20 +148,28 @@ export async function advancePage(session, page, request) {
             },
         };
     }
-    const changed = outcome.kind === 'changed'
+    let changed = outcome.kind === 'changed'
         ? outcome.changed
         : {
             changed: false,
             observed: [],
             waitedMs: 0,
         };
+    // 预览可能沿用原网址，通过新出现的最终提交动作确认步骤变化。
+    const inspection = await inspectPage(session, page, {
+        runId: request.runId,
+        persist: false,
+        now,
+    });
+    if (!changed.changed && changed.blockedByError === undefined && request.actionKind === 'review'
+        && !request.pageSchema.actions.some(action => action.commitAction)
+        && inspection.schema.errors.length === 0
+        && inspection.schema.actions.some(action => action.commitAction && !action.disabled)
+        && !inspection.schema.actions.some(action => action.kind === 'review' && !action.disabled)) {
+        changed = { ...changed, changed: true, observed: [{ kind: 'step_changed', target: 'review' }] };
+    }
     // 被错误拦住：不算推进成功，把错误如实返回。
     if (!changed.changed) {
-        const inspection = await inspectPage(session, page, {
-            runId: request.runId,
-            persist: false,
-            now,
-        });
         // 站点校验错误拦住：如实归 rejected。真正超时没变化：归 timeout，
         // 不再把两种混成一码，避免把校验阻断误统计成超时。
         const outcome = changed.blockedByError === undefined ? 'timeout' : 'rejected_by_site';
@@ -183,12 +191,6 @@ export async function advancePage(session, page, request) {
             newPageSchema: inspection.schema,
         };
     }
-    // 推进成功：重扫一次，把新页面交回上层。
-    const inspection = await inspectPage(session, page, {
-        runId: request.runId,
-        persist: false,
-        now,
-    });
     const result = {
         actionPlanItemId: newId('advance'),
         kind: 'click',

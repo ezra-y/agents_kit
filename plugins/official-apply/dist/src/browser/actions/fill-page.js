@@ -5,8 +5,11 @@ import { setCheckbox } from "./set-checkbox.js";
 import { selectNativeOption } from "./select-native-option.js";
 import { selectCustomOption } from "./select-custom-option.js";
 import { fillDateControl } from "./fill-date-control.js";
+import { loadFieldCatalog } from "../../fields/map-site-fields.js";
+import { PHOENIX } from "../controls/phoenix-controls.js";
 export async function fillPage(context, request) {
     const fieldByRef = new Map(request.pageSchema.fields.map((field) => [field.runtimeRef, field]));
+    const catalog = new Map(context.paths === undefined ? [] : loadFieldCatalog(context.paths).map((field) => [field.key, field]));
     const results = [];
     const requiresVisualFallback = [];
     let toolRoundTrips = 0;
@@ -66,6 +69,7 @@ export async function fillPage(context, request) {
             page: context.page,
             pageSchema: request.pageSchema,
             runId: request.runId,
+            canonicalField: item.canonicalKey === undefined ? undefined : catalog.get(item.canonicalKey),
         });
         results.push({
             actionPlanItemId: item.id,
@@ -107,6 +111,10 @@ export async function executeFieldAction(item, field, locator, timeoutMs, custom
             return { ...result };
         }
         case 'select_option': {
+            if (custom.canonicalField?.valueType.includes('date') && /^\d{4}-\d{2}(?:-\d{2})?$/.test(String(value ?? '')) &&
+                await locator.evaluate((element, selector) => element.closest(selector) !== null, PHOENIX.select)) {
+                return fillDateControl(locator, String(value), { ...options, page: custom.page });
+            }
             // 三种「选一项」的控件长得像，但操作方式完全不同，按扫描出来的类型分流。
             // 猜错的代价很大：对着 ARIA combobox 调 selectOption 会一直超时。
             if (field.controlKind === 'radio_group') {
@@ -132,6 +140,7 @@ export async function executeFieldAction(item, field, locator, timeoutMs, custom
                     runId: custom.runId,
                     fieldRuntimeRef: item.runtimeRef,
                     requestedLabel: asLabel,
+                    canonicalField: custom.canonicalField,
                     pageSchema: custom.pageSchema,
                     ...(timeoutMs === undefined ? {} : { timeoutMs }),
                 });

@@ -468,6 +468,7 @@ fields:
   - 学校
   - 院校
   - 毕业院校
+  - 毕业学校
   - 就读院校
   - 学校名称
   - University
@@ -586,6 +587,7 @@ fields:
   - 平均绩点
   - 绩点
   - 平均成绩
+  - 成绩(GPA)
   value_type: score
   common_controls:
   - number
@@ -688,10 +690,12 @@ fields:
   aliases:
   - 英语证书
   - 英语等级证书
+  - 英语等级
   - 四六级证书
   value_type: enum_or_text
   common_controls:
   - select
+  - combobox
   - radio
   - text
   answer_policy: reuse_if_explicit
@@ -699,6 +703,11 @@ fields:
   status: verified
   answer_scope: global
   reuse_note: 用户明确没有四六级；要求证书时填写“无”。
+  option_normalization:
+    none:
+    - 无
+    - 没有证书
+    - 未参加
 - key: qualification.exam.postgraduate_english_score
   name: 考研英语成绩
   category: exam
@@ -1104,12 +1113,14 @@ fields:
   - 可入职时间
   - 最早入职时间
   - 到岗时间
+  - 最早到岗时间
   - Available Date
   value_type: date_or_text
   common_controls:
   - date
   - text
   - select
+  - combobox
   answer_policy: confirm_each_application
   sensitivity: normal
   status: verified
@@ -1121,6 +1132,8 @@ fields:
   aliases:
   - 期望薪资
   - 薪资期望
+  - 期望月薪
+  - 期望月薪（税前）
   - 期望年薪
   - Expected Salary
   value_type: money_or_range
@@ -1128,6 +1141,7 @@ fields:
   - number
   - text
   - select
+  - combobox
   answer_policy: confirm_each_application
   sensitivity: personal
   status: verified
@@ -1359,6 +1373,7 @@ fields:
   - 为什么选择本岗位
   - 为什么申请该岗位
   - 岗位申请动机
+  - 是什么吸引您申请这一职位
   - Why this role
   - Why this position
   value_type: long_text

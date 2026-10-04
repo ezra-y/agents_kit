@@ -4,6 +4,8 @@ import { MOKA_SELECT } from "../controls/moka-select.js";
 import { readControlValue } from "../controls/read-control-value.js";
 import { selectCustomOptionFromLocator } from "./select-custom-option.js";
 import { setCheckbox } from "./set-checkbox.js";
+import { PHOENIX } from "../controls/phoenix-controls.js";
+import { formatDate } from "../../answers/normalize-answer-value.js";
 async function chooseMokaMonth(locator, value, page, timeout) {
     const composite = await locator.evaluate((element, selector) => element.closest(selector) !== null, MOKA_DATE.monthRange);
     let endpoint = false;
@@ -61,6 +63,27 @@ async function chooseMokaMonth(locator, value, page, timeout) {
 }
 export async function fillDateControl(locator, value, options = {}) {
     const timeout = options.timeoutMs ?? 5_000;
+    const phoenix = await locator.evaluate((element, selectors) => element.closest(selectors.select) !== null, PHOENIX);
+    if (phoenix) {
+        const before = await readControlValue(locator);
+        if (before === value)
+            return { changed: false, beforeValue: before, afterValue: before, ok: true };
+        if (options.page === undefined)
+            throw new Error('日期日历需要当前浏览器页面');
+        const active = await locator.evaluate((element, selectors) => element.closest(selectors.select)?.matches(selectors.activeSelect) === true, PHOENIX);
+        if (!active)
+            await locator.click({ timeout });
+        const popup = options.page.locator(PHOENIX.calendar).filter({ visible: true });
+        await popup.first().waitFor({ state: 'visible', timeout });
+        if (await popup.count() !== 1)
+            throw new Error('当前日期日历无法唯一定位');
+        const formatted = await popup.locator(PHOENIX.calendarDatePanel).isVisible() ? formatDate(value, 'date') : value;
+        await popup.locator(PHOENIX.calendarInput).fill(formatted, { timeout });
+        await popup.locator(PHOENIX.calendarInput).press('Enter', { timeout });
+        const after = await readControlValue(locator);
+        return { changed: after !== before, beforeValue: before, afterValue: after, ok: after === formatted,
+            ...(after === formatted ? {} : { reason: `日历输入后显示的是「${after}」` }) };
+    }
     const inputType = await locator.getAttribute('type').catch(() => null);
     const customMonth = await locator.evaluate((element, selectors) => element.matches(selectors.monthPickerInput) || element.closest(selectors.monthRange) !== null, MOKA_DATE);
     if (customMonth) {

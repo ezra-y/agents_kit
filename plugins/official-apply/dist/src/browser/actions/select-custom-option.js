@@ -1,11 +1,13 @@
 import { readControlValue } from "../controls/read-control-value.js";
 import { CUSTOM_OPTION_SELECTOR, MOKA_SELECT } from "../controls/moka-select.js";
 import { fieldValueMatches } from "../validation/validate-page.js";
+import { normalizeAnswerValue } from "../../answers/normalize-answer-value.js";
+import { PHOENIX } from "../controls/phoenix-controls.js";
 import { captureOverlaySignature, findNewOverlaySelector, scanChangedRegion, } from "../scan/scan-changed-region.js";
 import { findActionTarget } from "../locators/find-action-target.js";
 const DEFAULT_TIMEOUT_MS = 8_000;
 async function ownedPopup(locator) {
-    const handle = await locator.evaluateHandle((element, selectors) => {
+    const handle = await locator.evaluateHandle((element, { selectors, phoenix }) => {
         const visible = (node) => {
             const style = window.getComputedStyle(node);
             return style.display !== 'none' && style.visibility !== 'hidden' && !node.classList.contains('sugar-popup-move-leave') && node.getClientRects().length > 0;
@@ -19,8 +21,15 @@ async function ownedPopup(locator) {
                 return popup;
         }
         const popup = element.closest(selectors.container)?.querySelector(selectors.overlay);
-        return popup !== null && popup !== undefined && visible(popup) ? popup : null;
-    }, MOKA_SELECT);
+        if (popup !== null && popup !== undefined && visible(popup))
+            return popup;
+        if (element.closest(phoenix.select)?.matches(phoenix.activeSelect)) {
+            const popups = Array.from(document.querySelectorAll(phoenix.overlay)).filter(visible);
+            if (popups.length === 1)
+                return popups[0];
+        }
+        return null;
+    }, { selectors: MOKA_SELECT, phoenix: PHOENIX });
     const popup = handle.asElement();
     if (popup !== null)
         return popup;
@@ -52,8 +61,7 @@ export async function selectCustomOptionFromLocator(page, input) {
             verifiedSelectedValue: beforeValue,
         };
     }
-    let overlaySelector = popup === undefined ? undefined : await popup.getAttribute('role');
-    overlaySelector = overlaySelector ? `[role="${overlaySelector}"]` : MOKA_SELECT.overlay;
+    let overlaySelector;
     if (popup === undefined) {
         const before = await captureOverlaySignature(frame);
         try {
@@ -86,10 +94,16 @@ export async function selectCustomOptionFromLocator(page, input) {
             reason: '点击后没有出现新的浮层',
         };
     }
+    overlaySelector ??= await popup.evaluate((element, selectors) => {
+        const role = element.getAttribute('role');
+        return role ? `[role="${role}"]` : element.matches(selectors.phoenix) ? selectors.phoenix : selectors.moka;
+    }, { phoenix: PHOENIX.overlay, moka: MOKA_SELECT.overlay });
     try {
         const region = await scanChangedRegion(frame, { rootSelector: overlaySelector }, popup);
         const availableOptions = region.options;
-        const match = region.optionLabels.find((label) => label === input.requestedLabel);
+        const normalized = normalizeAnswerValue({ value: input.requestedLabel, canonicalKey: input.canonicalField?.key,
+            canonicalField: input.canonicalField, controlKind: 'combobox', siteOptions: availableOptions });
+        const match = normalized.matched ? availableOptions.find((option) => (option.rawValue ?? option.rawLabel) === String(normalized.formattedValue))?.rawLabel : undefined;
         if (match === undefined) {
             await page.keyboard.press('Escape').catch(() => undefined);
             return {
@@ -123,7 +137,7 @@ export async function selectCustomOptionFromLocator(page, input) {
             };
         }
         const verified = await readControlValue(input.locator, { combineMonthControls: false });
-        const ok = fieldValueMatches({ currentValue: verified, options: availableOptions, controlKind: 'combobox' }, { runtimeRef: 'selection', expectedValue: input.requestedLabel, required: false, controlKind: 'combobox' });
+        const ok = fieldValueMatches({ currentValue: verified, options: availableOptions, controlKind: 'combobox' }, { runtimeRef: 'selection', expectedValue: match, required: false, controlKind: 'combobox' });
         return {
             ok,
             changed: verified !== beforeValue,
@@ -162,6 +176,7 @@ export async function selectCustomOption(page, request) {
     const selected = await selectCustomOptionFromLocator(page, {
         locator: found.target.locator,
         requestedLabel: request.requestedLabel,
+        canonicalField: request.canonicalField,
         timeoutMs,
     });
     return {

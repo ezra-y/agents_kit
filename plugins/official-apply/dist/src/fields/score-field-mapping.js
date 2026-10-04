@@ -67,7 +67,7 @@ function scoreSectionContext(siteField, canonical) {
         return { delta: WEIGHTS.section_context, detail: `区域「${siteField.sectionPath.join('>')}」与字段类别一致` };
     }
     if (own !== undefined) {
-        const conflicting = SECTION_HINTS.find(([prefix, hints]) => prefix !== own[0] && hints.some((hint) => section.includes(normalizeForMatch(hint))));
+        const conflicting = SECTION_HINTS.find(([prefix, hints]) => prefix !== own[0] && hints.some((hint) => !['基本信息', '个人信息', 'personal', 'identity'].includes(hint) && section.includes(normalizeForMatch(hint))));
         if (conflicting !== undefined) {
             return {
                 delta: -SECTION_CONFLICT_PENALTY,

@@ -1,3 +1,4 @@
+import { PHOENIX } from "../controls/phoenix-controls.js";
 import { CONTROL_SELECTOR } from "./control-selector.js";
 import { MOKA_SELECT } from "../controls/moka-select.js";
 import { MOKA_DATE } from "../controls/moka-date.js";
@@ -6,7 +7,7 @@ import { committedControlValue } from "../controls/read-control-value.js";
 const MAX_ELEMENTS = 3000;
 const MAX_TEXT = 200;
 export async function collectFrameNodes(frame, framePath, options = {}) {
-    const raw = await frame.evaluate(({ maxElements, maxText, rootSelector, rootIndex, rootElement, controlSelector, selectSelectors, dateSelectors, checkboxSelectors, }) => {
+    const raw = await frame.evaluate(({ maxElements, maxText, rootSelector, rootIndex, rootElement, controlSelector, selectSelectors, dateSelectors, checkboxSelectors, phoenix, }) => {
         const all = Array.from(document.querySelectorAll('*'));
         const indexOf = new Map();
         all.forEach((element, i) => indexOf.set(element, i));
@@ -176,6 +177,14 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
             while (current !== null && hops < 30) {
                 const tag = current.tagName.toLowerCase();
                 const role = current.getAttribute('role');
+                if (parts.length === 0 && element.closest(`${phoenix.field},${phoenix.staticField}`) !== null && current.querySelectorAll(`${phoenix.field},${phoenix.staticField}`).length > 1) {
+                    const preceding = current.previousElementSibling;
+                    if (preceding !== null && preceding.querySelector(controlSelector) === null) {
+                        const label = labelTextOf(preceding);
+                        if (label !== '' && label.length <= LABEL_MAX_CHARS)
+                            return [label];
+                    }
+                }
                 if (tag === 'fieldset') {
                     const legend = current.querySelector('legend');
                     const text = legend === null ? '' : clean(legend.textContent);
@@ -250,7 +259,7 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
         const repeatContainerOf = (element) => {
             let current = element.parentElement;
             let hops = 0;
-            while (current !== null && hops < 12) {
+            while (current !== null && hops < 30) {
                 const parent = current.parentElement;
                 if (parent !== null) {
                     const signature = signatureOf(current);
@@ -348,7 +357,7 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
             .map((element) => {
             const tag = element.tagName.toLowerCase();
             const type = element.getAttribute('type');
-            const checkboxControl = element.closest(checkboxSelectors.control);
+            const checkboxControl = element.closest(`${checkboxSelectors.control},${phoenix.checkbox}`);
             const rect = (checkboxControl ?? element).getBoundingClientRect();
             const asInput = element;
             const repeat = repeatContainerOf(element);
@@ -357,10 +366,14 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
                 sectionPath.push(repeat.label);
             }
             const isErrorNode = element.matches(ERROR_SELECTOR);
+            const phoenixField = element.closest(`${phoenix.field},${phoenix.staticField}`);
+            const phoenixStatic = element.matches(phoenix.staticControl);
+            const privacyAgreement = type === 'checkbox' ? element.closest(phoenix.privacyAgreement) : null;
+            const phoenixRadio = element.matches(phoenix.radioGroup);
             const customSelect = tag === 'input'
-                ? element.closest(selectSelectors.control) : null;
-            const sdkField = element.closest(selectSelectors.field);
-            const sdkTitle = sdkField?.querySelector(selectSelectors.label) ?? null;
+                ? element.closest(`${selectSelectors.control},${phoenix.select}`) : null;
+            const sdkField = phoenixField ?? element.closest(selectSelectors.field);
+            const sdkTitle = sdkField?.querySelector(phoenixField === null ? selectSelectors.label : phoenix.title) ?? null;
             const sdkQuestionLabel = labelTextOf(sdkTitle);
             const monthRange = element.closest(dateSelectors.monthRange);
             const monthItem = monthRange === null ? null : element.closest(dateSelectors.monthItem)?.parentElement ?? null;
@@ -370,17 +383,20 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
             const isEndCheckbox = endpointCheckbox !== null && endpointCheckbox === element;
             const monthControlIndex = isEndCheckbox ? 1 : monthItems.indexOf(monthItem);
             const isMonthControl = isEndCheckbox || (monthInputs.length === 2 && monthInputs[0] === element && (endpointCheckbox === null || monthControlIndex === 0));
-            const selectedText = clean(customSelect?.querySelector(selectSelectors.display)?.textContent);
+            const selectedText = clean(customSelect?.querySelector(`${selectSelectors.display},${phoenix.display}`)?.textContent);
             const labelEvidence = labelEvidenceOf(element);
+            if (privacyAgreement !== null)
+                labelEvidence.unshift({ source: 'nearby_text', text: clean(privacyAgreement.textContent), score: 1 });
             if (sdkQuestionLabel !== '' && (isEndCheckbox || !['checkbox', 'radio'].includes(type ?? ''))) {
                 const label = isMonthControl && (monthItems.length === 2 || endpointCheckbox !== null)
                     ? (monthControlIndex === 0 ? '开始时间' : '结束时间') : sdkQuestionLabel;
                 labelEvidence.unshift({ source: 'nearby_text', text: label, score: 1 });
             }
             // 复合手机号控件里的区号属于手机号的格式，不能再填入完整号码。
-            const isPhoneDialCode = customSelect !== null && /^\+\d{1,4}$/.test(selectedText) &&
-                labelEvidence.some((item) => /手机|电话|phone|mobile/i.test(item.text)) &&
-                (customSelect.parentElement?.parentElement?.parentElement?.querySelectorAll('input').length ?? 0) > 1;
+            const isPhoneDialCode = (phoenixStatic && /(?:手机|电话).*类型|phone\s*type/i.test(sdkQuestionLabel)) ||
+                (customSelect !== null && /^\+\d{1,4}$/.test(selectedText) &&
+                    labelEvidence.some((item) => /手机|电话|phone|mobile/i.test(item.text)) &&
+                    (customSelect.parentElement?.parentElement?.parentElement?.querySelectorAll('input').length ?? 0) > 1);
             /**
              * 收集这个控件的选项。
              *
@@ -407,7 +423,10 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
                 }
                 return [...new Set(nodes)];
             };
-            const options = isMonthControl ? [] :
+            const options = phoenixRadio ? Array.from(element.querySelectorAll(phoenix.radio)).map(option => ({
+                rawLabel: clean(option.textContent), rawValue: clean(option.textContent),
+                selected: option.matches(phoenix.checkedRadio), disabled: option.getAttribute('aria-disabled') === 'true',
+            })) : isMonthControl ? [] :
                 tag === 'select'
                     ? Array.from(element.querySelectorAll('option')).map((option) => ({
                         rawLabel: clean(option.textContent),
@@ -434,16 +453,17 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
                 index: indexOf.get(element) ?? -1,
                 tag,
                 type,
-                role: element.getAttribute('role') ?? (customSelect === null ? implicitRole(element) : 'combobox'),
+                role: element.getAttribute('role') ?? (phoenixStatic ? 'textbox' : phoenixRadio ? 'radiogroup' : customSelect === null ? implicitRole(element) : 'combobox'),
                 htmlName: element.getAttribute('name'),
                 htmlId: element.getAttribute('id'),
                 autocomplete: element.getAttribute('autocomplete'),
                 required: element.hasAttribute('required') ||
                     element.getAttribute('aria-required') === 'true' ||
+                    Boolean(phoenixField?.querySelector(phoenix.required)) ||
                     (Boolean(sdkTitle?.querySelector(dateSelectors.required)) && (monthRange === null || isMonthControl)) ||
                     labelText.includes('*'),
                 disabled: element.hasAttribute('disabled') || element.getAttribute('aria-disabled') === 'true',
-                readonly: element.hasAttribute('readonly') || element.getAttribute('aria-readonly') === 'true',
+                readonly: phoenixStatic || element.hasAttribute('readonly') || element.getAttribute('aria-readonly') === 'true',
                 visible: isVisible(checkboxControl ?? element),
                 /**
                  * 当前值。
@@ -457,6 +477,8 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
                  */
                 value: null,
                 valueSources: (() => {
+                    if (phoenixRadio)
+                        return { customSelect: false, selectedLabel: options.find(option => option.selected)?.rawLabel ?? '' };
                     if (isMonthControl)
                         return { customSelect: false,
                             monthParts: Array.from((isEndCheckbox ? monthItems[1] : monthItem)?.querySelectorAll(selectSelectors.display) ?? []).map(node => clean(node.textContent)),
@@ -478,7 +500,7 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
                         customSelect: customSelect !== null,
                         ...(nativeValue === undefined ? {} : { nativeValue }),
                         ...(selected === undefined ? {} : { selectedLabel: selected.rawLabel }),
-                        displayedValue: customSelect !== null ? selectedText : clean(copy.textContent),
+                        displayedValue: customSelect !== null ? selectedText : phoenixStatic ? (copy.textContent ?? '').trim() : clean(copy.textContent),
                         ...(combo && element.hasAttribute('aria-valuetext') ? { ariaValueText: clean(element.getAttribute('aria-valuetext')) } : {}),
                         ...(combo && element.hasAttribute('data-value') ? { dataValue: element.getAttribute('data-value') } : {}),
                     };
@@ -498,6 +520,7 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
                 sectionPath,
                 boundingBox: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
                 options,
+                ...(customSelect?.matches(phoenix.select) ? { optionsComplete: false } : {}),
                 describedByText: textOfIds(element.getAttribute('aria-describedby')),
                 repeatContainerIndex: repeat === null ? null : repeat.index,
                 repeatContainerSignature: repeat === null ? null : repeat.signature,
@@ -508,15 +531,18 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
                 repeatContainerRole: repeat === null ? null : repeat.role,
                 repeatContainerTestId: repeat === null ? null : repeat.testId,
                 ...(repeat === null ? {} : { repeatContainerText: repeat.text }),
-                isFormControl: !isPhoneDialCode && (monthRange === null || isMonthControl) && (tag === 'input' || tag === 'textarea' || tag === 'select' ||
+                isFormControl: !isPhoneDialCode && (monthRange === null || isMonthControl) && (phoenixStatic || phoenixRadio ||
+                    tag === 'input' || tag === 'textarea' || tag === 'select' ||
                     element.getAttribute('contenteditable') === 'true' ||
                     ['textbox', 'combobox', 'checkbox', 'radio', 'listbox', 'switch', 'slider', 'spinbutton'].includes(element.getAttribute('role') ?? '')),
                 isCustomSelect: customSelect !== null,
                 isMonthPicker: element.matches(dateSelectors.monthPickerInput),
                 ...(sdkQuestionLabel === '' ? {} : { sdkQuestionLabel }),
+                ...(phoenixField === null ? {} : { sdkFieldCss: `${phoenixField.matches(phoenix.staticField) ? phoenix.staticField : phoenix.field}:has(> ${phoenix.title} :text-is(${JSON.stringify(sdkQuestionLabel)}))` }),
                 ...(sdkField === null ? {} : { sdkControlIndex: Array.from(sdkField.querySelectorAll(controlSelector)).indexOf(element) }),
                 ...(isMonthControl ? { monthControlIndex } : {}),
-                isButtonLike: tag === 'button' ||
+                isButtonLike: element.matches(phoenix.button) ||
+                    tag === 'button' ||
                     element.getAttribute('role') === 'button' ||
                     (tag === 'input' && ['button', 'submit', 'reset'].includes(type ?? '')),
                 isErrorNode,
@@ -559,6 +585,7 @@ export async function collectFrameNodes(frame, framePath, options = {}) {
         selectSelectors: MOKA_SELECT,
         dateSelectors: MOKA_DATE,
         checkboxSelectors: MOKA_CHECKBOX,
+        phoenix: PHOENIX,
     });
     const snapshot = { framePath, ...raw };
     for (const element of snapshot.elements) {
@@ -673,6 +700,7 @@ export function normalizeControlKind(element) {
         case 'switch':
             return 'checkbox';
         case 'radio':
+        case 'radiogroup':
             return 'radio_group';
         case 'textbox':
             return 'text';
@@ -706,7 +734,7 @@ function buildLocatorCandidates(element, label, sectionPath) {
         const title = element.sdkQuestionLabel ?? label;
         const control = element.monthControlIndex !== undefined && element.type === 'checkbox' ? `${MOKA_DATE.monthRange} input[type=checkbox]` : element.monthControlIndex === undefined ? `:is(${CONTROL_SELECTOR}) >> nth=${element.sdkControlIndex}` :
             `${MOKA_DATE.monthRange} > span:has(> ${MOKA_DATE.monthItem}) >> nth=${element.monthControlIndex} >> input >> nth=0`;
-        const fieldSelector = `${MOKA_SELECT.field}:has(> ${MOKA_SELECT.label} :text-is(${JSON.stringify(title)})) ${control}`;
+        const fieldSelector = `${element.sdkFieldCss ?? `${MOKA_SELECT.field}:has(> ${MOKA_SELECT.label} :text-is(${JSON.stringify(title)}))`} ${control}`;
         const prefix = element.repeatContainerCss === null || element.repeatContainerLocatorIndex === null ? '' :
             `${element.repeatContainerCss} >> nth=${element.repeatContainerLocatorIndex} >> `;
         candidates.push({ strategy: 'css_fallback', description: `在「${label}」题目内定位控件`,
@@ -891,6 +919,7 @@ function toField(snapshot, frame, element, context) {
         ...(controlKind === 'checkbox' && element.checked !== null ? { currentValue: element.checked } :
             element.value === null || element.value === '' ? {} : { currentValue: element.value }),
         options,
+        ...(element.optionsComplete === undefined ? {} : { optionsComplete: element.optionsComplete }),
         errorTexts: element.describedByText,
         locatorCandidates: buildLocatorCandidates(element, label, element.sectionPath),
         fieldFingerprint: computeFieldFingerprint({

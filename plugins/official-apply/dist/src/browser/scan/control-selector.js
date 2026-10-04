@@ -13,5 +13,9 @@ export const CONTROL_SELECTOR = [
     '[role=switch]',
     '[role=slider]',
     '[role=spinbutton]',
+    PHOENIX.radioGroup,
+    PHOENIX.button,
+    PHOENIX.staticControl,
 ].join(',');
+import { PHOENIX } from "../controls/phoenix-controls.js";
 //# sourceMappingURL=control-selector.js.map

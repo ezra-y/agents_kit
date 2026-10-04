@@ -13,7 +13,9 @@
 import { randomUUID } from 'node:crypto';
 import { inspectPage } from "../scan/inspect-page.js";
 import { diffPage, sameField } from "../scan/diff-page.js";
-import { normalizeDegree } from "../../fields/normalize-field-option.js";
+import { normalizeDegree, matchFromCatalog } from "../../fields/normalize-field-option.js";
+import { loadFieldCatalog } from "../../fields/map-site-fields.js";
+import { matchSiteOption } from "../../answers/normalize-answer-value.js";
 import { openRuntimeDatabase } from "../../storage/open-runtime-database.js";
 function defaultIdFactory(prefix) {
     return `${prefix}_${randomUUID().replaceAll('-', '').slice(0, 16)}`;
@@ -27,13 +29,16 @@ function calendarDate(value) {
     const parsed = new Date(`${date}${day === undefined ? '-01' : ''}T00:00:00Z`);
     return Number.isNaN(parsed.getTime()) || !parsed.toISOString().startsWith(date) ? undefined : date;
 }
-export function fieldValueMatches(actual, expected) {
+export function fieldValueMatches(actual, expected, optionNormalization) {
     if (expected.expectedValue === undefined) {
         return true;
     }
     const current = String(actual.currentValue ?? '');
     const planned = String(expected.expectedValue);
     if (current === planned)
+        return true;
+    const normalized = matchFromCatalog(current, optionNormalization);
+    if (normalized !== undefined && normalized === (matchFromCatalog(planned, optionNormalization) ?? expected.expectedValue))
         return true;
     if (actual.options.some((option) => (option.rawLabel === current || option.rawValue === current) &&
         (option.rawLabel === planned || option.rawValue === planned)))
@@ -42,10 +47,15 @@ export function fieldValueMatches(actual, expected) {
         const degree = normalizeDegree(current);
         return degree !== undefined && degree === normalizeDegree(planned);
     }
+    if (expected.canonicalKey === 'application.compensation.expected_salary' && /^\d+$/.test(planned)) {
+        return matchSiteOption(planned, [{ rawLabel: current, source: 'dom' }], expected.canonicalKey) !== undefined;
+    }
     if (actual.controlKind === 'date' || actual.controlKind === 'month' ||
         /(?:date|_month)$/.test(expected.canonicalKey ?? '')) {
         const date = calendarDate(current);
-        return date !== undefined && date === calendarDate(planned);
+        const expectedDate = calendarDate(planned);
+        return date !== undefined && expectedDate !== undefined &&
+            (date === expectedDate || (/^\d{4}-\d{2}$/.test(expectedDate) && date === `${expectedDate}-01`));
     }
     return false;
 }
@@ -61,6 +71,8 @@ export async function validatePage(session, page, request) {
     const current = inspection.schema;
     const currentByRef = new Map(current.fields.map((field) => [field.runtimeRef, field]));
     const issues = [];
+    const normalizationByKey = new Map((request.paths === undefined ? [] : loadFieldCatalog(request.paths))
+        .map(field => [field.key, field.optionNormalization]));
     // 上传控件可以核对附件；导航或提交按钮不能证明填写结果。
     if (current.fields.length === 0 && current.uploads.length === 0) {
         issues.push({
@@ -100,7 +112,7 @@ export async function validatePage(session, page, request) {
             }
             continue;
         }
-        if (!fieldValueMatches(actual, expected)) {
+        if (!fieldValueMatches(actual, expected, normalizationByKey.get(expected.canonicalKey ?? ''))) {
             issues.push({
                 severity: 'error',
                 code: 'value_mismatch',

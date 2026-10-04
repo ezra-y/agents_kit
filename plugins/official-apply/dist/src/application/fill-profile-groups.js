@@ -187,7 +187,7 @@ export async function fillProfileGroups(request) {
                     continue;
                 const field = fields.find(field => request.mappings.some(mapping => mapping.runtimeRef === field.runtimeRef && mapping.canonicalKey === key));
                 const normalized = resolved === undefined ? normalizeAnswerValue({ canonicalKey: key, canonicalField: catalog.get(key), value,
-                    controlKind: field.controlKind, inputType: field.inputType, siteOptions: field.options }) : { matched: true, formattedValue: value };
+                    controlKind: field.controlKind, inputType: field.inputType, siteOptions: field.options, optionsComplete: field.optionsComplete }) : { matched: true, formattedValue: value };
                 if (normalized.matched)
                     values[key] = normalized.formattedValue;
             }

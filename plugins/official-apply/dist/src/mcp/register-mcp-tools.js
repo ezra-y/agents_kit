@@ -1051,7 +1051,7 @@ export function registerMcpTools() {
                 type: 'object',
                 properties: {
                     runId: { type: 'string' },
-                    answers: { type: 'array', description: '每项含 canonicalKey、value 和 scope' },
+                    answers: { type: 'array', description: '每项含 canonicalKey、value 和 scope；复用已有用户回答时可带 sourceRef 引用原始来源。' },
                 },
                 required: ['runId', 'answers'],
             },

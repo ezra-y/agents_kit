@@ -261,7 +261,7 @@ export async function runApplication(context, request) {
         // 重新解析、接着填剩下的，而不是把整页从头再来一遍。
         let workingSchema = schema;
         let workingAnswers = answers;
-        let filled = await fillPage({ page: context.page }, {
+        let filled = await fillPage({ page: context.page, paths: request.paths }, {
             runId: request.runId,
             plan: buildActionPlan({
                 runId: request.runId,
@@ -325,7 +325,7 @@ export async function runApplication(context, request) {
                 pendingQuestions = requiredConditionalAnswers;
                 break;
             }
-            const nextFill = await fillPage({ page: context.page }, {
+            const nextFill = await fillPage({ page: context.page, paths: request.paths }, {
                 runId: request.runId,
                 plan: buildActionPlan({
                     runId: request.runId,

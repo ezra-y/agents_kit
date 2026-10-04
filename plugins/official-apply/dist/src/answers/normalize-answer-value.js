@@ -56,6 +56,14 @@ export function matchSiteOption(value, options, canonicalKey, optionNormalizatio
         if (matches.length === 1)
             return matches[0];
     }
+    if (canonicalKey === 'application.compensation.expected_salary' && /^\d+$/.test(String(value))) {
+        const amount = Number(value);
+        const ranges = options.filter(option => {
+            const range = /^(\d+)\s*[~～-]\s*(\d+)$/.exec(option.rawLabel.trim());
+            return range !== null && amount >= Number(range[1]) && amount <= Number(range[2]);
+        });
+        return ranges.length === 1 ? ranges[0] : undefined;
+    }
     if (optionNormalization !== undefined || options.some((option) => option.normalizedValue !== undefined))
         return undefined;
     // 3. label 包含关系。只在唯一命中时采用，避免「北京」同时命中多项。
@@ -81,6 +89,9 @@ export function normalizeAnswerValue(input) {
         const canonical = input.canonicalField ?? (typeof value === 'boolean' ? { key: canonicalKey ?? '', valueType: 'boolean' } : undefined);
         const option = matchSiteOption(value, normalizeFieldOptions(siteOptions, canonical), canonicalKey, input.canonicalField?.optionNormalization);
         if (option === undefined) {
+            if (input.optionsComplete === false && controlKind === 'combobox') {
+                return { formattedValue: input.value, matched: true };
+            }
             return {
                 formattedValue: value,
                 matched: false,

@@ -6,6 +6,7 @@ import { findActionTarget } from "../locators/find-action-target.js";
 import { actionKindFor } from "./build-action-plan.js";
 import { executeFieldAction } from "./fill-page.js";
 import { scopeAllowsField } from "../../site-adapters/write-scope.js";
+import { loadFieldCatalog } from "../../fields/map-site-fields.js";
 const DEFAULT_TIMEOUT_MS = 8_000;
 function failure(runtimeRef, errorCode, errorMessage) {
     return {
@@ -28,6 +29,7 @@ export async function fillRepeatableGroup(page, request) {
     let workingGroup = request.group;
     let workingSchema = request.pageSchema;
     const fieldsByInstance = new Map();
+    const catalog = new Map(request.paths === undefined ? [] : loadFieldCatalog(request.paths).map((field) => [field.key, field]));
     for (const field of request.pageSchema.fields) {
         if (field.repeatGroupKey === request.group.groupKey &&
             field.repeatInstanceIndex !== undefined) {
@@ -158,6 +160,7 @@ export async function fillRepeatableGroup(page, request) {
                 page,
                 pageSchema: workingSchema,
                 runId: request.runId,
+                canonicalField: catalog.get(canonicalKey),
             });
             results.push({
                 actionPlanItemId: `repeat_${runtimeRef}`,

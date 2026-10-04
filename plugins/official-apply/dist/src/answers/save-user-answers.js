@@ -53,7 +53,7 @@ export function saveUserAnswers(request) {
                 status, user_confirmed, confidence, valid_until, last_confirmed_at,
                 supersedes_answer_id, created_at, updated_at)
              VALUES (?, ?, ?, ?, ?, 'current_user_input', ?, 'active', 1, 1, ?, ?, ?, ?, ?)`)
-                    .run(answerId, answer.canonicalKey, answer.scope.type, scopeKey, JSON.stringify(answer.value), `run:${request.runId}`, answer.validUntil ?? null, now, previous[0]?.id ?? null, now, now);
+                    .run(answerId, answer.canonicalKey, answer.scope.type, scopeKey, JSON.stringify(answer.value), answer.sourceRef ?? `run:${request.runId}`, answer.validUntil ?? null, now, previous[0]?.id ?? null, now, now);
                 savedAnswerIds.push(answerId);
                 for (const old of previous) {
                     priv.db

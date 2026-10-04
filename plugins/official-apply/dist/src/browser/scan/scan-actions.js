@@ -1,3 +1,4 @@
+import { PHOENIX } from "../controls/phoenix-controls.js";
 /**
  * 动作文案 → 动作类型。
  *
@@ -78,6 +79,12 @@ function expectedChangesOf(kind) {
 function locatorsOf(element, label, sameLabelIndex) {
     const candidates = [];
     const anchor = element.sectionPath[element.sectionPath.length - 1];
+    if (element.tag === 'div' && element.role !== 'button') {
+        candidates.push({ strategy: 'css_fallback', description: `按 Phoenix 按钮文字「${label}」定位`,
+            target: { css: `${PHOENIX.button}:has(${PHOENIX.buttonLabel}:text-is(${JSON.stringify(label)}))`,
+                ...(sameLabelIndex === undefined ? {} : { nth: sameLabelIndex }) },
+            source: 'scanner', basePriority: 85, confidence: 0.9 });
+    }
     if (anchor !== undefined) {
         candidates.push({
             strategy: 'region_role_name',

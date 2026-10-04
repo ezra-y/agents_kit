@@ -2,6 +2,7 @@ import { CONTROL_SELECTOR } from "./control-selector.js";
 import { MOKA_SELECT } from "../controls/moka-select.js";
 import { MOKA_CHECKBOX } from "../controls/moka-checkbox.js";
 import { MOKA_DATE } from "../controls/moka-date.js";
+import { PHOENIX } from "../controls/phoenix-controls.js";
 /**
  * 算一次页面摘要。
  *
@@ -21,9 +22,9 @@ export async function computePageDigest(page) {
 async function readFrameDigest(frame) {
     const frameKey = `${frame.name()}:${frame.url()}`;
     const digest = await frame
-        .evaluate(({ controlSelector, select, checkbox, date }) => {
+        .evaluate(({ controlSelector, select, checkbox, date, phoenix }) => {
         const indices = new Map(Array.from(document.querySelectorAll('*')).map((node, index) => [node, index]));
-        const nodes = Array.from(document.querySelectorAll(`${controlSelector},option,[role=option],[aria-current],[role=alert],[aria-live=assertive],[aria-live=polite],label,legend,h1,h2,h3,${select.display},${select.label},${checkbox.checked},${date.required}`));
+        const nodes = Array.from(document.querySelectorAll(`${controlSelector},option,[role=option],[aria-current],[role=alert],[aria-live=assertive],[aria-live=polite],label,legend,h1,h2,h3,${select.display},${select.label},${checkbox.checked},${date.required},${phoenix.display},${phoenix.title},${phoenix.checkedRadio},${phoenix.required}`));
         const markers = nodes.map((node) => {
             const element = node;
             const html = node;
@@ -80,7 +81,7 @@ async function readFrameDigest(frame) {
             controlCount: nodes.filter((node) => node.matches(controlSelector)).length,
             valueHash: markers.join('\n'),
         };
-    }, { controlSelector: CONTROL_SELECTOR, select: MOKA_SELECT, checkbox: MOKA_CHECKBOX, date: MOKA_DATE })
+    }, { controlSelector: CONTROL_SELECTOR, select: MOKA_SELECT, checkbox: MOKA_CHECKBOX, date: MOKA_DATE, phoenix: PHOENIX })
         .catch(() => undefined);
     return digest === undefined
         ? { frameKey, controlCount: -1, valueHash: 'unreadable' }

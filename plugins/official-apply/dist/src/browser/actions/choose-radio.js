@@ -1,3 +1,4 @@
+import { PHOENIX } from "../controls/phoenix-controls.js";
 /**
  * 把传进来的定位器还原成「这一组 radio」。
  *
@@ -24,6 +25,17 @@ export async function chooseRadio(group, targetValue, options = {}) {
     const timeout = options.timeoutMs ?? 5_000;
     const escaped = targetValue.replace(/["\\]/g, '\\$&');
     const scope = await resolveGroup(group);
+    if (await scope.locator(PHOENIX.radio).count() > 0) {
+        const option = scope.locator(PHOENIX.radio).filter({ has: scope.page().getByText(targetValue, { exact: true }) });
+        if (await option.count() !== 1)
+            return { changed: false, ok: false, reason: `无法唯一定位官网单选项「${targetValue}」` };
+        const selected = () => option.evaluate((element, selector) => element.matches(selector), PHOENIX.checkedRadio);
+        if (await selected())
+            return { changed: false, ok: true, selectedValue: targetValue };
+        await option.click({ timeout });
+        const checked = await selected();
+        return { changed: checked, ok: checked, ...(checked ? { selectedValue: targetValue } : { reason: '点击后仍未选中' }) };
+    }
     const isGroupItself = (await scope.count().catch(() => 0)) > 1;
     // 组里按 value 找具体那一项；找不到再按可见文字找。
     const byValue = isGroupItself

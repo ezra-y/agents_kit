@@ -18,8 +18,8 @@ const FAMILY_RULES = [
     {
         familyKey: 'beisen',
         displayName: '北森',
-        hostPatterns: ['beisen.com', 'italent.cn'],
-        scriptHostPatterns: ['beisen.com', 'italent.cn'],
+        hostPatterns: ['beisen.com', 'italent.cn', 'zhiye.com'],
+        scriptHostPatterns: ['beisen.com', 'italent.cn', 'zhiye.com'],
         apiPathPatterns: ['/recruitment/api'],
         domMarkers: ['data-beisen'],
     },

@@ -1,9 +1,10 @@
 import { CUSTOM_OPTION_SELECTOR, MOKA_SELECT } from "../controls/moka-select.js";
+import { PHOENIX } from "../controls/phoenix-controls.js";
 import { collectFrameNodes, scanControls } from "./scan-controls.js";
 import { scanActions } from "./scan-actions.js";
 import { scanRegions } from "./scan-regions.js";
 /** 可能承载浮层的角色。点开下拉后新出现的通常是其中之一。 */
-const OVERLAY_SELECTOR = `[role=listbox],[role=menu],[role=dialog],[role=tree],[role=grid],${MOKA_SELECT.overlay}`;
+const OVERLAY_SELECTOR = `[role=listbox],[role=menu],[role=dialog],[role=tree],[role=grid],${MOKA_SELECT.overlay},${PHOENIX.overlay}`;
 function scanError(code, detail) {
     return new Error(`${code}: ${detail}`);
 }
@@ -13,7 +14,7 @@ function scanError(code, detail) {
  * 描述符只用 role、可访问名和一小段文字，不含用户输入，也不含坐标。
  */
 export async function captureOverlaySignature(frame) {
-    const descriptors = await frame.evaluate((selector) => {
+    const descriptors = await frame.evaluate(({ selector, phoenix }) => {
         const visible = (element) => {
             const style = window.getComputedStyle(element);
             if (style.display === 'none' || style.visibility === 'hidden')
@@ -23,12 +24,12 @@ export async function captureOverlaySignature(frame) {
         return Array.from(document.querySelectorAll(selector))
             .filter(visible)
             .map((element) => {
-            const role = element.getAttribute('role') ?? 'moka_select';
+            const role = element.getAttribute('role') ?? (element.matches(phoenix) ? 'phoenix_select' : 'moka_select');
             const label = (element.getAttribute('aria-label') ?? '').trim();
             const text = (element.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 40);
             return `${role}|${label}|${text}`;
         });
-    }, OVERLAY_SELECTOR);
+    }, { selector: OVERLAY_SELECTOR, phoenix: PHOENIX.overlay });
     return { descriptors };
 }
 /**
@@ -46,6 +47,8 @@ export async function findNewOverlaySelector(frame, before) {
     const [role = '', label = ''] = fresh.split('|');
     if (role === 'moka_select')
         return MOKA_SELECT.overlay;
+    if (role === 'phoenix_select')
+        return PHOENIX.overlay;
     if (role === '') {
         return null;
     }
