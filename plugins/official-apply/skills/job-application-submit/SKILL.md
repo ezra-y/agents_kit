@@ -29,6 +29,7 @@ description: 在企业招聘官网完成已经明确岗位的申请和最终提�
 7. 从成功页、提交接口和应聘记录读取结果，按任务保存证据。按 [原表回写](../recruitment-link/references/table-setup.md) 第 5 节更新对应行并读回；使用本批登记，不要求用户重复提供表格链接。
 8. 结果不确定时，先按 [结果核对](references/confirmation-guard.md#结果核对) 只读检查官网应聘记录，保留本次请求和页面证据；只有当前岗位结果已明确，才调用
    `apply.resolve_submission { runId, result, confirmedBy }`。这个工具只改本地结果，不再次点击。当前环境无法核实时再交用户核对。
+   核实结论改变后，按 [结果同步](../recruitment-link/references/fill-selection.md#3-更新用户的结果位置) 更新原行并读回，再交接后续岗位。
 
 聊天确认无需固定句式。表格确认必须来自专用“确认投递”字段，AI 不得代勾；普通范围、验证码和
 状态复选框不能替代它。表格摘要不一致或当前环境不能读取该行时，展示当前摘要并等待后续确认。

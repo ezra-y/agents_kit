@@ -101,6 +101,8 @@ python3 skills/recruitment-link/scripts/table-locations.py --data-root <dataRoot
 
 ## 5. 将执行结果写回原行
 
+更新时机、负责人、字段含义和读回完成条件统一按 [结果同步](fill-selection.md#3-更新用户的结果位置) 执行。本节负责定位原行和调用写入工具。
+
 导入任务时在 externalRowId 保存原行身份：飞书用 `feishu:<baseToken>:<tableId>:<recordId>`；文件使用 read-local 返回的 externalRowIds，它包含绝对文件路径和稳定主键；其他文件读取工具按同样格式生成 `json.dumps(["file", 绝对路径, keyValue], ensure_ascii=False)`，不能仅用行号或主键值，以免不同表的同值行覆盖任务。随批次保存对应表格角色和文件路径；切换默认表不改变旧批次的原行归属。
 将每批原表描述及 `{externalRowId,role,recordId或keyValue}` 保存在 `<dataRoot>/tables/batches/<batchId>.json`，使用普通文件工具写入；恢复时先读这份绑定，不从当前默认位置猜旧任务来源。
 已有任务从 runtime.sqlite 的 application_tasks.external_row_id/source 读取原身份；没有原表行身份时，先按实际链接确认唯一行再补绑定。找不到就报告“待关联原行”，不随便覆盖同名公司。
