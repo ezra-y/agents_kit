@@ -35,6 +35,7 @@
         "skill:standalone/playground",
         "skill:standalone/pp-agent-capture",
         "skill:standalone/product-brainstorming",
+        "skill:standalone/reddit-community-research",
         "skill:standalone/skill-creator",
         "skill:standalone/smart-search",
         "skill:standalone/ui-ux-pro-max"
@@ -89,6 +90,7 @@
         "skill:standalone/positioning-workshop",
         "skill:standalone/pp-agent-capture",
         "skill:standalone/product-brainstorming",
+        "skill:standalone/reddit-community-research",
         "skill:standalone/skill-creator",
         "skill:standalone/smart-search",
         "skill:standalone/ui-ux-pro-max"

@@ -1,0 +1,14 @@
+{
+  "description": "真实公开讨论的必要字段，原文未经改写；用于验证数据整理与计数。",
+  "sources": [
+    "https://www.reddit.com/r/openrouter/comments/1wgoag8/",
+    "https://www.reddit.com/r/openrouter/comments/1wgp50b/",
+    "https://www.reddit.com/r/SillyTavernAI/comments/1wflsa9/",
+    "https://www.reddit.com/r/PiCodingAgent/comments/1wmd8ez/",
+    "https://www.reddit.com/r/PiCodingAgent/comments/1wkg12p/",
+    "https://www.reddit.com/r/hermesagent/comments/1wtdt4n/comment/pdwmtfu/",
+    "https://www.reddit.com/r/hermesagent/comments/1wzgmom/codex_usage/"
+  ],
+  "retrieval": "前两篇来自本次 Arctic Shift 实际查询；集中讨论来自用户已有研究保存的 Reddit 和 Arctic Shift 资料；Pi 帖子和 Hermes 阅读案例来自用户六社区调研保存的真实资料。reading-findings.jsonl 原样保存两条既有分析记录，用于检查字段与原文在读取过程中的完整保留。",
+  "coverage": "这是选定的测试材料。集中讨论仅包含测试使用的四条真实评论；Hermes 阅读案例包含两篇原帖和一条相关评论，覆盖范围以各文件实际记录为准。"
+}

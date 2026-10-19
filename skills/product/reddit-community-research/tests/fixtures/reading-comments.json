@@ -1,0 +1,13 @@
+[
+  {
+    "id": "pdwmtfu",
+    "author": "Jlock796",
+    "body": "What I use Hermes Agent for besides coding?  solo operator, one VPS, four Telegram tabs…  \nMost Hermes posts I see are about code. Mine barely touches it. I run a one-person business, and Hermes is my content and marketing operations desk.\n\n**The setup**  \nHermes runs on a small VPS as a service that restarts itself. I send it jobs from Telegram. I split Telegram into four tabs so context never bleeds between them:  \nPersonal social  \nPersonal site  \nBusiness social  \nBusiness site  \nEach tab knows which accounts it serves, which voice to use, and which single link goes with that audience. The personal tab gets my raw voice. The business tab gets the clean version. They never cross.\n\n**What it does for me:**\n\n**Social drafting.** I give it a brief and it writes posts for the right accounts in the right voice.  \n**Design handoff.** Drafts go to Canva for layouts, and finished assets land in Drive.  \n**Scheduling.** Approved posts get pushed into Postiz as drafts. Nothing goes live without me.  \n**Blog and site copy.** It writes the copy and opens PRs. I review and merge.  \n**Gemini for the heavy lifting.** It handles the generation side while Hermes handles the routing and follow-through.  \nCron and kanban are built in, and recurring content jobs are where I'm headed next.\n\n**What I learned:**  \n**One worker owns a job start to finish.** When I split a layout job across several agents, the results were worse. Containing it in one worker fixed that.  \n**Separate tabs per audience beat one giant thread.** The agent stops mixing voices and links.  \n**I approve, it drafts.** Hermes never publishes on its own.  \n**The free model tier will rate limit you.** I was getting 429s on a free OpenRouter model and switched to a paid one. It's been reliable since.  \nI'm solving the \"I'm one person and I need a production team\" problem, not the \"I need a coding assistant\" problem.\n\nhttps://preview.redd.it/zbm8p27q6jth1.jpeg?width=1353&format=pjpg&auto=webp&s=37dd568650b5c3867ca60985257a8789aa4851f8\n\nWhat are you all using it for outside of code?",
+    "parent_id": "t3_1wtdt4n",
+    "created_utc": 1791154771,
+    "score": 2,
+    "is_submitter": false,
+    "link_id": "t3_1wtdt4n",
+    "subreddit": "hermesagent"
+  }
+]

@@ -1,0 +1,92 @@
+[
+  {
+    "id": "p9vxn5v",
+    "author": "windwardmist",
+    "created_utc": 1789441717,
+    "subreddit": "openrouter",
+    "score": 1,
+    "body": "Took me several weeks to get a response so I’d expect about a month. ",
+    "link_id": "t3_1wgoag8",
+    "parent_id": "t3_1wgoag8"
+  },
+  {
+    "id": "pa147ts",
+    "author": "Interesting-Ad-1822",
+    "created_utc": 1789504095,
+    "subreddit": "openrouter",
+    "score": 1,
+    "body": "Same happened with me, they are not responding money deducted but no credits, I moved to deepinfra. I may not continue with them because of no support from them ",
+    "link_id": "t3_1wgoag8",
+    "parent_id": "t3_1wgoag8"
+  },
+  {
+    "id": "p9w3m9d",
+    "author": "poptix",
+    "created_utc": 1789443939,
+    "subreddit": "openrouter",
+    "score": 2,
+    "body": "Qwen uses a lot. Make use of the information the API gives you to make better budgeting decisions or skip the overthinking models for now.",
+    "link_id": "t3_1wgp50b",
+    "parent_id": "t3_1wgp50b"
+  },
+  {
+    "id": "p9wkrb4",
+    "author": "Nekotekina",
+    "created_utc": 1789451285,
+    "subreddit": "openrouter",
+    "score": 1,
+    "body": "Can you elaborate? What exactly does it explain? Since I'm not complaining about long thinking. Only about input length. It doesn't seem to include previous thinking traces.",
+    "link_id": "t3_1wgp50b",
+    "parent_id": "t1_p9w3m9d"
+  },
+  {
+    "id": "p9wnc87",
+    "author": "poptix",
+    "created_utc": 1789452506,
+    "subreddit": "openrouter",
+    "score": 1,
+    "body": "You should treat it like a street vendor you won't find next week. Have whatever is routing your requests use the API response data to log request and response profiles and point out outliers, then blacklist them when appropriate. \n\nSome kid just fessed up to routing requests to lesser models and pocketing the difference.\n\n",
+    "link_id": "t3_1wgp50b",
+    "parent_id": "t1_p9wkrb4"
+  },
+  {
+    "id": "p9n4i95",
+    "author": "AutoModerator",
+    "created_utc": 1789338609,
+    "subreddit": "SillyTavernAI",
+    "score": 3,
+    "body": "MODELS: 16B to 31B – For discussion of models in the 16B to 31B parameter range.\n\n*I am a bot, and this action was performed automatically. Please [contact the moderators of this subreddit](/message/compose/?to=/r/SillyTavernAI) if you have any questions or concerns.*",
+    "link_id": "t3_1wflsa9",
+    "parent_id": "t3_1wflsa9"
+  },
+  {
+    "id": "p9n4ic7",
+    "author": "AutoModerator",
+    "created_utc": 1789338610,
+    "subreddit": "SillyTavernAI",
+    "score": 2,
+    "body": "APIs\n\n*I am a bot, and this action was performed automatically. Please [contact the moderators of this subreddit](/message/compose/?to=/r/SillyTavernAI) if you have any questions or concerns.*",
+    "link_id": "t3_1wflsa9",
+    "parent_id": "t3_1wflsa9"
+  },
+  {
+    "id": "p9n6nme",
+    "author": "Baros4294",
+    "created_utc": 1789339245,
+    "subreddit": "SillyTavernAI",
+    "score": 3,
+    "body": "Best API models for the best instructions following? In my testing Gemini 3.8 Flash, Kimi K3, GLM 5.3 seem to have great IF but none is perfect and ignored my instructions sometime",
+    "link_id": "t3_1wflsa9",
+    "parent_id": "t1_p9n4ic7"
+  },
+  {
+    "id": "p9n8kdt",
+    "author": "ImaginationHefty6401",
+    "created_utc": 1789339816,
+    "subreddit": "SillyTavernAI",
+    "score": 3,
+    "body": "I'm just curious. How do these models manage humor? I do a lot of roleplays with some comedic factor and I still think DeepSeek (older model) is the funniest. ",
+    "link_id": "t3_1wflsa9",
+    "parent_id": "t1_p9n6nme"
+  }
+]

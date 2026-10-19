@@ -1,0 +1,38 @@
+[
+  {
+    "id": "1wkg12p",
+    "title": "Can I use openai model for browser automation?",
+    "selftext": "[removed]",
+    "author": "boklos",
+    "created_utc": 1789804430,
+    "score": 1,
+    "num_comments": 0,
+    "link_flair_text": "Question",
+    "url": "https://www.reddit.com/r/PiCodingAgent/comments/1wkg12p/can_i_use_openai_model_for_browser_automation/",
+    "is_self": true,
+    "is_video": false,
+    "removed_by_category": "reddit",
+    "subreddit": "PiCodingAgent",
+    "post_url": "https://www.reddit.com/r/PiCodingAgent/comments/1wkg12p/can_i_use_openai_model_for_browser_automation/",
+    "date_phoenix": "2026-09-19",
+    "comments": []
+  },
+  {
+    "id": "1wmd8ez",
+    "title": "Pi Desktop: a desktop GUI for the Pi/omp coding agent",
+    "selftext": "I've worked on Pi Desktop for a while but haven't posted about it much, so here's a proper intro.\n\n\n\nIt's a desktop app for the Pi coding agent, and it also works with oh-my-pi (OMP). I use Pi every day and wanted more than a terminal window, so I built this.\n\n\n\nWhat it does:\n\n\n\nStreaming chat that shows thinking blocks and tool calls. File reads show as highlighted code, and edits show as diffs.\n\nMultiple workspaces. Each session runs its own agent process, so a task keeps going when you switch to a different one.\n\nA file tree, a code editor, preview panes for code, images, and PDFs, and a terminal.\n\nFour permission modes, from read-only to trusted. You can also add allow/deny rules, for example \"never touch \\*.env\".\n\nA package browser that connects to pi.dev/packages.\n\nThemes. There are 7 built-in, you can make your own in the app, and there's a small community gallery.\n\nAn optional mode where Pi, Claude, and Codex agree on a plan before Pi builds it.\n\nIt's had a few releases so far, and more people have picked it up than I expected. Thanks to everyone who has downloaded it, starred it, or filed an issue. It's still alpha, so feedback and bug reports help a lot.\n\nWebsite: [https://pi-desktop.com](https://pi-desktop.com)\n\nRepo: [https://github.com/FaqFirebase/pi-desktop](https://github.com/FaqFirebase/pi-desktop)\n\n",
+    "author": "PikkonMG",
+    "created_utc": 1789998279,
+    "score": 107,
+    "num_comments": 27,
+    "link_flair_text": "Resource",
+    "url": "https://i.redd.it/ukid93qnnvqh1.png",
+    "is_self": false,
+    "is_video": false,
+    "removed_by_category": null,
+    "subreddit": "PiCodingAgent",
+    "post_url": "https://www.reddit.com/r/PiCodingAgent/comments/1wmd8ez/pi_desktop_a_desktop_gui_for_the_piomp_coding/",
+    "date_phoenix": "2026-09-21",
+    "comments": []
+  }
+]

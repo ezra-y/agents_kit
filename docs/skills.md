@@ -1,6 +1,6 @@
 # 技能清单
 
-共 **310** 个 · 常驻 **77** 个 · 有上游可检查更新 **157** 个
+共 **312** 个 · 常驻 **79** 个 · 有上游可检查更新 **157** 个
 
 可搜索网页清册由 `agents-kit docs build` 生成到 `docs/index.html`，不进入 Git。
 
@@ -230,12 +230,13 @@
 | `writing-for-agents` | Writing documents for agents. Use when creating or editing skills, or  | `role/workflow` `focus/code-quality` `output/code` | ● | [github.com/mattpocock/skills](https://github.com/mattpocock/skills) |
 | `zoom-out` | 让 agent 抬升一个抽象层,给出相关模块和调用方的地图。正文只有 2 行,标了仅手动调用。 | `role/researcher` `focus/codebase-navigation` `focus/software-architecture` `output/report` |  | — |
 
-## 产品 (`product`，31 个)
+## 产品 (`product`，32 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
 | `positioning-workshop` | 产品定位工作坊：从目标用户、未满足需求、产品价值和竞品差异中找到营销主张 | `role/guide` `focus/brand-strategy` `focus/product-validation` `focus/requirements-discovery` `output/decision` | ● | [github.com/deanpeters/Product-Manager-Skills](https://github.com/deanpeters/Product-Manager-Skills) |
 | `product-brainstorming` | 产品头脑风暴：探索用户问题、机会空间、解决方案和关键假设 | `role/guide` `focus/decision-making` `focus/product-validation` `focus/requirements-discovery` `output/decision` | ● | [github.com/anthropics/knowledge-work-plugins](https://github.com/anthropics/knowledge-work-plugins) |
+| `reddit-community-research` | 从 Reddit 帖子和评论初筛需求，深入阅读提取具体痛点、归纳共性并按数量生成研究报告。 | `role/researcher` `focus/requirements-discovery` `focus/requirements-synthesis` `output/report` | ● | — |
 | `thinking-bounded-rationality` | 有限理性。搜索或调研可能无止境时，先定一个明确的“够用”阈值，遇到第一个达标的选项就收手，不追最优解。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` |  | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
 | `thinking-circle-of-competence` | 能力圈。判断某个断言自己有没有依据时，先划出证据边界，再估错判的代价，然后选择回答、去查还是明说不知道，不硬编。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` |  | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
 | `thinking-cynefin` | Cynefin 框架。不清楚该用哪种应对方式时，先把问题归到简单、繁杂、复杂或混乱域，混乱域先拆解再定策略。 | `role/workflow` `focus/decision-making` `focus/mental-models` `output/decision` |  | [github.com/tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills) |
@@ -302,7 +303,7 @@
 | `social-science-paper-writing` | 面向社会科学与设计研究的论文工作流：支持选题诊断、研究问题细化、文献综述规划、CNKI/Google Scholar 到 Zotero 的资 | `role/workflow` `focus/literature-review` `focus/long-form-writing` `focus/research-question-refinement` `platform/zotero` `output/article` `output/report` |  | [raw.githubusercontent.com](https://raw.githubusercontent.com/fakerqwq/social-science-paper-writing-skill/main/social-science-paper-writing-skill/SKILL.md) |
 | `thesis-figure-skill` | 面向论文研究框架、方法流程、概念模型、服务蓝图和系统关系的可编辑配图工作流：先明确关系与布局，再用 TikZ 或 draw.io 实现、渲染 | `role/workflow` `focus/design-analysis` `focus/visual-design` `output/diagram` |  | — |
 
-## 研究与办公 (`research-office`，40 个)
+## 研究与办公 (`research-office`，41 个)
 
 | 技能 | 说明 | 标签 | 常驻 | 来源 |
 |---|---|---|:--:|---|
@@ -312,6 +313,7 @@
 | `deep-research-skill` | 论点驱动的深度调研工作流：优先一手源、交叉验证、反例分析，并输出带来源的判断型报告。 | `role/researcher` `focus/web-research` `output/research` | ● | — |
 | `eli5` | Explain a topic like I'm a 5 year old. Use when the user types /eli5 < | `role/builder` `focus/interactive-tools` `stack/html` `output/app` | ● | [github.com/anthropics/claude-plugins-community](https://github.com/anthropics/claude-plugins-community) |
 | `job-application-submit` | 在企业招聘官网完成已经明确岗位的申请和最终提交。仅当用户要求申请或提交，而且任务已有用户提供的具体岗位，或用户明确授权 Agent 代选岗位 | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
+| `job-recommendation` | 根据简历推荐具体岗位，生成一致的飞书表格和岗位阅读文档，读取文档确认并继续投递。 | `role/workflow` `focus/workflow-automation` `output/skill` | ● | — |
 | `lark-approval` | 审批:查处理待办已办实例、搜可发起的审批定义、看详情并发起原生审批实例。 | `role/integration` `focus/approvals` `platform/lark` `output/approval` |  | [github.com/larksuite/cli](https://github.com/larksuite/cli/tree/main/skills/lark-approval) |
 | `lark-attendance` | 考勤打卡:只能查自己的打卡记录。 | `role/integration` `focus/attendance` `platform/lark` `output/report` |  | [github.com/larksuite/cli](https://github.com/larksuite/cli/tree/main/skills/lark-attendance) |
 | `lark-base` | 多维表格:建表、字段、记录、视图、统计、公式与 lookup、表单、仪表盘、workflow、角色权限。25 个附件。 | `role/integration` `focus/database` `focus/workflow-automation` `platform/lark` `output/database` |  | [github.com/larksuite/cli](https://github.com/larksuite/cli/tree/main/skills/lark-base) |

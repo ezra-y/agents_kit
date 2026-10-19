@@ -1,0 +1,35 @@
+[
+  {
+    "id": "1wgoag8",
+    "author": "WhatIsATypeError",
+    "created_utc": 1789441107,
+    "subreddit": "openrouter",
+    "score": 2,
+    "title": "Does Openrouter just ignore all support tickets?",
+    "selftext": "I've used OpenRouter for a while, never had any problems, but recently I added money and it was never credited to my account. I sent a support request. Got no response. Sent another one a week later. Still got no response. So it's been two weeks without a peep from them. Do they actually respond to tickets or am I screwed?",
+    "num_comments": 2,
+    "url": "https://www.reddit.com/r/openrouter/comments/1wgoag8/does_openrouter_just_ignore_all_support_tickets/"
+  },
+  {
+    "id": "1wgp50b",
+    "author": "Nekotekina",
+    "created_utc": 1789443529,
+    "subreddit": "openrouter",
+    "score": 0,
+    "title": "I think openrouter scams me with input tokens on Qwen 3.8 Max",
+    "selftext": "The same chat in embedded chatroom with multiple messages gets less than 10k tokens of input when redirected to a different model, gets billed almost 100k by Qwen 3.8, and it was 170k at some point for absolutely no visible reason, except that I uploaded a huge file in a \\*\\*different\\*\\* chat.",
+    "num_comments": 2,
+    "url": "https://www.reddit.com/r/openrouter/comments/1wgp50b/i_think_openrouter_scams_me_with_input_tokens_on/"
+  },
+  {
+    "id": "1wflsa9",
+    "author": "deffcolony",
+    "created_utc": 1789338608,
+    "subreddit": "SillyTavernAI",
+    "score": 27,
+    "title": "[Megathread] - Best Models/API discussion - Week of: September 13, 2026",
+    "selftext": "This is our weekly megathread for discussions about models and API services. \n\nAll non-specifically technical discussions about API/models not posted to this thread will be deleted. No more \"What's the best model?\" threads. \n\n^((This isn't a free-for-all to advertise services you own or work for in every  single megathread, we may allow announcements for new services every  now and then provided they are legitimate and not overly promoted, but  don't be surprised if ads are removed.)) \n\n  \n**How to Use This Megathread**\n\nBelow this post, you’ll find **top-level comments for each category:**\n\n* **MODELS: ≥ 70B** – For discussion of models with 70B parameters or more.\n* **MODELS: 32B to 70B** – For discussion of models in the 32B to 70B parameter range.\n* **MODELS: 16B to 32B** – For discussion of models in the 16B to 32B parameter range.\n* **MODELS: 8B to 16B** – For discussion of models in the 8B to 16B parameter range.\n* **MODELS: < 8B** – For discussion of smaller models under 8B parameters.\n* **APIs** – For any discussion about API services for models (pricing, performance, access, etc.).\n* **MISC DISCUSSION** – For anything else related to models/APIs that doesn’t fit the above sections.\n\nPlease reply to the relevant section below with your questions, experiences, or recommendations!  \nThis keeps discussion organized and helps others find information faster.\n\nHave at it!",
+    "num_comments": 127,
+    "url": "https://www.reddit.com/r/SillyTavernAI/comments/1wflsa9/megathread_best_modelsapi_discussion_week_of/"
+  }
+]

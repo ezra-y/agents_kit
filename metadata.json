@@ -437,6 +437,17 @@
       ],
       "category": "research-office"
     },
+    "skill:plugin/official-apply/job-recommendation": {
+      "recommendation": 4,
+      "description": "根据简历推荐具体岗位，生成一致的飞书表格和岗位阅读文档，读取文档确认并继续投递。",
+      "trigger": "",
+      "tags": [
+        "role/workflow",
+        "focus/workflow-automation",
+        "output/skill"
+      ],
+      "category": "research-office"
+    },
     "skill:plugin/official-apply/official-apply": {
       "recommendation": 3,
       "description": "统一处理网申任务。用户要整理岗位来源、导入任务、登录招聘官网、填写或检查站内简历、继续上次任务、准备或确认最终投递时使用。根据用户目的和已有状态进入对应阶段，不要求用户选择阶段技能。",
@@ -3343,6 +3354,17 @@
         "output/code"
       ]
     },
+    "skill:standalone/reddit-community-research": {
+      "recommendation": 4,
+      "description": "从 Reddit 帖子和评论初筛需求，深入阅读提取具体痛点、归纳共性并按数量生成研究报告。",
+      "trigger": "调研 Reddit 社区、提取帖子评论中的痛点需求、分析场景与人群、继续已有社区研究。",
+      "tags": [
+        "role/researcher",
+        "focus/requirements-discovery",
+        "focus/requirements-synthesis",
+        "output/report"
+      ]
+    },
     "skill:standalone/redesign-existing-projects": {
       "recommendation": 3,
       "description": "给**已有**站点做升级:先审计现状、识别出通用 AI 套路,再套高端标准,且不破坏现有功能。兼容任何 CSS 框架。",
@@ -3878,17 +3900,6 @@
         "focus/software-architecture",
         "output/report"
       ]
-    },
-    "skill:plugin/official-apply/job-recommendation": {
-      "recommendation": 4,
-      "description": "根据简历推荐具体岗位，生成一致的飞书表格和岗位阅读文档，读取文档确认并继续投递。",
-      "trigger": "",
-      "tags": [
-        "role/workflow",
-        "focus/workflow-automation",
-        "output/skill"
-      ],
-      "category": "research-office"
     }
   }
 }

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reddit 社区需求调研"
+  short_description: "按问题归属筛选，归并共性并保留独立需求，交付 Notion 完整调研和需求汇总"
+  default_prompt: "使用 $reddit-community-research 调研指定 Reddit 社区，逐帖分析并标注问题归属，归并共性并保留独立需求，交付 Notion 完整调研报告、需求汇总和过程文档。"
