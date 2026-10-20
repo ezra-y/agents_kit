@@ -4,6 +4,7 @@
     "claude": {
       "scope": "user",
       "skills": [
+        "skill:standalone/ad-campaign-archive",
         "skill:standalone/agent-reach",
         "skill:standalone/agent-trajectory",
         "skill:standalone/banner-design",
@@ -58,6 +59,7 @@
     "codex": {
       "scope": "user",
       "skills": [
+        "skill:standalone/ad-campaign-archive",
         "skill:standalone/agent-reach",
         "skill:standalone/agent-trajectory",
         "skill:standalone/banner-design",

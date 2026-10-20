@@ -1,0 +1,4 @@
+interface:
+  display_name: "广告投放资料整理"
+  short_description: "整理广告素材、导入包、数据表和 PostHog 看板，汇总到 Notion"
+  default_prompt: "使用 $ad-campaign-archive 整理本批已投放广告，更新素材、导入包、数据表和 PostHog 看板，并汇总到指定 Notion 页面。"

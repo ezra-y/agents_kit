@@ -1669,6 +1669,18 @@
         "output/report"
       ]
     },
+    "skill:standalone/ad-campaign-archive": {
+      "recommendation": 4,
+      "description": "整理广告素材、导入包、数据表、PostHog看板和Notion资料入口",
+      "trigger": "广告投放后整理、广告资料归档、整理投放文件",
+      "tags": [
+        "role/workflow",
+        "focus/file-management",
+        "focus/usage-analysis",
+        "output/files",
+        "output/spreadsheet"
+      ]
+    },
     "skill:standalone/agent-reach": {
       "recommendation": 4,
       "description": "获取需要平台专用接口或登录状态的网页、社交帖子和视频内容，并选择可用后端。用于需要这些平台能力的检索；已有专用技能时使用专用技能。",
