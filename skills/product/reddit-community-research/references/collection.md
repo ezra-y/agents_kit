@@ -17,10 +17,10 @@ OpenCLI 已有的读取入口可先通过 `opencli reddit read --help`、`opencl
 ### 采集一个时间范围
 
 ```bash
-python3 scripts/reddit_research.py collect --db /绝对路径/research.sqlite --subreddit openrouter --after 2026-09-15 --before 2026-09-16
+python3 scripts/reddit_research.py collect --db /绝对路径/research.sqlite --subreddit openrouter --subreddit LocalLLaMA --after 2026-09-15 --before 2026-09-16
 ```
 
-时间默认使用 UTC，开始包含、结束不包含；可以使用带时区的 ISO 日期时间。帖子和评论各自按创建时间进入范围。来自更早帖子的范围内评论仍被收集，并补取其原帖作为背景。
+`--subreddit` 可传入单个社区，也可重复指定以一次采集多个目标社区。时间默认使用 UTC，开始包含、结束不包含；可以使用带时区的 ISO 日期时间。帖子和评论各自按创建时间进入范围。来自更早帖子的范围内评论仍被收集，并补取其原帖作为背景。
 
 按需使用 `--kind posts` 或 `--kind comments`。范围与参数相同的命令可以继续已保存进度。每批原始资料与分页位置一并保存；网络和解析错误直接终止，已经完成的批次保留。
 
@@ -50,7 +50,7 @@ python3 scripts/reddit_research.py status --db /绝对路径/research.sqlite
 python3 scripts/reddit_research.py batches --db /绝对路径/research.sqlite --out /绝对路径/screen-batches
 ```
 
-输出目录使用新目录。正文与评论各自进入批次，评论带有原帖标题及父级文本提示。长正文分段，保留 `source_id`、`part` 和 `parts`；所有分段均需筛选。父级提示可能截短，完整内容在资料库中保留。批次字符目标可用 `--max-chars` 调整，单条分段长度可用 `--record-chars` 调整。
+输出目录使用新目录。正文与评论各自进入批次，附带所属社区 `subreddit`、净得分 `score`、作者头衔 `author_flair`、原帖标题 `post_title`、原帖分类标签 `post_flair`、原帖赞成票占比 `post_upvote_ratio`、高争议标记 `contested` 及父级文本提示；原资料缺失的字段为 `null`。当原帖评论满 10 条且 `upvote_ratio <= 0.65`，或评论带有原生争议标记 `controversiality == 1` 时，`contested` 为 `true`。长正文分段，保留 `source_id`、`part` 和 `parts`；所有分段均需筛选。父级提示可能截短，完整内容在资料库中保留。批次字符目标可用 `--max-chars` 调整，单条分段长度可用 `--record-chars` 调整。
 
 Agent 按 [needs.md](needs.md) 筛选，保存 `screen.jsonl`。每个分段给出决定与依据，保留输入的 `source_id` 和 `part`。合并结果：
 

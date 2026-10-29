@@ -96,6 +96,19 @@ def get_record(connection, source_id):
     return row
 
 
+ACTION_RANK = {"expressing": 0, "seeking": 1, "acted": 2}
+RANK_ACTION = {rank: name for name, rank in ACTION_RANK.items()}
+UNKNOWN_AUTHORS = {None, "", "[deleted]", "[removed]"}
+
+
+def post_contested(post_raw):
+    if not post_raw:
+        return False
+    ratio = post_raw.get("upvote_ratio")
+    comments = post_raw.get("num_comments") or 0
+    return ratio is not None and ratio <= 0.65 and comments >= 10
+
+
 def record_text(row):
     raw = json.loads(row["raw"])
     if row["kind"] == "posts":
@@ -236,6 +249,7 @@ def export_batches(connection, directory, max_chars=20000, record_chars=6000):
     for row in connection.execute(
         "SELECT * FROM records WHERE in_scope=1 ORDER BY created_utc, id"
     ):
+        raw = json.loads(row["raw"])
         text = record_text(row)
         parent = connection.execute(
             "SELECT * FROM records WHERE id=?", (row["parent_id"],)
@@ -243,6 +257,7 @@ def export_batches(connection, directory, max_chars=20000, record_chars=6000):
         post = connection.execute(
             "SELECT * FROM records WHERE id=?", (row["post_id"],)
         ).fetchone()
+        post_raw = json.loads(post["raw"]) if post else None
         chunks = [
             text[i : i + record_chars] for i in range(0, len(text), record_chars)
         ] or [""]
@@ -251,11 +266,20 @@ def export_batches(connection, directory, max_chars=20000, record_chars=6000):
                 "source_id": row["id"],
                 "post_id": row["post_id"],
                 "parent_id": row["parent_id"],
+                "subreddit": raw.get("subreddit"),
                 "author": row["author"],
+                "author_flair": raw.get("author_flair_text") or None,
+                "score": raw.get("score"),
                 "part": index,
                 "parts": len(chunks),
                 "text": chunk,
-                "post_title": json.loads(post["raw"]).get("title") if post else None,
+                "post_title": post_raw.get("title") if post_raw else None,
+                "post_flair": (post_raw.get("link_flair_text") or None)
+                if post_raw
+                else None,
+                "post_upvote_ratio": post_raw.get("upvote_ratio") if post_raw else None,
+                "contested": post_contested(post_raw)
+                or bool(raw.get("controversiality")),
                 "reply_to_text": record_text(parent)[:1200] if parent else None,
                 "reply_to_truncated": bool(parent and len(record_text(parent)) > 1200),
                 "url": record_url(row),
@@ -310,6 +334,12 @@ def read_findings(connection, findings, start=0, limit=20):
         for source_id in (
             finding["source_id"],
             *(item["source_id"] for item in finding["evidence"]),
+            *(
+                [finding["action_evidence"]["source_id"]]
+                if isinstance(finding.get("action_evidence"), dict)
+                and finding["action_evidence"].get("source_id")
+                else []
+            ),
         )
     }
     records = {
@@ -353,9 +383,13 @@ def read_findings(connection, findings, start=0, limit=20):
                 "post_id": row["post_id"],
                 "parent_id": row["parent_id"],
                 "url": record_url(row),
-                "raw": json.loads(row["raw"]),
+                "contested": post_contested(raw)
+                if row["kind"] == "posts"
+                else bool(raw.get("controversiality")),
+                "raw": raw,
             }
             for source_id, row in sorted(records.items())
+            for raw in (json.loads(row["raw"]),)
         },
         "missing_parent_ids": sorted(missing),
     }
@@ -406,6 +440,53 @@ def discussion_unit(connection, row, megathreads, discussion_id=None):
     return row["id"]
 
 
+def new_bucket(name=None):
+    return {
+        "name": name,
+        "discussions": set(),
+        "discussion_actions": {},
+        "authors": set(),
+        "comments": set(),
+        "posts": set(),
+        "contested_posts": set(),
+        "sources": {},
+    }
+
+
+def record_in_bucket(
+    bucket, discussion_id, source, source_raw, post_is_contested, action
+):
+    bucket["discussions"].add(discussion_id)
+    rank = ACTION_RANK[action]
+    if rank > bucket["discussion_actions"].get(discussion_id, -1):
+        bucket["discussion_actions"][discussion_id] = rank
+    if source["author"] not in UNKNOWN_AUTHORS:
+        bucket["authors"].add(source["author"].casefold())
+    if source["kind"] == "comments":
+        bucket["comments"].add(source["id"])
+    bucket["posts"].add(source["post_id"])
+    if post_is_contested:
+        bucket["contested_posts"].add(source["post_id"])
+    bucket["sources"][source["id"]] = source_raw.get("score")
+
+
+def bucket_metrics(bucket):
+    scores = [score for score in bucket["sources"].values() if score is not None]
+    actions = {"acted": 0, "seeking": 0, "expressing": 0}
+    for rank in bucket["discussion_actions"].values():
+        actions[RANK_ACTION[rank]] += 1
+    return {
+        "discussions": len(bucket["discussions"]),
+        "authors": len(bucket["authors"]),
+        "expressing_comments": len(bucket["comments"]),
+        "posts": len(bucket["posts"]),
+        "contested_posts": len(bucket["contested_posts"]),
+        "actions": actions,
+        "score_total": sum(scores) if scores else None,
+        "scored_sources": len(scores),
+    }
+
+
 def count_findings(connection, findings, megathreads=(), *, include_attributions):
     if not include_attributions:
         raise ValueError("请指定本轮纳入统计的问题归属标签")
@@ -414,14 +495,7 @@ def count_findings(connection, findings, megathreads=(), *, include_attributions
     for post_id in megathreads:
         get_record(connection, post_id)
     groups = defaultdict(
-        lambda: {
-            "discussions": set(),
-            "authors": set(),
-            "comments": set(),
-            "posts": set(),
-            "findings": [],
-            "sources": set(),
-        }
+        lambda: {**new_bucket(), "findings": [], "subreddits": {}}
     )
     seen = set()
     for finding in findings:
@@ -434,13 +508,19 @@ def count_findings(connection, findings, megathreads=(), *, include_attributions
         if attribution not in include_attributions:
             continue
         source = get_record(connection, finding["source_id"])
-        get_record(connection, source["post_id"])
+        post = get_record(connection, source["post_id"])
         if not source["in_scope"]:
             raise ValueError(f"表达来源超出初始资料范围：{source['id']}")
         if finding["kind"] not in ("pain", "need") or not finding["statement"].strip():
             raise ValueError(f"需求类型或描述无效：{finding['id']}")
-        if not finding.get("need_id") or not finding.get("evidence"):
-            raise ValueError(f"缺少共性编号或原文依据：{finding['id']}")
+        action = finding.get("action")
+        if action not in ACTION_RANK:
+            raise ValueError(f"缺少或无效的行动等级：{finding['id']}")
+        need_id = (finding.get("need_id") or "").strip()
+        if not need_id:
+            continue
+        if not finding.get("evidence"):
+            raise ValueError(f"缺少原文依据：{finding['id']}")
         has_source_quote = False
         for evidence in finding["evidence"]:
             record = get_record(connection, evidence["source_id"])
@@ -453,28 +533,78 @@ def count_findings(connection, findings, megathreads=(), *, include_attributions
             has_source_quote |= record["id"] == source["id"]
         if not has_source_quote:
             raise ValueError(f"缺少表达来源自身的原话：{finding['id']}")
-        group = groups[finding["need_id"]]
-        group["discussions"].add(
-            discussion_unit(
-                connection, source, megathreads, finding.get("discussion_id")
-            )
+        disc_id = discussion_unit(
+            connection, source, megathreads, finding.get("discussion_id")
         )
-        if source["author"] and source["author"] not in ("[deleted]", "[removed]"):
-            group["authors"].add(source["author"].casefold())
-        if source["kind"] == "comments":
-            group["comments"].add(source["id"])
-        group["posts"].add(source["post_id"])
-        group["sources"].add(source["id"])
+        action_evidence = finding.get("action_evidence")
+        if action == "expressing":
+            if action_evidence:
+                raise ValueError(f"纯表达记录不应包含行动证据：{finding['id']}")
+        else:
+            if (
+                not isinstance(action_evidence, dict)
+                or not isinstance(action_evidence.get("source_id"), str)
+                or not isinstance(action_evidence.get("quote"), str)
+                or not action_evidence["quote"].strip()
+            ):
+                raise ValueError(f"行动等级须附原文行动证据：{finding['id']}")
+            action_record = get_record(connection, action_evidence["source_id"])
+            if action_record["post_id"] != source["post_id"]:
+                raise ValueError(f"行动证据来自另一篇讨论：{finding['id']}")
+            if (
+                source["post_id"] in megathreads
+                and source["kind"] == "comments"
+                and discussion_unit(
+                    connection, action_record, megathreads, finding.get("discussion_id")
+                )
+                != disc_id
+            ):
+                raise ValueError(f"行动证据不在同一集中讨论问题内：{finding['id']}")
+            if action_record["id"] != source["id"] and (
+                source["author"] in UNKNOWN_AUTHORS
+                or action_record["author"] in UNKNOWN_AUTHORS
+                or action_record["author"].casefold() != source["author"].casefold()
+            ):
+                raise ValueError(f"行动证据须来自同一表达作者：{finding['id']}")
+            if action_evidence["quote"] not in record_text(action_record):
+                raise ValueError(
+                    f"原文中找不到行动摘录：{finding['id']} / {action_record['id']}"
+                )
+        source_raw = json.loads(source["raw"])
+        subreddit = (source_raw.get("subreddit") or "").strip()
+        if not subreddit:
+            raise ValueError(f"来源缺少社区名称：{source['id']}")
+        post_is_contested = post_contested(json.loads(post["raw"]))
+        group = groups[need_id]
+        record_in_bucket(group, disc_id, source, source_raw, post_is_contested, action)
+        sub_key = subreddit.casefold()
+        if sub_key not in group["subreddits"]:
+            group["subreddits"][sub_key] = new_bucket(subreddit)
+        record_in_bucket(
+            group["subreddits"][sub_key],
+            disc_id,
+            source,
+            source_raw,
+            post_is_contested,
+            action,
+        )
         group["findings"].append(finding["id"])
     result = []
     for need_id, group in groups.items():
         result.append(
             {
                 "need_id": need_id,
-                "discussions": len(group["discussions"]),
-                "authors": len(group["authors"]),
-                "expressing_comments": len(group["comments"]),
-                "posts": len(group["posts"]),
+                **bucket_metrics(group),
+                "by_subreddit": [
+                    {"subreddit": sub["name"], **bucket_metrics(sub)}
+                    for sub in sorted(
+                        group["subreddits"].values(),
+                        key=lambda item: (
+                            -len(item["discussions"]),
+                            item["name"].casefold(),
+                        ),
+                    )
+                ],
                 "discussion_ids": sorted(group["discussions"]),
                 "source_ids": sorted(group["sources"]),
                 "finding_ids": group["findings"],
@@ -489,7 +619,20 @@ def write_json(path, value):
     )
 
 
-def main():
+def parse_subreddits(values):
+    subreddits, seen = [], set()
+    for item in values:
+        clean = item.removeprefix("r/").removeprefix("/r/").strip()
+        if not clean:
+            raise ValueError("社区名称不能为空")
+        key = clean.casefold()
+        if key not in seen:
+            seen.add(key)
+            subreddits.append(clean)
+    return subreddits
+
+
+def build_parser():
     parser = argparse.ArgumentParser(
         description="Reddit 资料采集、分批、完整讨论读取与需求计数"
     )
@@ -497,7 +640,12 @@ def main():
     collect = commands.add_parser(
         "collect", help="按 UTC 时间范围采集帖子与评论，可重复运行继续"
     )
-    collect.add_argument("--subreddit", required=True)
+    collect.add_argument(
+        "--subreddit",
+        action="append",
+        required=True,
+        help="目标社区名称，可重复指定以采集多个社区",
+    )
     collect.add_argument("--after", required=True)
     collect.add_argument("--before", required=True)
     collect.add_argument(
@@ -544,7 +692,11 @@ def main():
     commands.add_parser("status", help="显示实际资料数量与缺少的父级")
     for command in commands.choices.values():
         command.add_argument("--db", required=True)
-    args = parser.parse_args()
+    return parser
+
+
+def main():
+    args = build_parser().parse_args()
     if getattr(args, "out", None):
         inputs = [args.db]
         if args.command in ("count", "read-findings"):
@@ -560,14 +712,16 @@ def main():
     ) as connection:
         if args.command == "collect":
             kinds = ("posts", "comments") if args.kind == "both" else (args.kind,)
-            for kind in kinds:
-                collect_range(
-                    connection,
-                    kind,
-                    {"subreddit": args.subreddit.removeprefix("r/")},
-                    timestamp(args.after),
-                    timestamp(args.before),
-                )
+            after, before = timestamp(args.after), timestamp(args.before)
+            for subreddit in parse_subreddits(args.subreddit):
+                for kind in kinds:
+                    collect_range(
+                        connection,
+                        kind,
+                        {"subreddit": subreddit},
+                        after,
+                        before,
+                    )
             hydrate_posts(connection)
             print(json.dumps(status(connection), ensure_ascii=False))
         elif args.command == "import":
